@@ -115,6 +115,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ae37cc9f566bd18108a4efed39c16e505"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGImage.html#ae37cc9f566bd18108a4efed39c16e505">GImage</a>(string filename=&quot;&quot;, double x=0, double y=0)</td></tr>
 <tr class="memdesc:ae37cc9f566bd18108a4efed39c16e505"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs a new image by loading the image from the specified file.  <a href="#ae37cc9f566bd18108a4efed39c16e505">More...</a><br /></td></tr>
 <tr class="separator:ae37cc9f566bd18108a4efed39c16e505"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abbdf80157620710ca03d6ff2b869333d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGImage.html#abbdf80157620710ca03d6ff2b869333d">GImage</a>(std::istream &amp;source, double x=0, double y=0)</td></tr>
+<tr class="memdesc:abbdf80157620710ca03d6ff2b869333d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs a new image by loading the image from the specified input stream.  <a href="#abbdf80157620710ca03d6ff2b869333d">More...</a><br /></td></tr>
+<tr class="separator:abbdf80157620710ca03d6ff2b869333d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac106706c2a94c64f002934a273f8f4e7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGImage.html#ac106706c2a94c64f002934a273f8f4e7">GImage</a>(double width, double height)</td></tr>
 <tr class="memdesc:ac106706c2a94c64f002934a273f8f4e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a blank <a class="el" href="classGImage.html" title="This graphical object subclass represents an image from a file. ">GImage</a> of the given width and height.  <a href="#ac106706c2a94c64f002934a273f8f4e7">More...</a><br /></td></tr>
 <tr class="separator:ac106706c2a94c64f002934a273f8f4e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -441,7 +444,7 @@ Protected Attributes</h2></td></tr>
 </div>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="ae37cc9f566bd18108a4efed39c16e505"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae37cc9f566bd18108a4efed39c16e505">&#9670;&nbsp;</a></span>GImage() <span class="overload">[1/3]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ae37cc9f566bd18108a4efed39c16e505">&#9670;&nbsp;</a></span>GImage() <span class="overload">[1/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -482,8 +485,50 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="abbdf80157620710ca03d6ff2b869333d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abbdf80157620710ca03d6ff2b869333d">&#9670;&nbsp;</a></span>GImage() <span class="overload">[2/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classGImage.html">GImage</a> </td>
+          <td>(</td>
+          <td class="paramtype">std::istream &amp;&#160;</td>
+          <td class="paramname"><em>source</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>x</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>y</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Constructs a new image by loading the image from the specified input stream. </p>
+<p>By default, the upper left corner of the image appears at the origin, but you can pass coordinates to move it to the point (<code>x</code>, <code>y</code>). </p><dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classErrorException.html" title="  This exception is thrown by calls to the error function. ">ErrorException</a></td><td>if the given file is not found or cannot be loaded as a valid image file </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="ac106706c2a94c64f002934a273f8f4e7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac106706c2a94c64f002934a273f8f4e7">&#9670;&nbsp;</a></span>GImage() <span class="overload">[2/3]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ac106706c2a94c64f002934a273f8f4e7">&#9670;&nbsp;</a></span>GImage() <span class="overload">[3/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -541,7 +586,7 @@ Protected Attributes</h2></td></tr>
 </div>
 </div>
 <a id="a3444f37769d2b073dacd164dc2a1f45a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3444f37769d2b073dacd164dc2a1f45a">&#9670;&nbsp;</a></span>GImage() <span class="overload">[3/3]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a3444f37769d2b073dacd164dc2a1f45a">&#9670;&nbsp;</a></span>GImage() <span class="overload">[4/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">

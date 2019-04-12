@@ -4,21 +4,21 @@
 
 {\ttfamily \#include $<$deque.\+h$>$}
 
-\subsection*{Classes}
+\subsection*{Public Types}
 \begin{DoxyCompactItemize}
 \item 
-class \mbox{\hyperlink{classDeque_1_1const__deque__iterator}{const\+\_\+deque\+\_\+iterator}}
+using \mbox{\hyperlink{classDeque_a82e5b35971ca4096ad8c03687e86f11f}{const\+\_\+iterator}} = \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1CheckedIterator}{stanfordcpplib\+::collections\+::\+Checked\+Iterator}}$<$ typename std\+::deque$<$ Value\+Type $>$\+::\mbox{\hyperlink{classDeque_a82e5b35971ca4096ad8c03687e86f11f}{const\+\_\+iterator}} $>$
 \item 
-class \mbox{\hyperlink{classDeque_1_1deque__iterator}{deque\+\_\+iterator}}
+using \mbox{\hyperlink{classDeque_af87a5290666b1bb4bf3e44cafc305ad5}{iterator}} = \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1CheckedIterator}{stanfordcpplib\+::collections\+::\+Checked\+Iterator}}$<$ typename std\+::deque$<$ Value\+Type $>$\+::\mbox{\hyperlink{classDeque_af87a5290666b1bb4bf3e44cafc305ad5}{iterator}} $>$
 \end{DoxyCompactItemize}
 \subsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-\mbox{\hyperlink{classDeque_a41ebad440badfe713f3ffbbec2eac93f}{Deque}} ()
+\mbox{\hyperlink{classDeque_a6514d251a0a76b440727037b2a205b3a}{Deque}} ()=default
 \item 
 \mbox{\hyperlink{classDeque_a68fd6ae6ef9283c882d90c6924e932cd}{Deque}} (std\+::initializer\+\_\+list$<$ Value\+Type $>$ list)
 \item 
-virtual \mbox{\hyperlink{classDeque_a9d75ae227f70523957cb9b60283d9390}{$\sim$\+Deque}} ()
+virtual \mbox{\hyperlink{classDeque_a55937bfda443e26297e41cc1be5b93f0}{$\sim$\+Deque}} ()=default
 \item 
 void \mbox{\hyperlink{classDeque_ab901606bf3a8019c986f0cf9a9f298dc}{add}} (const Value\+Type \&value)
 \item 
@@ -28,9 +28,9 @@ void \mbox{\hyperlink{classDeque_a1d5c5f74583e2a0fcd33f177ecbb9aa4}{add\+Front}}
 \item 
 const Value\+Type \& \mbox{\hyperlink{classDeque_adc761c91bdacd01bed5c96e25fd9486a}{back}} () const
 \item 
-\mbox{\hyperlink{classDeque_1_1deque__iterator}{deque\+\_\+iterator}} \mbox{\hyperlink{classDeque_ab0616f247b41eeb1a672421386fd5612}{begin}} ()
+\mbox{\hyperlink{classDeque_af87a5290666b1bb4bf3e44cafc305ad5}{iterator}} \mbox{\hyperlink{classDeque_a9401c74ac7945b9ef845456a094e3aa5}{begin}} ()
 \item 
-\mbox{\hyperlink{classDeque_1_1const__deque__iterator}{const\+\_\+deque\+\_\+iterator}} \mbox{\hyperlink{classDeque_a92be94822f29cf2d75f992e50763f34d}{begin}} () const
+\mbox{\hyperlink{classDeque_a82e5b35971ca4096ad8c03687e86f11f}{const\+\_\+iterator}} \mbox{\hyperlink{classDeque_a6d7df88b97979181d0b076ffffa253cc}{begin}} () const
 \item 
 void \mbox{\hyperlink{classDeque_ac8bb3912a3ce86b15842e79d0b421204}{clear}} ()
 \item 
@@ -40,9 +40,9 @@ Value\+Type \mbox{\hyperlink{classDeque_a0f7233390ba171bc0897e5f9618ac4a6}{deque
 \item 
 Value\+Type \mbox{\hyperlink{classDeque_aecf002fe82a60407f6008f6fd7ac2c27}{dequeue\+Front}} ()
 \item 
-\mbox{\hyperlink{classDeque_1_1deque__iterator}{deque\+\_\+iterator}} \mbox{\hyperlink{classDeque_a3f00605ada70bb4af841bafa03311f4a}{end}} ()
+\mbox{\hyperlink{classDeque_af87a5290666b1bb4bf3e44cafc305ad5}{iterator}} \mbox{\hyperlink{classDeque_a3e0273054479ffdb04674903752630a0}{end}} ()
 \item 
-\mbox{\hyperlink{classDeque_1_1const__deque__iterator}{const\+\_\+deque\+\_\+iterator}} \mbox{\hyperlink{classDeque_a255e9712f118c564977def0bdb6438a2}{end}} () const
+\mbox{\hyperlink{classDeque_a82e5b35971ca4096ad8c03687e86f11f}{const\+\_\+iterator}} \mbox{\hyperlink{classDeque_a9224b9d5e9b60b47509ac51e8a0fc735}{end}} () const
 \item 
 void \mbox{\hyperlink{classDeque_a663f69ed5d98f3f167202e9b2d7e7a9a}{enqueue}} (const Value\+Type \&value)
 \item 
@@ -61,8 +61,6 @@ bool \mbox{\hyperlink{classDeque_a512bc8214fed49868d85acd8f1e351d3}{operator!=}}
 bool \mbox{\hyperlink{classDeque_afdfe6d4b99c8d185f9f8c6d48fc19c88}{operator$<$}} (const \mbox{\hyperlink{classDeque}{Deque}} \&deque2) const
 \item 
 bool \mbox{\hyperlink{classDeque_a08a801e1cca1a84e7fae799f5c12696e}{operator$<$=}} (const \mbox{\hyperlink{classDeque}{Deque}} \&deque2) const
-\item 
-\mbox{\hyperlink{classDeque}{Deque}} \& \mbox{\hyperlink{classDeque_a1fedefadfc83c266110c8f6b135c1106}{operator=}} (const \mbox{\hyperlink{classDeque}{Deque}} \&other)
 \item 
 bool \mbox{\hyperlink{classDeque_a7c3d72e4bc4a27ebfd08adbcddbb80f8}{operator==}} (const \mbox{\hyperlink{classDeque}{Deque}} \&deque2) const
 \item 
@@ -87,17 +85,30 @@ int \mbox{\hyperlink{classDeque_af9593d4a5ff4274efaf429cb4f9e57cc}{size}} () con
 std\+::deque$<$ Value\+Type $>$ \mbox{\hyperlink{classDeque_a577546d159bb5d7237f506789f2beafd}{to\+Stl\+Deque}} () const
 \item 
 std\+::string \mbox{\hyperlink{classDeque_a1fe5121d6528fdea3f243321b3fa3a49}{to\+String}} () const
-\item 
-unsigned int \mbox{\hyperlink{classDeque_a0aa696ccb72cbf928535d6b646bac1aa}{version}} () const
 \end{DoxyCompactItemize}
 
 
+\subsection{Member Typedef Documentation}
+\mbox{\Hypertarget{classDeque_a82e5b35971ca4096ad8c03687e86f11f}\label{classDeque_a82e5b35971ca4096ad8c03687e86f11f}} 
+\index{Deque@{Deque}!const\+\_\+iterator@{const\+\_\+iterator}}
+\index{const\+\_\+iterator@{const\+\_\+iterator}!Deque@{Deque}}
+\subsubsection{\texorpdfstring{const\+\_\+iterator}{const\_iterator}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{classDeque_a82e5b35971ca4096ad8c03687e86f11f}{const\+\_\+iterator}} =  \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1CheckedIterator}{stanfordcpplib\+::collections\+::\+Checked\+Iterator}}$<$typename std\+::deque$<$Value\+Type$>$\+::\mbox{\hyperlink{classDeque_a82e5b35971ca4096ad8c03687e86f11f}{const\+\_\+iterator}}$>$}
+
+\mbox{\Hypertarget{classDeque_af87a5290666b1bb4bf3e44cafc305ad5}\label{classDeque_af87a5290666b1bb4bf3e44cafc305ad5}} 
+\index{Deque@{Deque}!iterator@{iterator}}
+\index{iterator@{iterator}!Deque@{Deque}}
+\subsubsection{\texorpdfstring{iterator}{iterator}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{classDeque_af87a5290666b1bb4bf3e44cafc305ad5}{iterator}} =  \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1CheckedIterator}{stanfordcpplib\+::collections\+::\+Checked\+Iterator}}$<$typename std\+::deque$<$Value\+Type$>$\+::\mbox{\hyperlink{classDeque_af87a5290666b1bb4bf3e44cafc305ad5}{iterator}}$>$}
+
+
+
 \subsection{Constructor \& Destructor Documentation}
-\mbox{\Hypertarget{classDeque_a41ebad440badfe713f3ffbbec2eac93f}\label{classDeque_a41ebad440badfe713f3ffbbec2eac93f}} 
+\mbox{\Hypertarget{classDeque_a6514d251a0a76b440727037b2a205b3a}\label{classDeque_a6514d251a0a76b440727037b2a205b3a}} 
 \index{Deque@{Deque}!Deque@{Deque}}
 \index{Deque@{Deque}!Deque@{Deque}}
 \subsubsection{\texorpdfstring{Deque()}{Deque()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
-{\footnotesize\ttfamily \mbox{\hyperlink{classDeque}{Deque}} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily \mbox{\hyperlink{classDeque}{Deque}} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
 
 \mbox{\Hypertarget{classDeque_a68fd6ae6ef9283c882d90c6924e932cd}\label{classDeque_a68fd6ae6ef9283c882d90c6924e932cd}} 
 \index{Deque@{Deque}!Deque@{Deque}}
@@ -105,11 +116,11 @@ unsigned int \mbox{\hyperlink{classDeque_a0aa696ccb72cbf928535d6b646bac1aa}{vers
 \subsubsection{\texorpdfstring{Deque()}{Deque()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
 {\footnotesize\ttfamily \mbox{\hyperlink{classDeque}{Deque}} (\begin{DoxyParamCaption}\item[{std\+::initializer\+\_\+list$<$ Value\+Type $>$}]{list }\end{DoxyParamCaption})}
 
-\mbox{\Hypertarget{classDeque_a9d75ae227f70523957cb9b60283d9390}\label{classDeque_a9d75ae227f70523957cb9b60283d9390}} 
+\mbox{\Hypertarget{classDeque_a55937bfda443e26297e41cc1be5b93f0}\label{classDeque_a55937bfda443e26297e41cc1be5b93f0}} 
 \index{Deque@{Deque}!````~Deque@{$\sim$\+Deque}}
 \index{````~Deque@{$\sim$\+Deque}!Deque@{Deque}}
 \subsubsection{\texorpdfstring{$\sim$\+Deque()}{~Deque()}}
-{\footnotesize\ttfamily $\sim$\mbox{\hyperlink{classDeque}{Deque}} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+{\footnotesize\ttfamily virtual $\sim$\mbox{\hyperlink{classDeque}{Deque}} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}, {\ttfamily [default]}}
 
 
 
@@ -138,17 +149,17 @@ unsigned int \mbox{\hyperlink{classDeque_a0aa696ccb72cbf928535d6b646bac1aa}{vers
 \subsubsection{\texorpdfstring{back()}{back()}}
 {\footnotesize\ttfamily const Value\+Type \& back (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
 
-\mbox{\Hypertarget{classDeque_ab0616f247b41eeb1a672421386fd5612}\label{classDeque_ab0616f247b41eeb1a672421386fd5612}} 
+\mbox{\Hypertarget{classDeque_a9401c74ac7945b9ef845456a094e3aa5}\label{classDeque_a9401c74ac7945b9ef845456a094e3aa5}} 
 \index{Deque@{Deque}!begin@{begin}}
 \index{begin@{begin}!Deque@{Deque}}
 \subsubsection{\texorpdfstring{begin()}{begin()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
-{\footnotesize\ttfamily \mbox{\hyperlink{classDeque_1_1deque__iterator}{deque\+\_\+iterator}} begin (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classDeque}{Deque}}$<$ Value\+Type $>$\+::\mbox{\hyperlink{classDeque_af87a5290666b1bb4bf3e44cafc305ad5}{iterator}} begin (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
 
-\mbox{\Hypertarget{classDeque_a92be94822f29cf2d75f992e50763f34d}\label{classDeque_a92be94822f29cf2d75f992e50763f34d}} 
+\mbox{\Hypertarget{classDeque_a6d7df88b97979181d0b076ffffa253cc}\label{classDeque_a6d7df88b97979181d0b076ffffa253cc}} 
 \index{Deque@{Deque}!begin@{begin}}
 \index{begin@{begin}!Deque@{Deque}}
 \subsubsection{\texorpdfstring{begin()}{begin()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
-{\footnotesize\ttfamily \mbox{\hyperlink{classDeque_1_1const__deque__iterator}{const\+\_\+deque\+\_\+iterator}} begin (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classDeque}{Deque}}$<$ Value\+Type $>$\+::\mbox{\hyperlink{classDeque_a82e5b35971ca4096ad8c03687e86f11f}{const\+\_\+iterator}} begin (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
 
 \mbox{\Hypertarget{classDeque_ac8bb3912a3ce86b15842e79d0b421204}\label{classDeque_ac8bb3912a3ce86b15842e79d0b421204}} 
 \index{Deque@{Deque}!clear@{clear}}
@@ -174,17 +185,17 @@ unsigned int \mbox{\hyperlink{classDeque_a0aa696ccb72cbf928535d6b646bac1aa}{vers
 \subsubsection{\texorpdfstring{dequeue\+Front()}{dequeueFront()}}
 {\footnotesize\ttfamily Value\+Type dequeue\+Front (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
 
-\mbox{\Hypertarget{classDeque_a3f00605ada70bb4af841bafa03311f4a}\label{classDeque_a3f00605ada70bb4af841bafa03311f4a}} 
+\mbox{\Hypertarget{classDeque_a3e0273054479ffdb04674903752630a0}\label{classDeque_a3e0273054479ffdb04674903752630a0}} 
 \index{Deque@{Deque}!end@{end}}
 \index{end@{end}!Deque@{Deque}}
 \subsubsection{\texorpdfstring{end()}{end()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
-{\footnotesize\ttfamily \mbox{\hyperlink{classDeque_1_1deque__iterator}{deque\+\_\+iterator}} end (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classDeque}{Deque}}$<$ Value\+Type $>$\+::\mbox{\hyperlink{classDeque_af87a5290666b1bb4bf3e44cafc305ad5}{iterator}} end (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
 
-\mbox{\Hypertarget{classDeque_a255e9712f118c564977def0bdb6438a2}\label{classDeque_a255e9712f118c564977def0bdb6438a2}} 
+\mbox{\Hypertarget{classDeque_a9224b9d5e9b60b47509ac51e8a0fc735}\label{classDeque_a9224b9d5e9b60b47509ac51e8a0fc735}} 
 \index{Deque@{Deque}!end@{end}}
 \index{end@{end}!Deque@{Deque}}
 \subsubsection{\texorpdfstring{end()}{end()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
-{\footnotesize\ttfamily \mbox{\hyperlink{classDeque_1_1const__deque__iterator}{const\+\_\+deque\+\_\+iterator}} end (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classDeque}{Deque}}$<$ Value\+Type $>$\+::\mbox{\hyperlink{classDeque_a82e5b35971ca4096ad8c03687e86f11f}{const\+\_\+iterator}} end (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
 
 \mbox{\Hypertarget{classDeque_a663f69ed5d98f3f167202e9b2d7e7a9a}\label{classDeque_a663f69ed5d98f3f167202e9b2d7e7a9a}} 
 \index{Deque@{Deque}!enqueue@{enqueue}}
@@ -239,12 +250,6 @@ unsigned int \mbox{\hyperlink{classDeque_a0aa696ccb72cbf928535d6b646bac1aa}{vers
 \index{operator$<$=@{operator$<$=}!Deque@{Deque}}
 \subsubsection{\texorpdfstring{operator$<$=()}{operator<=()}}
 {\footnotesize\ttfamily bool operator$<$= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classDeque}{Deque}}$<$ Value\+Type $>$ \&}]{deque2 }\end{DoxyParamCaption}) const}
-
-\mbox{\Hypertarget{classDeque_a1fedefadfc83c266110c8f6b135c1106}\label{classDeque_a1fedefadfc83c266110c8f6b135c1106}} 
-\index{Deque@{Deque}!operator=@{operator=}}
-\index{operator=@{operator=}!Deque@{Deque}}
-\subsubsection{\texorpdfstring{operator=()}{operator=()}}
-{\footnotesize\ttfamily \mbox{\hyperlink{classDeque}{Deque}}\& operator= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classDeque}{Deque}}$<$ Value\+Type $>$ \&}]{other }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
 
 \mbox{\Hypertarget{classDeque_a7c3d72e4bc4a27ebfd08adbcddbb80f8}\label{classDeque_a7c3d72e4bc4a27ebfd08adbcddbb80f8}} 
 \index{Deque@{Deque}!operator==@{operator==}}
@@ -318,12 +323,6 @@ unsigned int \mbox{\hyperlink{classDeque_a0aa696ccb72cbf928535d6b646bac1aa}{vers
 \subsubsection{\texorpdfstring{to\+String()}{toString()}}
 {\footnotesize\ttfamily std\+::string to\+String (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
 
-\mbox{\Hypertarget{classDeque_a0aa696ccb72cbf928535d6b646bac1aa}\label{classDeque_a0aa696ccb72cbf928535d6b646bac1aa}} 
-\index{Deque@{Deque}!version@{version}}
-\index{version@{version}!Deque@{Deque}}
-\subsubsection{\texorpdfstring{version()}{version()}}
-{\footnotesize\ttfamily unsigned int version (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
-
 
 
 \subsection{Friends And Related Function Documentation}
@@ -338,10 +337,4 @@ unsigned int \mbox{\hyperlink{classDeque_a0aa696ccb72cbf928535d6b646bac1aa}{vers
 \index{operator$<$$<$@{operator$<$$<$}!Deque@{Deque}}
 \subsubsection{\texorpdfstring{operator$<$$<$}{operator<<}}
 {\footnotesize\ttfamily std\+::ostream\& operator$<$$<$ (\begin{DoxyParamCaption}\item[{std\+::ostream \&}]{os,  }\item[{const \mbox{\hyperlink{classDeque}{Deque}}$<$ T $>$ \&}]{deque }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [friend]}}
-
-\mbox{\Hypertarget{classDeque_ac12ad2761ec7037f8866b726424a81e2}\label{classDeque_ac12ad2761ec7037f8866b726424a81e2}} 
-\index{Deque@{Deque}!stanfordcpplib\+::collections\+::compare@{stanfordcpplib\+::collections\+::compare}}
-\index{stanfordcpplib\+::collections\+::compare@{stanfordcpplib\+::collections\+::compare}!Deque@{Deque}}
-\subsubsection{\texorpdfstring{stanfordcpplib\+::collections\+::compare}{stanfordcpplib::collections::compare}}
-{\footnotesize\ttfamily int \mbox{\hyperlink{namespacestanfordcpplib_1_1collections_a6d113dfaa3d28a3894990c64411ff03c}{stanfordcpplib\+::collections\+::compare}} (\begin{DoxyParamCaption}\item[{const Collection \&}]{pq1,  }\item[{const Collection \&}]{pq2 }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [friend]}}
 

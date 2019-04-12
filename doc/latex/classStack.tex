@@ -7,23 +7,15 @@
 \subsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-\mbox{\hyperlink{classStack_a7bda4597c418045448855db1ad87dbc5}{Stack}} ()
+\mbox{\hyperlink{classStack_a3fc38470bd349e85c6995ba03e6284c8}{Stack}} ()=default
 \item 
 \mbox{\hyperlink{classStack_aecafaaaa5e02b2c138a10f6482963634}{Stack}} (std\+::initializer\+\_\+list$<$ Value\+Type $>$ list)
 \item 
-virtual \mbox{\hyperlink{classStack_ade4f41695c7ea04c2aec4babf349f280}{$\sim$\+Stack}} ()
+virtual \mbox{\hyperlink{classStack_aa757fa42027d1b9690c567ff38c65708}{$\sim$\+Stack}} ()=default
 \item 
 void \mbox{\hyperlink{classStack_ab901606bf3a8019c986f0cf9a9f298dc}{add}} (const Value\+Type \&value)
 \item 
-iterator \mbox{\hyperlink{classStack_ad69bd11391be1a1dba5c8202259664f8}{begin}} ()
-\item 
-const\+\_\+iterator \mbox{\hyperlink{classStack_a29305669b60ca1680752e2fc3592ba99}{begin}} () const
-\item 
 void \mbox{\hyperlink{classStack_ac8bb3912a3ce86b15842e79d0b421204}{clear}} ()
-\item 
-iterator \mbox{\hyperlink{classStack_acad38d52497a975bfb6f2f6acd76631f}{end}} ()
-\item 
-const\+\_\+iterator \mbox{\hyperlink{classStack_accf9a4bd0c34d4a5f6a7dab66ea10cdc}{end}} () const
 \item 
 bool \mbox{\hyperlink{classStack_a8a06f9a4f35024fe7f29b0f87dd9a711}{equals}} (const \mbox{\hyperlink{classStack}{Stack}}$<$ Value\+Type $>$ \&stack2) const
 \item 
@@ -58,11 +50,11 @@ std\+::string \mbox{\hyperlink{classStack_a1fe5121d6528fdea3f243321b3fa3a49}{to\
 
 
 \subsection{Constructor \& Destructor Documentation}
-\mbox{\Hypertarget{classStack_a7bda4597c418045448855db1ad87dbc5}\label{classStack_a7bda4597c418045448855db1ad87dbc5}} 
+\mbox{\Hypertarget{classStack_a3fc38470bd349e85c6995ba03e6284c8}\label{classStack_a3fc38470bd349e85c6995ba03e6284c8}} 
 \index{Stack@{Stack}!Stack@{Stack}}
 \index{Stack@{Stack}!Stack@{Stack}}
 \subsubsection{\texorpdfstring{Stack()}{Stack()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
-{\footnotesize\ttfamily \mbox{\hyperlink{classStack}{Stack}} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily \mbox{\hyperlink{classStack}{Stack}} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
 
 \mbox{\Hypertarget{classStack_aecafaaaa5e02b2c138a10f6482963634}\label{classStack_aecafaaaa5e02b2c138a10f6482963634}} 
 \index{Stack@{Stack}!Stack@{Stack}}
@@ -70,11 +62,11 @@ std\+::string \mbox{\hyperlink{classStack_a1fe5121d6528fdea3f243321b3fa3a49}{to\
 \subsubsection{\texorpdfstring{Stack()}{Stack()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
 {\footnotesize\ttfamily \mbox{\hyperlink{classStack}{Stack}} (\begin{DoxyParamCaption}\item[{std\+::initializer\+\_\+list$<$ Value\+Type $>$}]{list }\end{DoxyParamCaption})}
 
-\mbox{\Hypertarget{classStack_ade4f41695c7ea04c2aec4babf349f280}\label{classStack_ade4f41695c7ea04c2aec4babf349f280}} 
+\mbox{\Hypertarget{classStack_aa757fa42027d1b9690c567ff38c65708}\label{classStack_aa757fa42027d1b9690c567ff38c65708}} 
 \index{Stack@{Stack}!````~Stack@{$\sim$\+Stack}}
 \index{````~Stack@{$\sim$\+Stack}!Stack@{Stack}}
 \subsubsection{\texorpdfstring{$\sim$\+Stack()}{~Stack()}}
-{\footnotesize\ttfamily $\sim$\mbox{\hyperlink{classStack}{Stack}} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+{\footnotesize\ttfamily virtual $\sim$\mbox{\hyperlink{classStack}{Stack}} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}, {\ttfamily [default]}}
 
 
 
@@ -85,35 +77,11 @@ std\+::string \mbox{\hyperlink{classStack_a1fe5121d6528fdea3f243321b3fa3a49}{to\
 \subsubsection{\texorpdfstring{add()}{add()}}
 {\footnotesize\ttfamily void add (\begin{DoxyParamCaption}\item[{const Value\+Type \&}]{value }\end{DoxyParamCaption})}
 
-\mbox{\Hypertarget{classStack_ad69bd11391be1a1dba5c8202259664f8}\label{classStack_ad69bd11391be1a1dba5c8202259664f8}} 
-\index{Stack@{Stack}!begin@{begin}}
-\index{begin@{begin}!Stack@{Stack}}
-\subsubsection{\texorpdfstring{begin()}{begin()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
-{\footnotesize\ttfamily iterator begin (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
-
-\mbox{\Hypertarget{classStack_a29305669b60ca1680752e2fc3592ba99}\label{classStack_a29305669b60ca1680752e2fc3592ba99}} 
-\index{Stack@{Stack}!begin@{begin}}
-\index{begin@{begin}!Stack@{Stack}}
-\subsubsection{\texorpdfstring{begin()}{begin()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
-{\footnotesize\ttfamily const\+\_\+iterator begin (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
-
 \mbox{\Hypertarget{classStack_ac8bb3912a3ce86b15842e79d0b421204}\label{classStack_ac8bb3912a3ce86b15842e79d0b421204}} 
 \index{Stack@{Stack}!clear@{clear}}
 \index{clear@{clear}!Stack@{Stack}}
 \subsubsection{\texorpdfstring{clear()}{clear()}}
 {\footnotesize\ttfamily void clear (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
-
-\mbox{\Hypertarget{classStack_acad38d52497a975bfb6f2f6acd76631f}\label{classStack_acad38d52497a975bfb6f2f6acd76631f}} 
-\index{Stack@{Stack}!end@{end}}
-\index{end@{end}!Stack@{Stack}}
-\subsubsection{\texorpdfstring{end()}{end()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
-{\footnotesize\ttfamily iterator end (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
-
-\mbox{\Hypertarget{classStack_accf9a4bd0c34d4a5f6a7dab66ea10cdc}\label{classStack_accf9a4bd0c34d4a5f6a7dab66ea10cdc}} 
-\index{Stack@{Stack}!end@{end}}
-\index{end@{end}!Stack@{Stack}}
-\subsubsection{\texorpdfstring{end()}{end()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
-{\footnotesize\ttfamily const\+\_\+iterator end (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
 
 \mbox{\Hypertarget{classStack_a8a06f9a4f35024fe7f29b0f87dd9a711}\label{classStack_a8a06f9a4f35024fe7f29b0f87dd9a711}} 
 \index{Stack@{Stack}!equals@{equals}}

@@ -100,9 +100,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a4f422b01fff7cc16eea81e00638f44d2"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classErrorException.html#a4f422b01fff7cc16eea81e00638f44d2">ErrorException</a>(string msg)</td></tr>
 <tr class="memdesc:a4f422b01fff7cc16eea81e00638f44d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a new <a class="el" href="classErrorException.html" title="  This exception is thrown by calls to the error function. ">ErrorException</a> with the given error message.  <a href="#a4f422b01fff7cc16eea81e00638f44d2">More...</a><br /></td></tr>
 <tr class="separator:a4f422b01fff7cc16eea81e00638f44d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8a69609bdba32e156392e54dadadcb18"><td class="memItemLeft" align="right" valign="top"></td><td class="memItemRight" valign="bottom"><a class="el" href="classErrorException.html#a8a69609bdba32e156392e54dadadcb18">~ErrorException</a>()  throw ()</td></tr>
-<tr class="memdesc:a8a69609bdba32e156392e54dadadcb18"><td class="mdescLeft">&#160;</td><td class="mdescRight">Frees any memory allocated by the exception.  <a href="#a8a69609bdba32e156392e54dadadcb18">More...</a><br /></td></tr>
-<tr class="separator:a8a69609bdba32e156392e54dadadcb18"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a61c8f6114a93ea2ff11a5f08e3640d76"><td class="memItemLeft" align="right" valign="top"></td><td class="memItemRight" valign="bottom"><a class="el" href="classErrorException.html#a61c8f6114a93ea2ff11a5f08e3640d76">~ErrorException</a>() noexcept=default</td></tr>
+<tr class="memdesc:a61c8f6114a93ea2ff11a5f08e3640d76"><td class="mdescLeft">&#160;</td><td class="mdescRight">Frees any memory allocated by the exception.  <a href="#a61c8f6114a93ea2ff11a5f08e3640d76">More...</a><br /></td></tr>
+<tr class="separator:a61c8f6114a93ea2ff11a5f08e3640d76"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af1e6a5fb477a95a876e86ceadf065ffd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classErrorException.html#af1e6a5fb477a95a876e86ceadf065ffd">dump</a>() const</td></tr>
 <tr class="memdesc:af1e6a5fb477a95a876e86ceadf065ffd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints the exception to the standard error stream (cerr), including its message and stack trace if any.  <a href="#af1e6a5fb477a95a876e86ceadf065ffd">More...</a><br /></td></tr>
 <tr class="separator:af1e6a5fb477a95a876e86ceadf065ffd"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -124,9 +124,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a896ae13e5a5b1b89f058f7de9697c3cd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classErrorException.html#a896ae13e5a5b1b89f058f7de9697c3cd">setKind</a>(string kind)</td></tr>
 <tr class="memdesc:a896ae13e5a5b1b89f058f7de9697c3cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets what kind of exception this is.  <a href="#a896ae13e5a5b1b89f058f7de9697c3cd">More...</a><br /></td></tr>
 <tr class="separator:a896ae13e5a5b1b89f058f7de9697c3cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8d4b96162e93e11e5816d83702578af8"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classErrorException.html#a8d4b96162e93e11e5816d83702578af8">what</a>() const  throw ()</td></tr>
-<tr class="memdesc:a8d4b96162e93e11e5816d83702578af8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the exception's error message as a C string.  <a href="#a8d4b96162e93e11e5816d83702578af8">More...</a><br /></td></tr>
-<tr class="separator:a8d4b96162e93e11e5816d83702578af8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a576a441c2b1e2f01d271e237b314eac3"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classErrorException.html#a576a441c2b1e2f01d271e237b314eac3">what</a>() const noexcept</td></tr>
+<tr class="memdesc:a576a441c2b1e2f01d271e237b314eac3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the exception's error message as a C string.  <a href="#a576a441c2b1e2f01d271e237b314eac3">More...</a><br /></td></tr>
+<tr class="separator:a576a441c2b1e2f01d271e237b314eac3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
@@ -166,8 +166,8 @@ Protected Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a8a69609bdba32e156392e54dadadcb18"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8a69609bdba32e156392e54dadadcb18">&#9670;&nbsp;</a></span>~ErrorException()</h2>
+<a id="a61c8f6114a93ea2ff11a5f08e3640d76"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a61c8f6114a93ea2ff11a5f08e3640d76">&#9670;&nbsp;</a></span>~ErrorException()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -176,21 +176,15 @@ Protected Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">~<a class="el" href="classErrorException.html">ErrorException</a> </td>
+          <td class="memname">virtual ~<a class="el" href="classErrorException.html">ErrorException</a> </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
         </tr>
-        <tr>
-          <td align="right">throw </td><td>(</td><td colspan="2"></td>
-        </tr>
-        <tr>
-          <td align="right"></td><td>)</td><td></td><td></td>
-        </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">virtual</span><span class="mlabel">default</span><span class="mlabel">noexcept</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -415,8 +409,8 @@ Protected Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a8d4b96162e93e11e5816d83702578af8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8d4b96162e93e11e5816d83702578af8">&#9670;&nbsp;</a></span>what()</h2>
+<a id="a576a441c2b1e2f01d271e237b314eac3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a576a441c2b1e2f01d271e237b314eac3">&#9670;&nbsp;</a></span>what()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -430,16 +424,10 @@ Protected Member Functions</h2></td></tr>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
         </tr>
-        <tr>
-          <td align="right">throw </td><td>(</td><td colspan="2"></td>
-        </tr>
-        <tr>
-          <td align="right"></td><td>)</td><td></td><td></td>
-        </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">virtual</span><span class="mlabel">noexcept</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">

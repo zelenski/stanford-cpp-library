@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['width_5fheight_5fmax',['WIDTH_HEIGHT_MAX',['../classGCanvas.html#a9150dbfb90e715487461a8c07850871e',1,'GCanvas']]]
+  ['value',['value',['../structstanfordcpplib_1_1collections_1_1IsLessThanComparable.html#a5b4ee4ae6cba6bb75200ba7af1910873',1,'stanfordcpplib::collections::IsLessThanComparable::value()'],['../structstanfordcpplib_1_1collections_1_1IsHashable.html#a5b4ee4ae6cba6bb75200ba7af1910873',1,'stanfordcpplib::collections::IsHashable::value()'],['../structstanfordcpplib_1_1collections_1_1Fail.html#a5b4ee4ae6cba6bb75200ba7af1910873',1,'stanfordcpplib::collections::Fail::value()']]]
 ];

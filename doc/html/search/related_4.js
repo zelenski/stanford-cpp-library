@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['qtgui',['QtGui',['../classGThread.html#a78e6068a40352424a09cd3753706c619',1,'GThread']]]
+  ['projectingiterator',['ProjectingIterator',['../classstanfordcpplib_1_1collections_1_1ProjectingIterator.html#a140b3a0abc5ca187fb1e71464fb177c2',1,'stanfordcpplib::collections::ProjectingIterator']]]
 ];

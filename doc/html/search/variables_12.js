@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['zero',['ZERO',['../classBigInteger.html#a9ffc8471ab0e5bfe12128dca249d965b',1,'BigInteger']]]
+  ['width_5fheight_5fmax',['WIDTH_HEIGHT_MAX',['../classGCanvas.html#a9150dbfb90e715487461a8c07850871e',1,'GCanvas']]]
 ];

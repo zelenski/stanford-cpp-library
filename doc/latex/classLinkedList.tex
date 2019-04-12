@@ -4,25 +4,23 @@
 
 {\ttfamily \#include $<$linkedlist.\+h$>$}
 
-\subsection*{Classes}
+\subsection*{Public Types}
 \begin{DoxyCompactItemize}
 \item 
-class \mbox{\hyperlink{classLinkedList_1_1const__linkedlist__iterator}{const\+\_\+linkedlist\+\_\+iterator}}
+using \mbox{\hyperlink{classLinkedList_a3b9d37bc4aeea14213d403a3b30a230f}{const\+\_\+iterator}} = \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1CheckedIterator}{stanfordcpplib\+::collections\+::\+Checked\+Iterator}}$<$ typename std\+::list$<$ Value\+Type $>$\+::\mbox{\hyperlink{classLinkedList_a3b9d37bc4aeea14213d403a3b30a230f}{const\+\_\+iterator}} $>$
 \item 
-class \mbox{\hyperlink{classLinkedList_1_1linkedlist__iterator}{linkedlist\+\_\+iterator}}
+using \mbox{\hyperlink{classLinkedList_a50754c96f45bbb0f50e145fd70de6615}{iterator}} = \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1CheckedIterator}{stanfordcpplib\+::collections\+::\+Checked\+Iterator}}$<$ typename std\+::list$<$ Value\+Type $>$\+::\mbox{\hyperlink{classLinkedList_a50754c96f45bbb0f50e145fd70de6615}{iterator}} $>$
 \end{DoxyCompactItemize}
 \subsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-\mbox{\hyperlink{classLinkedList_ac5d84c6fdafb5582dca61b2bbb7800f0}{Linked\+List}} ()
+\mbox{\hyperlink{classLinkedList_a1a7a6ed8aa1481e33bcb4f91dda73206}{Linked\+List}} ()=default
 \item 
 \mbox{\hyperlink{classLinkedList_ae9514892204b457ddde51967b066e772}{Linked\+List}} (const std\+::list$<$ Value\+Type $>$ \&v)
 \item 
 \mbox{\hyperlink{classLinkedList_ad6d043fd9b28b5547bfdded20547e07b}{Linked\+List}} (std\+::initializer\+\_\+list$<$ Value\+Type $>$ list)
 \item 
-\mbox{\hyperlink{classLinkedList_a1330add0e884cda7ab733040dc48c7ff}{Linked\+List}} (const \mbox{\hyperlink{classLinkedList}{Linked\+List}} \&src)
-\item 
-virtual \mbox{\hyperlink{classLinkedList_ab2cd0a10d50aeffd524b75b36fb2be05}{$\sim$\+Linked\+List}} ()
+virtual \mbox{\hyperlink{classLinkedList_a3112225e2c74b4df3327f36e6c34e861}{$\sim$\+Linked\+List}} ()=default
 \item 
 void \mbox{\hyperlink{classLinkedList_aa6249e9d60956ac91381e5040b77c0c6}{add}} (Value\+Type value)
 \item 
@@ -34,17 +32,17 @@ Value\+Type \& \mbox{\hyperlink{classLinkedList_a2bad145b40a82c36986f67610313658
 \item 
 const Value\+Type \& \mbox{\hyperlink{classLinkedList_adc761c91bdacd01bed5c96e25fd9486a}{back}} () const
 \item 
-\mbox{\hyperlink{classLinkedList_1_1linkedlist__iterator}{linkedlist\+\_\+iterator}} \mbox{\hyperlink{classLinkedList_aadd186cc545efe8cf699b4ec5e6402ae}{begin}} ()
+\mbox{\hyperlink{classLinkedList_a50754c96f45bbb0f50e145fd70de6615}{iterator}} \mbox{\hyperlink{classLinkedList_ad69bd11391be1a1dba5c8202259664f8}{begin}} ()
 \item 
-\mbox{\hyperlink{classLinkedList_1_1const__linkedlist__iterator}{const\+\_\+linkedlist\+\_\+iterator}} \mbox{\hyperlink{classLinkedList_af9ba13847c300fab2067d7a228449947}{begin}} () const
+\mbox{\hyperlink{classLinkedList_a3b9d37bc4aeea14213d403a3b30a230f}{const\+\_\+iterator}} \mbox{\hyperlink{classLinkedList_a29305669b60ca1680752e2fc3592ba99}{begin}} () const
 \item 
 void \mbox{\hyperlink{classLinkedList_ac8bb3912a3ce86b15842e79d0b421204}{clear}} ()
 \item 
 bool \mbox{\hyperlink{classLinkedList_a6fbc1a150987e7e5320d244a3baeb560}{contains}} (const Value\+Type \&value) const
 \item 
-\mbox{\hyperlink{classLinkedList_1_1linkedlist__iterator}{linkedlist\+\_\+iterator}} \mbox{\hyperlink{classLinkedList_af97c149df5db3e2a35dfeb3797582748}{end}} ()
+\mbox{\hyperlink{classLinkedList_a50754c96f45bbb0f50e145fd70de6615}{iterator}} \mbox{\hyperlink{classLinkedList_acad38d52497a975bfb6f2f6acd76631f}{end}} ()
 \item 
-\mbox{\hyperlink{classLinkedList_1_1const__linkedlist__iterator}{const\+\_\+linkedlist\+\_\+iterator}} \mbox{\hyperlink{classLinkedList_af3382437fa7ab4f2148e2fa27be4c477}{end}} () const
+\mbox{\hyperlink{classLinkedList_a3b9d37bc4aeea14213d403a3b30a230f}{const\+\_\+iterator}} \mbox{\hyperlink{classLinkedList_accf9a4bd0c34d4a5f6a7dab66ea10cdc}{end}} () const
 \item 
 bool \mbox{\hyperlink{classLinkedList_a0e2f3f8756f745a9243a086687c414f4}{equals}} (const \mbox{\hyperlink{classLinkedList}{Linked\+List}}$<$ Value\+Type $>$ \&l2) const
 \item 
@@ -62,11 +60,7 @@ bool \mbox{\hyperlink{classLinkedList_acf82f9b2937375c7b1cf3dccb3df3312}{is\+Emp
 \item 
 int \mbox{\hyperlink{classLinkedList_a48d608a1714954f0a7bcac6459483cb6}{last\+Index\+Of}} (const Value\+Type \&value) const
 \item 
-void \mbox{\hyperlink{classLinkedList_a2931bda025b4800f128f37790d21f49f}{map\+All}} (void($\ast$fn)(Value\+Type)) const
-\item 
-void \mbox{\hyperlink{classLinkedList_a395b81e6a77aa9702362198771785dfd}{map\+All}} (void($\ast$fn)(const Value\+Type \&)) const
-\item 
-{\footnotesize template$<$typename Functor\+Type $>$ }\\void \mbox{\hyperlink{classLinkedList_a8dc32c1e45704cfae41daf8adb4e66dc}{map\+All}} (Functor\+Type fn) const
+void \mbox{\hyperlink{classLinkedList_a0661241902bd7df69ab9c56f8d4c93c9}{map\+All}} (std\+::function$<$ void(const Value\+Type \&)$>$ fn) const
 \item 
 bool \mbox{\hyperlink{classLinkedList_ae6756397a80197200f1c3fe3bf7dc59f}{operator!=}} (const \mbox{\hyperlink{classLinkedList}{Linked\+List}} \&list2) const
 \item 
@@ -85,8 +79,6 @@ bool \mbox{\hyperlink{classLinkedList_ae6756397a80197200f1c3fe3bf7dc59f}{operato
 bool \mbox{\hyperlink{classLinkedList_a1622208b00e2ffcf2ad120c1d748c784}{operator$<$}} (const \mbox{\hyperlink{classLinkedList}{Linked\+List}} \&list2) const
 \item 
 bool \mbox{\hyperlink{classLinkedList_ac25ce8222d0af74f8052d4106ec83cd0}{operator$<$=}} (const \mbox{\hyperlink{classLinkedList}{Linked\+List}} \&list2) const
-\item 
-\mbox{\hyperlink{classLinkedList}{Linked\+List}} \& \mbox{\hyperlink{classLinkedList_a8ba73804c2f6409d0f7fac8ab07caa75}{operator=}} (const \mbox{\hyperlink{classLinkedList}{Linked\+List}} \&src)
 \item 
 bool \mbox{\hyperlink{classLinkedList_a1000d6e937d2d5418896a1d572ced7b3}{operator==}} (const \mbox{\hyperlink{classLinkedList}{Linked\+List}} \&list2) const
 \item 
@@ -127,41 +119,48 @@ void \mbox{\hyperlink{classLinkedList_a47fdc9eea42b6975cdc835bb2e08810e}{sort}} 
 \mbox{\hyperlink{classLinkedList}{Linked\+List}}$<$ Value\+Type $>$ \mbox{\hyperlink{classLinkedList_a1524b4e899bf6d7b9db87243f3be0c1b}{sub\+List}} (int start, int length) const
 \item 
 std\+::string \mbox{\hyperlink{classLinkedList_a1fe5121d6528fdea3f243321b3fa3a49}{to\+String}} () const
-\item 
-unsigned int \mbox{\hyperlink{classLinkedList_a0aa696ccb72cbf928535d6b646bac1aa}{version}} () const
 \end{DoxyCompactItemize}
 
 
+\subsection{Member Typedef Documentation}
+\mbox{\Hypertarget{classLinkedList_a3b9d37bc4aeea14213d403a3b30a230f}\label{classLinkedList_a3b9d37bc4aeea14213d403a3b30a230f}} 
+\index{Linked\+List@{Linked\+List}!const\+\_\+iterator@{const\+\_\+iterator}}
+\index{const\+\_\+iterator@{const\+\_\+iterator}!Linked\+List@{Linked\+List}}
+\subsubsection{\texorpdfstring{const\+\_\+iterator}{const\_iterator}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{classLinkedList_a3b9d37bc4aeea14213d403a3b30a230f}{const\+\_\+iterator}} =  \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1CheckedIterator}{stanfordcpplib\+::collections\+::\+Checked\+Iterator}}$<$typename std\+::list$<$Value\+Type$>$\+::\mbox{\hyperlink{classLinkedList_a3b9d37bc4aeea14213d403a3b30a230f}{const\+\_\+iterator}}$>$}
+
+\mbox{\Hypertarget{classLinkedList_a50754c96f45bbb0f50e145fd70de6615}\label{classLinkedList_a50754c96f45bbb0f50e145fd70de6615}} 
+\index{Linked\+List@{Linked\+List}!iterator@{iterator}}
+\index{iterator@{iterator}!Linked\+List@{Linked\+List}}
+\subsubsection{\texorpdfstring{iterator}{iterator}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{classLinkedList_a50754c96f45bbb0f50e145fd70de6615}{iterator}} =  \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1CheckedIterator}{stanfordcpplib\+::collections\+::\+Checked\+Iterator}}$<$typename std\+::list$<$Value\+Type$>$\+::\mbox{\hyperlink{classLinkedList_a50754c96f45bbb0f50e145fd70de6615}{iterator}}$>$}
+
+
+
 \subsection{Constructor \& Destructor Documentation}
-\mbox{\Hypertarget{classLinkedList_ac5d84c6fdafb5582dca61b2bbb7800f0}\label{classLinkedList_ac5d84c6fdafb5582dca61b2bbb7800f0}} 
+\mbox{\Hypertarget{classLinkedList_a1a7a6ed8aa1481e33bcb4f91dda73206}\label{classLinkedList_a1a7a6ed8aa1481e33bcb4f91dda73206}} 
 \index{Linked\+List@{Linked\+List}!Linked\+List@{Linked\+List}}
 \index{Linked\+List@{Linked\+List}!Linked\+List@{Linked\+List}}
-\subsubsection{\texorpdfstring{Linked\+List()}{LinkedList()}\hspace{0.1cm}{\footnotesize\ttfamily [1/4]}}
-{\footnotesize\ttfamily \mbox{\hyperlink{classLinkedList}{Linked\+List}} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+\subsubsection{\texorpdfstring{Linked\+List()}{LinkedList()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classLinkedList}{Linked\+List}} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
 
 \mbox{\Hypertarget{classLinkedList_ae9514892204b457ddde51967b066e772}\label{classLinkedList_ae9514892204b457ddde51967b066e772}} 
 \index{Linked\+List@{Linked\+List}!Linked\+List@{Linked\+List}}
 \index{Linked\+List@{Linked\+List}!Linked\+List@{Linked\+List}}
-\subsubsection{\texorpdfstring{Linked\+List()}{LinkedList()}\hspace{0.1cm}{\footnotesize\ttfamily [2/4]}}
+\subsubsection{\texorpdfstring{Linked\+List()}{LinkedList()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
 {\footnotesize\ttfamily \mbox{\hyperlink{classLinkedList}{Linked\+List}} (\begin{DoxyParamCaption}\item[{const std\+::list$<$ Value\+Type $>$ \&}]{v }\end{DoxyParamCaption})}
 
 \mbox{\Hypertarget{classLinkedList_ad6d043fd9b28b5547bfdded20547e07b}\label{classLinkedList_ad6d043fd9b28b5547bfdded20547e07b}} 
 \index{Linked\+List@{Linked\+List}!Linked\+List@{Linked\+List}}
 \index{Linked\+List@{Linked\+List}!Linked\+List@{Linked\+List}}
-\subsubsection{\texorpdfstring{Linked\+List()}{LinkedList()}\hspace{0.1cm}{\footnotesize\ttfamily [3/4]}}
+\subsubsection{\texorpdfstring{Linked\+List()}{LinkedList()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
 {\footnotesize\ttfamily \mbox{\hyperlink{classLinkedList}{Linked\+List}} (\begin{DoxyParamCaption}\item[{std\+::initializer\+\_\+list$<$ Value\+Type $>$}]{list }\end{DoxyParamCaption})}
 
-\mbox{\Hypertarget{classLinkedList_ab2cd0a10d50aeffd524b75b36fb2be05}\label{classLinkedList_ab2cd0a10d50aeffd524b75b36fb2be05}} 
+\mbox{\Hypertarget{classLinkedList_a3112225e2c74b4df3327f36e6c34e861}\label{classLinkedList_a3112225e2c74b4df3327f36e6c34e861}} 
 \index{Linked\+List@{Linked\+List}!````~Linked\+List@{$\sim$\+Linked\+List}}
 \index{````~Linked\+List@{$\sim$\+Linked\+List}!Linked\+List@{Linked\+List}}
 \subsubsection{\texorpdfstring{$\sim$\+Linked\+List()}{~LinkedList()}}
-{\footnotesize\ttfamily $\sim$\mbox{\hyperlink{classLinkedList}{Linked\+List}} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
-
-\mbox{\Hypertarget{classLinkedList_a1330add0e884cda7ab733040dc48c7ff}\label{classLinkedList_a1330add0e884cda7ab733040dc48c7ff}} 
-\index{Linked\+List@{Linked\+List}!Linked\+List@{Linked\+List}}
-\index{Linked\+List@{Linked\+List}!Linked\+List@{Linked\+List}}
-\subsubsection{\texorpdfstring{Linked\+List()}{LinkedList()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
-{\footnotesize\ttfamily \mbox{\hyperlink{classLinkedList}{Linked\+List}} (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classLinkedList}{Linked\+List}}$<$ Value\+Type $>$ \&}]{src }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily virtual $\sim$\mbox{\hyperlink{classLinkedList}{Linked\+List}} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}, {\ttfamily [default]}}
 
 
 
@@ -196,17 +195,17 @@ unsigned int \mbox{\hyperlink{classLinkedList_a0aa696ccb72cbf928535d6b646bac1aa}
 \subsubsection{\texorpdfstring{back()}{back()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
 {\footnotesize\ttfamily const Value\+Type \& back (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
 
-\mbox{\Hypertarget{classLinkedList_aadd186cc545efe8cf699b4ec5e6402ae}\label{classLinkedList_aadd186cc545efe8cf699b4ec5e6402ae}} 
+\mbox{\Hypertarget{classLinkedList_ad69bd11391be1a1dba5c8202259664f8}\label{classLinkedList_ad69bd11391be1a1dba5c8202259664f8}} 
 \index{Linked\+List@{Linked\+List}!begin@{begin}}
 \index{begin@{begin}!Linked\+List@{Linked\+List}}
 \subsubsection{\texorpdfstring{begin()}{begin()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
-{\footnotesize\ttfamily \mbox{\hyperlink{classLinkedList_1_1linkedlist__iterator}{linkedlist\+\_\+iterator}} begin (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classLinkedList_a50754c96f45bbb0f50e145fd70de6615}{iterator}} begin (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
 
-\mbox{\Hypertarget{classLinkedList_af9ba13847c300fab2067d7a228449947}\label{classLinkedList_af9ba13847c300fab2067d7a228449947}} 
+\mbox{\Hypertarget{classLinkedList_a29305669b60ca1680752e2fc3592ba99}\label{classLinkedList_a29305669b60ca1680752e2fc3592ba99}} 
 \index{Linked\+List@{Linked\+List}!begin@{begin}}
 \index{begin@{begin}!Linked\+List@{Linked\+List}}
 \subsubsection{\texorpdfstring{begin()}{begin()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
-{\footnotesize\ttfamily \mbox{\hyperlink{classLinkedList_1_1const__linkedlist__iterator}{const\+\_\+linkedlist\+\_\+iterator}} begin (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classLinkedList_a3b9d37bc4aeea14213d403a3b30a230f}{const\+\_\+iterator}} begin (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
 
 \mbox{\Hypertarget{classLinkedList_ac8bb3912a3ce86b15842e79d0b421204}\label{classLinkedList_ac8bb3912a3ce86b15842e79d0b421204}} 
 \index{Linked\+List@{Linked\+List}!clear@{clear}}
@@ -220,17 +219,17 @@ unsigned int \mbox{\hyperlink{classLinkedList_a0aa696ccb72cbf928535d6b646bac1aa}
 \subsubsection{\texorpdfstring{contains()}{contains()}}
 {\footnotesize\ttfamily bool contains (\begin{DoxyParamCaption}\item[{const Value\+Type \&}]{value }\end{DoxyParamCaption}) const}
 
-\mbox{\Hypertarget{classLinkedList_af97c149df5db3e2a35dfeb3797582748}\label{classLinkedList_af97c149df5db3e2a35dfeb3797582748}} 
+\mbox{\Hypertarget{classLinkedList_acad38d52497a975bfb6f2f6acd76631f}\label{classLinkedList_acad38d52497a975bfb6f2f6acd76631f}} 
 \index{Linked\+List@{Linked\+List}!end@{end}}
 \index{end@{end}!Linked\+List@{Linked\+List}}
 \subsubsection{\texorpdfstring{end()}{end()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
-{\footnotesize\ttfamily \mbox{\hyperlink{classLinkedList_1_1linkedlist__iterator}{linkedlist\+\_\+iterator}} end (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classLinkedList_a50754c96f45bbb0f50e145fd70de6615}{iterator}} end (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
 
-\mbox{\Hypertarget{classLinkedList_af3382437fa7ab4f2148e2fa27be4c477}\label{classLinkedList_af3382437fa7ab4f2148e2fa27be4c477}} 
+\mbox{\Hypertarget{classLinkedList_accf9a4bd0c34d4a5f6a7dab66ea10cdc}\label{classLinkedList_accf9a4bd0c34d4a5f6a7dab66ea10cdc}} 
 \index{Linked\+List@{Linked\+List}!end@{end}}
 \index{end@{end}!Linked\+List@{Linked\+List}}
 \subsubsection{\texorpdfstring{end()}{end()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
-{\footnotesize\ttfamily \mbox{\hyperlink{classLinkedList_1_1const__linkedlist__iterator}{const\+\_\+linkedlist\+\_\+iterator}} end (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classLinkedList_a3b9d37bc4aeea14213d403a3b30a230f}{const\+\_\+iterator}} end (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
 
 \mbox{\Hypertarget{classLinkedList_a0e2f3f8756f745a9243a086687c414f4}\label{classLinkedList_a0e2f3f8756f745a9243a086687c414f4}} 
 \index{Linked\+List@{Linked\+List}!equals@{equals}}
@@ -280,23 +279,11 @@ unsigned int \mbox{\hyperlink{classLinkedList_a0aa696ccb72cbf928535d6b646bac1aa}
 \subsubsection{\texorpdfstring{last\+Index\+Of()}{lastIndexOf()}}
 {\footnotesize\ttfamily int last\+Index\+Of (\begin{DoxyParamCaption}\item[{const Value\+Type \&}]{value }\end{DoxyParamCaption}) const}
 
-\mbox{\Hypertarget{classLinkedList_a2931bda025b4800f128f37790d21f49f}\label{classLinkedList_a2931bda025b4800f128f37790d21f49f}} 
+\mbox{\Hypertarget{classLinkedList_a0661241902bd7df69ab9c56f8d4c93c9}\label{classLinkedList_a0661241902bd7df69ab9c56f8d4c93c9}} 
 \index{Linked\+List@{Linked\+List}!map\+All@{map\+All}}
 \index{map\+All@{map\+All}!Linked\+List@{Linked\+List}}
-\subsubsection{\texorpdfstring{map\+All()}{mapAll()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
-{\footnotesize\ttfamily void map\+All (\begin{DoxyParamCaption}\item[{void($\ast$)(Value\+Type)}]{fn }\end{DoxyParamCaption}) const}
-
-\mbox{\Hypertarget{classLinkedList_a395b81e6a77aa9702362198771785dfd}\label{classLinkedList_a395b81e6a77aa9702362198771785dfd}} 
-\index{Linked\+List@{Linked\+List}!map\+All@{map\+All}}
-\index{map\+All@{map\+All}!Linked\+List@{Linked\+List}}
-\subsubsection{\texorpdfstring{map\+All()}{mapAll()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
-{\footnotesize\ttfamily void map\+All (\begin{DoxyParamCaption}\item[{void($\ast$)(const Value\+Type \&)}]{fn }\end{DoxyParamCaption}) const}
-
-\mbox{\Hypertarget{classLinkedList_a8dc32c1e45704cfae41daf8adb4e66dc}\label{classLinkedList_a8dc32c1e45704cfae41daf8adb4e66dc}} 
-\index{Linked\+List@{Linked\+List}!map\+All@{map\+All}}
-\index{map\+All@{map\+All}!Linked\+List@{Linked\+List}}
-\subsubsection{\texorpdfstring{map\+All()}{mapAll()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
-{\footnotesize\ttfamily void map\+All (\begin{DoxyParamCaption}\item[{Functor\+Type}]{fn }\end{DoxyParamCaption}) const}
+\subsubsection{\texorpdfstring{map\+All()}{mapAll()}}
+{\footnotesize\ttfamily void map\+All (\begin{DoxyParamCaption}\item[{std\+::function$<$ void(const Value\+Type \&)$>$}]{fn }\end{DoxyParamCaption}) const}
 
 \mbox{\Hypertarget{classLinkedList_ae6756397a80197200f1c3fe3bf7dc59f}\label{classLinkedList_ae6756397a80197200f1c3fe3bf7dc59f}} 
 \index{Linked\+List@{Linked\+List}!operator"!=@{operator"!=}}
@@ -351,12 +338,6 @@ unsigned int \mbox{\hyperlink{classLinkedList_a0aa696ccb72cbf928535d6b646bac1aa}
 \index{operator$<$=@{operator$<$=}!Linked\+List@{Linked\+List}}
 \subsubsection{\texorpdfstring{operator$<$=()}{operator<=()}}
 {\footnotesize\ttfamily bool operator$<$= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classLinkedList}{Linked\+List}}$<$ Value\+Type $>$ \&}]{list2 }\end{DoxyParamCaption}) const}
-
-\mbox{\Hypertarget{classLinkedList_a8ba73804c2f6409d0f7fac8ab07caa75}\label{classLinkedList_a8ba73804c2f6409d0f7fac8ab07caa75}} 
-\index{Linked\+List@{Linked\+List}!operator=@{operator=}}
-\index{operator=@{operator=}!Linked\+List@{Linked\+List}}
-\subsubsection{\texorpdfstring{operator=()}{operator=()}}
-{\footnotesize\ttfamily \mbox{\hyperlink{classLinkedList}{Linked\+List}}$<$ Value\+Type $>$ \& operator= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classLinkedList}{Linked\+List}}$<$ Value\+Type $>$ \&}]{src }\end{DoxyParamCaption})}
 
 \mbox{\Hypertarget{classLinkedList_a1000d6e937d2d5418896a1d572ced7b3}\label{classLinkedList_a1000d6e937d2d5418896a1d572ced7b3}} 
 \index{Linked\+List@{Linked\+List}!operator==@{operator==}}
@@ -477,10 +458,4 @@ unsigned int \mbox{\hyperlink{classLinkedList_a0aa696ccb72cbf928535d6b646bac1aa}
 \index{to\+String@{to\+String}!Linked\+List@{Linked\+List}}
 \subsubsection{\texorpdfstring{to\+String()}{toString()}}
 {\footnotesize\ttfamily std\+::string to\+String (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
-
-\mbox{\Hypertarget{classLinkedList_a0aa696ccb72cbf928535d6b646bac1aa}\label{classLinkedList_a0aa696ccb72cbf928535d6b646bac1aa}} 
-\index{Linked\+List@{Linked\+List}!version@{version}}
-\index{version@{version}!Linked\+List@{Linked\+List}}
-\subsubsection{\texorpdfstring{version()}{version()}}
-{\footnotesize\ttfamily unsigned int version (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
 

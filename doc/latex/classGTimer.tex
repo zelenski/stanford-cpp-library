@@ -14,6 +14,8 @@ This class implements a simple interval timer that generates a {\ttfamily G\+Tim
 \item 
 \mbox{\hyperlink{classGTimer_ab947e096ce76b63f283502e4b4446810}{G\+Timer}} (double milliseconds)
 \begin{DoxyCompactList}\small\item\em Creates a timer object that generates a {\ttfamily G\+Timer\+Event} each time the specified number of milliseconds has elapsed. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classGTimer_a2f693771957cae3efd9bfc952c543961}{$\sim$\+G\+Timer}} ()
+\begin{DoxyCompactList}\small\item\em Destroys the timer, stopping it if it\textquotesingle{}s currently running. \end{DoxyCompactList}\item 
 double \mbox{\hyperlink{classGTimer_a73d6fbcedb3f4c8379a76161503dc8f8}{get\+Delay}} () const
 \begin{DoxyCompactList}\small\item\em Returns the delay in milliseconds between each tick of this timer. \end{DoxyCompactList}\item 
 bool \mbox{\hyperlink{classGTimer_ac1991ea0e286fbb461b60c8c9299d781}{is\+Started}} () const
@@ -51,6 +53,16 @@ Due to implementation details, you must create at least one \mbox{\hyperlink{cla
 {\em \mbox{\hyperlink{classErrorException}{Error\+Exception}}} & if milliseconds is negative \\
 \hline
 \end{DoxyExceptions}
+\mbox{\Hypertarget{classGTimer_a2f693771957cae3efd9bfc952c543961}\label{classGTimer_a2f693771957cae3efd9bfc952c543961}} 
+\index{G\+Timer@{G\+Timer}!````~G\+Timer@{$\sim$\+G\+Timer}}
+\index{````~G\+Timer@{$\sim$\+G\+Timer}!G\+Timer@{G\+Timer}}
+\subsubsection{\texorpdfstring{$\sim$\+G\+Timer()}{~GTimer()}}
+{\footnotesize\ttfamily $\sim$\mbox{\hyperlink{classGTimer}{G\+Timer}} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Destroys the timer, stopping it if it\textquotesingle{}s currently running. 
+
 
 
 \subsection{Member Function Documentation}

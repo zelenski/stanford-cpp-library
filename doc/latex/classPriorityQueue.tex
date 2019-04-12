@@ -7,25 +7,21 @@
 \subsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-\mbox{\hyperlink{classPriorityQueue_abc81897aed19eefcf321dcb7e12b166d}{Priority\+Queue}} ()
+\mbox{\hyperlink{classPriorityQueue_a6930969dba58cbd2b3326bb2b69a86bb}{Priority\+Queue}} ()=default
 \item 
-\mbox{\hyperlink{classPriorityQueue_a3508a0b072e57d2c42cd799a0f89f1f4}{Priority\+Queue}} (std\+::initializer\+\_\+list$<$ std\+::pair$<$ double, Value\+Type $>$ $>$ list)
+\mbox{\hyperlink{classPriorityQueue_a0959caf22cf508b3ffbe726d5bc701d1}{Priority\+Queue}} (std\+::initializer\+\_\+list$<$ std\+::pair$<$ double, Value\+Type $>$$>$ list)
 \item 
-virtual \mbox{\hyperlink{classPriorityQueue_af97f1420d96fea6165720866508f06a3}{$\sim$\+Priority\+Queue}} ()
+virtual \mbox{\hyperlink{classPriorityQueue_afc663d44a2c1d9789bafb284407e6ee2}{$\sim$\+Priority\+Queue}} ()=default
 \item 
 void \mbox{\hyperlink{classPriorityQueue_aa604cec721b985421df5448c531a4482}{add}} (const Value\+Type \&value, double priority)
 \item 
 Value\+Type \& \mbox{\hyperlink{classPriorityQueue_a2bad145b40a82c36986f67610313658d}{back}} ()
-\item 
-pq\+\_\+iterator \mbox{\hyperlink{classPriorityQueue_a8a167c2d310ada97d87241d533544a91}{begin}} () const
 \item 
 void \mbox{\hyperlink{classPriorityQueue_a32f7f8d063a6cdc2cd726e994d8eae95}{change\+Priority}} (Value\+Type value, double new\+Priority)
 \item 
 void \mbox{\hyperlink{classPriorityQueue_ac8bb3912a3ce86b15842e79d0b421204}{clear}} ()
 \item 
 Value\+Type \mbox{\hyperlink{classPriorityQueue_aaee07e371e2370e76e6c42bada727ba2}{dequeue}} ()
-\item 
-pq\+\_\+iterator \mbox{\hyperlink{classPriorityQueue_a57bd03708d373db49c5d34a781a4d7cb}{end}} () const
 \item 
 void \mbox{\hyperlink{classPriorityQueue_a25b238c85272091d0662ad153abe058d}{enqueue}} (const Value\+Type \&value, double priority)
 \item 
@@ -52,23 +48,23 @@ std\+::string \mbox{\hyperlink{classPriorityQueue_a1fe5121d6528fdea3f243321b3fa3
 
 
 \subsection{Constructor \& Destructor Documentation}
-\mbox{\Hypertarget{classPriorityQueue_abc81897aed19eefcf321dcb7e12b166d}\label{classPriorityQueue_abc81897aed19eefcf321dcb7e12b166d}} 
+\mbox{\Hypertarget{classPriorityQueue_a6930969dba58cbd2b3326bb2b69a86bb}\label{classPriorityQueue_a6930969dba58cbd2b3326bb2b69a86bb}} 
 \index{Priority\+Queue@{Priority\+Queue}!Priority\+Queue@{Priority\+Queue}}
 \index{Priority\+Queue@{Priority\+Queue}!Priority\+Queue@{Priority\+Queue}}
 \subsubsection{\texorpdfstring{Priority\+Queue()}{PriorityQueue()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
-{\footnotesize\ttfamily \mbox{\hyperlink{classPriorityQueue}{Priority\+Queue}} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily \mbox{\hyperlink{classPriorityQueue}{Priority\+Queue}} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
 
-\mbox{\Hypertarget{classPriorityQueue_a3508a0b072e57d2c42cd799a0f89f1f4}\label{classPriorityQueue_a3508a0b072e57d2c42cd799a0f89f1f4}} 
+\mbox{\Hypertarget{classPriorityQueue_a0959caf22cf508b3ffbe726d5bc701d1}\label{classPriorityQueue_a0959caf22cf508b3ffbe726d5bc701d1}} 
 \index{Priority\+Queue@{Priority\+Queue}!Priority\+Queue@{Priority\+Queue}}
 \index{Priority\+Queue@{Priority\+Queue}!Priority\+Queue@{Priority\+Queue}}
 \subsubsection{\texorpdfstring{Priority\+Queue()}{PriorityQueue()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
-{\footnotesize\ttfamily \mbox{\hyperlink{classPriorityQueue}{Priority\+Queue}} (\begin{DoxyParamCaption}\item[{std\+::initializer\+\_\+list$<$ std\+::pair$<$ double, Value\+Type $>$ $>$}]{list }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily \mbox{\hyperlink{classPriorityQueue}{Priority\+Queue}} (\begin{DoxyParamCaption}\item[{std\+::initializer\+\_\+list$<$ std\+::pair$<$ double, Value\+Type $>$$>$}]{list }\end{DoxyParamCaption})}
 
-\mbox{\Hypertarget{classPriorityQueue_af97f1420d96fea6165720866508f06a3}\label{classPriorityQueue_af97f1420d96fea6165720866508f06a3}} 
+\mbox{\Hypertarget{classPriorityQueue_afc663d44a2c1d9789bafb284407e6ee2}\label{classPriorityQueue_afc663d44a2c1d9789bafb284407e6ee2}} 
 \index{Priority\+Queue@{Priority\+Queue}!````~Priority\+Queue@{$\sim$\+Priority\+Queue}}
 \index{````~Priority\+Queue@{$\sim$\+Priority\+Queue}!Priority\+Queue@{Priority\+Queue}}
 \subsubsection{\texorpdfstring{$\sim$\+Priority\+Queue()}{~PriorityQueue()}}
-{\footnotesize\ttfamily $\sim$\mbox{\hyperlink{classPriorityQueue}{Priority\+Queue}} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+{\footnotesize\ttfamily virtual $\sim$\mbox{\hyperlink{classPriorityQueue}{Priority\+Queue}} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}, {\ttfamily [default]}}
 
 
 
@@ -84,12 +80,6 @@ std\+::string \mbox{\hyperlink{classPriorityQueue_a1fe5121d6528fdea3f243321b3fa3
 \index{back@{back}!Priority\+Queue@{Priority\+Queue}}
 \subsubsection{\texorpdfstring{back()}{back()}}
 {\footnotesize\ttfamily Value\+Type \& back (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
-
-\mbox{\Hypertarget{classPriorityQueue_a8a167c2d310ada97d87241d533544a91}\label{classPriorityQueue_a8a167c2d310ada97d87241d533544a91}} 
-\index{Priority\+Queue@{Priority\+Queue}!begin@{begin}}
-\index{begin@{begin}!Priority\+Queue@{Priority\+Queue}}
-\subsubsection{\texorpdfstring{begin()}{begin()}}
-{\footnotesize\ttfamily pq\+\_\+iterator begin (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
 
 \mbox{\Hypertarget{classPriorityQueue_a32f7f8d063a6cdc2cd726e994d8eae95}\label{classPriorityQueue_a32f7f8d063a6cdc2cd726e994d8eae95}} 
 \index{Priority\+Queue@{Priority\+Queue}!change\+Priority@{change\+Priority}}
@@ -108,12 +98,6 @@ std\+::string \mbox{\hyperlink{classPriorityQueue_a1fe5121d6528fdea3f243321b3fa3
 \index{dequeue@{dequeue}!Priority\+Queue@{Priority\+Queue}}
 \subsubsection{\texorpdfstring{dequeue()}{dequeue()}}
 {\footnotesize\ttfamily Value\+Type dequeue (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
-
-\mbox{\Hypertarget{classPriorityQueue_a57bd03708d373db49c5d34a781a4d7cb}\label{classPriorityQueue_a57bd03708d373db49c5d34a781a4d7cb}} 
-\index{Priority\+Queue@{Priority\+Queue}!end@{end}}
-\index{end@{end}!Priority\+Queue@{Priority\+Queue}}
-\subsubsection{\texorpdfstring{end()}{end()}}
-{\footnotesize\ttfamily pq\+\_\+iterator end (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
 
 \mbox{\Hypertarget{classPriorityQueue_a25b238c85272091d0662ad153abe058d}\label{classPriorityQueue_a25b238c85272091d0662ad153abe058d}} 
 \index{Priority\+Queue@{Priority\+Queue}!enqueue@{enqueue}}

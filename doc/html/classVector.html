@@ -73,7 +73,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Classes</a> &#124;
+<a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="classVector-members.html">List of all members</a>  </div>
   <div class="headertitle">
@@ -86,47 +86,53 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <p><code>#include "<a class="el" href="vector_8h_source.html">vector.h</a>"</code></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr class="memitem:aa1fbc80673e1a5d9661a77e20836b8d8"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classVector.html#aa1fbc80673e1a5d9661a77e20836b8d8">const_iterator</a> = <a class="el" href="classstanfordcpplib_1_1collections_1_1CheckedIterator.html">stanfordcpplib::collections::CheckedIterator</a>&lt; typename ContainerType::const_iterator &gt;</td></tr>
+<tr class="separator:aa1fbc80673e1a5d9661a77e20836b8d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa8cbadd6807ea71ae7465ef4793a6866"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classVector.html#aa8cbadd6807ea71ae7465ef4793a6866">iterator</a> = <a class="el" href="classstanfordcpplib_1_1collections_1_1CheckedIterator.html">stanfordcpplib::collections::CheckedIterator</a>&lt; typename ContainerType::iterator &gt;</td></tr>
+<tr class="separator:aa8cbadd6807ea71ae7465ef4793a6866"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a4df026156780bc0ca651c342b7d6daa4"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classVector.html#a4df026156780bc0ca651c342b7d6daa4">Vector</a>()</td></tr>
-<tr class="memdesc:a4df026156780bc0ca651c342b7d6daa4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new empty vector.  <a href="#a4df026156780bc0ca651c342b7d6daa4">More...</a><br /></td></tr>
-<tr class="separator:a4df026156780bc0ca651c342b7d6daa4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba83f7828d95b601500471996fc8c3c0"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classVector.html#aba83f7828d95b601500471996fc8c3c0">Vector</a>()=default</td></tr>
+<tr class="memdesc:aba83f7828d95b601500471996fc8c3c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new empty vector.  <a href="#aba83f7828d95b601500471996fc8c3c0">More...</a><br /></td></tr>
+<tr class="separator:aba83f7828d95b601500471996fc8c3c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abf5f4a6c2e8f722dfaed5c07027a84ac"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classVector.html#abf5f4a6c2e8f722dfaed5c07027a84ac">Vector</a>(int n, ValueType value=ValueType())</td></tr>
 <tr class="memdesc:abf5f4a6c2e8f722dfaed5c07027a84ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new vector, creating an array with <code>n</code> elements, each of which is initialized to <code>value</code>.  <a href="#abf5f4a6c2e8f722dfaed5c07027a84ac">More...</a><br /></td></tr>
 <tr class="separator:abf5f4a6c2e8f722dfaed5c07027a84ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a81ccc7dac38b6bdeca04281b1acb39c0"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classVector.html#a81ccc7dac38b6bdeca04281b1acb39c0">Vector</a>(std::initializer_list&lt; ValueType &gt; list)</td></tr>
 <tr class="memdesc:a81ccc7dac38b6bdeca04281b1acb39c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Uses an initializer list to set up the vector.  <a href="#a81ccc7dac38b6bdeca04281b1acb39c0">More...</a><br /></td></tr>
 <tr class="separator:a81ccc7dac38b6bdeca04281b1acb39c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaa9fccd0cb7734271f7a15e5d9dc0d27"><td class="memItemLeft" align="right" valign="top"></td><td class="memItemRight" valign="bottom"><a class="el" href="classVector.html#aaa9fccd0cb7734271f7a15e5d9dc0d27">~Vector</a>()</td></tr>
-<tr class="memdesc:aaa9fccd0cb7734271f7a15e5d9dc0d27"><td class="mdescLeft">&#160;</td><td class="mdescRight">Frees any heap storage allocated by this vector.  <a href="#aaa9fccd0cb7734271f7a15e5d9dc0d27">More...</a><br /></td></tr>
-<tr class="separator:aaa9fccd0cb7734271f7a15e5d9dc0d27"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a46f51c573db980ae2ae366dba3daf53d"><td class="memItemLeft" align="right" valign="top"></td><td class="memItemRight" valign="bottom"><a class="el" href="classVector.html#a46f51c573db980ae2ae366dba3daf53d">~Vector</a>()=default</td></tr>
+<tr class="memdesc:a46f51c573db980ae2ae366dba3daf53d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Frees any heap storage allocated by this vector.  <a href="#a46f51c573db980ae2ae366dba3daf53d">More...</a><br /></td></tr>
+<tr class="separator:a46f51c573db980ae2ae366dba3daf53d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab901606bf3a8019c986f0cf9a9f298dc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classVector.html#ab901606bf3a8019c986f0cf9a9f298dc">add</a>(const ValueType &amp;value)</td></tr>
 <tr class="memdesc:ab901606bf3a8019c986f0cf9a9f298dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a new value to the end of this vector.  <a href="#ab901606bf3a8019c986f0cf9a9f298dc">More...</a><br /></td></tr>
 <tr class="separator:ab901606bf3a8019c986f0cf9a9f298dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7e05c14d67a60defeb6723b5704967a6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classVector.html">Vector</a>&lt; ValueType &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classVector.html#a7e05c14d67a60defeb6723b5704967a6">addAll</a>(const <a class="el" href="classVector.html">Vector</a>&lt; ValueType &gt; &amp;v)</td></tr>
 <tr class="memdesc:a7e05c14d67a60defeb6723b5704967a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds all elements of the given other vector to this vector.  <a href="#a7e05c14d67a60defeb6723b5704967a6">More...</a><br /></td></tr>
 <tr class="separator:a7e05c14d67a60defeb6723b5704967a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a36067964c5c7f8b7934682f5c3be49c6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classVector.html">Vector</a>&lt; ValueType &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classVector.html#a36067964c5c7f8b7934682f5c3be49c6">addAll</a>(std::initializer_list&lt; ValueType &gt; list)</td></tr>
-<tr class="memdesc:a36067964c5c7f8b7934682f5c3be49c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds all elements of the given initializer list to this vector.  <a href="#a36067964c5c7f8b7934682f5c3be49c6">More...</a><br /></td></tr>
-<tr class="separator:a36067964c5c7f8b7934682f5c3be49c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2bad145b40a82c36986f67610313658d"><td class="memItemLeft" align="right" valign="top">ValueType &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classVector.html#a2bad145b40a82c36986f67610313658d">back</a>()</td></tr>
 <tr class="memdesc:a2bad145b40a82c36986f67610313658d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the element at index (size - 1) in this vector (without removing it).  <a href="#a2bad145b40a82c36986f67610313658d">More...</a><br /></td></tr>
 <tr class="separator:a2bad145b40a82c36986f67610313658d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adc761c91bdacd01bed5c96e25fd9486a"><td class="memItemLeft" align="right" valign="top">const ValueType &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classVector.html#adc761c91bdacd01bed5c96e25fd9486a">back</a>() const</td></tr>
 <tr class="memdesc:adc761c91bdacd01bed5c96e25fd9486a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the element at index (size - 1) in this vector (without removing it).  <a href="#adc761c91bdacd01bed5c96e25fd9486a">More...</a><br /></td></tr>
 <tr class="separator:adc761c91bdacd01bed5c96e25fd9486a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0c62c15c8ed609e7e5e9518cf5f5c712"><td class="memItemLeft" align="right" valign="top">iterator&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classVector.html#a0c62c15c8ed609e7e5e9518cf5f5c712">begin</a>() const</td></tr>
-<tr class="memdesc:a0c62c15c8ed609e7e5e9518cf5f5c712"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns an iterator pointed at the beginning of this vector.  <a href="#a0c62c15c8ed609e7e5e9518cf5f5c712">More...</a><br /></td></tr>
-<tr class="separator:a0c62c15c8ed609e7e5e9518cf5f5c712"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaba614c33559b8e311d00a84e2a68fb6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classVector.html#aa8cbadd6807ea71ae7465ef4793a6866">iterator</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classVector.html#aaba614c33559b8e311d00a84e2a68fb6">begin</a>()</td></tr>
+<tr class="separator:aaba614c33559b8e311d00a84e2a68fb6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a906b1e081acafd8fd70dd152d41e7b88"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classVector.html#aa1fbc80673e1a5d9661a77e20836b8d8">const_iterator</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classVector.html#a906b1e081acafd8fd70dd152d41e7b88">begin</a>() const</td></tr>
+<tr class="separator:a906b1e081acafd8fd70dd152d41e7b88"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac8bb3912a3ce86b15842e79d0b421204"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classVector.html#ac8bb3912a3ce86b15842e79d0b421204">clear</a>()</td></tr>
 <tr class="memdesc:ac8bb3912a3ce86b15842e79d0b421204"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes all elements from this vector.  <a href="#ac8bb3912a3ce86b15842e79d0b421204">More...</a><br /></td></tr>
 <tr class="separator:ac8bb3912a3ce86b15842e79d0b421204"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6fbc1a150987e7e5320d244a3baeb560"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classVector.html#a6fbc1a150987e7e5320d244a3baeb560">contains</a>(const ValueType &amp;value) const</td></tr>
 <tr class="memdesc:a6fbc1a150987e7e5320d244a3baeb560"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if the vector contains the given value.  <a href="#a6fbc1a150987e7e5320d244a3baeb560">More...</a><br /></td></tr>
 <tr class="separator:a6fbc1a150987e7e5320d244a3baeb560"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a68b688a51bd0cf6fb5bc2cba292209a8"><td class="memItemLeft" align="right" valign="top">iterator&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classVector.html#a68b688a51bd0cf6fb5bc2cba292209a8">end</a>() const</td></tr>
-<tr class="memdesc:a68b688a51bd0cf6fb5bc2cba292209a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns an iterator pointed just past the end of this vector.  <a href="#a68b688a51bd0cf6fb5bc2cba292209a8">More...</a><br /></td></tr>
-<tr class="separator:a68b688a51bd0cf6fb5bc2cba292209a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a45b7794f00a099c37860cf5df4477c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classVector.html#aa8cbadd6807ea71ae7465ef4793a6866">iterator</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classVector.html#a2a45b7794f00a099c37860cf5df4477c">end</a>()</td></tr>
+<tr class="separator:a2a45b7794f00a099c37860cf5df4477c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf338fc55a6bef18f2e7279c537af2ff"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classVector.html#aa1fbc80673e1a5d9661a77e20836b8d8">const_iterator</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classVector.html#aaf338fc55a6bef18f2e7279c537af2ff">end</a>() const</td></tr>
+<tr class="separator:aaf338fc55a6bef18f2e7279c537af2ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9552fd9e921fc047fdd59e59d82e88ef"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classVector.html#a9552fd9e921fc047fdd59e59d82e88ef">ensureCapacity</a>(int cap)</td></tr>
 <tr class="memdesc:a9552fd9e921fc047fdd59e59d82e88ef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Guarantees that the vector's internal array is at least the given length.  <a href="#a9552fd9e921fc047fdd59e59d82e88ef">More...</a><br /></td></tr>
 <tr class="separator:a9552fd9e921fc047fdd59e59d82e88ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -154,31 +160,21 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a48d608a1714954f0a7bcac6459483cb6"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classVector.html#a48d608a1714954f0a7bcac6459483cb6">lastIndexOf</a>(const ValueType &amp;value) const</td></tr>
 <tr class="memdesc:a48d608a1714954f0a7bcac6459483cb6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the index of the last occurrence of the given value.  <a href="#a48d608a1714954f0a7bcac6459483cb6">More...</a><br /></td></tr>
 <tr class="separator:a48d608a1714954f0a7bcac6459483cb6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2931bda025b4800f128f37790d21f49f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classVector.html#a2931bda025b4800f128f37790d21f49f">mapAll</a>(void(*fn)(ValueType)) const</td></tr>
-<tr class="memdesc:a2931bda025b4800f128f37790d21f49f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calls the specified function on each element of the vector in ascending index order.  <a href="#a2931bda025b4800f128f37790d21f49f">More...</a><br /></td></tr>
-<tr class="separator:a2931bda025b4800f128f37790d21f49f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a395b81e6a77aa9702362198771785dfd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classVector.html#a395b81e6a77aa9702362198771785dfd">mapAll</a>(void(*fn)(const ValueType &amp;)) const</td></tr>
-<tr class="memdesc:a395b81e6a77aa9702362198771785dfd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calls the specified function on each element of the vector in ascending index order.  <a href="#a395b81e6a77aa9702362198771785dfd">More...</a><br /></td></tr>
-<tr class="separator:a395b81e6a77aa9702362198771785dfd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8dc32c1e45704cfae41daf8adb4e66dc"><td class="memTemplParams" colspan="2">template&lt;typename FunctorType &gt; </td></tr>
-<tr class="memitem:a8dc32c1e45704cfae41daf8adb4e66dc"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classVector.html#a8dc32c1e45704cfae41daf8adb4e66dc">mapAll</a>(FunctorType fn) const</td></tr>
-<tr class="memdesc:a8dc32c1e45704cfae41daf8adb4e66dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calls the specified function on each element of the vector in ascending index order.  <a href="#a8dc32c1e45704cfae41daf8adb4e66dc">More...</a><br /></td></tr>
-<tr class="separator:a8dc32c1e45704cfae41daf8adb4e66dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0661241902bd7df69ab9c56f8d4c93c9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classVector.html#a0661241902bd7df69ab9c56f8d4c93c9">mapAll</a>(std::function&lt; void(const ValueType &amp;)&gt; fn) const</td></tr>
+<tr class="memdesc:a0661241902bd7df69ab9c56f8d4c93c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calls the specified function on each element of the vector in ascending index order.  <a href="#a0661241902bd7df69ab9c56f8d4c93c9">More...</a><br /></td></tr>
+<tr class="separator:a0661241902bd7df69ab9c56f8d4c93c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3e96c4b5c89d1b00f587b521874cd0d8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classVector.html#a3e96c4b5c89d1b00f587b521874cd0d8">operator!=</a>(const <a class="el" href="classVector.html">Vector</a> &amp;v2) const</td></tr>
 <tr class="memdesc:a3e96c4b5c89d1b00f587b521874cd0d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compares two vectors for inequality.  <a href="#a3e96c4b5c89d1b00f587b521874cd0d8">More...</a><br /></td></tr>
 <tr class="separator:a3e96c4b5c89d1b00f587b521874cd0d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acb70fcd67f846bf16b96223bcf43e476"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classVector.html">Vector</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classVector.html#acb70fcd67f846bf16b96223bcf43e476">operator+</a>(const <a class="el" href="classVector.html">Vector</a> &amp;v2) const</td></tr>
 <tr class="memdesc:acb70fcd67f846bf16b96223bcf43e476"><td class="mdescLeft">&#160;</td><td class="mdescRight">Concatenates two vectors and returns the result.  <a href="#acb70fcd67f846bf16b96223bcf43e476">More...</a><br /></td></tr>
 <tr class="separator:acb70fcd67f846bf16b96223bcf43e476"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2dce2988ba5880d744280b4bbf85b135"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classVector.html">Vector</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classVector.html#a2dce2988ba5880d744280b4bbf85b135">operator+</a>(std::initializer_list&lt; ValueType &gt; list) const</td></tr>
-<tr class="memdesc:a2dce2988ba5880d744280b4bbf85b135"><td class="mdescLeft">&#160;</td><td class="mdescRight">Concatenates this vector with an initializer list such as {1, 2, 3}, returning the result.  <a href="#a2dce2988ba5880d744280b4bbf85b135">More...</a><br /></td></tr>
-<tr class="separator:a2dce2988ba5880d744280b4bbf85b135"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab2024a99b90c3bc71e3007f8dc5b38fa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classVector.html">Vector</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classVector.html#ab2024a99b90c3bc71e3007f8dc5b38fa">operator+</a>(const ValueType &amp;elem) const</td></tr>
+<tr class="memdesc:ab2024a99b90c3bc71e3007f8dc5b38fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Produces a vector formed by appending the given element to this vector.  <a href="#ab2024a99b90c3bc71e3007f8dc5b38fa">More...</a><br /></td></tr>
+<tr class="separator:ab2024a99b90c3bc71e3007f8dc5b38fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6b35f98e0e64a2fff6891a8806f640fd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classVector.html">Vector</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classVector.html#a6b35f98e0e64a2fff6891a8806f640fd">operator+=</a>(const <a class="el" href="classVector.html">Vector</a> &amp;v2)</td></tr>
 <tr class="memdesc:a6b35f98e0e64a2fff6891a8806f640fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds all of the elements from <code>v2</code> to the end of this vector.  <a href="#a6b35f98e0e64a2fff6891a8806f640fd">More...</a><br /></td></tr>
 <tr class="separator:a6b35f98e0e64a2fff6891a8806f640fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a22e55ed53bfa2da64ecd22b36757fcea"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classVector.html">Vector</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classVector.html#a22e55ed53bfa2da64ecd22b36757fcea">operator+=</a>(std::initializer_list&lt; ValueType &gt; list)</td></tr>
-<tr class="memdesc:a22e55ed53bfa2da64ecd22b36757fcea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds all of the elements from the given initializer list to the end of the vector.  <a href="#a22e55ed53bfa2da64ecd22b36757fcea">More...</a><br /></td></tr>
-<tr class="separator:a22e55ed53bfa2da64ecd22b36757fcea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afded71b2a6d6df8b0257cbfd8f7e8d5f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classVector.html">Vector</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classVector.html#afded71b2a6d6df8b0257cbfd8f7e8d5f">operator+=</a>(const ValueType &amp;value)</td></tr>
 <tr class="memdesc:afded71b2a6d6df8b0257cbfd8f7e8d5f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds the single specified value) to the end of the vector.  <a href="#afded71b2a6d6df8b0257cbfd8f7e8d5f">More...</a><br /></td></tr>
 <tr class="separator:afded71b2a6d6df8b0257cbfd8f7e8d5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -248,12 +244,14 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a68d5113d5e35ad7906cb7d1707621e08"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classVector.html">Vector</a>&lt; ValueType &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classVector.html#a68d5113d5e35ad7906cb7d1707621e08">subList</a>(int start, int length) const</td></tr>
 <tr class="memdesc:a68d5113d5e35ad7906cb7d1707621e08"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a new vector containing the given subset range of elements from this vector.  <a href="#a68d5113d5e35ad7906cb7d1707621e08">More...</a><br /></td></tr>
 <tr class="separator:a68d5113d5e35ad7906cb7d1707621e08"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae03d3b2b1d798ec0490b8adc2ff1abd0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classVector.html">Vector</a>&lt; ValueType &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classVector.html#ae03d3b2b1d798ec0490b8adc2ff1abd0">subList</a>(int start) const</td></tr>
+<tr class="memdesc:ae03d3b2b1d798ec0490b8adc2ff1abd0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a new vector containing the elements from the start position to the end of the vector.  <a href="#ae03d3b2b1d798ec0490b8adc2ff1abd0">More...</a><br /></td></tr>
+<tr class="separator:ae03d3b2b1d798ec0490b8adc2ff1abd0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1fe5121d6528fdea3f243321b3fa3a49"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classVector.html#a1fe5121d6528fdea3f243321b3fa3a49">toString</a>() const</td></tr>
 <tr class="memdesc:a1fe5121d6528fdea3f243321b3fa3a49"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts the vector to a printable string representation such as "{10, 20, 30, 40}".  <a href="#a1fe5121d6528fdea3f243321b3fa3a49">More...</a><br /></td></tr>
 <tr class="separator:a1fe5121d6528fdea3f243321b3fa3a49"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0aa696ccb72cbf928535d6b646bac1aa"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classVector.html#a0aa696ccb72cbf928535d6b646bac1aa">version</a>() const</td></tr>
-<tr class="memdesc:a0aa696ccb72cbf928535d6b646bac1aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the internal version of this collection.  <a href="#a0aa696ccb72cbf928535d6b646bac1aa">More...</a><br /></td></tr>
-<tr class="separator:a0aa696ccb72cbf928535d6b646bac1aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1aea0de96f7197055bac8bf8aba7f32"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classVector.html#ad1aea0de96f7197055bac8bf8aba7f32">updateVersion</a>()</td></tr>
+<tr class="separator:ad1aea0de96f7197055bac8bf8aba7f32"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><h3>template&lt;typename ValueType&gt;<br />
@@ -261,12 +259,44 @@ class Vector&lt; ValueType &gt;</h3>
 
 <p>This class stores an ordered list of values similar to an array. </p>
 <p>It supports traditional array selection using square brackets, but also supports inserting and deleting elements. It is similar in function to the STL <code>vector</code> type, but is simpler both to use and to implement. </p>
-</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a4df026156780bc0ca651c342b7d6daa4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4df026156780bc0ca651c342b7d6daa4">&#9670;&nbsp;</a></span>Vector() <span class="overload">[1/3]</span></h2>
+</div><h2 class="groupheader">Member Typedef Documentation</h2>
+<a id="aa1fbc80673e1a5d9661a77e20836b8d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa1fbc80673e1a5d9661a77e20836b8d8">&#9670;&nbsp;</a></span>const_iterator</h2>
 
 <div class="memitem">
 <div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classVector.html#aa1fbc80673e1a5d9661a77e20836b8d8">const_iterator</a> =  <a class="el" href="classstanfordcpplib_1_1collections_1_1CheckedIterator.html">stanfordcpplib::collections::CheckedIterator</a>&lt;typename ContainerType::const_iterator&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa8cbadd6807ea71ae7465ef4793a6866"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa8cbadd6807ea71ae7465ef4793a6866">&#9670;&nbsp;</a></span>iterator</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classVector.html#aa8cbadd6807ea71ae7465ef4793a6866">iterator</a> =  <a class="el" href="classstanfordcpplib_1_1collections_1_1CheckedIterator.html">stanfordcpplib::collections::CheckedIterator</a>&lt;typename ContainerType::iterator&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="aba83f7828d95b601500471996fc8c3c0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aba83f7828d95b601500471996fc8c3c0">&#9670;&nbsp;</a></span>Vector() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname"><a class="el" href="classVector.html">Vector</a> </td>
@@ -275,6 +305,11 @@ class Vector&lt; ValueType &gt;</h3>
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p>Initializes a new empty vector. </p>
@@ -342,8 +377,8 @@ class Vector&lt; ValueType &gt;</h3>
 
 </div>
 </div>
-<a id="aaa9fccd0cb7734271f7a15e5d9dc0d27"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aaa9fccd0cb7734271f7a15e5d9dc0d27">&#9670;&nbsp;</a></span>~Vector()</h2>
+<a id="a46f51c573db980ae2ae366dba3daf53d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a46f51c573db980ae2ae366dba3daf53d">&#9670;&nbsp;</a></span>~Vector()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -352,7 +387,7 @@ class Vector&lt; ValueType &gt;</h3>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">~<a class="el" href="classVector.html">Vector</a> </td>
+          <td class="memname">virtual ~<a class="el" href="classVector.html">Vector</a> </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -360,7 +395,7 @@ class Vector&lt; ValueType &gt;</h3>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">virtual</span><span class="mlabel">default</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -393,7 +428,7 @@ class Vector&lt; ValueType &gt;</h3>
 </div>
 </div>
 <a id="a7e05c14d67a60defeb6723b5704967a6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7e05c14d67a60defeb6723b5704967a6">&#9670;&nbsp;</a></span>addAll() <span class="overload">[1/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e05c14d67a60defeb6723b5704967a6">&#9670;&nbsp;</a></span>addAll()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -410,27 +445,6 @@ class Vector&lt; ValueType &gt;</h3>
 
 <p>Adds all elements of the given other vector to this vector. </p>
 <p>Returns a reference to this vector. Identical in behavior to the += operator. </p><dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000104">Big-Oh:</a></b></dt><dd>O(N) </dd></dl>
-
-</div>
-</div>
-<a id="a36067964c5c7f8b7934682f5c3be49c6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a36067964c5c7f8b7934682f5c3be49c6">&#9670;&nbsp;</a></span>addAll() <span class="overload">[2/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classVector.html">Vector</a>&lt; ValueType &gt; &amp; addAll </td>
-          <td>(</td>
-          <td class="paramtype">std::initializer_list&lt; ValueType &gt;&#160;</td>
-          <td class="paramname"><em>list</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Adds all elements of the given initializer list to this vector. </p>
-<p>Returns a reference to this vector. Identical in behavior to the += operator. </p><dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000105">Big-Oh:</a></b></dt><dd>O(N) </dd></dl>
 
 </div>
 </div>
@@ -456,7 +470,7 @@ class Vector&lt; ValueType &gt;</h3>
   </table>
   </dd>
 </dl>
-<dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000106">Big-Oh:</a></b></dt><dd>O(1) </dd></dl>
+<dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000105">Big-Oh:</a></b></dt><dd>O(1) </dd></dl>
 
 </div>
 </div>
@@ -482,35 +496,41 @@ class Vector&lt; ValueType &gt;</h3>
   </table>
   </dd>
 </dl>
-<dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000107">Big-Oh:</a></b></dt><dd>O(1) </dd></dl>
+<dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000106">Big-Oh:</a></b></dt><dd>O(1) </dd></dl>
 
 </div>
 </div>
-<a id="a0c62c15c8ed609e7e5e9518cf5f5c712"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0c62c15c8ed609e7e5e9518cf5f5c712">&#9670;&nbsp;</a></span>begin()</h2>
+<a id="aaba614c33559b8e311d00a84e2a68fb6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaba614c33559b8e311d00a84e2a68fb6">&#9670;&nbsp;</a></span>begin() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">iterator begin </td>
+          <td class="memname"><a class="el" href="classVector.html">Vector</a>&lt; ValueType &gt;::<a class="el" href="classVector.html#aa8cbadd6807ea71ae7465ef4793a6866">iterator</a> begin </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a906b1e081acafd8fd70dd152d41e7b88"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a906b1e081acafd8fd70dd152d41e7b88">&#9670;&nbsp;</a></span>begin() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classVector.html">Vector</a>&lt; ValueType &gt;::<a class="el" href="classVector.html#aa1fbc80673e1a5d9661a77e20836b8d8">const_iterator</a> begin </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
-
-<p>Returns an iterator pointed at the beginning of this vector. </p>
-<dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000153">Big-Oh:</a></b></dt><dd>O(1) </dd></dl>
 
 </div>
 </div>
@@ -530,7 +550,7 @@ class Vector&lt; ValueType &gt;</h3>
 </div><div class="memdoc">
 
 <p>Removes all elements from this vector. </p>
-<dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000108">Big-Oh:</a></b></dt><dd>O(1) </dd></dl>
+<dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000107">Big-Oh:</a></b></dt><dd>O(1) </dd></dl>
 
 </div>
 </div>
@@ -551,35 +571,41 @@ class Vector&lt; ValueType &gt;</h3>
 </div><div class="memdoc">
 
 <p>Returns true if the vector contains the given value. </p>
-<p>The ValueType must have an == operator to use this method. </p><dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000109">Big-Oh:</a></b></dt><dd>O(N) </dd></dl>
+<p>The ValueType must have an == operator to use this method. </p><dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000108">Big-Oh:</a></b></dt><dd>O(N) </dd></dl>
 
 </div>
 </div>
-<a id="a68b688a51bd0cf6fb5bc2cba292209a8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a68b688a51bd0cf6fb5bc2cba292209a8">&#9670;&nbsp;</a></span>end()</h2>
+<a id="a2a45b7794f00a099c37860cf5df4477c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a45b7794f00a099c37860cf5df4477c">&#9670;&nbsp;</a></span>end() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">iterator end </td>
+          <td class="memname"><a class="el" href="classVector.html">Vector</a>&lt; ValueType &gt;::<a class="el" href="classVector.html#aa8cbadd6807ea71ae7465ef4793a6866">iterator</a> end </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aaf338fc55a6bef18f2e7279c537af2ff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf338fc55a6bef18f2e7279c537af2ff">&#9670;&nbsp;</a></span>end() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classVector.html">Vector</a>&lt; ValueType &gt;::<a class="el" href="classVector.html#aa1fbc80673e1a5d9661a77e20836b8d8">const_iterator</a> end </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
-
-<p>Returns an iterator pointed just past the end of this vector. </p>
-<dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000154">Big-Oh:</a></b></dt><dd>O(1) </dd></dl>
 
 </div>
 </div>
@@ -600,7 +626,7 @@ class Vector&lt; ValueType &gt;</h3>
 </div><div class="memdoc">
 
 <p>Guarantees that the vector's internal array is at least the given length. </p>
-<p>If necessary, resizes the array to be the given length or larger. </p><dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000110">Big-Oh:</a></b></dt><dd>O(N) </dd></dl>
+<p>If necessary, resizes the array to be the given length or larger. </p><dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000109">Big-Oh:</a></b></dt><dd>O(N) </dd></dl>
 
 </div>
 </div>
@@ -621,7 +647,7 @@ class Vector&lt; ValueType &gt;</h3>
 </div><div class="memdoc">
 
 <p>Compares two vectors for equality. </p>
-<p>Returns <code>true</code> if this vector contains exactly the same values as the given other vector. Identical in behavior to the == operator. </p><dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000111">Big-Oh:</a></b></dt><dd>O(N) </dd></dl>
+<p>Returns <code>true</code> if this vector contains exactly the same values as the given other vector. Identical in behavior to the == operator. </p><dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000110">Big-Oh:</a></b></dt><dd>O(N) </dd></dl>
 
 </div>
 </div>
@@ -647,7 +673,7 @@ class Vector&lt; ValueType &gt;</h3>
   </table>
   </dd>
 </dl>
-<dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000112">Big-Oh:</a></b></dt><dd>O(1) </dd></dl>
+<dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000111">Big-Oh:</a></b></dt><dd>O(1) </dd></dl>
 
 </div>
 </div>
@@ -673,7 +699,7 @@ class Vector&lt; ValueType &gt;</h3>
   </table>
   </dd>
 </dl>
-<dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000113">Big-Oh:</a></b></dt><dd>O(1) </dd></dl>
+<dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000112">Big-Oh:</a></b></dt><dd>O(1) </dd></dl>
 
 </div>
 </div>
@@ -700,7 +726,7 @@ class Vector&lt; ValueType &gt;</h3>
   </table>
   </dd>
 </dl>
-<dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000114">Big-Oh:</a></b></dt><dd>O(1) </dd></dl>
+<dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000113">Big-Oh:</a></b></dt><dd>O(1) </dd></dl>
 
 </div>
 </div>
@@ -721,7 +747,7 @@ class Vector&lt; ValueType &gt;</h3>
 </div><div class="memdoc">
 
 <p>Returns the index of the first occurrence of the given value. </p>
-<p>If the value is not found in the vector, returns -1. The ValueType must have an == operator to use this method. </p><dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000115">Big-Oh:</a></b></dt><dd>O(N) </dd></dl>
+<p>If the value is not found in the vector, returns -1. The ValueType must have an == operator to use this method. </p><dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000114">Big-Oh:</a></b></dt><dd>O(N) </dd></dl>
 
 </div>
 </div>
@@ -758,7 +784,7 @@ class Vector&lt; ValueType &gt;</h3>
   </table>
   </dd>
 </dl>
-<dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000116">Big-Oh:</a></b></dt><dd>O(N) </dd></dl>
+<dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000115">Big-Oh:</a></b></dt><dd>O(N) </dd></dl>
 
 </div>
 </div>
@@ -778,7 +804,7 @@ class Vector&lt; ValueType &gt;</h3>
 </div><div class="memdoc">
 
 <p>Returns <code>true</code> if this vector contains no elements. </p>
-<dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000117">Big-Oh:</a></b></dt><dd>O(1) </dd></dl>
+<dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000116">Big-Oh:</a></b></dt><dd>O(1) </dd></dl>
 
 </div>
 </div>
@@ -799,12 +825,12 @@ class Vector&lt; ValueType &gt;</h3>
 </div><div class="memdoc">
 
 <p>Returns the index of the last occurrence of the given value. </p>
-<p>If the value is not found in the vector, returns -1. The ValueType must have an == operator to use this method. </p><dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000118">Big-Oh:</a></b></dt><dd>O(N) </dd></dl>
+<p>If the value is not found in the vector, returns -1. The ValueType must have an == operator to use this method. </p><dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000117">Big-Oh:</a></b></dt><dd>O(N) </dd></dl>
 
 </div>
 </div>
-<a id="a2931bda025b4800f128f37790d21f49f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2931bda025b4800f128f37790d21f49f">&#9670;&nbsp;</a></span>mapAll() <span class="overload">[1/3]</span></h2>
+<a id="a0661241902bd7df69ab9c56f8d4c93c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0661241902bd7df69ab9c56f8d4c93c9">&#9670;&nbsp;</a></span>mapAll()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -812,7 +838,7 @@ class Vector&lt; ValueType &gt;</h3>
         <tr>
           <td class="memname">void mapAll </td>
           <td>(</td>
-          <td class="paramtype">void(*)(ValueType)&#160;</td>
+          <td class="paramtype">std::function&lt; void(const ValueType &amp;)&gt;&#160;</td>
           <td class="paramname"><em>fn</em></td><td>)</td>
           <td> const</td>
         </tr>
@@ -820,49 +846,7 @@ class Vector&lt; ValueType &gt;</h3>
 </div><div class="memdoc">
 
 <p>Calls the specified function on each element of the vector in ascending index order. </p>
-<dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000119">Big-Oh:</a></b></dt><dd>O(N) </dd></dl>
-
-</div>
-</div>
-<a id="a395b81e6a77aa9702362198771785dfd"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a395b81e6a77aa9702362198771785dfd">&#9670;&nbsp;</a></span>mapAll() <span class="overload">[2/3]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void mapAll </td>
-          <td>(</td>
-          <td class="paramtype">void(*)(const ValueType &amp;)&#160;</td>
-          <td class="paramname"><em>fn</em></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Calls the specified function on each element of the vector in ascending index order. </p>
-<dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000120">Big-Oh:</a></b></dt><dd>O(N) </dd></dl>
-
-</div>
-</div>
-<a id="a8dc32c1e45704cfae41daf8adb4e66dc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8dc32c1e45704cfae41daf8adb4e66dc">&#9670;&nbsp;</a></span>mapAll() <span class="overload">[3/3]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void mapAll </td>
-          <td>(</td>
-          <td class="paramtype">FunctorType&#160;</td>
-          <td class="paramname"><em>fn</em></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Calls the specified function on each element of the vector in ascending index order. </p>
-<dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000121">Big-Oh:</a></b></dt><dd>O(N) </dd></dl>
+<dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000118">Big-Oh:</a></b></dt><dd>O(N) </dd></dl>
 
 </div>
 </div>
@@ -883,7 +867,7 @@ class Vector&lt; ValueType &gt;</h3>
 </div><div class="memdoc">
 
 <p>Compares two vectors for inequality. </p>
-<p>The ValueType must have a != operator. </p><dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000145">Big-Oh:</a></b></dt><dd>O(N) </dd></dl>
+<p>The ValueType must have a != operator. </p><dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000142">Big-Oh:</a></b></dt><dd>O(N) </dd></dl>
 
 </div>
 </div>
@@ -904,12 +888,12 @@ class Vector&lt; ValueType &gt;</h3>
 </div><div class="memdoc">
 
 <p>Concatenates two vectors and returns the result. </p>
-<dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000139">Big-Oh:</a></b></dt><dd>O(N) </dd></dl>
+<dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000137">Big-Oh:</a></b></dt><dd>O(N) </dd></dl>
 
 </div>
 </div>
-<a id="a2dce2988ba5880d744280b4bbf85b135"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2dce2988ba5880d744280b4bbf85b135">&#9670;&nbsp;</a></span>operator+() <span class="overload">[2/2]</span></h2>
+<a id="ab2024a99b90c3bc71e3007f8dc5b38fa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab2024a99b90c3bc71e3007f8dc5b38fa">&#9670;&nbsp;</a></span>operator+() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -917,20 +901,20 @@ class Vector&lt; ValueType &gt;</h3>
         <tr>
           <td class="memname"><a class="el" href="classVector.html">Vector</a>&lt; ValueType &gt; operator+ </td>
           <td>(</td>
-          <td class="paramtype">std::initializer_list&lt; ValueType &gt;&#160;</td>
-          <td class="paramname"><em>list</em></td><td>)</td>
+          <td class="paramtype">const ValueType &amp;&#160;</td>
+          <td class="paramname"><em>elem</em></td><td>)</td>
           <td> const</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Concatenates this vector with an initializer list such as {1, 2, 3}, returning the result. </p>
-<dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000140">Big-Oh:</a></b></dt><dd>O(N) </dd></dl>
+<p>Produces a vector formed by appending the given element to this vector. </p>
+<dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000138">Big-Oh:</a></b></dt><dd>O(N) </dd></dl>
 
 </div>
 </div>
 <a id="a6b35f98e0e64a2fff6891a8806f640fd"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6b35f98e0e64a2fff6891a8806f640fd">&#9670;&nbsp;</a></span>operator+=() <span class="overload">[1/3]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b35f98e0e64a2fff6891a8806f640fd">&#9670;&nbsp;</a></span>operator+=() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -946,33 +930,12 @@ class Vector&lt; ValueType &gt;</h3>
 </div><div class="memdoc">
 
 <p>Adds all of the elements from <code>v2</code> to the end of this vector. </p>
-<dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000141">Big-Oh:</a></b></dt><dd>O(N) </dd></dl>
-
-</div>
-</div>
-<a id="a22e55ed53bfa2da64ecd22b36757fcea"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a22e55ed53bfa2da64ecd22b36757fcea">&#9670;&nbsp;</a></span>operator+=() <span class="overload">[2/3]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classVector.html">Vector</a>&lt; ValueType &gt; &amp; operator+= </td>
-          <td>(</td>
-          <td class="paramtype">std::initializer_list&lt; ValueType &gt;&#160;</td>
-          <td class="paramname"><em>list</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Adds all of the elements from the given initializer list to the end of the vector. </p>
-<dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000142">Big-Oh:</a></b></dt><dd>O(N) </dd></dl>
+<dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000139">Big-Oh:</a></b></dt><dd>O(N) </dd></dl>
 
 </div>
 </div>
 <a id="afded71b2a6d6df8b0257cbfd8f7e8d5f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afded71b2a6d6df8b0257cbfd8f7e8d5f">&#9670;&nbsp;</a></span>operator+=() <span class="overload">[3/3]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#afded71b2a6d6df8b0257cbfd8f7e8d5f">&#9670;&nbsp;</a></span>operator+=() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -988,7 +951,7 @@ class Vector&lt; ValueType &gt;</h3>
 </div><div class="memdoc">
 
 <p>Adds the single specified value) to the end of the vector. </p>
-<dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000143">Big-Oh:</a></b></dt><dd>O(1) </dd></dl>
+<dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000140">Big-Oh:</a></b></dt><dd>O(1) </dd></dl>
 
 </div>
 </div>
@@ -1009,7 +972,7 @@ class Vector&lt; ValueType &gt;</h3>
 </div><div class="memdoc">
 
 <p>Adds an element to the vector passed as the left-hand operatand. </p>
-<p>This form makes it easier to initialize vectors in old versions of C++. </p><dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000152">Big-Oh:</a></b></dt><dd>O(1) </dd></dl>
+<p>This form makes it easier to initialize vectors in old versions of C++. </p><dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000147">Big-Oh:</a></b></dt><dd>O(1) </dd></dl>
 
 </div>
 </div>
@@ -1030,7 +993,7 @@ class Vector&lt; ValueType &gt;</h3>
 </div><div class="memdoc">
 
 <p>Relational operators to compare two vectors. </p>
-<p>Each element is compared pairwise to the corresponding element at the same index in the other vector; for example, we first check the values at index 0, then 1, and so on. The &lt;, &gt;, &lt;=, &gt;= operators require that the ValueType has a &lt; operator so that the elements can be compared pairwise. </p><dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000146">Big-Oh:</a></b></dt><dd>O(N) </dd></dl>
+<p>Each element is compared pairwise to the corresponding element at the same index in the other vector; for example, we first check the values at index 0, then 1, and so on. The &lt;, &gt;, &lt;=, &gt;= operators require that the ValueType has a &lt; operator so that the elements can be compared pairwise. </p><dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000143">Big-Oh:</a></b></dt><dd>O(N) </dd></dl>
 
 </div>
 </div>
@@ -1051,7 +1014,7 @@ class Vector&lt; ValueType &gt;</h3>
 </div><div class="memdoc">
 
 <p>Relational operators to compare two vectors. </p>
-<p>Each element is compared pairwise to the corresponding element at the same index in the other vector; for example, we first check the values at index 0, then 1, and so on. The &lt;, &gt;, &lt;=, &gt;= operators require that the ValueType has a &lt; operator so that the elements can be compared pairwise. </p><dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000147">Big-Oh:</a></b></dt><dd>O(N) </dd></dl>
+<p>Each element is compared pairwise to the corresponding element at the same index in the other vector; for example, we first check the values at index 0, then 1, and so on. The &lt;, &gt;, &lt;=, &gt;= operators require that the ValueType has a &lt; operator so that the elements can be compared pairwise. </p><dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000144">Big-Oh:</a></b></dt><dd>O(N) </dd></dl>
 
 </div>
 </div>
@@ -1072,7 +1035,7 @@ class Vector&lt; ValueType &gt;</h3>
 </div><div class="memdoc">
 
 <p>Compares two vectors for equality. </p>
-<p>The ValueType must have an == operator. </p><dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000144">Big-Oh:</a></b></dt><dd>O(N) </dd></dl>
+<p>The ValueType must have an == operator. </p><dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000141">Big-Oh:</a></b></dt><dd>O(N) </dd></dl>
 
 </div>
 </div>
@@ -1093,7 +1056,7 @@ class Vector&lt; ValueType &gt;</h3>
 </div><div class="memdoc">
 
 <p>Relational operators to compare two vectors. </p>
-<p>Each element is compared pairwise to the corresponding element at the same index in the other vector; for example, we first check the values at index 0, then 1, and so on. The &lt;, &gt;, &lt;=, &gt;= operators require that the ValueType has a &lt; operator so that the elements can be compared pairwise. </p><dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000148">Big-Oh:</a></b></dt><dd>O(N) </dd></dl>
+<p>Each element is compared pairwise to the corresponding element at the same index in the other vector; for example, we first check the values at index 0, then 1, and so on. The &lt;, &gt;, &lt;=, &gt;= operators require that the ValueType has a &lt; operator so that the elements can be compared pairwise. </p><dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000145">Big-Oh:</a></b></dt><dd>O(N) </dd></dl>
 
 </div>
 </div>
@@ -1114,7 +1077,7 @@ class Vector&lt; ValueType &gt;</h3>
 </div><div class="memdoc">
 
 <p>Relational operators to compare two vectors. </p>
-<p>Each element is compared pairwise to the corresponding element at the same index in the other vector; for example, we first check the values at index 0, then 1, and so on. The &lt;, &gt;, &lt;=, &gt;= operators require that the ValueType has a &lt; operator so that the elements can be compared pairwise. </p><dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000149">Big-Oh:</a></b></dt><dd>O(N) </dd></dl>
+<p>Each element is compared pairwise to the corresponding element at the same index in the other vector; for example, we first check the values at index 0, then 1, and so on. The &lt;, &gt;, &lt;=, &gt;= operators require that the ValueType has a &lt; operator so that the elements can be compared pairwise. </p><dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000146">Big-Oh:</a></b></dt><dd>O(N) </dd></dl>
 
 </div>
 </div>
@@ -1141,7 +1104,7 @@ class Vector&lt; ValueType &gt;</h3>
   </table>
   </dd>
 </dl>
-<dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000137">Big-Oh:</a></b></dt><dd>O(1) </dd></dl>
+<dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000135">Big-Oh:</a></b></dt><dd>O(1) </dd></dl>
 
 </div>
 </div>
@@ -1168,7 +1131,7 @@ class Vector&lt; ValueType &gt;</h3>
   </table>
   </dd>
 </dl>
-<dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000138">Big-Oh:</a></b></dt><dd>O(1) </dd></dl>
+<dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000136">Big-Oh:</a></b></dt><dd>O(1) </dd></dl>
 
 </div>
 </div>
@@ -1194,7 +1157,7 @@ class Vector&lt; ValueType &gt;</h3>
   </table>
   </dd>
 </dl>
-<dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000123">Big-Oh:</a></b></dt><dd>O(1) </dd></dl>
+<dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000120">Big-Oh:</a></b></dt><dd>O(1) </dd></dl>
 
 </div>
 </div>
@@ -1220,7 +1183,7 @@ class Vector&lt; ValueType &gt;</h3>
   </table>
   </dd>
 </dl>
-<dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000122">Big-Oh:</a></b></dt><dd>O(N) </dd></dl>
+<dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000119">Big-Oh:</a></b></dt><dd>O(N) </dd></dl>
 
 </div>
 </div>
@@ -1241,7 +1204,7 @@ class Vector&lt; ValueType &gt;</h3>
 </div><div class="memdoc">
 
 <p>Adds a new value to the end of this vector. </p>
-<p>This method is a synonym of the add method that is provided to ensure compatibility with the STL <code>vector</code> class. </p><dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000124">Big-Oh:</a></b></dt><dd>O(1) </dd></dl>
+<p>This method is a synonym of the add method that is provided to ensure compatibility with the STL <code>vector</code> class. </p><dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000121">Big-Oh:</a></b></dt><dd>O(1) </dd></dl>
 
 </div>
 </div>
@@ -1262,7 +1225,7 @@ class Vector&lt; ValueType &gt;</h3>
 </div><div class="memdoc">
 
 <p>Adds a new value to the start of this vector. </p>
-<p>This method is equivalent to calling insert(0, value) and is provided to improve compatibility with the STL <code>vector</code> class. </p><dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000125">Big-Oh:</a></b></dt><dd>O(N) </dd></dl>
+<p>This method is equivalent to calling insert(0, value) and is provided to improve compatibility with the STL <code>vector</code> class. </p><dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000122">Big-Oh:</a></b></dt><dd>O(N) </dd></dl>
 
 </div>
 </div>
@@ -1289,7 +1252,7 @@ class Vector&lt; ValueType &gt;</h3>
   </table>
   </dd>
 </dl>
-<dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000126">Big-Oh:</a></b></dt><dd>O(N) </dd></dl>
+<dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000123">Big-Oh:</a></b></dt><dd>O(N) </dd></dl>
 
 </div>
 </div>
@@ -1315,7 +1278,7 @@ class Vector&lt; ValueType &gt;</h3>
   </table>
   </dd>
 </dl>
-<dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000128">Big-Oh:</a></b></dt><dd>O(1) </dd></dl>
+<dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000125">Big-Oh:</a></b></dt><dd>O(1) </dd></dl>
 
 </div>
 </div>
@@ -1341,7 +1304,7 @@ class Vector&lt; ValueType &gt;</h3>
   </table>
   </dd>
 </dl>
-<dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000127">Big-Oh:</a></b></dt><dd>O(N) </dd></dl>
+<dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000124">Big-Oh:</a></b></dt><dd>O(N) </dd></dl>
 
 </div>
 </div>
@@ -1362,7 +1325,7 @@ class Vector&lt; ValueType &gt;</h3>
 </div><div class="memdoc">
 
 <p>Removes the first occurrence of the element value from this vector. </p>
-<p>All subsequent elements are shifted one position to the left. If the vector does not contain the given value, has no effect. The ValueType must have an == operator to use this method. </p><dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000129">Big-Oh:</a></b></dt><dd>O(N) </dd></dl>
+<p>All subsequent elements are shifted one position to the left. If the vector does not contain the given value, has no effect. The ValueType must have an == operator to use this method. </p><dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000126">Big-Oh:</a></b></dt><dd>O(N) </dd></dl>
 
 </div>
 </div>
@@ -1382,7 +1345,7 @@ class Vector&lt; ValueType &gt;</h3>
 </div><div class="memdoc">
 
 <p>Reverses the order of the elements in this vector. </p>
-<p>For example, if vector stores {1, 3, 4, 9}, changes it to store {9, 4, 3, 1}. </p><dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000130">Big-Oh:</a></b></dt><dd>O(N) </dd></dl>
+<p>For example, if vector stores {1, 3, 4, 9}, changes it to store {9, 4, 3, 1}. </p><dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000127">Big-Oh:</a></b></dt><dd>O(N) </dd></dl>
 
 </div>
 </div>
@@ -1419,7 +1382,7 @@ class Vector&lt; ValueType &gt;</h3>
   </table>
   </dd>
 </dl>
-<dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000131">Big-Oh:</a></b></dt><dd>O(1) </dd></dl>
+<dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000128">Big-Oh:</a></b></dt><dd>O(1) </dd></dl>
 
 </div>
 </div>
@@ -1439,7 +1402,7 @@ class Vector&lt; ValueType &gt;</h3>
 </div><div class="memdoc">
 
 <p>Rearranges the order of the elements in this vector into a random order. </p>
-<dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000133">Big-Oh:</a></b></dt><dd>O(N) </dd></dl>
+<dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000130">Big-Oh:</a></b></dt><dd>O(N) </dd></dl>
 
 </div>
 </div>
@@ -1459,7 +1422,7 @@ class Vector&lt; ValueType &gt;</h3>
 </div><div class="memdoc">
 
 <p>Returns the number of elements in this vector. </p>
-<dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000132">Big-Oh:</a></b></dt><dd>O(1) </dd></dl>
+<dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000129">Big-Oh:</a></b></dt><dd>O(1) </dd></dl>
 
 </div>
 </div>
@@ -1479,12 +1442,12 @@ class Vector&lt; ValueType &gt;</h3>
 </div><div class="memdoc">
 
 <p>Rearranges the order of the elements in this vector into sorted order. </p>
-<p>For example, if vector stores {9, 1, 4, 3}, changes it to store {1, 3, 4, 9}. The ValueType must have an operator &lt; to call this method. </p><dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000134">Big-Oh:</a></b></dt><dd>O(N log N) </dd></dl>
+<p>For example, if vector stores {9, 1, 4, 3}, changes it to store {1, 3, 4, 9}. The ValueType must have an operator &lt; to call this method. </p><dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000131">Big-Oh:</a></b></dt><dd>O(N log N) </dd></dl>
 
 </div>
 </div>
 <a id="a68d5113d5e35ad7906cb7d1707621e08"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a68d5113d5e35ad7906cb7d1707621e08">&#9670;&nbsp;</a></span>subList()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a68d5113d5e35ad7906cb7d1707621e08">&#9670;&nbsp;</a></span>subList() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1516,7 +1479,34 @@ class Vector&lt; ValueType &gt;</h3>
   </table>
   </dd>
 </dl>
-<dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000135">Big-Oh:</a></b></dt><dd>O(N) </dd></dl>
+<dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000132">Big-Oh:</a></b></dt><dd>O(N) </dd></dl>
+
+</div>
+</div>
+<a id="ae03d3b2b1d798ec0490b8adc2ff1abd0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae03d3b2b1d798ec0490b8adc2ff1abd0">&#9670;&nbsp;</a></span>subList() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classVector.html">Vector</a>&lt; ValueType &gt; subList </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>start</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns a new vector containing the elements from the start position to the end of the vector. </p>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classErrorException.html" title="  This exception is thrown by calls to the error function. ">ErrorException</a></td><td>if start &gt; <a class="el" href="classVector.html#af9593d4a5ff4274efaf429cb4f9e57cc" title="Returns the number of elements in this vector. ">size()</a> </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000133">Big-Oh:</a></b></dt><dd>O(N) </dd></dl>
 
 </div>
 </div>
@@ -1536,27 +1526,24 @@ class Vector&lt; ValueType &gt;</h3>
 </div><div class="memdoc">
 
 <p>Converts the vector to a printable string representation such as "{10, 20, 30, 40}". </p>
-<dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000136">Big-Oh:</a></b></dt><dd>O(N) </dd></dl>
+<dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000134">Big-Oh:</a></b></dt><dd>O(N) </dd></dl>
 
 </div>
 </div>
-<a id="a0aa696ccb72cbf928535d6b646bac1aa"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0aa696ccb72cbf928535d6b646bac1aa">&#9670;&nbsp;</a></span>version()</h2>
+<a id="ad1aea0de96f7197055bac8bf8aba7f32"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad1aea0de96f7197055bac8bf8aba7f32">&#9670;&nbsp;</a></span>updateVersion()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">unsigned int version </td>
+          <td class="memname">void updateVersion </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
-          <td> const</td>
+          <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>Returns the internal version of this collection. </p>
-<p>This is used to check for invalid iterators and issue error messages. </p><dl class="BigOh"><dt><b><a class="el" href="BigOh.html#_BigOh000155">Big-Oh:</a></b></dt><dd>O(1) </dd></dl>
 
 </div>
 </div>

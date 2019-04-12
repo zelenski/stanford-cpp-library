@@ -4,49 +4,39 @@
 
 {\ttfamily \#include $<$map.\+h$>$}
 
-\subsection*{Classes}
+\subsection*{Public Types}
 \begin{DoxyCompactItemize}
 \item 
-class \mbox{\hyperlink{classMap_1_1iterator}{iterator}}
+using \mbox{\hyperlink{classMap_a04e3b848cce2bbfed5ea818e1b264000}{const\+\_\+iterator}} = \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1ProjectingIterator}{stanfordcpplib\+::collections\+::\+Projecting\+Iterator}}$<$ \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1CheckedIterator}{stanfordcpplib\+::collections\+::\+Checked\+Iterator}}$<$ typename Map\+Type\+::const\+\_\+iterator $>$ $>$
+\item 
+using \mbox{\hyperlink{classMap_ab3d10e70baaeac78e76b7abae7e2cf76}{iterator}} = \mbox{\hyperlink{classMap_a04e3b848cce2bbfed5ea818e1b264000}{const\+\_\+iterator}}
 \end{DoxyCompactItemize}
 \subsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
 \mbox{\hyperlink{classMap_a49848ab3a0e1934c5615242b67af68c7}{Map}} ()
 \item 
-\mbox{\hyperlink{classMap_ad1ada5d0cc94f69c235f999c2fbc3dff}{Map}} (bool less\+Func(Key\+Type, Key\+Type))
+\mbox{\hyperlink{classMap_afeeb032b309df7c22d2640f98e0dd9a4}{Map}} (std\+::function$<$ bool(const Key\+Type \&, const Key\+Type \&)$>$ less\+Func)
 \item 
-\mbox{\hyperlink{classMap_a0f8061a4d1a8b6cc2a005d457f7f99d0}{Map}} (bool less\+Func(const Key\+Type \&, const Key\+Type \&))
+\mbox{\hyperlink{classMap_a79fa612ecdfc84da8a66341c76e6bd85}{Map}} (std\+::initializer\+\_\+list$<$ std\+::pair$<$ const Key\+Type, Value\+Type $>$$>$ list)
 \item 
-\mbox{\hyperlink{classMap_a3c4b56834747c9afec2e1d843348c7a9}{Map}} (std\+::initializer\+\_\+list$<$ std\+::pair$<$ Key\+Type, Value\+Type $>$ $>$ list)
+\mbox{\hyperlink{classMap_a67384221d4d1bf326b8fd854488e2264}{Map}} (std\+::initializer\+\_\+list$<$ std\+::pair$<$ const Key\+Type, Value\+Type $>$$>$ list, std\+::function$<$ bool(const Key\+Type \&, const Key\+Type \&)$>$ less\+Func)
 \item 
-\mbox{\hyperlink{classMap_a1015ca1e803c78ab7fd4414bd4d58888}{Map}} (std\+::initializer\+\_\+list$<$ std\+::pair$<$ Key\+Type, Value\+Type $>$ $>$ list, bool less\+Func(Key\+Type, Key\+Type))
-\item 
-\mbox{\hyperlink{classMap_af04ed5af861a0358b240f8dbd5b3ac77}{Map}} (std\+::initializer\+\_\+list$<$ std\+::pair$<$ Key\+Type, Value\+Type $>$ $>$ list, bool less\+Func(const Key\+Type \&, const Key\+Type \&))
-\item 
-{\footnotesize template$<$typename Compare\+Type $>$ }\\\mbox{\hyperlink{classMap_a0f654fae6d97cd1f9b6420d00837eeeb}{Map}} (Compare\+Type cmp)
-\item 
-\mbox{\hyperlink{classMap_a81c36bfbe9ece7606add9fc522cad3b2}{Map}} (const \mbox{\hyperlink{classMap}{Map}} \&src)
-\item 
-virtual \mbox{\hyperlink{classMap_ac59b12e62f61360298c324334ecc6bc9}{$\sim$\+Map}} ()
+virtual \mbox{\hyperlink{classMap_aa23229d7196c7a4b09cb605b419acc3b}{$\sim$\+Map}} ()=default
 \item 
 void \mbox{\hyperlink{classMap_a9129d6095063e7e14d85c627d35086a5}{add}} (const Key\+Type \&key, const Value\+Type \&value)
 \item 
 \mbox{\hyperlink{classMap}{Map}} \& \mbox{\hyperlink{classMap_a44f4dae7b5abf1bd265cd5e8cb6cf47b}{add\+All}} (const \mbox{\hyperlink{classMap}{Map}} \&map2)
 \item 
-\mbox{\hyperlink{classMap}{Map}} \& \mbox{\hyperlink{classMap_a6a9d926265bac6843977955112057120}{add\+All}} (std\+::initializer\+\_\+list$<$ std\+::pair$<$ Key\+Type, Value\+Type $>$ $>$ list)
-\item 
 Key\+Type \mbox{\hyperlink{classMap_adfa4b8f8e4f5ecc11fb76a3efba70d70}{back}} () const
 \item 
-\mbox{\hyperlink{classMap_1_1iterator}{iterator}} \mbox{\hyperlink{classMap_a0c62c15c8ed609e7e5e9518cf5f5c712}{begin}} () const
+\mbox{\hyperlink{classMap_a04e3b848cce2bbfed5ea818e1b264000}{const\+\_\+iterator}} \mbox{\hyperlink{classMap_aa70377b8ab33c528e81e1a7e7b9da9fc}{begin}} () const
 \item 
 void \mbox{\hyperlink{classMap_ac8bb3912a3ce86b15842e79d0b421204}{clear}} ()
 \item 
-int \mbox{\hyperlink{classMap_a3c48bf82825a2262058961e44e376151}{compare\+Keys}} (const Key\+Type \&k1, const Key\+Type \&k2) const
-\item 
 bool \mbox{\hyperlink{classMap_a37473445b6725c5f0fc59a32ea2e645e}{contains\+Key}} (const Key\+Type \&key) const
 \item 
-\mbox{\hyperlink{classMap_1_1iterator}{iterator}} \mbox{\hyperlink{classMap_a68b688a51bd0cf6fb5bc2cba292209a8}{end}} () const
+\mbox{\hyperlink{classMap_a04e3b848cce2bbfed5ea818e1b264000}{const\+\_\+iterator}} \mbox{\hyperlink{classMap_a5b99f697823461ff62f22bd052079375}{end}} () const
 \item 
 bool \mbox{\hyperlink{classMap_a91a1c833c72a288f2e2ea0207449513a}{equals}} (const \mbox{\hyperlink{classMap}{Map}} \&map2) const
 \item 
@@ -58,43 +48,25 @@ bool \mbox{\hyperlink{classMap_acf82f9b2937375c7b1cf3dccb3df3312}{is\+Empty}} ()
 \item 
 \mbox{\hyperlink{classVector}{Vector}}$<$ Key\+Type $>$ \mbox{\hyperlink{classMap_a88e3a058d30d97a5ce6ae57608e7db17}{keys}} () const
 \item 
-void \mbox{\hyperlink{classMap_a19f96e0d9ac469495dd46924139d697e}{map\+All}} (void($\ast$fn)(Key\+Type, Value\+Type)) const
-\item 
-void \mbox{\hyperlink{classMap_a02c631ce6ad1bdf96e585f7041ab5556}{map\+All}} (void($\ast$fn)(const Key\+Type \&, const Value\+Type \&)) const
-\item 
-{\footnotesize template$<$typename Functor\+Type $>$ }\\void \mbox{\hyperlink{classMap_a8dc32c1e45704cfae41daf8adb4e66dc}{map\+All}} (Functor\+Type fn) const
+void \mbox{\hyperlink{classMap_a57822037d00ad7cdbf2882e4ab91451d}{map\+All}} (std\+::function$<$ void(const Key\+Type \&, const Value\+Type \&)$>$ fn) const
 \item 
 bool \mbox{\hyperlink{classMap_a0a372de2f537b6d74ad13d6bd26f0414}{operator!=}} (const \mbox{\hyperlink{classMap}{Map}} \&map2) const
 \item 
 \mbox{\hyperlink{classMap}{Map}} \mbox{\hyperlink{classMap_a078716a91244790312e19db9daf692db}{operator$\ast$}} (const \mbox{\hyperlink{classMap}{Map}} \&map2) const
 \item 
-\mbox{\hyperlink{classMap}{Map}} \mbox{\hyperlink{classMap_afe04702252ed63484b973ce6ee66c8c5}{operator$\ast$}} (std\+::initializer\+\_\+list$<$ std\+::pair$<$ Key\+Type, Value\+Type $>$ $>$ list) const
-\item 
 \mbox{\hyperlink{classMap}{Map}} \& \mbox{\hyperlink{classMap_a5d455253cf7b430025844b814f60f81d}{operator$\ast$=}} (const \mbox{\hyperlink{classMap}{Map}} \&map2)
-\item 
-\mbox{\hyperlink{classMap}{Map}} \& \mbox{\hyperlink{classMap_a08c8874c72372169781e46a36bab97a5}{operator$\ast$=}} (std\+::initializer\+\_\+list$<$ std\+::pair$<$ Key\+Type, Value\+Type $>$ $>$ list)
 \item 
 \mbox{\hyperlink{classMap}{Map}} \mbox{\hyperlink{classMap_af25292376af863c7defa9dd9a378d383}{operator+}} (const \mbox{\hyperlink{classMap}{Map}} \&map2) const
 \item 
-\mbox{\hyperlink{classMap}{Map}} \mbox{\hyperlink{classMap_a3fb55aac55ebd09ffd989a48627d2ab9}{operator+}} (std\+::initializer\+\_\+list$<$ std\+::pair$<$ Key\+Type, Value\+Type $>$ $>$ list) const
-\item 
 \mbox{\hyperlink{classMap}{Map}} \& \mbox{\hyperlink{classMap_ac0478d198f73f2a6c45c03e453faa538}{operator+=}} (const \mbox{\hyperlink{classMap}{Map}} \&map2)
-\item 
-\mbox{\hyperlink{classMap}{Map}} \& \mbox{\hyperlink{classMap_a42f7fe44b1c670571d749a6a02b9702a}{operator+=}} (std\+::initializer\+\_\+list$<$ std\+::pair$<$ Key\+Type, Value\+Type $>$ $>$ list)
 \item 
 \mbox{\hyperlink{classMap}{Map}} \mbox{\hyperlink{classMap_a68704368f8cfa5ea173c0dfc95c75920}{operator-\/}} (const \mbox{\hyperlink{classMap}{Map}} \&map2) const
 \item 
-\mbox{\hyperlink{classMap}{Map}} \mbox{\hyperlink{classMap_a47ec48c18c6f07358c8e8810f027984d}{operator-\/}} (std\+::initializer\+\_\+list$<$ std\+::pair$<$ Key\+Type, Value\+Type $>$ $>$ list) const
-\item 
 \mbox{\hyperlink{classMap}{Map}} \& \mbox{\hyperlink{classMap_a5c6ee663a9c3956c53220cfff8659f1c}{operator-\/=}} (const \mbox{\hyperlink{classMap}{Map}} \&map2)
-\item 
-\mbox{\hyperlink{classMap}{Map}} \& \mbox{\hyperlink{classMap_a627c9183807211699369ce4a6e763e33}{operator-\/=}} (std\+::initializer\+\_\+list$<$ std\+::pair$<$ Key\+Type, Value\+Type $>$ $>$ list)
 \item 
 bool \mbox{\hyperlink{classMap_aa7853d8fda7f6e2e8a353dfed157c376}{operator$<$}} (const \mbox{\hyperlink{classMap}{Map}} \&map2) const
 \item 
 bool \mbox{\hyperlink{classMap_a91d581dcc2a8ff2a83aa7854e9166dc9}{operator$<$=}} (const \mbox{\hyperlink{classMap}{Map}} \&map2) const
-\item 
-\mbox{\hyperlink{classMap}{Map}} \& \mbox{\hyperlink{classMap_a70c7b38b7d69581be6cbfe53ca06f725}{operator=}} (const \mbox{\hyperlink{classMap}{Map}} \&src)
 \item 
 bool \mbox{\hyperlink{classMap_a5dda0121a37510aec1dcf9cd53ba21e8}{operator==}} (const \mbox{\hyperlink{classMap}{Map}} \&map2) const
 \item 
@@ -110,82 +82,65 @@ void \mbox{\hyperlink{classMap_af0d1d70a37332cb3054fe5b1b170927c}{put}} (const K
 \item 
 \mbox{\hyperlink{classMap}{Map}} \& \mbox{\hyperlink{classMap_aa8f04a9b5782a099d73bb66377d9c110}{put\+All}} (const \mbox{\hyperlink{classMap}{Map}} \&map2)
 \item 
-\mbox{\hyperlink{classMap}{Map}} \& \mbox{\hyperlink{classMap_a5703d038cf94b188b8a52c33b89944b5}{put\+All}} (std\+::initializer\+\_\+list$<$ std\+::pair$<$ Key\+Type, Value\+Type $>$ $>$ list)
-\item 
 void \mbox{\hyperlink{classMap_ac6e7e5198a9f1c8b2cc40fbd1d0eb3b0}{remove}} (const Key\+Type \&key)
 \item 
 \mbox{\hyperlink{classMap}{Map}} \& \mbox{\hyperlink{classMap_aef8a9fb79f29126a485f697c3069801c}{remove\+All}} (const \mbox{\hyperlink{classMap}{Map}} \&map2)
 \item 
-\mbox{\hyperlink{classMap}{Map}} \& \mbox{\hyperlink{classMap_a137a0bba581f8406f9859cf949536510}{remove\+All}} (std\+::initializer\+\_\+list$<$ std\+::pair$<$ Key\+Type, Value\+Type $>$ $>$ list)
-\item 
 \mbox{\hyperlink{classMap}{Map}} \& \mbox{\hyperlink{classMap_abe07b84e7c8050870da86c3d2005f3bb}{retain\+All}} (const \mbox{\hyperlink{classMap}{Map}} \&map2)
-\item 
-\mbox{\hyperlink{classMap}{Map}} \& \mbox{\hyperlink{classMap_a16d237e15768c6f5f3b7a9f633a6551d}{retain\+All}} (std\+::initializer\+\_\+list$<$ std\+::pair$<$ Key\+Type, Value\+Type $>$ $>$ list)
 \item 
 int \mbox{\hyperlink{classMap_af9593d4a5ff4274efaf429cb4f9e57cc}{size}} () const
 \item 
 std\+::string \mbox{\hyperlink{classMap_a1fe5121d6528fdea3f243321b3fa3a49}{to\+String}} () const
 \item 
 \mbox{\hyperlink{classVector}{Vector}}$<$ Value\+Type $>$ \mbox{\hyperlink{classMap_a50ccbe4184324f0da975648a12728d20}{values}} () const
-\item 
-unsigned int \mbox{\hyperlink{classMap_a0aa696ccb72cbf928535d6b646bac1aa}{version}} () const
 \end{DoxyCompactItemize}
+
+
+\subsection{Member Typedef Documentation}
+\mbox{\Hypertarget{classMap_a04e3b848cce2bbfed5ea818e1b264000}\label{classMap_a04e3b848cce2bbfed5ea818e1b264000}} 
+\index{Map@{Map}!const\+\_\+iterator@{const\+\_\+iterator}}
+\index{const\+\_\+iterator@{const\+\_\+iterator}!Map@{Map}}
+\subsubsection{\texorpdfstring{const\+\_\+iterator}{const\_iterator}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{classMap_a04e3b848cce2bbfed5ea818e1b264000}{const\+\_\+iterator}} =  \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1ProjectingIterator}{stanfordcpplib\+::collections\+::\+Projecting\+Iterator}}$<$\mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1CheckedIterator}{stanfordcpplib\+::collections\+::\+Checked\+Iterator}}$<$typename Map\+Type\+::const\+\_\+iterator$>$ $>$}
+
+\mbox{\Hypertarget{classMap_ab3d10e70baaeac78e76b7abae7e2cf76}\label{classMap_ab3d10e70baaeac78e76b7abae7e2cf76}} 
+\index{Map@{Map}!iterator@{iterator}}
+\index{iterator@{iterator}!Map@{Map}}
+\subsubsection{\texorpdfstring{iterator}{iterator}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{classMap_ab3d10e70baaeac78e76b7abae7e2cf76}{iterator}} =  \mbox{\hyperlink{classMap_a04e3b848cce2bbfed5ea818e1b264000}{const\+\_\+iterator}}}
+
 
 
 \subsection{Constructor \& Destructor Documentation}
 \mbox{\Hypertarget{classMap_a49848ab3a0e1934c5615242b67af68c7}\label{classMap_a49848ab3a0e1934c5615242b67af68c7}} 
 \index{Map@{Map}!Map@{Map}}
 \index{Map@{Map}!Map@{Map}}
-\subsubsection{\texorpdfstring{Map()}{Map()}\hspace{0.1cm}{\footnotesize\ttfamily [1/8]}}
+\subsubsection{\texorpdfstring{Map()}{Map()}\hspace{0.1cm}{\footnotesize\ttfamily [1/4]}}
 {\footnotesize\ttfamily \mbox{\hyperlink{classMap}{Map}} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
 
-\mbox{\Hypertarget{classMap_ad1ada5d0cc94f69c235f999c2fbc3dff}\label{classMap_ad1ada5d0cc94f69c235f999c2fbc3dff}} 
+\mbox{\Hypertarget{classMap_afeeb032b309df7c22d2640f98e0dd9a4}\label{classMap_afeeb032b309df7c22d2640f98e0dd9a4}} 
 \index{Map@{Map}!Map@{Map}}
 \index{Map@{Map}!Map@{Map}}
-\subsubsection{\texorpdfstring{Map()}{Map()}\hspace{0.1cm}{\footnotesize\ttfamily [2/8]}}
-{\footnotesize\ttfamily \mbox{\hyperlink{classMap}{Map}} (\begin{DoxyParamCaption}\item[{bool }]{less\+FuncKey\+Type, Key\+Type }\end{DoxyParamCaption})}
+\subsubsection{\texorpdfstring{Map()}{Map()}\hspace{0.1cm}{\footnotesize\ttfamily [2/4]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classMap}{Map}} (\begin{DoxyParamCaption}\item[{std\+::function$<$ bool(const Key\+Type \&, const Key\+Type \&)$>$}]{less\+Func }\end{DoxyParamCaption})}
 
-\mbox{\Hypertarget{classMap_a0f8061a4d1a8b6cc2a005d457f7f99d0}\label{classMap_a0f8061a4d1a8b6cc2a005d457f7f99d0}} 
+\mbox{\Hypertarget{classMap_a79fa612ecdfc84da8a66341c76e6bd85}\label{classMap_a79fa612ecdfc84da8a66341c76e6bd85}} 
 \index{Map@{Map}!Map@{Map}}
 \index{Map@{Map}!Map@{Map}}
-\subsubsection{\texorpdfstring{Map()}{Map()}\hspace{0.1cm}{\footnotesize\ttfamily [3/8]}}
-{\footnotesize\ttfamily \mbox{\hyperlink{classMap}{Map}} (\begin{DoxyParamCaption}\item[{bool }]{less\+Funcconst Key\+Type \&, const Key\+Type \& }\end{DoxyParamCaption})}
+\subsubsection{\texorpdfstring{Map()}{Map()}\hspace{0.1cm}{\footnotesize\ttfamily [3/4]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classMap}{Map}} (\begin{DoxyParamCaption}\item[{std\+::initializer\+\_\+list$<$ std\+::pair$<$ const Key\+Type, Value\+Type $>$$>$}]{list }\end{DoxyParamCaption})}
 
-\mbox{\Hypertarget{classMap_a3c4b56834747c9afec2e1d843348c7a9}\label{classMap_a3c4b56834747c9afec2e1d843348c7a9}} 
+\mbox{\Hypertarget{classMap_a67384221d4d1bf326b8fd854488e2264}\label{classMap_a67384221d4d1bf326b8fd854488e2264}} 
 \index{Map@{Map}!Map@{Map}}
 \index{Map@{Map}!Map@{Map}}
-\subsubsection{\texorpdfstring{Map()}{Map()}\hspace{0.1cm}{\footnotesize\ttfamily [4/8]}}
-{\footnotesize\ttfamily \mbox{\hyperlink{classMap}{Map}} (\begin{DoxyParamCaption}\item[{std\+::initializer\+\_\+list$<$ std\+::pair$<$ Key\+Type, Value\+Type $>$ $>$}]{list }\end{DoxyParamCaption})}
+\subsubsection{\texorpdfstring{Map()}{Map()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classMap}{Map}} (\begin{DoxyParamCaption}\item[{std\+::initializer\+\_\+list$<$ std\+::pair$<$ const Key\+Type, Value\+Type $>$$>$}]{list,  }\item[{std\+::function$<$ bool(const Key\+Type \&, const Key\+Type \&)$>$}]{less\+Func }\end{DoxyParamCaption})}
 
-\mbox{\Hypertarget{classMap_a1015ca1e803c78ab7fd4414bd4d58888}\label{classMap_a1015ca1e803c78ab7fd4414bd4d58888}} 
-\index{Map@{Map}!Map@{Map}}
-\index{Map@{Map}!Map@{Map}}
-\subsubsection{\texorpdfstring{Map()}{Map()}\hspace{0.1cm}{\footnotesize\ttfamily [5/8]}}
-{\footnotesize\ttfamily \mbox{\hyperlink{classMap}{Map}} (\begin{DoxyParamCaption}\item[{std\+::initializer\+\_\+list$<$ std\+::pair$<$ Key\+Type, Value\+Type $>$ $>$}]{list,  }\item[{bool }]{less\+FuncKey\+Type, Key\+Type }\end{DoxyParamCaption})}
-
-\mbox{\Hypertarget{classMap_af04ed5af861a0358b240f8dbd5b3ac77}\label{classMap_af04ed5af861a0358b240f8dbd5b3ac77}} 
-\index{Map@{Map}!Map@{Map}}
-\index{Map@{Map}!Map@{Map}}
-\subsubsection{\texorpdfstring{Map()}{Map()}\hspace{0.1cm}{\footnotesize\ttfamily [6/8]}}
-{\footnotesize\ttfamily \mbox{\hyperlink{classMap}{Map}} (\begin{DoxyParamCaption}\item[{std\+::initializer\+\_\+list$<$ std\+::pair$<$ Key\+Type, Value\+Type $>$ $>$}]{list,  }\item[{bool }]{less\+Funcconst Key\+Type \&, const Key\+Type \& }\end{DoxyParamCaption})}
-
-\mbox{\Hypertarget{classMap_ac59b12e62f61360298c324334ecc6bc9}\label{classMap_ac59b12e62f61360298c324334ecc6bc9}} 
+\mbox{\Hypertarget{classMap_aa23229d7196c7a4b09cb605b419acc3b}\label{classMap_aa23229d7196c7a4b09cb605b419acc3b}} 
 \index{Map@{Map}!````~Map@{$\sim$\+Map}}
 \index{````~Map@{$\sim$\+Map}!Map@{Map}}
 \subsubsection{\texorpdfstring{$\sim$\+Map()}{~Map()}}
-{\footnotesize\ttfamily $\sim$\mbox{\hyperlink{classMap}{Map}} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
-
-\mbox{\Hypertarget{classMap_a0f654fae6d97cd1f9b6420d00837eeeb}\label{classMap_a0f654fae6d97cd1f9b6420d00837eeeb}} 
-\index{Map@{Map}!Map@{Map}}
-\index{Map@{Map}!Map@{Map}}
-\subsubsection{\texorpdfstring{Map()}{Map()}\hspace{0.1cm}{\footnotesize\ttfamily [7/8]}}
-{\footnotesize\ttfamily \mbox{\hyperlink{classMap}{Map}} (\begin{DoxyParamCaption}\item[{Compare\+Type}]{cmp }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [explicit]}}
-
-\mbox{\Hypertarget{classMap_a81c36bfbe9ece7606add9fc522cad3b2}\label{classMap_a81c36bfbe9ece7606add9fc522cad3b2}} 
-\index{Map@{Map}!Map@{Map}}
-\index{Map@{Map}!Map@{Map}}
-\subsubsection{\texorpdfstring{Map()}{Map()}\hspace{0.1cm}{\footnotesize\ttfamily [8/8]}}
-{\footnotesize\ttfamily \mbox{\hyperlink{classMap}{Map}} (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classMap}{Map}}$<$ Key\+Type, Value\+Type $>$ \&}]{src }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+{\footnotesize\ttfamily virtual $\sim$\mbox{\hyperlink{classMap}{Map}} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}, {\ttfamily [default]}}
 
 
 
@@ -199,14 +154,8 @@ unsigned int \mbox{\hyperlink{classMap_a0aa696ccb72cbf928535d6b646bac1aa}{versio
 \mbox{\Hypertarget{classMap_a44f4dae7b5abf1bd265cd5e8cb6cf47b}\label{classMap_a44f4dae7b5abf1bd265cd5e8cb6cf47b}} 
 \index{Map@{Map}!add\+All@{add\+All}}
 \index{add\+All@{add\+All}!Map@{Map}}
-\subsubsection{\texorpdfstring{add\+All()}{addAll()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+\subsubsection{\texorpdfstring{add\+All()}{addAll()}}
 {\footnotesize\ttfamily \mbox{\hyperlink{classMap}{Map}}$<$ Key\+Type, Value\+Type $>$ \& add\+All (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classMap}{Map}}$<$ Key\+Type, Value\+Type $>$ \&}]{map2 }\end{DoxyParamCaption})}
-
-\mbox{\Hypertarget{classMap_a6a9d926265bac6843977955112057120}\label{classMap_a6a9d926265bac6843977955112057120}} 
-\index{Map@{Map}!add\+All@{add\+All}}
-\index{add\+All@{add\+All}!Map@{Map}}
-\subsubsection{\texorpdfstring{add\+All()}{addAll()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
-{\footnotesize\ttfamily \mbox{\hyperlink{classMap}{Map}}$<$ Key\+Type, Value\+Type $>$ \& add\+All (\begin{DoxyParamCaption}\item[{std\+::initializer\+\_\+list$<$ std\+::pair$<$ Key\+Type, Value\+Type $>$ $>$}]{list }\end{DoxyParamCaption})}
 
 \mbox{\Hypertarget{classMap_adfa4b8f8e4f5ecc11fb76a3efba70d70}\label{classMap_adfa4b8f8e4f5ecc11fb76a3efba70d70}} 
 \index{Map@{Map}!back@{back}}
@@ -214,11 +163,11 @@ unsigned int \mbox{\hyperlink{classMap_a0aa696ccb72cbf928535d6b646bac1aa}{versio
 \subsubsection{\texorpdfstring{back()}{back()}}
 {\footnotesize\ttfamily Key\+Type back (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
 
-\mbox{\Hypertarget{classMap_a0c62c15c8ed609e7e5e9518cf5f5c712}\label{classMap_a0c62c15c8ed609e7e5e9518cf5f5c712}} 
+\mbox{\Hypertarget{classMap_aa70377b8ab33c528e81e1a7e7b9da9fc}\label{classMap_aa70377b8ab33c528e81e1a7e7b9da9fc}} 
 \index{Map@{Map}!begin@{begin}}
 \index{begin@{begin}!Map@{Map}}
 \subsubsection{\texorpdfstring{begin()}{begin()}}
-{\footnotesize\ttfamily \mbox{\hyperlink{classMap_1_1iterator}{iterator}} begin (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classMap}{Map}}$<$ Key\+Type, Value\+Type $>$\+::\mbox{\hyperlink{classMap_ab3d10e70baaeac78e76b7abae7e2cf76}{iterator}} begin (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
 
 \mbox{\Hypertarget{classMap_ac8bb3912a3ce86b15842e79d0b421204}\label{classMap_ac8bb3912a3ce86b15842e79d0b421204}} 
 \index{Map@{Map}!clear@{clear}}
@@ -226,23 +175,17 @@ unsigned int \mbox{\hyperlink{classMap_a0aa696ccb72cbf928535d6b646bac1aa}{versio
 \subsubsection{\texorpdfstring{clear()}{clear()}}
 {\footnotesize\ttfamily void clear (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
 
-\mbox{\Hypertarget{classMap_a3c48bf82825a2262058961e44e376151}\label{classMap_a3c48bf82825a2262058961e44e376151}} 
-\index{Map@{Map}!compare\+Keys@{compare\+Keys}}
-\index{compare\+Keys@{compare\+Keys}!Map@{Map}}
-\subsubsection{\texorpdfstring{compare\+Keys()}{compareKeys()}}
-{\footnotesize\ttfamily int compare\+Keys (\begin{DoxyParamCaption}\item[{const Key\+Type \&}]{k1,  }\item[{const Key\+Type \&}]{k2 }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
-
 \mbox{\Hypertarget{classMap_a37473445b6725c5f0fc59a32ea2e645e}\label{classMap_a37473445b6725c5f0fc59a32ea2e645e}} 
 \index{Map@{Map}!contains\+Key@{contains\+Key}}
 \index{contains\+Key@{contains\+Key}!Map@{Map}}
 \subsubsection{\texorpdfstring{contains\+Key()}{containsKey()}}
 {\footnotesize\ttfamily bool contains\+Key (\begin{DoxyParamCaption}\item[{const Key\+Type \&}]{key }\end{DoxyParamCaption}) const}
 
-\mbox{\Hypertarget{classMap_a68b688a51bd0cf6fb5bc2cba292209a8}\label{classMap_a68b688a51bd0cf6fb5bc2cba292209a8}} 
+\mbox{\Hypertarget{classMap_a5b99f697823461ff62f22bd052079375}\label{classMap_a5b99f697823461ff62f22bd052079375}} 
 \index{Map@{Map}!end@{end}}
 \index{end@{end}!Map@{Map}}
 \subsubsection{\texorpdfstring{end()}{end()}}
-{\footnotesize\ttfamily \mbox{\hyperlink{classMap_1_1iterator}{iterator}} end (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classMap}{Map}}$<$ Key\+Type, Value\+Type $>$\+::\mbox{\hyperlink{classMap_ab3d10e70baaeac78e76b7abae7e2cf76}{iterator}} end (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
 
 \mbox{\Hypertarget{classMap_a91a1c833c72a288f2e2ea0207449513a}\label{classMap_a91a1c833c72a288f2e2ea0207449513a}} 
 \index{Map@{Map}!equals@{equals}}
@@ -274,23 +217,11 @@ unsigned int \mbox{\hyperlink{classMap_a0aa696ccb72cbf928535d6b646bac1aa}{versio
 \subsubsection{\texorpdfstring{keys()}{keys()}}
 {\footnotesize\ttfamily \mbox{\hyperlink{classVector}{Vector}}$<$ Key\+Type $>$ keys (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
 
-\mbox{\Hypertarget{classMap_a19f96e0d9ac469495dd46924139d697e}\label{classMap_a19f96e0d9ac469495dd46924139d697e}} 
+\mbox{\Hypertarget{classMap_a57822037d00ad7cdbf2882e4ab91451d}\label{classMap_a57822037d00ad7cdbf2882e4ab91451d}} 
 \index{Map@{Map}!map\+All@{map\+All}}
 \index{map\+All@{map\+All}!Map@{Map}}
-\subsubsection{\texorpdfstring{map\+All()}{mapAll()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
-{\footnotesize\ttfamily void map\+All (\begin{DoxyParamCaption}\item[{void($\ast$)(Key\+Type, Value\+Type)}]{fn }\end{DoxyParamCaption}) const}
-
-\mbox{\Hypertarget{classMap_a02c631ce6ad1bdf96e585f7041ab5556}\label{classMap_a02c631ce6ad1bdf96e585f7041ab5556}} 
-\index{Map@{Map}!map\+All@{map\+All}}
-\index{map\+All@{map\+All}!Map@{Map}}
-\subsubsection{\texorpdfstring{map\+All()}{mapAll()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
-{\footnotesize\ttfamily void map\+All (\begin{DoxyParamCaption}\item[{void($\ast$)(const Key\+Type \&, const Value\+Type \&)}]{fn }\end{DoxyParamCaption}) const}
-
-\mbox{\Hypertarget{classMap_a8dc32c1e45704cfae41daf8adb4e66dc}\label{classMap_a8dc32c1e45704cfae41daf8adb4e66dc}} 
-\index{Map@{Map}!map\+All@{map\+All}}
-\index{map\+All@{map\+All}!Map@{Map}}
-\subsubsection{\texorpdfstring{map\+All()}{mapAll()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
-{\footnotesize\ttfamily void map\+All (\begin{DoxyParamCaption}\item[{Functor\+Type}]{fn }\end{DoxyParamCaption}) const}
+\subsubsection{\texorpdfstring{map\+All()}{mapAll()}}
+{\footnotesize\ttfamily void map\+All (\begin{DoxyParamCaption}\item[{std\+::function$<$ void(const Key\+Type \&, const Value\+Type \&)$>$}]{fn }\end{DoxyParamCaption}) const}
 
 \mbox{\Hypertarget{classMap_a0a372de2f537b6d74ad13d6bd26f0414}\label{classMap_a0a372de2f537b6d74ad13d6bd26f0414}} 
 \index{Map@{Map}!operator"!=@{operator"!=}}
@@ -301,74 +232,38 @@ unsigned int \mbox{\hyperlink{classMap_a0aa696ccb72cbf928535d6b646bac1aa}{versio
 \mbox{\Hypertarget{classMap_a078716a91244790312e19db9daf692db}\label{classMap_a078716a91244790312e19db9daf692db}} 
 \index{Map@{Map}!operator$\ast$@{operator$\ast$}}
 \index{operator$\ast$@{operator$\ast$}!Map@{Map}}
-\subsubsection{\texorpdfstring{operator$\ast$()}{operator*()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+\subsubsection{\texorpdfstring{operator$\ast$()}{operator*()}}
 {\footnotesize\ttfamily \mbox{\hyperlink{classMap}{Map}}$<$ Key\+Type, Value\+Type $>$ operator$\ast$ (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classMap}{Map}}$<$ Key\+Type, Value\+Type $>$ \&}]{map2 }\end{DoxyParamCaption}) const}
-
-\mbox{\Hypertarget{classMap_afe04702252ed63484b973ce6ee66c8c5}\label{classMap_afe04702252ed63484b973ce6ee66c8c5}} 
-\index{Map@{Map}!operator$\ast$@{operator$\ast$}}
-\index{operator$\ast$@{operator$\ast$}!Map@{Map}}
-\subsubsection{\texorpdfstring{operator$\ast$()}{operator*()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
-{\footnotesize\ttfamily \mbox{\hyperlink{classMap}{Map}}$<$ Key\+Type, Value\+Type $>$ operator$\ast$ (\begin{DoxyParamCaption}\item[{std\+::initializer\+\_\+list$<$ std\+::pair$<$ Key\+Type, Value\+Type $>$ $>$}]{list }\end{DoxyParamCaption}) const}
 
 \mbox{\Hypertarget{classMap_a5d455253cf7b430025844b814f60f81d}\label{classMap_a5d455253cf7b430025844b814f60f81d}} 
 \index{Map@{Map}!operator$\ast$=@{operator$\ast$=}}
 \index{operator$\ast$=@{operator$\ast$=}!Map@{Map}}
-\subsubsection{\texorpdfstring{operator$\ast$=()}{operator*=()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+\subsubsection{\texorpdfstring{operator$\ast$=()}{operator*=()}}
 {\footnotesize\ttfamily \mbox{\hyperlink{classMap}{Map}}$<$ Key\+Type, Value\+Type $>$ \& operator$\ast$= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classMap}{Map}}$<$ Key\+Type, Value\+Type $>$ \&}]{map2 }\end{DoxyParamCaption})}
-
-\mbox{\Hypertarget{classMap_a08c8874c72372169781e46a36bab97a5}\label{classMap_a08c8874c72372169781e46a36bab97a5}} 
-\index{Map@{Map}!operator$\ast$=@{operator$\ast$=}}
-\index{operator$\ast$=@{operator$\ast$=}!Map@{Map}}
-\subsubsection{\texorpdfstring{operator$\ast$=()}{operator*=()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
-{\footnotesize\ttfamily \mbox{\hyperlink{classMap}{Map}}$<$ Key\+Type, Value\+Type $>$ \& operator$\ast$= (\begin{DoxyParamCaption}\item[{std\+::initializer\+\_\+list$<$ std\+::pair$<$ Key\+Type, Value\+Type $>$ $>$}]{list }\end{DoxyParamCaption})}
 
 \mbox{\Hypertarget{classMap_af25292376af863c7defa9dd9a378d383}\label{classMap_af25292376af863c7defa9dd9a378d383}} 
 \index{Map@{Map}!operator+@{operator+}}
 \index{operator+@{operator+}!Map@{Map}}
-\subsubsection{\texorpdfstring{operator+()}{operator+()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+\subsubsection{\texorpdfstring{operator+()}{operator+()}}
 {\footnotesize\ttfamily \mbox{\hyperlink{classMap}{Map}}$<$ Key\+Type, Value\+Type $>$ operator+ (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classMap}{Map}}$<$ Key\+Type, Value\+Type $>$ \&}]{map2 }\end{DoxyParamCaption}) const}
-
-\mbox{\Hypertarget{classMap_a3fb55aac55ebd09ffd989a48627d2ab9}\label{classMap_a3fb55aac55ebd09ffd989a48627d2ab9}} 
-\index{Map@{Map}!operator+@{operator+}}
-\index{operator+@{operator+}!Map@{Map}}
-\subsubsection{\texorpdfstring{operator+()}{operator+()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
-{\footnotesize\ttfamily \mbox{\hyperlink{classMap}{Map}}$<$ Key\+Type, Value\+Type $>$ operator+ (\begin{DoxyParamCaption}\item[{std\+::initializer\+\_\+list$<$ std\+::pair$<$ Key\+Type, Value\+Type $>$ $>$}]{list }\end{DoxyParamCaption}) const}
 
 \mbox{\Hypertarget{classMap_ac0478d198f73f2a6c45c03e453faa538}\label{classMap_ac0478d198f73f2a6c45c03e453faa538}} 
 \index{Map@{Map}!operator+=@{operator+=}}
 \index{operator+=@{operator+=}!Map@{Map}}
-\subsubsection{\texorpdfstring{operator+=()}{operator+=()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+\subsubsection{\texorpdfstring{operator+=()}{operator+=()}}
 {\footnotesize\ttfamily \mbox{\hyperlink{classMap}{Map}}$<$ Key\+Type, Value\+Type $>$ \& operator+= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classMap}{Map}}$<$ Key\+Type, Value\+Type $>$ \&}]{map2 }\end{DoxyParamCaption})}
-
-\mbox{\Hypertarget{classMap_a42f7fe44b1c670571d749a6a02b9702a}\label{classMap_a42f7fe44b1c670571d749a6a02b9702a}} 
-\index{Map@{Map}!operator+=@{operator+=}}
-\index{operator+=@{operator+=}!Map@{Map}}
-\subsubsection{\texorpdfstring{operator+=()}{operator+=()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
-{\footnotesize\ttfamily \mbox{\hyperlink{classMap}{Map}}$<$ Key\+Type, Value\+Type $>$ \& operator+= (\begin{DoxyParamCaption}\item[{std\+::initializer\+\_\+list$<$ std\+::pair$<$ Key\+Type, Value\+Type $>$ $>$}]{list }\end{DoxyParamCaption})}
 
 \mbox{\Hypertarget{classMap_a68704368f8cfa5ea173c0dfc95c75920}\label{classMap_a68704368f8cfa5ea173c0dfc95c75920}} 
 \index{Map@{Map}!operator-\/@{operator-\/}}
 \index{operator-\/@{operator-\/}!Map@{Map}}
-\subsubsection{\texorpdfstring{operator-\/()}{operator-()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+\subsubsection{\texorpdfstring{operator-\/()}{operator-()}}
 {\footnotesize\ttfamily \mbox{\hyperlink{classMap}{Map}}$<$ Key\+Type, Value\+Type $>$ operator-\/ (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classMap}{Map}}$<$ Key\+Type, Value\+Type $>$ \&}]{map2 }\end{DoxyParamCaption}) const}
-
-\mbox{\Hypertarget{classMap_a47ec48c18c6f07358c8e8810f027984d}\label{classMap_a47ec48c18c6f07358c8e8810f027984d}} 
-\index{Map@{Map}!operator-\/@{operator-\/}}
-\index{operator-\/@{operator-\/}!Map@{Map}}
-\subsubsection{\texorpdfstring{operator-\/()}{operator-()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
-{\footnotesize\ttfamily \mbox{\hyperlink{classMap}{Map}}$<$ Key\+Type, Value\+Type $>$ operator-\/ (\begin{DoxyParamCaption}\item[{std\+::initializer\+\_\+list$<$ std\+::pair$<$ Key\+Type, Value\+Type $>$ $>$}]{list }\end{DoxyParamCaption}) const}
 
 \mbox{\Hypertarget{classMap_a5c6ee663a9c3956c53220cfff8659f1c}\label{classMap_a5c6ee663a9c3956c53220cfff8659f1c}} 
 \index{Map@{Map}!operator-\/=@{operator-\/=}}
 \index{operator-\/=@{operator-\/=}!Map@{Map}}
-\subsubsection{\texorpdfstring{operator-\/=()}{operator-=()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+\subsubsection{\texorpdfstring{operator-\/=()}{operator-=()}}
 {\footnotesize\ttfamily \mbox{\hyperlink{classMap}{Map}}$<$ Key\+Type, Value\+Type $>$ \& operator-\/= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classMap}{Map}}$<$ Key\+Type, Value\+Type $>$ \&}]{map2 }\end{DoxyParamCaption})}
-
-\mbox{\Hypertarget{classMap_a627c9183807211699369ce4a6e763e33}\label{classMap_a627c9183807211699369ce4a6e763e33}} 
-\index{Map@{Map}!operator-\/=@{operator-\/=}}
-\index{operator-\/=@{operator-\/=}!Map@{Map}}
-\subsubsection{\texorpdfstring{operator-\/=()}{operator-=()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
-{\footnotesize\ttfamily \mbox{\hyperlink{classMap}{Map}}$<$ Key\+Type, Value\+Type $>$ \& operator-\/= (\begin{DoxyParamCaption}\item[{std\+::initializer\+\_\+list$<$ std\+::pair$<$ Key\+Type, Value\+Type $>$ $>$}]{list }\end{DoxyParamCaption})}
 
 \mbox{\Hypertarget{classMap_aa7853d8fda7f6e2e8a353dfed157c376}\label{classMap_aa7853d8fda7f6e2e8a353dfed157c376}} 
 \index{Map@{Map}!operator$<$@{operator$<$}}
@@ -381,12 +276,6 @@ unsigned int \mbox{\hyperlink{classMap_a0aa696ccb72cbf928535d6b646bac1aa}{versio
 \index{operator$<$=@{operator$<$=}!Map@{Map}}
 \subsubsection{\texorpdfstring{operator$<$=()}{operator<=()}}
 {\footnotesize\ttfamily bool operator$<$= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classMap}{Map}}$<$ Key\+Type, Value\+Type $>$ \&}]{map2 }\end{DoxyParamCaption}) const}
-
-\mbox{\Hypertarget{classMap_a70c7b38b7d69581be6cbfe53ca06f725}\label{classMap_a70c7b38b7d69581be6cbfe53ca06f725}} 
-\index{Map@{Map}!operator=@{operator=}}
-\index{operator=@{operator=}!Map@{Map}}
-\subsubsection{\texorpdfstring{operator=()}{operator=()}}
-{\footnotesize\ttfamily \mbox{\hyperlink{classMap}{Map}}\& operator= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classMap}{Map}}$<$ Key\+Type, Value\+Type $>$ \&}]{src }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
 
 \mbox{\Hypertarget{classMap_a5dda0121a37510aec1dcf9cd53ba21e8}\label{classMap_a5dda0121a37510aec1dcf9cd53ba21e8}} 
 \index{Map@{Map}!operator==@{operator==}}
@@ -427,14 +316,8 @@ unsigned int \mbox{\hyperlink{classMap_a0aa696ccb72cbf928535d6b646bac1aa}{versio
 \mbox{\Hypertarget{classMap_aa8f04a9b5782a099d73bb66377d9c110}\label{classMap_aa8f04a9b5782a099d73bb66377d9c110}} 
 \index{Map@{Map}!put\+All@{put\+All}}
 \index{put\+All@{put\+All}!Map@{Map}}
-\subsubsection{\texorpdfstring{put\+All()}{putAll()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+\subsubsection{\texorpdfstring{put\+All()}{putAll()}}
 {\footnotesize\ttfamily \mbox{\hyperlink{classMap}{Map}}$<$ Key\+Type, Value\+Type $>$ \& put\+All (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classMap}{Map}}$<$ Key\+Type, Value\+Type $>$ \&}]{map2 }\end{DoxyParamCaption})}
-
-\mbox{\Hypertarget{classMap_a5703d038cf94b188b8a52c33b89944b5}\label{classMap_a5703d038cf94b188b8a52c33b89944b5}} 
-\index{Map@{Map}!put\+All@{put\+All}}
-\index{put\+All@{put\+All}!Map@{Map}}
-\subsubsection{\texorpdfstring{put\+All()}{putAll()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
-{\footnotesize\ttfamily \mbox{\hyperlink{classMap}{Map}}$<$ Key\+Type, Value\+Type $>$ \& put\+All (\begin{DoxyParamCaption}\item[{std\+::initializer\+\_\+list$<$ std\+::pair$<$ Key\+Type, Value\+Type $>$ $>$}]{list }\end{DoxyParamCaption})}
 
 \mbox{\Hypertarget{classMap_ac6e7e5198a9f1c8b2cc40fbd1d0eb3b0}\label{classMap_ac6e7e5198a9f1c8b2cc40fbd1d0eb3b0}} 
 \index{Map@{Map}!remove@{remove}}
@@ -445,26 +328,14 @@ unsigned int \mbox{\hyperlink{classMap_a0aa696ccb72cbf928535d6b646bac1aa}{versio
 \mbox{\Hypertarget{classMap_aef8a9fb79f29126a485f697c3069801c}\label{classMap_aef8a9fb79f29126a485f697c3069801c}} 
 \index{Map@{Map}!remove\+All@{remove\+All}}
 \index{remove\+All@{remove\+All}!Map@{Map}}
-\subsubsection{\texorpdfstring{remove\+All()}{removeAll()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+\subsubsection{\texorpdfstring{remove\+All()}{removeAll()}}
 {\footnotesize\ttfamily \mbox{\hyperlink{classMap}{Map}}$<$ Key\+Type, Value\+Type $>$ \& remove\+All (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classMap}{Map}}$<$ Key\+Type, Value\+Type $>$ \&}]{map2 }\end{DoxyParamCaption})}
-
-\mbox{\Hypertarget{classMap_a137a0bba581f8406f9859cf949536510}\label{classMap_a137a0bba581f8406f9859cf949536510}} 
-\index{Map@{Map}!remove\+All@{remove\+All}}
-\index{remove\+All@{remove\+All}!Map@{Map}}
-\subsubsection{\texorpdfstring{remove\+All()}{removeAll()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
-{\footnotesize\ttfamily \mbox{\hyperlink{classMap}{Map}}$<$ Key\+Type, Value\+Type $>$ \& remove\+All (\begin{DoxyParamCaption}\item[{std\+::initializer\+\_\+list$<$ std\+::pair$<$ Key\+Type, Value\+Type $>$ $>$}]{list }\end{DoxyParamCaption})}
 
 \mbox{\Hypertarget{classMap_abe07b84e7c8050870da86c3d2005f3bb}\label{classMap_abe07b84e7c8050870da86c3d2005f3bb}} 
 \index{Map@{Map}!retain\+All@{retain\+All}}
 \index{retain\+All@{retain\+All}!Map@{Map}}
-\subsubsection{\texorpdfstring{retain\+All()}{retainAll()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+\subsubsection{\texorpdfstring{retain\+All()}{retainAll()}}
 {\footnotesize\ttfamily \mbox{\hyperlink{classMap}{Map}}$<$ Key\+Type, Value\+Type $>$ \& retain\+All (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classMap}{Map}}$<$ Key\+Type, Value\+Type $>$ \&}]{map2 }\end{DoxyParamCaption})}
-
-\mbox{\Hypertarget{classMap_a16d237e15768c6f5f3b7a9f633a6551d}\label{classMap_a16d237e15768c6f5f3b7a9f633a6551d}} 
-\index{Map@{Map}!retain\+All@{retain\+All}}
-\index{retain\+All@{retain\+All}!Map@{Map}}
-\subsubsection{\texorpdfstring{retain\+All()}{retainAll()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
-{\footnotesize\ttfamily \mbox{\hyperlink{classMap}{Map}}$<$ Key\+Type, Value\+Type $>$ \& retain\+All (\begin{DoxyParamCaption}\item[{std\+::initializer\+\_\+list$<$ std\+::pair$<$ Key\+Type, Value\+Type $>$ $>$}]{list }\end{DoxyParamCaption})}
 
 \mbox{\Hypertarget{classMap_af9593d4a5ff4274efaf429cb4f9e57cc}\label{classMap_af9593d4a5ff4274efaf429cb4f9e57cc}} 
 \index{Map@{Map}!size@{size}}
@@ -483,10 +354,4 @@ unsigned int \mbox{\hyperlink{classMap_a0aa696ccb72cbf928535d6b646bac1aa}{versio
 \index{values@{values}!Map@{Map}}
 \subsubsection{\texorpdfstring{values()}{values()}}
 {\footnotesize\ttfamily \mbox{\hyperlink{classVector}{Vector}}$<$ Value\+Type $>$ values (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
-
-\mbox{\Hypertarget{classMap_a0aa696ccb72cbf928535d6b646bac1aa}\label{classMap_a0aa696ccb72cbf928535d6b646bac1aa}} 
-\index{Map@{Map}!version@{version}}
-\index{version@{version}!Map@{Map}}
-\subsubsection{\texorpdfstring{version()}{version()}}
-{\footnotesize\ttfamily unsigned int version (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
 

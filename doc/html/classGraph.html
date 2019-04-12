@@ -74,6 +74,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
+<a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="classGraph-members.html">List of all members</a>  </div>
   <div class="headertitle">
@@ -86,11 +87,16 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <p><code>#include "<a class="el" href="graph_8h_source.html">graph.h</a>"</code></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr class="memitem:a695969c31e87f9e8319d74e5ca39024b"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraph.html#a695969c31e87f9e8319d74e5ca39024b">graph_iterator</a> = typename <a class="el" href="classstanfordcpplib_1_1collections_1_1GenericSet.html">Set</a>&lt; NodeType * &gt;::const_iterator</td></tr>
+<tr class="separator:a695969c31e87f9e8319d74e5ca39024b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:afc5ef9d72cc2c509814200791eaef62c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraph.html#afc5ef9d72cc2c509814200791eaef62c">Graph</a>()</td></tr>
-<tr class="memdesc:afc5ef9d72cc2c509814200791eaef62c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an empty graph.  <a href="#afc5ef9d72cc2c509814200791eaef62c">More...</a><br /></td></tr>
-<tr class="separator:afc5ef9d72cc2c509814200791eaef62c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0c40af42cad207665228815f0359bbd3"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraph.html#a0c40af42cad207665228815f0359bbd3">Graph</a>()=default</td></tr>
+<tr class="memdesc:a0c40af42cad207665228815f0359bbd3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an empty graph.  <a href="#a0c40af42cad207665228815f0359bbd3">More...</a><br /></td></tr>
+<tr class="separator:a0c40af42cad207665228815f0359bbd3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af5a604e5e9e4d68dbc10b312e59f678f"><td class="memItemLeft" align="right" valign="top"></td><td class="memItemRight" valign="bottom"><a class="el" href="classGraph.html#af5a604e5e9e4d68dbc10b312e59f678f">~Graph</a>()</td></tr>
 <tr class="memdesc:af5a604e5e9e4d68dbc10b312e59f678f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Frees the internal storage allocated to represent the graph.  <a href="#af5a604e5e9e4d68dbc10b312e59f678f">More...</a><br /></td></tr>
 <tr class="separator:af5a604e5e9e4d68dbc10b312e59f678f"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -115,7 +121,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a27d59ef129bb56cc144ecc81c0affd34"><td class="memItemLeft" align="right" valign="top">NodeType *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraph.html#a27d59ef129bb56cc144ecc81c0affd34">back</a>() const</td></tr>
 <tr class="memdesc:a27d59ef129bb56cc144ecc81c0affd34"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the last node in the graph in the order as would be returned by a for-each loop or iterator.  <a href="#a27d59ef129bb56cc144ecc81c0affd34">More...</a><br /></td></tr>
 <tr class="separator:a27d59ef129bb56cc144ecc81c0affd34"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aea3a8950c46f4ac913207201b685e715"><td class="memItemLeft" align="right" valign="top">graph_iterator&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraph.html#aea3a8950c46f4ac913207201b685e715">begin</a>() const</td></tr>
+<tr class="memitem:aea3a8950c46f4ac913207201b685e715"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGraph.html#a695969c31e87f9e8319d74e5ca39024b">graph_iterator</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraph.html#aea3a8950c46f4ac913207201b685e715">begin</a>() const</td></tr>
 <tr class="memdesc:aea3a8950c46f4ac913207201b685e715"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns an STL iterator positioned at the first vertex in the graph.  <a href="#aea3a8950c46f4ac913207201b685e715">More...</a><br /></td></tr>
 <tr class="separator:aea3a8950c46f4ac913207201b685e715"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac8bb3912a3ce86b15842e79d0b421204"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraph.html#ac8bb3912a3ce86b15842e79d0b421204">clear</a>()</td></tr>
@@ -145,7 +151,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a4f540ebc07c4e46a0bb7fee76a93386c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraph.html#a4f540ebc07c4e46a0bb7fee76a93386c">containsNode</a>(NodeType *node) const</td></tr>
 <tr class="memdesc:a4f540ebc07c4e46a0bb7fee76a93386c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if the given node is part of this graph.  <a href="#a4f540ebc07c4e46a0bb7fee76a93386c">More...</a><br /></td></tr>
 <tr class="separator:a4f540ebc07c4e46a0bb7fee76a93386c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afcdf62cae5d7e50644957d66f886742d"><td class="memItemLeft" align="right" valign="top">graph_iterator&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraph.html#afcdf62cae5d7e50644957d66f886742d">end</a>() const</td></tr>
+<tr class="memitem:afcdf62cae5d7e50644957d66f886742d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGraph.html#a695969c31e87f9e8319d74e5ca39024b">graph_iterator</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraph.html#afcdf62cae5d7e50644957d66f886742d">end</a>() const</td></tr>
 <tr class="memdesc:afcdf62cae5d7e50644957d66f886742d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns an STL iterator positioned after the last vertex in the graph.  <a href="#afcdf62cae5d7e50644957d66f886742d">More...</a><br /></td></tr>
 <tr class="separator:afcdf62cae5d7e50644957d66f886742d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6bec43eb3dfdf3d23eb328b406edf44a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraph.html#a6bec43eb3dfdf3d23eb328b406edf44a">equals</a>(const <a class="el" href="classGraph.html">Graph</a>&lt; NodeType, ArcType &gt; &amp;graph2) const</td></tr>
@@ -160,52 +166,52 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a94d4badfc856b0d4530c37121efb9834"><td class="memItemLeft" align="right" valign="top">ArcType *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraph.html#a94d4badfc856b0d4530c37121efb9834">getArc</a>(string node1, string node2) const</td></tr>
 <tr class="memdesc:a94d4badfc856b0d4530c37121efb9834"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the arc, if any, from node1 to node2.  <a href="#a94d4badfc856b0d4530c37121efb9834">More...</a><br /></td></tr>
 <tr class="separator:a94d4badfc856b0d4530c37121efb9834"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0690edaeae8d5256189ae2e8541788b5"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classSet.html">Set</a>&lt; ArcType * &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraph.html#a0690edaeae8d5256189ae2e8541788b5">getArcSet</a>() const</td></tr>
+<tr class="memitem:a0690edaeae8d5256189ae2e8541788b5"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classstanfordcpplib_1_1collections_1_1GenericSet.html">Set</a>&lt; ArcType * &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraph.html#a0690edaeae8d5256189ae2e8541788b5">getArcSet</a>() const</td></tr>
 <tr class="memdesc:a0690edaeae8d5256189ae2e8541788b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the set of all arcs in the graph.  <a href="#a0690edaeae8d5256189ae2e8541788b5">More...</a><br /></td></tr>
 <tr class="separator:a0690edaeae8d5256189ae2e8541788b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a17cfc7f4d8c738fc6f51813f50be6400"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classSet.html">Set</a>&lt; ArcType * &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraph.html#a17cfc7f4d8c738fc6f51813f50be6400">getArcSet</a>(NodeType *node) const</td></tr>
+<tr class="memitem:a17cfc7f4d8c738fc6f51813f50be6400"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classstanfordcpplib_1_1collections_1_1GenericSet.html">Set</a>&lt; ArcType * &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraph.html#a17cfc7f4d8c738fc6f51813f50be6400">getArcSet</a>(NodeType *node) const</td></tr>
 <tr class="memdesc:a17cfc7f4d8c738fc6f51813f50be6400"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the set of all arcs that start at the specified node, indicated as a pointer to its node structure.  <a href="#a17cfc7f4d8c738fc6f51813f50be6400">More...</a><br /></td></tr>
 <tr class="separator:a17cfc7f4d8c738fc6f51813f50be6400"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a31b9e2056ee2d66a7ea9feb02f016e8d"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classSet.html">Set</a>&lt; ArcType * &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraph.html#a31b9e2056ee2d66a7ea9feb02f016e8d">getArcSet</a>(string name) const</td></tr>
+<tr class="memitem:a31b9e2056ee2d66a7ea9feb02f016e8d"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classstanfordcpplib_1_1collections_1_1GenericSet.html">Set</a>&lt; ArcType * &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraph.html#a31b9e2056ee2d66a7ea9feb02f016e8d">getArcSet</a>(string name) const</td></tr>
 <tr class="memdesc:a31b9e2056ee2d66a7ea9feb02f016e8d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the set of all arcs that start at the specified node.  <a href="#a31b9e2056ee2d66a7ea9feb02f016e8d">More...</a><br /></td></tr>
 <tr class="separator:a31b9e2056ee2d66a7ea9feb02f016e8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad5fd149800cd46aae497b05b46059b63"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classSet.html">Set</a>&lt; ArcType * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraph.html#ad5fd149800cd46aae497b05b46059b63">getInverseArcSet</a>(NodeType *node) const</td></tr>
+<tr class="memitem:ad5fd149800cd46aae497b05b46059b63"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classstanfordcpplib_1_1collections_1_1GenericSet.html">Set</a>&lt; ArcType * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraph.html#ad5fd149800cd46aae497b05b46059b63">getInverseArcSet</a>(NodeType *node) const</td></tr>
 <tr class="memdesc:ad5fd149800cd46aae497b05b46059b63"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the set of outbound arcs to the given node from other nodes.  <a href="#ad5fd149800cd46aae497b05b46059b63">More...</a><br /></td></tr>
 <tr class="separator:ad5fd149800cd46aae497b05b46059b63"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2cfe12e71ca594736a1e329461cff024"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classSet.html">Set</a>&lt; ArcType * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraph.html#a2cfe12e71ca594736a1e329461cff024">getInverseArcSet</a>(string name) const</td></tr>
+<tr class="memitem:a2cfe12e71ca594736a1e329461cff024"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classstanfordcpplib_1_1collections_1_1GenericSet.html">Set</a>&lt; ArcType * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraph.html#a2cfe12e71ca594736a1e329461cff024">getInverseArcSet</a>(string name) const</td></tr>
 <tr class="memdesc:a2cfe12e71ca594736a1e329461cff024"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the set of outbound arcs to the given node from other nodes.  <a href="#a2cfe12e71ca594736a1e329461cff024">More...</a><br /></td></tr>
 <tr class="separator:a2cfe12e71ca594736a1e329461cff024"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa9eceee00e824ea4852449fa3de61e82"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classSet.html">Set</a>&lt; string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraph.html#aa9eceee00e824ea4852449fa3de61e82">getInverseNeighborNames</a>(NodeType *node) const</td></tr>
+<tr class="memitem:aa9eceee00e824ea4852449fa3de61e82"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstanfordcpplib_1_1collections_1_1GenericSet.html">Set</a>&lt; string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraph.html#aa9eceee00e824ea4852449fa3de61e82">getInverseNeighborNames</a>(NodeType *node) const</td></tr>
 <tr class="memdesc:aa9eceee00e824ea4852449fa3de61e82"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the set of strings of names of nodes that are neighbors of the given node.  <a href="#aa9eceee00e824ea4852449fa3de61e82">More...</a><br /></td></tr>
 <tr class="separator:aa9eceee00e824ea4852449fa3de61e82"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac3dc36bc1eb0f249180cfe78bce6e7a2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classSet.html">Set</a>&lt; string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraph.html#ac3dc36bc1eb0f249180cfe78bce6e7a2">getInverseNeighborNames</a>(string node) const</td></tr>
+<tr class="memitem:ac3dc36bc1eb0f249180cfe78bce6e7a2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstanfordcpplib_1_1collections_1_1GenericSet.html">Set</a>&lt; string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraph.html#ac3dc36bc1eb0f249180cfe78bce6e7a2">getInverseNeighborNames</a>(string node) const</td></tr>
 <tr class="memdesc:ac3dc36bc1eb0f249180cfe78bce6e7a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the set of strings of names of nodes that are neighbors of the given node.  <a href="#ac3dc36bc1eb0f249180cfe78bce6e7a2">More...</a><br /></td></tr>
 <tr class="separator:ac3dc36bc1eb0f249180cfe78bce6e7a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a80a5724c594b9bd0b6008c57b09af317"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classSet.html">Set</a>&lt; NodeType * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraph.html#a80a5724c594b9bd0b6008c57b09af317">getInverseNeighbors</a>(NodeType *node) const</td></tr>
+<tr class="memitem:a80a5724c594b9bd0b6008c57b09af317"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstanfordcpplib_1_1collections_1_1GenericSet.html">Set</a>&lt; NodeType * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraph.html#a80a5724c594b9bd0b6008c57b09af317">getInverseNeighbors</a>(NodeType *node) const</td></tr>
 <tr class="memdesc:a80a5724c594b9bd0b6008c57b09af317"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the set of nodes that are neighbors of the specified node.  <a href="#a80a5724c594b9bd0b6008c57b09af317">More...</a><br /></td></tr>
 <tr class="separator:a80a5724c594b9bd0b6008c57b09af317"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5294846b9cdd19394808e3736ec67004"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classSet.html">Set</a>&lt; NodeType * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraph.html#a5294846b9cdd19394808e3736ec67004">getInverseNeighbors</a>(string node) const</td></tr>
+<tr class="memitem:a5294846b9cdd19394808e3736ec67004"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstanfordcpplib_1_1collections_1_1GenericSet.html">Set</a>&lt; NodeType * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraph.html#a5294846b9cdd19394808e3736ec67004">getInverseNeighbors</a>(string node) const</td></tr>
 <tr class="memdesc:a5294846b9cdd19394808e3736ec67004"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the set of nodes that are neighbors of the specified node.  <a href="#a5294846b9cdd19394808e3736ec67004">More...</a><br /></td></tr>
 <tr class="separator:a5294846b9cdd19394808e3736ec67004"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae9b5cbd2bcb3918c4c64b1eb71c1a3a8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classSet.html">Set</a>&lt; string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraph.html#ae9b5cbd2bcb3918c4c64b1eb71c1a3a8">getNeighborNames</a>(NodeType *node) const</td></tr>
+<tr class="memitem:ae9b5cbd2bcb3918c4c64b1eb71c1a3a8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstanfordcpplib_1_1collections_1_1GenericSet.html">Set</a>&lt; string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraph.html#ae9b5cbd2bcb3918c4c64b1eb71c1a3a8">getNeighborNames</a>(NodeType *node) const</td></tr>
 <tr class="memdesc:ae9b5cbd2bcb3918c4c64b1eb71c1a3a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the set of node names that are neighbors of the specified node.  <a href="#ae9b5cbd2bcb3918c4c64b1eb71c1a3a8">More...</a><br /></td></tr>
 <tr class="separator:ae9b5cbd2bcb3918c4c64b1eb71c1a3a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6175b4d672266465dd34e070c7710b34"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classSet.html">Set</a>&lt; string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraph.html#a6175b4d672266465dd34e070c7710b34">getNeighborNames</a>(string node) const</td></tr>
+<tr class="memitem:a6175b4d672266465dd34e070c7710b34"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstanfordcpplib_1_1collections_1_1GenericSet.html">Set</a>&lt; string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraph.html#a6175b4d672266465dd34e070c7710b34">getNeighborNames</a>(string node) const</td></tr>
 <tr class="memdesc:a6175b4d672266465dd34e070c7710b34"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the set of node names that are neighbors of the specified node.  <a href="#a6175b4d672266465dd34e070c7710b34">More...</a><br /></td></tr>
 <tr class="separator:a6175b4d672266465dd34e070c7710b34"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0e49b167f0623a8ae76040c3e5eab3fb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classSet.html">Set</a>&lt; NodeType * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraph.html#a0e49b167f0623a8ae76040c3e5eab3fb">getNeighbors</a>(NodeType *node) const</td></tr>
+<tr class="memitem:a0e49b167f0623a8ae76040c3e5eab3fb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstanfordcpplib_1_1collections_1_1GenericSet.html">Set</a>&lt; NodeType * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraph.html#a0e49b167f0623a8ae76040c3e5eab3fb">getNeighbors</a>(NodeType *node) const</td></tr>
 <tr class="memdesc:a0e49b167f0623a8ae76040c3e5eab3fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the set of nodes that are neighbors of the specified node.  <a href="#a0e49b167f0623a8ae76040c3e5eab3fb">More...</a><br /></td></tr>
 <tr class="separator:a0e49b167f0623a8ae76040c3e5eab3fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3a3720906c380f36b50530419330bfe5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classSet.html">Set</a>&lt; NodeType * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraph.html#a3a3720906c380f36b50530419330bfe5">getNeighbors</a>(string node) const</td></tr>
+<tr class="memitem:a3a3720906c380f36b50530419330bfe5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstanfordcpplib_1_1collections_1_1GenericSet.html">Set</a>&lt; NodeType * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraph.html#a3a3720906c380f36b50530419330bfe5">getNeighbors</a>(string node) const</td></tr>
 <tr class="memdesc:a3a3720906c380f36b50530419330bfe5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the set of nodes that are neighbors of the specified node.  <a href="#a3a3720906c380f36b50530419330bfe5">More...</a><br /></td></tr>
 <tr class="separator:a3a3720906c380f36b50530419330bfe5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a81487976cf0e576047333c85463c33aa"><td class="memItemLeft" align="right" valign="top">NodeType *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraph.html#a81487976cf0e576047333c85463c33aa">getNode</a>(string name) const</td></tr>
 <tr class="memdesc:a81487976cf0e576047333c85463c33aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Looks up a node in the name table attached to the graph and returns a pointer to that node.  <a href="#a81487976cf0e576047333c85463c33aa">More...</a><br /></td></tr>
 <tr class="separator:a81487976cf0e576047333c85463c33aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3c6f37932f377dd2bf4fec61343a916d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classSet.html">Set</a>&lt; string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraph.html#a3c6f37932f377dd2bf4fec61343a916d">getNodeNames</a>() const</td></tr>
+<tr class="memitem:a3c6f37932f377dd2bf4fec61343a916d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstanfordcpplib_1_1collections_1_1GenericSet.html">Set</a>&lt; string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraph.html#a3c6f37932f377dd2bf4fec61343a916d">getNodeNames</a>() const</td></tr>
 <tr class="memdesc:a3c6f37932f377dd2bf4fec61343a916d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the set of the names of all nodes in the graph.  <a href="#a3c6f37932f377dd2bf4fec61343a916d">More...</a><br /></td></tr>
 <tr class="separator:a3c6f37932f377dd2bf4fec61343a916d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abd5552888f57aaa581099e8146c617c9"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classSet.html">Set</a>&lt; NodeType * &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraph.html#abd5552888f57aaa581099e8146c617c9">getNodeSet</a>() const</td></tr>
+<tr class="memitem:abd5552888f57aaa581099e8146c617c9"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classstanfordcpplib_1_1collections_1_1GenericSet.html">Set</a>&lt; NodeType * &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraph.html#abd5552888f57aaa581099e8146c617c9">getNodeSet</a>() const</td></tr>
 <tr class="memdesc:abd5552888f57aaa581099e8146c617c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the set of all nodes in the graph.  <a href="#abd5552888f57aaa581099e8146c617c9">More...</a><br /></td></tr>
 <tr class="separator:abd5552888f57aaa581099e8146c617c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a54164ab847f3a5c7fe15d15ac95af443"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraph.html#a54164ab847f3a5c7fe15d15ac95af443">isConnected</a>(NodeType *n1, NodeType *n2) const</td></tr>
@@ -291,7 +297,7 @@ class Graph&lt; NodeType, ArcType &gt;</h3>
 <li>
 A <code>string</code> field called <code>name</code> </li>
 <li>
-A <code><a class="el" href="classSet.html">Set</a>&lt;ArcType *&gt;</code> field called <code>arcs</code> </li>
+A <code>Set&lt;ArcType *&gt;</code> field called <code>arcs</code> </li>
 </ul>
 <p>The <code>ArcType</code> definition must include: </p><ul>
 <li>
@@ -299,12 +305,30 @@ A <code>NodeType *</code> field called <code>start</code> </li>
 <li>
 A <code>NodeType *</code> field called <code>finish</code> </li>
 </ul>
-</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="afc5ef9d72cc2c509814200791eaef62c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afc5ef9d72cc2c509814200791eaef62c">&#9670;&nbsp;</a></span>Graph()</h2>
+</div><h2 class="groupheader">Member Typedef Documentation</h2>
+<a id="a695969c31e87f9e8319d74e5ca39024b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a695969c31e87f9e8319d74e5ca39024b">&#9670;&nbsp;</a></span>graph_iterator</h2>
 
 <div class="memitem">
 <div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classGraph.html#a695969c31e87f9e8319d74e5ca39024b">graph_iterator</a> =  typename <a class="el" href="classstanfordcpplib_1_1collections_1_1GenericSet.html">Set</a>&lt;NodeType *&gt;::const_iterator</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a0c40af42cad207665228815f0359bbd3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0c40af42cad207665228815f0359bbd3">&#9670;&nbsp;</a></span>Graph()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname"><a class="el" href="classGraph.html">Graph</a> </td>
@@ -313,6 +337,11 @@ A <code>NodeType *</code> field called <code>finish</code> </li>
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p>Creates an empty graph. </p>
@@ -561,7 +590,7 @@ A <code>NodeType *</code> field called <code>finish</code> </li>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">graph_iterator begin </td>
+          <td class="memname"><a class="el" href="classGraph.html#a695969c31e87f9e8319d74e5ca39024b">graph_iterator</a> begin </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -796,7 +825,7 @@ A <code>NodeType *</code> field called <code>finish</code> </li>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">graph_iterator end </td>
+          <td class="memname"><a class="el" href="classGraph.html#a695969c31e87f9e8319d74e5ca39024b">graph_iterator</a> end </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -930,7 +959,7 @@ A <code>NodeType *</code> field called <code>finish</code> </li>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">const <a class="el" href="classSet.html">Set</a>&lt; ArcType * &gt; &amp; getArcSet </td>
+          <td class="memname">const <a class="el" href="classstanfordcpplib_1_1collections_1_1GenericSet.html">Set</a>&lt; ArcType * &gt; &amp; getArcSet </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -950,7 +979,7 @@ A <code>NodeType *</code> field called <code>finish</code> </li>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">const <a class="el" href="classSet.html">Set</a>&lt; ArcType * &gt; &amp; getArcSet </td>
+          <td class="memname">const <a class="el" href="classstanfordcpplib_1_1collections_1_1GenericSet.html">Set</a>&lt; ArcType * &gt; &amp; getArcSet </td>
           <td>(</td>
           <td class="paramtype">NodeType *&#160;</td>
           <td class="paramname"><em>node</em></td><td>)</td>
@@ -971,7 +1000,7 @@ A <code>NodeType *</code> field called <code>finish</code> </li>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">const <a class="el" href="classSet.html">Set</a>&lt; ArcType * &gt; &amp; getArcSet </td>
+          <td class="memname">const <a class="el" href="classstanfordcpplib_1_1collections_1_1GenericSet.html">Set</a>&lt; ArcType * &gt; &amp; getArcSet </td>
           <td>(</td>
           <td class="paramtype">string &#160;</td>
           <td class="paramname"><em>name</em></td><td>)</td>
@@ -992,7 +1021,7 @@ A <code>NodeType *</code> field called <code>finish</code> </li>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">const <a class="el" href="classSet.html">Set</a>&lt; ArcType * &gt; getInverseArcSet </td>
+          <td class="memname">const <a class="el" href="classstanfordcpplib_1_1collections_1_1GenericSet.html">Set</a>&lt; ArcType * &gt; getInverseArcSet </td>
           <td>(</td>
           <td class="paramtype">NodeType *&#160;</td>
           <td class="paramname"><em>node</em></td><td>)</td>
@@ -1014,7 +1043,7 @@ A <code>NodeType *</code> field called <code>finish</code> </li>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">const <a class="el" href="classSet.html">Set</a>&lt; ArcType * &gt; getInverseArcSet </td>
+          <td class="memname">const <a class="el" href="classstanfordcpplib_1_1collections_1_1GenericSet.html">Set</a>&lt; ArcType * &gt; getInverseArcSet </td>
           <td>(</td>
           <td class="paramtype">string &#160;</td>
           <td class="paramname"><em>name</em></td><td>)</td>
@@ -1036,7 +1065,7 @@ A <code>NodeType *</code> field called <code>finish</code> </li>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classSet.html">Set</a>&lt; string &gt; getInverseNeighborNames </td>
+          <td class="memname"><a class="el" href="classstanfordcpplib_1_1collections_1_1GenericSet.html">Set</a>&lt; string &gt; getInverseNeighborNames </td>
           <td>(</td>
           <td class="paramtype">NodeType *&#160;</td>
           <td class="paramname"><em>node</em></td><td>)</td>
@@ -1058,7 +1087,7 @@ A <code>NodeType *</code> field called <code>finish</code> </li>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classSet.html">Set</a>&lt; string &gt; getInverseNeighborNames </td>
+          <td class="memname"><a class="el" href="classstanfordcpplib_1_1collections_1_1GenericSet.html">Set</a>&lt; string &gt; getInverseNeighborNames </td>
           <td>(</td>
           <td class="paramtype">string &#160;</td>
           <td class="paramname"><em>node</em></td><td>)</td>
@@ -1080,7 +1109,7 @@ A <code>NodeType *</code> field called <code>finish</code> </li>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classSet.html">Set</a>&lt; NodeType * &gt; getInverseNeighbors </td>
+          <td class="memname"><a class="el" href="classstanfordcpplib_1_1collections_1_1GenericSet.html">Set</a>&lt; NodeType * &gt; getInverseNeighbors </td>
           <td>(</td>
           <td class="paramtype">NodeType *&#160;</td>
           <td class="paramname"><em>node</em></td><td>)</td>
@@ -1102,7 +1131,7 @@ A <code>NodeType *</code> field called <code>finish</code> </li>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classSet.html">Set</a>&lt; NodeType * &gt; getInverseNeighbors </td>
+          <td class="memname"><a class="el" href="classstanfordcpplib_1_1collections_1_1GenericSet.html">Set</a>&lt; NodeType * &gt; getInverseNeighbors </td>
           <td>(</td>
           <td class="paramtype">string &#160;</td>
           <td class="paramname"><em>node</em></td><td>)</td>
@@ -1124,7 +1153,7 @@ A <code>NodeType *</code> field called <code>finish</code> </li>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classSet.html">Set</a>&lt; string &gt; getNeighborNames </td>
+          <td class="memname"><a class="el" href="classstanfordcpplib_1_1collections_1_1GenericSet.html">Set</a>&lt; string &gt; getNeighborNames </td>
           <td>(</td>
           <td class="paramtype">NodeType *&#160;</td>
           <td class="paramname"><em>node</em></td><td>)</td>
@@ -1146,7 +1175,7 @@ A <code>NodeType *</code> field called <code>finish</code> </li>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classSet.html">Set</a>&lt; string &gt; getNeighborNames </td>
+          <td class="memname"><a class="el" href="classstanfordcpplib_1_1collections_1_1GenericSet.html">Set</a>&lt; string &gt; getNeighborNames </td>
           <td>(</td>
           <td class="paramtype">string &#160;</td>
           <td class="paramname"><em>node</em></td><td>)</td>
@@ -1168,7 +1197,7 @@ A <code>NodeType *</code> field called <code>finish</code> </li>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classSet.html">Set</a>&lt; NodeType * &gt; getNeighbors </td>
+          <td class="memname"><a class="el" href="classstanfordcpplib_1_1collections_1_1GenericSet.html">Set</a>&lt; NodeType * &gt; getNeighbors </td>
           <td>(</td>
           <td class="paramtype">NodeType *&#160;</td>
           <td class="paramname"><em>node</em></td><td>)</td>
@@ -1190,7 +1219,7 @@ A <code>NodeType *</code> field called <code>finish</code> </li>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classSet.html">Set</a>&lt; NodeType * &gt; getNeighbors </td>
+          <td class="memname"><a class="el" href="classstanfordcpplib_1_1collections_1_1GenericSet.html">Set</a>&lt; NodeType * &gt; getNeighbors </td>
           <td>(</td>
           <td class="paramtype">string &#160;</td>
           <td class="paramname"><em>node</em></td><td>)</td>
@@ -1233,7 +1262,7 @@ A <code>NodeType *</code> field called <code>finish</code> </li>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classSet.html">Set</a>&lt; string &gt; getNodeNames </td>
+          <td class="memname"><a class="el" href="classstanfordcpplib_1_1collections_1_1GenericSet.html">Set</a>&lt; string &gt; getNodeNames </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -1253,7 +1282,7 @@ A <code>NodeType *</code> field called <code>finish</code> </li>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">const <a class="el" href="classSet.html">Set</a>&lt; NodeType * &gt; &amp; getNodeSet </td>
+          <td class="memname">const <a class="el" href="classstanfordcpplib_1_1collections_1_1GenericSet.html">Set</a>&lt; NodeType * &gt; &amp; getNodeSet </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>

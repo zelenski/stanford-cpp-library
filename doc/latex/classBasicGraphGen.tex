@@ -15,6 +15,11 @@ Inheritance diagram for Basic\+Graph\+Gen$<$ V, E $>$\+:\begin{figure}[H]
 \includegraphics[height=2.000000cm]{classBasicGraphGen}
 \end{center}
 \end{figure}
+\subsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+using \mbox{\hyperlink{classGraph_a695969c31e87f9e8319d74e5ca39024b}{graph\+\_\+iterator}} = typename \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ \mbox{\hyperlink{classVertexGen}{Vertex\+Gen}}$<$ V, E $>$ $\ast$$>$\+::const\+\_\+iterator
+\end{DoxyCompactItemize}
 \subsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
@@ -46,7 +51,7 @@ int \mbox{\hyperlink{classGraph_ac0b108b3354f5222d2c829dcd639fa7a}{arc\+Count}} 
 \begin{DoxyCompactList}\small\item\em Returns the number of arcs in the graph. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classVertexGen}{Vertex\+Gen}}$<$ V, E $>$ $\ast$ \mbox{\hyperlink{classGraph_a27d59ef129bb56cc144ecc81c0affd34}{back}} () const
 \begin{DoxyCompactList}\small\item\em Returns the last node in the graph in the order as would be returned by a for-\/each loop or iterator. \end{DoxyCompactList}\item 
-graph\+\_\+iterator \mbox{\hyperlink{classGraph_aea3a8950c46f4ac913207201b685e715}{begin}} () const
+\mbox{\hyperlink{classGraph_a695969c31e87f9e8319d74e5ca39024b}{graph\+\_\+iterator}} \mbox{\hyperlink{classGraph_aea3a8950c46f4ac913207201b685e715}{begin}} () const
 \begin{DoxyCompactList}\small\item\em Returns an S\+TL iterator positioned at the first vertex in the graph. \end{DoxyCompactList}\item 
 void \mbox{\hyperlink{classGraph_ac8bb3912a3ce86b15842e79d0b421204}{clear}} ()
 \begin{DoxyCompactList}\small\item\em Reinitializes the graph to be empty, removing all nodes and arcs and freeing any heap storage used by their corresponding internal structures. \end{DoxyCompactList}\item 
@@ -84,7 +89,7 @@ bool \mbox{\hyperlink{classBasicGraphGen_a37d4f31bc5bb6397fdb0bf966b54ca3f}{cont
 \begin{DoxyCompactList}\small\item\em Returns whether the graph contains the given vertex. \end{DoxyCompactList}\item 
 int \mbox{\hyperlink{classBasicGraphGen_aa1f43093f29e66e171d5f572a658ae0c}{edge\+Count}} () const
 \begin{DoxyCompactList}\small\item\em Returns the number of edges in the graph. \end{DoxyCompactList}\item 
-graph\+\_\+iterator \mbox{\hyperlink{classGraph_afcdf62cae5d7e50644957d66f886742d}{end}} () const
+\mbox{\hyperlink{classGraph_a695969c31e87f9e8319d74e5ca39024b}{graph\+\_\+iterator}} \mbox{\hyperlink{classGraph_afcdf62cae5d7e50644957d66f886742d}{end}} () const
 \begin{DoxyCompactList}\small\item\em Returns an S\+TL iterator positioned after the last vertex in the graph. \end{DoxyCompactList}\item 
 bool \mbox{\hyperlink{classGraph_a6bec43eb3dfdf3d23eb328b406edf44a}{equals}} (const \mbox{\hyperlink{classGraph}{Graph}}$<$ \mbox{\hyperlink{classVertexGen}{Vertex\+Gen}}$<$ V, E $>$, Edge\+Gen$<$ V, E $>$ $>$ \&graph2) const
 \begin{DoxyCompactList}\small\item\em Compares two graphs for equality. \end{DoxyCompactList}\item 
@@ -94,61 +99,61 @@ Edge\+Gen$<$ V, E $>$ $\ast$ \mbox{\hyperlink{classGraph_a7c33db338f839ff9e3dafe
 \begin{DoxyCompactList}\small\item\em Returns the arc, if any, from node1 to node2. \end{DoxyCompactList}\item 
 Edge\+Gen$<$ V, E $>$ $\ast$ \mbox{\hyperlink{classGraph_a94d4badfc856b0d4530c37121efb9834}{get\+Arc}} (const std\+::string \&node1, const std\+::string \&node2) const
 \begin{DoxyCompactList}\small\item\em Returns the arc, if any, from node1 to node2. \end{DoxyCompactList}\item 
-const \mbox{\hyperlink{classSet}{Set}}$<$ Edge\+Gen$<$ V, E $>$ $\ast$$>$ \& \mbox{\hyperlink{classGraph_a0690edaeae8d5256189ae2e8541788b5}{get\+Arc\+Set}} () const
+const \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ Edge\+Gen$<$ V, E $>$ $\ast$$>$ \& \mbox{\hyperlink{classGraph_a0690edaeae8d5256189ae2e8541788b5}{get\+Arc\+Set}} () const
 \begin{DoxyCompactList}\small\item\em Returns the set of all arcs in the graph. \end{DoxyCompactList}\item 
-const \mbox{\hyperlink{classSet}{Set}}$<$ Edge\+Gen$<$ V, E $>$ $\ast$$>$ \& \mbox{\hyperlink{classGraph_a17cfc7f4d8c738fc6f51813f50be6400}{get\+Arc\+Set}} (\mbox{\hyperlink{classVertexGen}{Vertex\+Gen}}$<$ V, E $>$ $\ast$node) const
+const \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ Edge\+Gen$<$ V, E $>$ $\ast$$>$ \& \mbox{\hyperlink{classGraph_a17cfc7f4d8c738fc6f51813f50be6400}{get\+Arc\+Set}} (\mbox{\hyperlink{classVertexGen}{Vertex\+Gen}}$<$ V, E $>$ $\ast$node) const
 \begin{DoxyCompactList}\small\item\em Returns the set of all arcs that start at the specified node, indicated as a pointer to its node structure. \end{DoxyCompactList}\item 
-const \mbox{\hyperlink{classSet}{Set}}$<$ Edge\+Gen$<$ V, E $>$ $\ast$$>$ \& \mbox{\hyperlink{classGraph_a31b9e2056ee2d66a7ea9feb02f016e8d}{get\+Arc\+Set}} (const std\+::string \&name) const
+const \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ Edge\+Gen$<$ V, E $>$ $\ast$$>$ \& \mbox{\hyperlink{classGraph_a31b9e2056ee2d66a7ea9feb02f016e8d}{get\+Arc\+Set}} (const std\+::string \&name) const
 \begin{DoxyCompactList}\small\item\em Returns the set of all arcs that start at the specified node. \end{DoxyCompactList}\item 
 Edge\+Gen$<$ V, E $>$ $\ast$ \mbox{\hyperlink{classBasicGraphGen_aad31ac511c91ccf23a19af68e7a9f316}{get\+Edge}} (\mbox{\hyperlink{classVertexGen}{Vertex\+Gen}}$<$ V, E $>$ $\ast$v1, \mbox{\hyperlink{classVertexGen}{Vertex\+Gen}}$<$ V, E $>$ $\ast$v2) const
 \begin{DoxyCompactList}\small\item\em Returns the structure representing the edge from v1 to v2 in the graph. \end{DoxyCompactList}\item 
 Edge\+Gen$<$ V, E $>$ $\ast$ \mbox{\hyperlink{classBasicGraphGen_a57e156a4bae200f10f36fce5ec7fe504}{get\+Edge}} (const std\+::string \&v1, const std\+::string \&v2) const
 \begin{DoxyCompactList}\small\item\em Returns the structure representing the edge from v1 to v2 in the graph. \end{DoxyCompactList}\item 
-const \mbox{\hyperlink{classSet}{Set}}$<$ Edge\+Gen$<$ V, E $>$ $\ast$ $>$ \& \mbox{\hyperlink{classBasicGraphGen_a312cc70af3d52a9fbdd56629c1710e48}{get\+Edge\+Set}} () const
+const \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ Edge\+Gen$<$ V, E $>$ $\ast$ $>$ \& \mbox{\hyperlink{classBasicGraphGen_a312cc70af3d52a9fbdd56629c1710e48}{get\+Edge\+Set}} () const
 \begin{DoxyCompactList}\small\item\em Returns the set of all edges in the graph. \end{DoxyCompactList}\item 
-const \mbox{\hyperlink{classSet}{Set}}$<$ Edge\+Gen$<$ V, E $>$ $\ast$ $>$ \& \mbox{\hyperlink{classBasicGraphGen_abfe8d6cbb48312f7fbec0fd948330348}{get\+Edge\+Set}} (\mbox{\hyperlink{classVertexGen}{Vertex\+Gen}}$<$ V, E $>$ $\ast$v) const
+const \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ Edge\+Gen$<$ V, E $>$ $\ast$ $>$ \& \mbox{\hyperlink{classBasicGraphGen_abfe8d6cbb48312f7fbec0fd948330348}{get\+Edge\+Set}} (\mbox{\hyperlink{classVertexGen}{Vertex\+Gen}}$<$ V, E $>$ $\ast$v) const
 \begin{DoxyCompactList}\small\item\em Returns the set of all edges that start at the specified vertex. \end{DoxyCompactList}\item 
-const \mbox{\hyperlink{classSet}{Set}}$<$ Edge\+Gen$<$ V, E $>$ $\ast$ $>$ \& \mbox{\hyperlink{classBasicGraphGen_a6deea7a4536dfd6346c62c0c05a141ed}{get\+Edge\+Set}} (const std\+::string \&v) const
+const \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ Edge\+Gen$<$ V, E $>$ $\ast$ $>$ \& \mbox{\hyperlink{classBasicGraphGen_a6deea7a4536dfd6346c62c0c05a141ed}{get\+Edge\+Set}} (const std\+::string \&v) const
 \begin{DoxyCompactList}\small\item\em Returns the set of all edges that start at the specified vertex. \end{DoxyCompactList}\item 
 Edge\+Gen$<$ V, E $>$ $\ast$ \mbox{\hyperlink{classBasicGraphGen_ad8e645c23a9816fff136e0a5f7941669}{get\+Inverse\+Arc}} (Edge\+Gen$<$ V, E $>$ $\ast$edge) const
 \begin{DoxyCompactList}\small\item\em Returns the edge that is the opposite of the given edge; that is, if the specified edge e starts at v1 and ends at v2, will return the edge that starts at v2 and ends at v1, if such an edge exists in the graph. \end{DoxyCompactList}\item 
-const \mbox{\hyperlink{classSet}{Set}}$<$ Edge\+Gen$<$ V, E $>$ $\ast$$>$ \mbox{\hyperlink{classGraph_ad5fd149800cd46aae497b05b46059b63}{get\+Inverse\+Arc\+Set}} (\mbox{\hyperlink{classVertexGen}{Vertex\+Gen}}$<$ V, E $>$ $\ast$node) const
+const \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ Edge\+Gen$<$ V, E $>$ $\ast$$>$ \mbox{\hyperlink{classGraph_ad5fd149800cd46aae497b05b46059b63}{get\+Inverse\+Arc\+Set}} (\mbox{\hyperlink{classVertexGen}{Vertex\+Gen}}$<$ V, E $>$ $\ast$node) const
 \begin{DoxyCompactList}\small\item\em Returns the set of outbound arcs to the given node from other nodes. \end{DoxyCompactList}\item 
-const \mbox{\hyperlink{classSet}{Set}}$<$ Edge\+Gen$<$ V, E $>$ $\ast$$>$ \mbox{\hyperlink{classGraph_a2cfe12e71ca594736a1e329461cff024}{get\+Inverse\+Arc\+Set}} (const std\+::string \&name) const
+const \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ Edge\+Gen$<$ V, E $>$ $\ast$$>$ \mbox{\hyperlink{classGraph_a2cfe12e71ca594736a1e329461cff024}{get\+Inverse\+Arc\+Set}} (const std\+::string \&name) const
 \begin{DoxyCompactList}\small\item\em Returns the set of outbound arcs to the given node from other nodes. \end{DoxyCompactList}\item 
 Edge\+Gen$<$ V, E $>$ $\ast$ \mbox{\hyperlink{classBasicGraphGen_ae81616e12d12f2dcfa295b4a3b48f960}{get\+Inverse\+Edge}} (Edge\+Gen$<$ V, E $>$ $\ast$edge) const
 \begin{DoxyCompactList}\small\item\em Returns the edge that is the opposite of the given edge; that is, if the specified edge e starts at v1 and ends at v2, will return the edge that starts at v2 and ends at v1, if such an edge exists in the graph. \end{DoxyCompactList}\item 
-const \mbox{\hyperlink{classSet}{Set}}$<$ Edge\+Gen$<$ V, E $>$ $\ast$ $>$ \mbox{\hyperlink{classBasicGraphGen_a5db8788e3783e8ff16b19c06a5f2cf62}{get\+Inverse\+Edge\+Set}} (\mbox{\hyperlink{classVertexGen}{Vertex\+Gen}}$<$ V, E $>$ $\ast$v) const
+const \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ Edge\+Gen$<$ V, E $>$ $\ast$ $>$ \mbox{\hyperlink{classBasicGraphGen_a5db8788e3783e8ff16b19c06a5f2cf62}{get\+Inverse\+Edge\+Set}} (\mbox{\hyperlink{classVertexGen}{Vertex\+Gen}}$<$ V, E $>$ $\ast$v) const
 \begin{DoxyCompactList}\small\item\em Returns the set of all edges in the graph that end at the specified vertex. \end{DoxyCompactList}\item 
-const \mbox{\hyperlink{classSet}{Set}}$<$ Edge\+Gen$<$ V, E $>$ $\ast$ $>$ \mbox{\hyperlink{classBasicGraphGen_a7ef9596e6faf68669228bc69808e84bd}{get\+Inverse\+Edge\+Set}} (const std\+::string \&v) const
+const \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ Edge\+Gen$<$ V, E $>$ $\ast$ $>$ \mbox{\hyperlink{classBasicGraphGen_a7ef9596e6faf68669228bc69808e84bd}{get\+Inverse\+Edge\+Set}} (const std\+::string \&v) const
 \begin{DoxyCompactList}\small\item\em Returns the set of all edges in the graph that end at the specified vertex. \end{DoxyCompactList}\item 
-\mbox{\hyperlink{classSet}{Set}}$<$ std\+::string $>$ \mbox{\hyperlink{classGraph_aa9eceee00e824ea4852449fa3de61e82}{get\+Inverse\+Neighbor\+Names}} (\mbox{\hyperlink{classVertexGen}{Vertex\+Gen}}$<$ V, E $>$ $\ast$node) const
+\mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ std\+::string $>$ \mbox{\hyperlink{classGraph_aa9eceee00e824ea4852449fa3de61e82}{get\+Inverse\+Neighbor\+Names}} (\mbox{\hyperlink{classVertexGen}{Vertex\+Gen}}$<$ V, E $>$ $\ast$node) const
 \begin{DoxyCompactList}\small\item\em Returns the set of strings of names of nodes that are neighbors of the given node. \end{DoxyCompactList}\item 
-\mbox{\hyperlink{classSet}{Set}}$<$ std\+::string $>$ \mbox{\hyperlink{classGraph_ac3dc36bc1eb0f249180cfe78bce6e7a2}{get\+Inverse\+Neighbor\+Names}} (const std\+::string \&node) const
+\mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ std\+::string $>$ \mbox{\hyperlink{classGraph_ac3dc36bc1eb0f249180cfe78bce6e7a2}{get\+Inverse\+Neighbor\+Names}} (const std\+::string \&node) const
 \begin{DoxyCompactList}\small\item\em Returns the set of strings of names of nodes that are neighbors of the given node. \end{DoxyCompactList}\item 
-\mbox{\hyperlink{classSet}{Set}}$<$ \mbox{\hyperlink{classVertexGen}{Vertex\+Gen}}$<$ V, E $>$ $\ast$$>$ \mbox{\hyperlink{classGraph_a80a5724c594b9bd0b6008c57b09af317}{get\+Inverse\+Neighbors}} (\mbox{\hyperlink{classVertexGen}{Vertex\+Gen}}$<$ V, E $>$ $\ast$node) const
+\mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ \mbox{\hyperlink{classVertexGen}{Vertex\+Gen}}$<$ V, E $>$ $\ast$$>$ \mbox{\hyperlink{classGraph_a80a5724c594b9bd0b6008c57b09af317}{get\+Inverse\+Neighbors}} (\mbox{\hyperlink{classVertexGen}{Vertex\+Gen}}$<$ V, E $>$ $\ast$node) const
 \begin{DoxyCompactList}\small\item\em Returns the set of nodes that are neighbors of the specified node. \end{DoxyCompactList}\item 
-\mbox{\hyperlink{classSet}{Set}}$<$ \mbox{\hyperlink{classVertexGen}{Vertex\+Gen}}$<$ V, E $>$ $\ast$$>$ \mbox{\hyperlink{classGraph_a5294846b9cdd19394808e3736ec67004}{get\+Inverse\+Neighbors}} (const std\+::string \&node) const
+\mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ \mbox{\hyperlink{classVertexGen}{Vertex\+Gen}}$<$ V, E $>$ $\ast$$>$ \mbox{\hyperlink{classGraph_a5294846b9cdd19394808e3736ec67004}{get\+Inverse\+Neighbors}} (const std\+::string \&node) const
 \begin{DoxyCompactList}\small\item\em Returns the set of nodes that are neighbors of the specified node. \end{DoxyCompactList}\item 
-\mbox{\hyperlink{classSet}{Set}}$<$ std\+::string $>$ \mbox{\hyperlink{classGraph_ae9b5cbd2bcb3918c4c64b1eb71c1a3a8}{get\+Neighbor\+Names}} (\mbox{\hyperlink{classVertexGen}{Vertex\+Gen}}$<$ V, E $>$ $\ast$node) const
+\mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ std\+::string $>$ \mbox{\hyperlink{classGraph_ae9b5cbd2bcb3918c4c64b1eb71c1a3a8}{get\+Neighbor\+Names}} (\mbox{\hyperlink{classVertexGen}{Vertex\+Gen}}$<$ V, E $>$ $\ast$node) const
 \begin{DoxyCompactList}\small\item\em Returns the set of node names that are neighbors of the specified node. \end{DoxyCompactList}\item 
-\mbox{\hyperlink{classSet}{Set}}$<$ std\+::string $>$ \mbox{\hyperlink{classGraph_a6175b4d672266465dd34e070c7710b34}{get\+Neighbor\+Names}} (const std\+::string \&node) const
+\mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ std\+::string $>$ \mbox{\hyperlink{classGraph_a6175b4d672266465dd34e070c7710b34}{get\+Neighbor\+Names}} (const std\+::string \&node) const
 \begin{DoxyCompactList}\small\item\em Returns the set of node names that are neighbors of the specified node. \end{DoxyCompactList}\item 
-\mbox{\hyperlink{classSet}{Set}}$<$ \mbox{\hyperlink{classVertexGen}{Vertex\+Gen}}$<$ V, E $>$ $\ast$$>$ \mbox{\hyperlink{classGraph_a0e49b167f0623a8ae76040c3e5eab3fb}{get\+Neighbors}} (\mbox{\hyperlink{classVertexGen}{Vertex\+Gen}}$<$ V, E $>$ $\ast$node) const
+\mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ \mbox{\hyperlink{classVertexGen}{Vertex\+Gen}}$<$ V, E $>$ $\ast$$>$ \mbox{\hyperlink{classGraph_a0e49b167f0623a8ae76040c3e5eab3fb}{get\+Neighbors}} (\mbox{\hyperlink{classVertexGen}{Vertex\+Gen}}$<$ V, E $>$ $\ast$node) const
 \begin{DoxyCompactList}\small\item\em Returns the set of nodes that are neighbors of the specified node. \end{DoxyCompactList}\item 
-\mbox{\hyperlink{classSet}{Set}}$<$ \mbox{\hyperlink{classVertexGen}{Vertex\+Gen}}$<$ V, E $>$ $\ast$$>$ \mbox{\hyperlink{classGraph_a3a3720906c380f36b50530419330bfe5}{get\+Neighbors}} (const std\+::string \&node) const
+\mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ \mbox{\hyperlink{classVertexGen}{Vertex\+Gen}}$<$ V, E $>$ $\ast$$>$ \mbox{\hyperlink{classGraph_a3a3720906c380f36b50530419330bfe5}{get\+Neighbors}} (const std\+::string \&node) const
 \begin{DoxyCompactList}\small\item\em Returns the set of nodes that are neighbors of the specified node. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classVertexGen}{Vertex\+Gen}}$<$ V, E $>$ $\ast$ \mbox{\hyperlink{classGraph_a81487976cf0e576047333c85463c33aa}{get\+Node}} (const std\+::string \&name) const
 \begin{DoxyCompactList}\small\item\em Looks up a node in the name table attached to the graph and returns a pointer to that node. \end{DoxyCompactList}\item 
-\mbox{\hyperlink{classSet}{Set}}$<$ std\+::string $>$ \mbox{\hyperlink{classGraph_a3c6f37932f377dd2bf4fec61343a916d}{get\+Node\+Names}} () const
+\mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ std\+::string $>$ \mbox{\hyperlink{classGraph_a3c6f37932f377dd2bf4fec61343a916d}{get\+Node\+Names}} () const
 \begin{DoxyCompactList}\small\item\em Returns the set of the names of all nodes in the graph. \end{DoxyCompactList}\item 
-const \mbox{\hyperlink{classSet}{Set}}$<$ \mbox{\hyperlink{classVertexGen}{Vertex\+Gen}}$<$ V, E $>$ $\ast$$>$ \& \mbox{\hyperlink{classGraph_abd5552888f57aaa581099e8146c617c9}{get\+Node\+Set}} () const
+const \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ \mbox{\hyperlink{classVertexGen}{Vertex\+Gen}}$<$ V, E $>$ $\ast$$>$ \& \mbox{\hyperlink{classGraph_abd5552888f57aaa581099e8146c617c9}{get\+Node\+Set}} () const
 \begin{DoxyCompactList}\small\item\em Returns the set of all nodes in the graph. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classVertexGen}{Vertex\+Gen}}$<$ V, E $>$ $\ast$ \mbox{\hyperlink{classBasicGraphGen_a4c0c055103d2adba54014d301ae7bd1c}{get\+Vertex}} (const std\+::string \&name) const
 \begin{DoxyCompactList}\small\item\em Looks up a vertex in the graph by name and returns a pointer to its internal data structure. \end{DoxyCompactList}\item 
-\mbox{\hyperlink{classSet}{Set}}$<$ std\+::string $>$ \mbox{\hyperlink{classBasicGraphGen_ae1bca1f87888bd787f836bc064a9ff01}{get\+Vertex\+Names}} () const
+\mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ std\+::string $>$ \mbox{\hyperlink{classBasicGraphGen_ae1bca1f87888bd787f836bc064a9ff01}{get\+Vertex\+Names}} () const
 \begin{DoxyCompactList}\small\item\em Returns a set of the names of all vertexes in the graph. \end{DoxyCompactList}\item 
-const \mbox{\hyperlink{classSet}{Set}}$<$ \mbox{\hyperlink{classVertexGen}{Vertex\+Gen}}$<$ V, E $>$ $\ast$ $>$ \& \mbox{\hyperlink{classBasicGraphGen_aec896ef5b1fc6044fc71318d1369f6f1}{get\+Vertex\+Set}} () const
+const \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ \mbox{\hyperlink{classVertexGen}{Vertex\+Gen}}$<$ V, E $>$ $\ast$ $>$ \& \mbox{\hyperlink{classBasicGraphGen_aec896ef5b1fc6044fc71318d1369f6f1}{get\+Vertex\+Set}} () const
 \begin{DoxyCompactList}\small\item\em Returns the set of all vertexes in the graph. \end{DoxyCompactList}\item 
 bool \mbox{\hyperlink{classGraph_a54164ab847f3a5c7fe15d15ac95af443}{is\+Connected}} (\mbox{\hyperlink{classVertexGen}{Vertex\+Gen}}$<$ V, E $>$ $\ast$n1, \mbox{\hyperlink{classVertexGen}{Vertex\+Gen}}$<$ V, E $>$ $\ast$n2) const
 \begin{DoxyCompactList}\small\item\em Returns {\ttfamily true} if the graph contains an arc from {\ttfamily n1} to {\ttfamily n2}. \end{DoxyCompactList}\item 
@@ -206,7 +211,7 @@ virtual void \mbox{\hyperlink{classGraph_a0fc2ca3535b7bff7759aa0c1d35ff08b}{scan
 \begin{DoxyCompactList}\small\item\em Reads the data for the specified node from the scanner. \end{DoxyCompactList}\item 
 int \mbox{\hyperlink{classGraph_af9593d4a5ff4274efaf429cb4f9e57cc}{size}} () const
 \begin{DoxyCompactList}\small\item\em Returns the number of nodes in the graph. \end{DoxyCompactList}\item 
-\mbox{\hyperlink{classMap}{Map}}$<$ std\+::string, \mbox{\hyperlink{classSet}{Set}}$<$ std\+::string $>$ $>$ \mbox{\hyperlink{classBasicGraphGen_a66498d3675a5bc08fa30a032d41764f7}{to\+Map}} () const
+\mbox{\hyperlink{classMap}{Map}}$<$ std\+::string, \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ std\+::string $>$ $>$ \mbox{\hyperlink{classBasicGraphGen_a66498d3675a5bc08fa30a032d41764f7}{to\+Map}} () const
 \begin{DoxyCompactList}\small\item\em Returns a \mbox{\hyperlink{classMap}{Map}} representing an adjacency list equivalent to this graph. \end{DoxyCompactList}\item 
 std\+::string \mbox{\hyperlink{classGraph_a1fe5121d6528fdea3f243321b3fa3a49}{to\+String}} () const
 \begin{DoxyCompactList}\small\item\em Converts the graph to a printable string representation. \end{DoxyCompactList}\item 
@@ -229,6 +234,15 @@ It also adds a few convenience functions such as mirroring members like \char`\"
 There are a few convenience functions related to neighbors, like is\+Neighbor. Basic\+Graph contains a D\+FS implementation called is\+Reachable, not found in the normal Stanford \mbox{\hyperlink{classGraph}{Graph}} class.
 
 There are also a few functions added to make edges more convenient to work with\+: get\+Edge(v1, v2) to get the edge between a given pair of vertices, and get\+Inverse\+Edge(edge) to get the edge v2 -\/$>$ v1 for a given edge v1 -\/$>$ v2. 
+
+\subsection{Member Typedef Documentation}
+\mbox{\Hypertarget{classGraph_a695969c31e87f9e8319d74e5ca39024b}\label{classGraph_a695969c31e87f9e8319d74e5ca39024b}} 
+\index{Basic\+Graph\+Gen@{Basic\+Graph\+Gen}!graph\+\_\+iterator@{graph\+\_\+iterator}}
+\index{graph\+\_\+iterator@{graph\+\_\+iterator}!Basic\+Graph\+Gen@{Basic\+Graph\+Gen}}
+\subsubsection{\texorpdfstring{graph\+\_\+iterator}{graph\_iterator}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{classGraph_a695969c31e87f9e8319d74e5ca39024b}{graph\+\_\+iterator}} =  typename \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$\mbox{\hyperlink{classVertexGen}{Vertex\+Gen}}$<$ V, E $>$  $\ast$$>$\+::const\+\_\+iterator\hspace{0.3cm}{\ttfamily [inherited]}}
+
+
 
 \subsection{Constructor \& Destructor Documentation}
 \mbox{\Hypertarget{classBasicGraphGen_a9d6eaee0a2e8ea6de432f815463813fa}\label{classBasicGraphGen_a9d6eaee0a2e8ea6de432f815463813fa}} 
@@ -507,7 +521,7 @@ Returns the last node in the graph in the order as would be returned by a for-\/
 \index{Basic\+Graph\+Gen@{Basic\+Graph\+Gen}!begin@{begin}}
 \index{begin@{begin}!Basic\+Graph\+Gen@{Basic\+Graph\+Gen}}
 \subsubsection{\texorpdfstring{begin()}{begin()}}
-{\footnotesize\ttfamily graph\+\_\+iterator begin (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [inherited]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classGraph_a695969c31e87f9e8319d74e5ca39024b}{graph\+\_\+iterator}} begin (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [inherited]}}
 
 
 
@@ -751,7 +765,7 @@ Equivalent to arc\+Count. \begin{DoxyRefDesc}{Big-\/\+Oh}
 \index{Basic\+Graph\+Gen@{Basic\+Graph\+Gen}!end@{end}}
 \index{end@{end}!Basic\+Graph\+Gen@{Basic\+Graph\+Gen}}
 \subsubsection{\texorpdfstring{end()}{end()}}
-{\footnotesize\ttfamily graph\+\_\+iterator end (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [inherited]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classGraph_a695969c31e87f9e8319d74e5ca39024b}{graph\+\_\+iterator}} end (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [inherited]}}
 
 
 
@@ -816,7 +830,7 @@ If multiple arcs exist between the given two nodes, which is returned is unspeci
 \index{Basic\+Graph\+Gen@{Basic\+Graph\+Gen}!get\+Arc\+Set@{get\+Arc\+Set}}
 \index{get\+Arc\+Set@{get\+Arc\+Set}!Basic\+Graph\+Gen@{Basic\+Graph\+Gen}}
 \subsubsection{\texorpdfstring{get\+Arc\+Set()}{getArcSet()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
-{\footnotesize\ttfamily const \mbox{\hyperlink{classSet}{Set}}$<$ Edge\+Gen$<$ V, E $>$  $\ast$ $>$ \& get\+Arc\+Set (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inherited]}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ Edge\+Gen$<$ V, E $>$  $\ast$ $>$ \& get\+Arc\+Set (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inherited]}}
 
 
 
@@ -828,7 +842,7 @@ Returns the set of all arcs in the graph.
 \index{Basic\+Graph\+Gen@{Basic\+Graph\+Gen}!get\+Arc\+Set@{get\+Arc\+Set}}
 \index{get\+Arc\+Set@{get\+Arc\+Set}!Basic\+Graph\+Gen@{Basic\+Graph\+Gen}}
 \subsubsection{\texorpdfstring{get\+Arc\+Set()}{getArcSet()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
-{\footnotesize\ttfamily const \mbox{\hyperlink{classSet}{Set}}$<$ Edge\+Gen$<$ V, E $>$  $\ast$ $>$ \& get\+Arc\+Set (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classVertexGen}{Vertex\+Gen}}$<$ V, E $>$  $\ast$}]{node }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inherited]}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ Edge\+Gen$<$ V, E $>$  $\ast$ $>$ \& get\+Arc\+Set (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classVertexGen}{Vertex\+Gen}}$<$ V, E $>$  $\ast$}]{node }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inherited]}}
 
 
 
@@ -840,7 +854,7 @@ If the pointer passed is null or the given node is not found in the graph, retur
 \index{Basic\+Graph\+Gen@{Basic\+Graph\+Gen}!get\+Arc\+Set@{get\+Arc\+Set}}
 \index{get\+Arc\+Set@{get\+Arc\+Set}!Basic\+Graph\+Gen@{Basic\+Graph\+Gen}}
 \subsubsection{\texorpdfstring{get\+Arc\+Set()}{getArcSet()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
-{\footnotesize\ttfamily const \mbox{\hyperlink{classSet}{Set}}$<$ Edge\+Gen$<$ V, E $>$  $\ast$ $>$ \& get\+Arc\+Set (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{name }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inherited]}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ Edge\+Gen$<$ V, E $>$  $\ast$ $>$ \& get\+Arc\+Set (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{name }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inherited]}}
 
 
 
@@ -904,7 +918,7 @@ edge from v1 to v2, or nullptr if there is no such edge
 \index{Basic\+Graph\+Gen@{Basic\+Graph\+Gen}!get\+Edge\+Set@{get\+Edge\+Set}}
 \index{get\+Edge\+Set@{get\+Edge\+Set}!Basic\+Graph\+Gen@{Basic\+Graph\+Gen}}
 \subsubsection{\texorpdfstring{get\+Edge\+Set()}{getEdgeSet()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
-{\footnotesize\ttfamily const \mbox{\hyperlink{classSet}{Set}}$<$ Edge\+Gen$<$ V, E $>$ $\ast$ $>$ \& get\+Edge\+Set (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+{\footnotesize\ttfamily const \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ Edge\+Gen$<$ V, E $>$ $\ast$ $>$ \& get\+Edge\+Set (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
 
 
 
@@ -916,7 +930,7 @@ Equivalent to get\+Arc\+Set. \begin{DoxyRefDesc}{Big-\/\+Oh}
 \index{Basic\+Graph\+Gen@{Basic\+Graph\+Gen}!get\+Edge\+Set@{get\+Edge\+Set}}
 \index{get\+Edge\+Set@{get\+Edge\+Set}!Basic\+Graph\+Gen@{Basic\+Graph\+Gen}}
 \subsubsection{\texorpdfstring{get\+Edge\+Set()}{getEdgeSet()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
-{\footnotesize\ttfamily const \mbox{\hyperlink{classSet}{Set}}$<$ Edge\+Gen$<$ V, E $>$ $\ast$ $>$ \& get\+Edge\+Set (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classVertexGen}{Vertex\+Gen}}$<$ V, E $>$ $\ast$}]{v }\end{DoxyParamCaption}) const}
+{\footnotesize\ttfamily const \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ Edge\+Gen$<$ V, E $>$ $\ast$ $>$ \& get\+Edge\+Set (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classVertexGen}{Vertex\+Gen}}$<$ V, E $>$ $\ast$}]{v }\end{DoxyParamCaption}) const}
 
 
 
@@ -930,7 +944,7 @@ Equivalent to get\+Arc\+Set. \begin{DoxyRefDesc}{Big-\/\+Oh}
 \index{Basic\+Graph\+Gen@{Basic\+Graph\+Gen}!get\+Edge\+Set@{get\+Edge\+Set}}
 \index{get\+Edge\+Set@{get\+Edge\+Set}!Basic\+Graph\+Gen@{Basic\+Graph\+Gen}}
 \subsubsection{\texorpdfstring{get\+Edge\+Set()}{getEdgeSet()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
-{\footnotesize\ttfamily const \mbox{\hyperlink{classSet}{Set}}$<$ Edge\+Gen$<$ V, E $>$ $\ast$ $>$ \& get\+Edge\+Set (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{v }\end{DoxyParamCaption}) const}
+{\footnotesize\ttfamily const \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ Edge\+Gen$<$ V, E $>$ $\ast$ $>$ \& get\+Edge\+Set (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{v }\end{DoxyParamCaption}) const}
 
 
 
@@ -960,7 +974,7 @@ Equivalent to get\+Inverse\+Edge. \begin{DoxyRefDesc}{Big-\/\+Oh}
 \index{Basic\+Graph\+Gen@{Basic\+Graph\+Gen}!get\+Inverse\+Arc\+Set@{get\+Inverse\+Arc\+Set}}
 \index{get\+Inverse\+Arc\+Set@{get\+Inverse\+Arc\+Set}!Basic\+Graph\+Gen@{Basic\+Graph\+Gen}}
 \subsubsection{\texorpdfstring{get\+Inverse\+Arc\+Set()}{getInverseArcSet()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
-{\footnotesize\ttfamily const \mbox{\hyperlink{classSet}{Set}}$<$ Edge\+Gen$<$ V, E $>$  $\ast$ $>$ get\+Inverse\+Arc\+Set (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classVertexGen}{Vertex\+Gen}}$<$ V, E $>$  $\ast$}]{node }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inherited]}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ Edge\+Gen$<$ V, E $>$  $\ast$ $>$ get\+Inverse\+Arc\+Set (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classVertexGen}{Vertex\+Gen}}$<$ V, E $>$  $\ast$}]{node }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inherited]}}
 
 
 
@@ -974,7 +988,7 @@ If any pointer passed is null, or if the given node is not found in this graph, 
 \index{Basic\+Graph\+Gen@{Basic\+Graph\+Gen}!get\+Inverse\+Arc\+Set@{get\+Inverse\+Arc\+Set}}
 \index{get\+Inverse\+Arc\+Set@{get\+Inverse\+Arc\+Set}!Basic\+Graph\+Gen@{Basic\+Graph\+Gen}}
 \subsubsection{\texorpdfstring{get\+Inverse\+Arc\+Set()}{getInverseArcSet()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
-{\footnotesize\ttfamily const \mbox{\hyperlink{classSet}{Set}}$<$ Edge\+Gen$<$ V, E $>$  $\ast$ $>$ get\+Inverse\+Arc\+Set (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{name }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inherited]}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ Edge\+Gen$<$ V, E $>$  $\ast$ $>$ get\+Inverse\+Arc\+Set (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{name }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inherited]}}
 
 
 
@@ -1004,7 +1018,7 @@ Equivalent to get\+Inverse\+Arc. \begin{DoxyRefDesc}{Big-\/\+Oh}
 \index{Basic\+Graph\+Gen@{Basic\+Graph\+Gen}!get\+Inverse\+Edge\+Set@{get\+Inverse\+Edge\+Set}}
 \index{get\+Inverse\+Edge\+Set@{get\+Inverse\+Edge\+Set}!Basic\+Graph\+Gen@{Basic\+Graph\+Gen}}
 \subsubsection{\texorpdfstring{get\+Inverse\+Edge\+Set()}{getInverseEdgeSet()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
-{\footnotesize\ttfamily const \mbox{\hyperlink{classSet}{Set}}$<$ Edge\+Gen$<$ V, E $>$ $\ast$ $>$ get\+Inverse\+Edge\+Set (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classVertexGen}{Vertex\+Gen}}$<$ V, E $>$ $\ast$}]{v }\end{DoxyParamCaption}) const}
+{\footnotesize\ttfamily const \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ Edge\+Gen$<$ V, E $>$ $\ast$ $>$ get\+Inverse\+Edge\+Set (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classVertexGen}{Vertex\+Gen}}$<$ V, E $>$ $\ast$}]{v }\end{DoxyParamCaption}) const}
 
 
 
@@ -1018,7 +1032,7 @@ Equivalent to get\+Inverse\+Arc\+Set. \begin{DoxyRefDesc}{Big-\/\+Oh}
 \index{Basic\+Graph\+Gen@{Basic\+Graph\+Gen}!get\+Inverse\+Edge\+Set@{get\+Inverse\+Edge\+Set}}
 \index{get\+Inverse\+Edge\+Set@{get\+Inverse\+Edge\+Set}!Basic\+Graph\+Gen@{Basic\+Graph\+Gen}}
 \subsubsection{\texorpdfstring{get\+Inverse\+Edge\+Set()}{getInverseEdgeSet()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
-{\footnotesize\ttfamily const \mbox{\hyperlink{classSet}{Set}}$<$ Edge\+Gen$<$ V, E $>$ $\ast$ $>$ get\+Inverse\+Edge\+Set (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{v }\end{DoxyParamCaption}) const}
+{\footnotesize\ttfamily const \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ Edge\+Gen$<$ V, E $>$ $\ast$ $>$ get\+Inverse\+Edge\+Set (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{v }\end{DoxyParamCaption}) const}
 
 
 
@@ -1032,7 +1046,7 @@ Equivalent to get\+Inverse\+Arc\+Set. \begin{DoxyRefDesc}{Big-\/\+Oh}
 \index{Basic\+Graph\+Gen@{Basic\+Graph\+Gen}!get\+Inverse\+Neighbor\+Names@{get\+Inverse\+Neighbor\+Names}}
 \index{get\+Inverse\+Neighbor\+Names@{get\+Inverse\+Neighbor\+Names}!Basic\+Graph\+Gen@{Basic\+Graph\+Gen}}
 \subsubsection{\texorpdfstring{get\+Inverse\+Neighbor\+Names()}{getInverseNeighborNames()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
-{\footnotesize\ttfamily \mbox{\hyperlink{classSet}{Set}}$<$ std\+::string $>$ get\+Inverse\+Neighbor\+Names (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classVertexGen}{Vertex\+Gen}}$<$ V, E $>$  $\ast$}]{node }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inherited]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ std\+::string $>$ get\+Inverse\+Neighbor\+Names (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classVertexGen}{Vertex\+Gen}}$<$ V, E $>$  $\ast$}]{node }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inherited]}}
 
 
 
@@ -1046,7 +1060,7 @@ If any pointer passed is null, or if the given node is not found in this graph, 
 \index{Basic\+Graph\+Gen@{Basic\+Graph\+Gen}!get\+Inverse\+Neighbor\+Names@{get\+Inverse\+Neighbor\+Names}}
 \index{get\+Inverse\+Neighbor\+Names@{get\+Inverse\+Neighbor\+Names}!Basic\+Graph\+Gen@{Basic\+Graph\+Gen}}
 \subsubsection{\texorpdfstring{get\+Inverse\+Neighbor\+Names()}{getInverseNeighborNames()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
-{\footnotesize\ttfamily \mbox{\hyperlink{classSet}{Set}}$<$ std\+::string $>$ get\+Inverse\+Neighbor\+Names (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{node }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inherited]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ std\+::string $>$ get\+Inverse\+Neighbor\+Names (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{node }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inherited]}}
 
 
 
@@ -1060,7 +1074,7 @@ If the given node is not found in this graph, returns an empty set. \begin{DoxyR
 \index{Basic\+Graph\+Gen@{Basic\+Graph\+Gen}!get\+Inverse\+Neighbors@{get\+Inverse\+Neighbors}}
 \index{get\+Inverse\+Neighbors@{get\+Inverse\+Neighbors}!Basic\+Graph\+Gen@{Basic\+Graph\+Gen}}
 \subsubsection{\texorpdfstring{get\+Inverse\+Neighbors()}{getInverseNeighbors()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
-{\footnotesize\ttfamily \mbox{\hyperlink{classSet}{Set}}$<$ \mbox{\hyperlink{classVertexGen}{Vertex\+Gen}}$<$ V, E $>$  $\ast$ $>$ get\+Inverse\+Neighbors (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classVertexGen}{Vertex\+Gen}}$<$ V, E $>$  $\ast$}]{node }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inherited]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ \mbox{\hyperlink{classVertexGen}{Vertex\+Gen}}$<$ V, E $>$  $\ast$ $>$ get\+Inverse\+Neighbors (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classVertexGen}{Vertex\+Gen}}$<$ V, E $>$  $\ast$}]{node }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inherited]}}
 
 
 
@@ -1074,7 +1088,7 @@ If any pointer passed is null, or if the given node is not found in this graph, 
 \index{Basic\+Graph\+Gen@{Basic\+Graph\+Gen}!get\+Inverse\+Neighbors@{get\+Inverse\+Neighbors}}
 \index{get\+Inverse\+Neighbors@{get\+Inverse\+Neighbors}!Basic\+Graph\+Gen@{Basic\+Graph\+Gen}}
 \subsubsection{\texorpdfstring{get\+Inverse\+Neighbors()}{getInverseNeighbors()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
-{\footnotesize\ttfamily \mbox{\hyperlink{classSet}{Set}}$<$ \mbox{\hyperlink{classVertexGen}{Vertex\+Gen}}$<$ V, E $>$  $\ast$ $>$ get\+Inverse\+Neighbors (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{node }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inherited]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ \mbox{\hyperlink{classVertexGen}{Vertex\+Gen}}$<$ V, E $>$  $\ast$ $>$ get\+Inverse\+Neighbors (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{node }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inherited]}}
 
 
 
@@ -1088,7 +1102,7 @@ If the given node is not found in this graph, returns an empty set. \begin{DoxyR
 \index{Basic\+Graph\+Gen@{Basic\+Graph\+Gen}!get\+Neighbor\+Names@{get\+Neighbor\+Names}}
 \index{get\+Neighbor\+Names@{get\+Neighbor\+Names}!Basic\+Graph\+Gen@{Basic\+Graph\+Gen}}
 \subsubsection{\texorpdfstring{get\+Neighbor\+Names()}{getNeighborNames()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
-{\footnotesize\ttfamily \mbox{\hyperlink{classSet}{Set}}$<$ std\+::string $>$ get\+Neighbor\+Names (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classVertexGen}{Vertex\+Gen}}$<$ V, E $>$  $\ast$}]{node }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inherited]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ std\+::string $>$ get\+Neighbor\+Names (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classVertexGen}{Vertex\+Gen}}$<$ V, E $>$  $\ast$}]{node }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inherited]}}
 
 
 
@@ -1102,7 +1116,7 @@ If any pointer passed is null, or if the given node is not found in this graph, 
 \index{Basic\+Graph\+Gen@{Basic\+Graph\+Gen}!get\+Neighbor\+Names@{get\+Neighbor\+Names}}
 \index{get\+Neighbor\+Names@{get\+Neighbor\+Names}!Basic\+Graph\+Gen@{Basic\+Graph\+Gen}}
 \subsubsection{\texorpdfstring{get\+Neighbor\+Names()}{getNeighborNames()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
-{\footnotesize\ttfamily \mbox{\hyperlink{classSet}{Set}}$<$ std\+::string $>$ get\+Neighbor\+Names (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{node }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inherited]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ std\+::string $>$ get\+Neighbor\+Names (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{node }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inherited]}}
 
 
 
@@ -1116,7 +1130,7 @@ If the given node is not found in this graph, returns an empty set. \begin{DoxyR
 \index{Basic\+Graph\+Gen@{Basic\+Graph\+Gen}!get\+Neighbors@{get\+Neighbors}}
 \index{get\+Neighbors@{get\+Neighbors}!Basic\+Graph\+Gen@{Basic\+Graph\+Gen}}
 \subsubsection{\texorpdfstring{get\+Neighbors()}{getNeighbors()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
-{\footnotesize\ttfamily \mbox{\hyperlink{classSet}{Set}}$<$ \mbox{\hyperlink{classVertexGen}{Vertex\+Gen}}$<$ V, E $>$  $\ast$ $>$ get\+Neighbors (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classVertexGen}{Vertex\+Gen}}$<$ V, E $>$  $\ast$}]{node }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inherited]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ \mbox{\hyperlink{classVertexGen}{Vertex\+Gen}}$<$ V, E $>$  $\ast$ $>$ get\+Neighbors (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classVertexGen}{Vertex\+Gen}}$<$ V, E $>$  $\ast$}]{node }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inherited]}}
 
 
 
@@ -1130,7 +1144,7 @@ If any pointer passed is null, or if the given node is not found in this graph, 
 \index{Basic\+Graph\+Gen@{Basic\+Graph\+Gen}!get\+Neighbors@{get\+Neighbors}}
 \index{get\+Neighbors@{get\+Neighbors}!Basic\+Graph\+Gen@{Basic\+Graph\+Gen}}
 \subsubsection{\texorpdfstring{get\+Neighbors()}{getNeighbors()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
-{\footnotesize\ttfamily \mbox{\hyperlink{classSet}{Set}}$<$ \mbox{\hyperlink{classVertexGen}{Vertex\+Gen}}$<$ V, E $>$  $\ast$ $>$ get\+Neighbors (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{node }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inherited]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ \mbox{\hyperlink{classVertexGen}{Vertex\+Gen}}$<$ V, E $>$  $\ast$ $>$ get\+Neighbors (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{node }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inherited]}}
 
 
 
@@ -1156,7 +1170,7 @@ If no node with the specified name exists, returns {\ttfamily nullptr}. \begin{D
 \index{Basic\+Graph\+Gen@{Basic\+Graph\+Gen}!get\+Node\+Names@{get\+Node\+Names}}
 \index{get\+Node\+Names@{get\+Node\+Names}!Basic\+Graph\+Gen@{Basic\+Graph\+Gen}}
 \subsubsection{\texorpdfstring{get\+Node\+Names()}{getNodeNames()}}
-{\footnotesize\ttfamily \mbox{\hyperlink{classSet}{Set}}$<$ std\+::string $>$ get\+Node\+Names (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inherited]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ std\+::string $>$ get\+Node\+Names (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inherited]}}
 
 
 
@@ -1168,7 +1182,7 @@ Similar to get\+Node\+Set but returns a set of strings rather than a set of poin
 \index{Basic\+Graph\+Gen@{Basic\+Graph\+Gen}!get\+Node\+Set@{get\+Node\+Set}}
 \index{get\+Node\+Set@{get\+Node\+Set}!Basic\+Graph\+Gen@{Basic\+Graph\+Gen}}
 \subsubsection{\texorpdfstring{get\+Node\+Set()}{getNodeSet()}}
-{\footnotesize\ttfamily const \mbox{\hyperlink{classSet}{Set}}$<$ \mbox{\hyperlink{classVertexGen}{Vertex\+Gen}}$<$ V, E $>$  $\ast$ $>$ \& get\+Node\+Set (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inherited]}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ \mbox{\hyperlink{classVertexGen}{Vertex\+Gen}}$<$ V, E $>$  $\ast$ $>$ \& get\+Node\+Set (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inherited]}}
 
 
 
@@ -1192,7 +1206,7 @@ If no vertex with the specified name exists, returns nullptr. \begin{DoxyRefDesc
 \index{Basic\+Graph\+Gen@{Basic\+Graph\+Gen}!get\+Vertex\+Names@{get\+Vertex\+Names}}
 \index{get\+Vertex\+Names@{get\+Vertex\+Names}!Basic\+Graph\+Gen@{Basic\+Graph\+Gen}}
 \subsubsection{\texorpdfstring{get\+Vertex\+Names()}{getVertexNames()}}
-{\footnotesize\ttfamily \mbox{\hyperlink{classSet}{Set}}$<$ std\+::string $>$ get\+Vertex\+Names (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+{\footnotesize\ttfamily \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ std\+::string $>$ get\+Vertex\+Names (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
 
 
 
@@ -1204,7 +1218,7 @@ The vertexes will be sorted by name in case-\/sensitive alphabetical order. \beg
 \index{Basic\+Graph\+Gen@{Basic\+Graph\+Gen}!get\+Vertex\+Set@{get\+Vertex\+Set}}
 \index{get\+Vertex\+Set@{get\+Vertex\+Set}!Basic\+Graph\+Gen@{Basic\+Graph\+Gen}}
 \subsubsection{\texorpdfstring{get\+Vertex\+Set()}{getVertexSet()}}
-{\footnotesize\ttfamily const \mbox{\hyperlink{classSet}{Set}}$<$ \mbox{\hyperlink{classVertexGen}{Vertex\+Gen}}$<$ V, E $>$ $\ast$ $>$ \& get\+Vertex\+Set (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+{\footnotesize\ttfamily const \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ \mbox{\hyperlink{classVertexGen}{Vertex\+Gen}}$<$ V, E $>$ $\ast$ $>$ \& get\+Vertex\+Set (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
 
 
 
@@ -1569,13 +1583,13 @@ Equivalent to node\+Count. \begin{DoxyRefDesc}{Big-\/\+Oh}
 \index{Basic\+Graph\+Gen@{Basic\+Graph\+Gen}!to\+Map@{to\+Map}}
 \index{to\+Map@{to\+Map}!Basic\+Graph\+Gen@{Basic\+Graph\+Gen}}
 \subsubsection{\texorpdfstring{to\+Map()}{toMap()}}
-{\footnotesize\ttfamily \mbox{\hyperlink{classMap}{Map}}$<$ std\+::string, \mbox{\hyperlink{classSet}{Set}}$<$ std\+::string $>$ $>$ to\+Map (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+{\footnotesize\ttfamily \mbox{\hyperlink{classMap}{Map}}$<$ std\+::string, \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ std\+::string $>$ $>$ to\+Map (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
 
 
 
 Returns a \mbox{\hyperlink{classMap}{Map}} representing an adjacency list equivalent to this graph. 
 
-Each vertex\textquotesingle{}s name is a key in the map, and its neighboring vertexes\textquotesingle{} names are stored in a \mbox{\hyperlink{classSet}{Set}} as the value associated with that key. It should be noted that this member does not preserve the weights of the edges between the neighboring vertexes, so it is not ideal for use with weighted graphs. \begin{DoxyRefDesc}{Big-\/\+Oh}
+Each vertex\textquotesingle{}s name is a key in the map, and its neighboring vertexes\textquotesingle{} names are stored in a Set as the value associated with that key. It should be noted that this member does not preserve the weights of the edges between the neighboring vertexes, so it is not ideal for use with weighted graphs. \begin{DoxyRefDesc}{Big-\/\+Oh}
 \item[\mbox{\hyperlink{BigOh__BigOh000036}{Big-\/\+Oh}}]O(V + E) \end{DoxyRefDesc}
 \mbox{\Hypertarget{classGraph_a1fe5121d6528fdea3f243321b3fa3a49}\label{classGraph_a1fe5121d6528fdea3f243321b3fa3a49}} 
 \index{Basic\+Graph\+Gen@{Basic\+Graph\+Gen}!to\+String@{to\+String}}

@@ -9,10 +9,15 @@ This class represents a graph with the specified node and arc types.
 
 {\ttfamily \#include $<$graph.\+h$>$}
 
+\subsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+using \mbox{\hyperlink{classGraph_a695969c31e87f9e8319d74e5ca39024b}{graph\+\_\+iterator}} = typename \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ Node\+Type $\ast$ $>$\+::const\+\_\+iterator
+\end{DoxyCompactItemize}
 \subsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-\mbox{\hyperlink{classGraph_afc5ef9d72cc2c509814200791eaef62c}{Graph}} ()
+\mbox{\hyperlink{classGraph_a0c40af42cad207665228815f0359bbd3}{Graph}} ()=default
 \begin{DoxyCompactList}\small\item\em Creates an empty graph. \end{DoxyCompactList}\item 
 virtual \mbox{\hyperlink{classGraph_af5a604e5e9e4d68dbc10b312e59f678f}{$\sim$\+Graph}} ()
 \begin{DoxyCompactList}\small\item\em Frees the internal storage allocated to represent the graph. \end{DoxyCompactList}\item 
@@ -30,7 +35,7 @@ int \mbox{\hyperlink{classGraph_ac0b108b3354f5222d2c829dcd639fa7a}{arc\+Count}} 
 \begin{DoxyCompactList}\small\item\em Returns the number of arcs in the graph. \end{DoxyCompactList}\item 
 Node\+Type $\ast$ \mbox{\hyperlink{classGraph_a27d59ef129bb56cc144ecc81c0affd34}{back}} () const
 \begin{DoxyCompactList}\small\item\em Returns the last node in the graph in the order as would be returned by a for-\/each loop or iterator. \end{DoxyCompactList}\item 
-graph\+\_\+iterator \mbox{\hyperlink{classGraph_aea3a8950c46f4ac913207201b685e715}{begin}} () const
+\mbox{\hyperlink{classGraph_a695969c31e87f9e8319d74e5ca39024b}{graph\+\_\+iterator}} \mbox{\hyperlink{classGraph_aea3a8950c46f4ac913207201b685e715}{begin}} () const
 \begin{DoxyCompactList}\small\item\em Returns an S\+TL iterator positioned at the first vertex in the graph. \end{DoxyCompactList}\item 
 void \mbox{\hyperlink{classGraph_ac8bb3912a3ce86b15842e79d0b421204}{clear}} ()
 \begin{DoxyCompactList}\small\item\em Reinitializes the graph to be empty, removing all nodes and arcs and freeing any heap storage used by their corresponding internal structures. \end{DoxyCompactList}\item 
@@ -50,7 +55,7 @@ bool \mbox{\hyperlink{classGraph_ac0beb77e8a238c2898ab851df71eeefe}{contains\+No
 \begin{DoxyCompactList}\small\item\em Returns true if there exists a node in this graph with the given name. \end{DoxyCompactList}\item 
 bool \mbox{\hyperlink{classGraph_a4f540ebc07c4e46a0bb7fee76a93386c}{contains\+Node}} (Node\+Type $\ast$node) const
 \begin{DoxyCompactList}\small\item\em Returns true if the given node is part of this graph. \end{DoxyCompactList}\item 
-graph\+\_\+iterator \mbox{\hyperlink{classGraph_afcdf62cae5d7e50644957d66f886742d}{end}} () const
+\mbox{\hyperlink{classGraph_a695969c31e87f9e8319d74e5ca39024b}{graph\+\_\+iterator}} \mbox{\hyperlink{classGraph_afcdf62cae5d7e50644957d66f886742d}{end}} () const
 \begin{DoxyCompactList}\small\item\em Returns an S\+TL iterator positioned after the last vertex in the graph. \end{DoxyCompactList}\item 
 bool \mbox{\hyperlink{classGraph_a6bec43eb3dfdf3d23eb328b406edf44a}{equals}} (const \mbox{\hyperlink{classGraph}{Graph}}$<$ Node\+Type, Arc\+Type $>$ \&graph2) const
 \begin{DoxyCompactList}\small\item\em Compares two graphs for equality. \end{DoxyCompactList}\item 
@@ -60,37 +65,37 @@ Arc\+Type $\ast$ \mbox{\hyperlink{classGraph_a7c33db338f839ff9e3dafe4fe61c16fd}{
 \begin{DoxyCompactList}\small\item\em Returns the arc, if any, from node1 to node2. \end{DoxyCompactList}\item 
 Arc\+Type $\ast$ \mbox{\hyperlink{classGraph_a94d4badfc856b0d4530c37121efb9834}{get\+Arc}} (const std\+::string \&node1, const std\+::string \&node2) const
 \begin{DoxyCompactList}\small\item\em Returns the arc, if any, from node1 to node2. \end{DoxyCompactList}\item 
-const \mbox{\hyperlink{classSet}{Set}}$<$ Arc\+Type $\ast$ $>$ \& \mbox{\hyperlink{classGraph_a0690edaeae8d5256189ae2e8541788b5}{get\+Arc\+Set}} () const
+const \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ Arc\+Type $\ast$ $>$ \& \mbox{\hyperlink{classGraph_a0690edaeae8d5256189ae2e8541788b5}{get\+Arc\+Set}} () const
 \begin{DoxyCompactList}\small\item\em Returns the set of all arcs in the graph. \end{DoxyCompactList}\item 
-const \mbox{\hyperlink{classSet}{Set}}$<$ Arc\+Type $\ast$ $>$ \& \mbox{\hyperlink{classGraph_a17cfc7f4d8c738fc6f51813f50be6400}{get\+Arc\+Set}} (Node\+Type $\ast$node) const
+const \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ Arc\+Type $\ast$ $>$ \& \mbox{\hyperlink{classGraph_a17cfc7f4d8c738fc6f51813f50be6400}{get\+Arc\+Set}} (Node\+Type $\ast$node) const
 \begin{DoxyCompactList}\small\item\em Returns the set of all arcs that start at the specified node, indicated as a pointer to its node structure. \end{DoxyCompactList}\item 
-const \mbox{\hyperlink{classSet}{Set}}$<$ Arc\+Type $\ast$ $>$ \& \mbox{\hyperlink{classGraph_a31b9e2056ee2d66a7ea9feb02f016e8d}{get\+Arc\+Set}} (const std\+::string \&name) const
+const \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ Arc\+Type $\ast$ $>$ \& \mbox{\hyperlink{classGraph_a31b9e2056ee2d66a7ea9feb02f016e8d}{get\+Arc\+Set}} (const std\+::string \&name) const
 \begin{DoxyCompactList}\small\item\em Returns the set of all arcs that start at the specified node. \end{DoxyCompactList}\item 
-const \mbox{\hyperlink{classSet}{Set}}$<$ Arc\+Type $\ast$ $>$ \mbox{\hyperlink{classGraph_ad5fd149800cd46aae497b05b46059b63}{get\+Inverse\+Arc\+Set}} (Node\+Type $\ast$node) const
+const \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ Arc\+Type $\ast$ $>$ \mbox{\hyperlink{classGraph_ad5fd149800cd46aae497b05b46059b63}{get\+Inverse\+Arc\+Set}} (Node\+Type $\ast$node) const
 \begin{DoxyCompactList}\small\item\em Returns the set of outbound arcs to the given node from other nodes. \end{DoxyCompactList}\item 
-const \mbox{\hyperlink{classSet}{Set}}$<$ Arc\+Type $\ast$ $>$ \mbox{\hyperlink{classGraph_a2cfe12e71ca594736a1e329461cff024}{get\+Inverse\+Arc\+Set}} (const std\+::string \&name) const
+const \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ Arc\+Type $\ast$ $>$ \mbox{\hyperlink{classGraph_a2cfe12e71ca594736a1e329461cff024}{get\+Inverse\+Arc\+Set}} (const std\+::string \&name) const
 \begin{DoxyCompactList}\small\item\em Returns the set of outbound arcs to the given node from other nodes. \end{DoxyCompactList}\item 
-\mbox{\hyperlink{classSet}{Set}}$<$ std\+::string $>$ \mbox{\hyperlink{classGraph_aa9eceee00e824ea4852449fa3de61e82}{get\+Inverse\+Neighbor\+Names}} (Node\+Type $\ast$node) const
+\mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ std\+::string $>$ \mbox{\hyperlink{classGraph_aa9eceee00e824ea4852449fa3de61e82}{get\+Inverse\+Neighbor\+Names}} (Node\+Type $\ast$node) const
 \begin{DoxyCompactList}\small\item\em Returns the set of strings of names of nodes that are neighbors of the given node. \end{DoxyCompactList}\item 
-\mbox{\hyperlink{classSet}{Set}}$<$ std\+::string $>$ \mbox{\hyperlink{classGraph_ac3dc36bc1eb0f249180cfe78bce6e7a2}{get\+Inverse\+Neighbor\+Names}} (const std\+::string \&node) const
+\mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ std\+::string $>$ \mbox{\hyperlink{classGraph_ac3dc36bc1eb0f249180cfe78bce6e7a2}{get\+Inverse\+Neighbor\+Names}} (const std\+::string \&node) const
 \begin{DoxyCompactList}\small\item\em Returns the set of strings of names of nodes that are neighbors of the given node. \end{DoxyCompactList}\item 
-\mbox{\hyperlink{classSet}{Set}}$<$ Node\+Type $\ast$ $>$ \mbox{\hyperlink{classGraph_a80a5724c594b9bd0b6008c57b09af317}{get\+Inverse\+Neighbors}} (Node\+Type $\ast$node) const
+\mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ Node\+Type $\ast$ $>$ \mbox{\hyperlink{classGraph_a80a5724c594b9bd0b6008c57b09af317}{get\+Inverse\+Neighbors}} (Node\+Type $\ast$node) const
 \begin{DoxyCompactList}\small\item\em Returns the set of nodes that are neighbors of the specified node. \end{DoxyCompactList}\item 
-\mbox{\hyperlink{classSet}{Set}}$<$ Node\+Type $\ast$ $>$ \mbox{\hyperlink{classGraph_a5294846b9cdd19394808e3736ec67004}{get\+Inverse\+Neighbors}} (const std\+::string \&node) const
+\mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ Node\+Type $\ast$ $>$ \mbox{\hyperlink{classGraph_a5294846b9cdd19394808e3736ec67004}{get\+Inverse\+Neighbors}} (const std\+::string \&node) const
 \begin{DoxyCompactList}\small\item\em Returns the set of nodes that are neighbors of the specified node. \end{DoxyCompactList}\item 
-\mbox{\hyperlink{classSet}{Set}}$<$ std\+::string $>$ \mbox{\hyperlink{classGraph_ae9b5cbd2bcb3918c4c64b1eb71c1a3a8}{get\+Neighbor\+Names}} (Node\+Type $\ast$node) const
+\mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ std\+::string $>$ \mbox{\hyperlink{classGraph_ae9b5cbd2bcb3918c4c64b1eb71c1a3a8}{get\+Neighbor\+Names}} (Node\+Type $\ast$node) const
 \begin{DoxyCompactList}\small\item\em Returns the set of node names that are neighbors of the specified node. \end{DoxyCompactList}\item 
-\mbox{\hyperlink{classSet}{Set}}$<$ std\+::string $>$ \mbox{\hyperlink{classGraph_a6175b4d672266465dd34e070c7710b34}{get\+Neighbor\+Names}} (const std\+::string \&node) const
+\mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ std\+::string $>$ \mbox{\hyperlink{classGraph_a6175b4d672266465dd34e070c7710b34}{get\+Neighbor\+Names}} (const std\+::string \&node) const
 \begin{DoxyCompactList}\small\item\em Returns the set of node names that are neighbors of the specified node. \end{DoxyCompactList}\item 
-\mbox{\hyperlink{classSet}{Set}}$<$ Node\+Type $\ast$ $>$ \mbox{\hyperlink{classGraph_a0e49b167f0623a8ae76040c3e5eab3fb}{get\+Neighbors}} (Node\+Type $\ast$node) const
+\mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ Node\+Type $\ast$ $>$ \mbox{\hyperlink{classGraph_a0e49b167f0623a8ae76040c3e5eab3fb}{get\+Neighbors}} (Node\+Type $\ast$node) const
 \begin{DoxyCompactList}\small\item\em Returns the set of nodes that are neighbors of the specified node. \end{DoxyCompactList}\item 
-\mbox{\hyperlink{classSet}{Set}}$<$ Node\+Type $\ast$ $>$ \mbox{\hyperlink{classGraph_a3a3720906c380f36b50530419330bfe5}{get\+Neighbors}} (const std\+::string \&node) const
+\mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ Node\+Type $\ast$ $>$ \mbox{\hyperlink{classGraph_a3a3720906c380f36b50530419330bfe5}{get\+Neighbors}} (const std\+::string \&node) const
 \begin{DoxyCompactList}\small\item\em Returns the set of nodes that are neighbors of the specified node. \end{DoxyCompactList}\item 
 Node\+Type $\ast$ \mbox{\hyperlink{classGraph_a81487976cf0e576047333c85463c33aa}{get\+Node}} (const std\+::string \&name) const
 \begin{DoxyCompactList}\small\item\em Looks up a node in the name table attached to the graph and returns a pointer to that node. \end{DoxyCompactList}\item 
-\mbox{\hyperlink{classSet}{Set}}$<$ std\+::string $>$ \mbox{\hyperlink{classGraph_a3c6f37932f377dd2bf4fec61343a916d}{get\+Node\+Names}} () const
+\mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ std\+::string $>$ \mbox{\hyperlink{classGraph_a3c6f37932f377dd2bf4fec61343a916d}{get\+Node\+Names}} () const
 \begin{DoxyCompactList}\small\item\em Returns the set of the names of all nodes in the graph. \end{DoxyCompactList}\item 
-const \mbox{\hyperlink{classSet}{Set}}$<$ Node\+Type $\ast$ $>$ \& \mbox{\hyperlink{classGraph_abd5552888f57aaa581099e8146c617c9}{get\+Node\+Set}} () const
+const \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ Node\+Type $\ast$ $>$ \& \mbox{\hyperlink{classGraph_abd5552888f57aaa581099e8146c617c9}{get\+Node\+Set}} () const
 \begin{DoxyCompactList}\small\item\em Returns the set of all nodes in the graph. \end{DoxyCompactList}\item 
 bool \mbox{\hyperlink{classGraph_a54164ab847f3a5c7fe15d15ac95af443}{is\+Connected}} (Node\+Type $\ast$n1, Node\+Type $\ast$n2) const
 \begin{DoxyCompactList}\small\item\em Returns {\ttfamily true} if the graph contains an arc from {\ttfamily n1} to {\ttfamily n2}. \end{DoxyCompactList}\item 
@@ -153,7 +158,7 @@ The {\ttfamily Node\+Type} and {\ttfamily Arc\+Type} parameters indicate the str
 The {\ttfamily Node\+Type} definition must include\+: 
 \begin{DoxyItemize}
 \item A {\ttfamily string} field called {\ttfamily name} 
-\item A {\ttfamily \mbox{\hyperlink{classSet}{Set}}$<$Arc\+Type $\ast$$>$} field called {\ttfamily arcs} 
+\item A {\ttfamily Set$<$Arc\+Type $\ast$$>$} field called {\ttfamily arcs} 
 \end{DoxyItemize}
 
 The {\ttfamily Arc\+Type} definition must include\+: 
@@ -162,12 +167,21 @@ The {\ttfamily Arc\+Type} definition must include\+:
 \item A {\ttfamily Node\+Type $\ast$} field called {\ttfamily finish} 
 \end{DoxyItemize}
 
+\subsection{Member Typedef Documentation}
+\mbox{\Hypertarget{classGraph_a695969c31e87f9e8319d74e5ca39024b}\label{classGraph_a695969c31e87f9e8319d74e5ca39024b}} 
+\index{Graph@{Graph}!graph\+\_\+iterator@{graph\+\_\+iterator}}
+\index{graph\+\_\+iterator@{graph\+\_\+iterator}!Graph@{Graph}}
+\subsubsection{\texorpdfstring{graph\+\_\+iterator}{graph\_iterator}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{classGraph_a695969c31e87f9e8319d74e5ca39024b}{graph\+\_\+iterator}} =  typename \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$Node\+Type $\ast$$>$\+::const\+\_\+iterator}
+
+
+
 \subsection{Constructor \& Destructor Documentation}
-\mbox{\Hypertarget{classGraph_afc5ef9d72cc2c509814200791eaef62c}\label{classGraph_afc5ef9d72cc2c509814200791eaef62c}} 
+\mbox{\Hypertarget{classGraph_a0c40af42cad207665228815f0359bbd3}\label{classGraph_a0c40af42cad207665228815f0359bbd3}} 
 \index{Graph@{Graph}!Graph@{Graph}}
 \index{Graph@{Graph}!Graph@{Graph}}
 \subsubsection{\texorpdfstring{Graph()}{Graph()}}
-{\footnotesize\ttfamily \mbox{\hyperlink{classGraph}{Graph}} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily \mbox{\hyperlink{classGraph}{Graph}} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
 
 
 
@@ -317,7 +331,7 @@ Returns the last node in the graph in the order as would be returned by a for-\/
 \index{Graph@{Graph}!begin@{begin}}
 \index{begin@{begin}!Graph@{Graph}}
 \subsubsection{\texorpdfstring{begin()}{begin()}}
-{\footnotesize\ttfamily graph\+\_\+iterator begin (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classGraph_a695969c31e87f9e8319d74e5ca39024b}{graph\+\_\+iterator}} begin (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
 
 
 
@@ -437,7 +451,7 @@ If the pointer passed is null, returns false. \begin{DoxyRefDesc}{Big-\/\+Oh}
 \index{Graph@{Graph}!end@{end}}
 \index{end@{end}!Graph@{Graph}}
 \subsubsection{\texorpdfstring{end()}{end()}}
-{\footnotesize\ttfamily graph\+\_\+iterator end (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classGraph_a695969c31e87f9e8319d74e5ca39024b}{graph\+\_\+iterator}} end (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
 
 
 
@@ -502,7 +516,7 @@ If multiple arcs exist between the given two nodes, which is returned is unspeci
 \index{Graph@{Graph}!get\+Arc\+Set@{get\+Arc\+Set}}
 \index{get\+Arc\+Set@{get\+Arc\+Set}!Graph@{Graph}}
 \subsubsection{\texorpdfstring{get\+Arc\+Set()}{getArcSet()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
-{\footnotesize\ttfamily const \mbox{\hyperlink{classSet}{Set}}$<$ Arc\+Type $\ast$ $>$ \& get\+Arc\+Set (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+{\footnotesize\ttfamily const \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ Arc\+Type $\ast$ $>$ \& get\+Arc\+Set (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
 
 
 
@@ -514,7 +528,7 @@ Returns the set of all arcs in the graph.
 \index{Graph@{Graph}!get\+Arc\+Set@{get\+Arc\+Set}}
 \index{get\+Arc\+Set@{get\+Arc\+Set}!Graph@{Graph}}
 \subsubsection{\texorpdfstring{get\+Arc\+Set()}{getArcSet()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
-{\footnotesize\ttfamily const \mbox{\hyperlink{classSet}{Set}}$<$ Arc\+Type $\ast$ $>$ \& get\+Arc\+Set (\begin{DoxyParamCaption}\item[{Node\+Type $\ast$}]{node }\end{DoxyParamCaption}) const}
+{\footnotesize\ttfamily const \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ Arc\+Type $\ast$ $>$ \& get\+Arc\+Set (\begin{DoxyParamCaption}\item[{Node\+Type $\ast$}]{node }\end{DoxyParamCaption}) const}
 
 
 
@@ -526,7 +540,7 @@ If the pointer passed is null or the given node is not found in the graph, retur
 \index{Graph@{Graph}!get\+Arc\+Set@{get\+Arc\+Set}}
 \index{get\+Arc\+Set@{get\+Arc\+Set}!Graph@{Graph}}
 \subsubsection{\texorpdfstring{get\+Arc\+Set()}{getArcSet()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
-{\footnotesize\ttfamily const \mbox{\hyperlink{classSet}{Set}}$<$ Arc\+Type $\ast$ $>$ \& get\+Arc\+Set (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{name }\end{DoxyParamCaption}) const}
+{\footnotesize\ttfamily const \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ Arc\+Type $\ast$ $>$ \& get\+Arc\+Set (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{name }\end{DoxyParamCaption}) const}
 
 
 
@@ -538,7 +552,7 @@ If the given node is not found in the graph, returns an empty set. \begin{DoxyRe
 \index{Graph@{Graph}!get\+Inverse\+Arc\+Set@{get\+Inverse\+Arc\+Set}}
 \index{get\+Inverse\+Arc\+Set@{get\+Inverse\+Arc\+Set}!Graph@{Graph}}
 \subsubsection{\texorpdfstring{get\+Inverse\+Arc\+Set()}{getInverseArcSet()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
-{\footnotesize\ttfamily const \mbox{\hyperlink{classSet}{Set}}$<$ Arc\+Type $\ast$ $>$ get\+Inverse\+Arc\+Set (\begin{DoxyParamCaption}\item[{Node\+Type $\ast$}]{node }\end{DoxyParamCaption}) const}
+{\footnotesize\ttfamily const \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ Arc\+Type $\ast$ $>$ get\+Inverse\+Arc\+Set (\begin{DoxyParamCaption}\item[{Node\+Type $\ast$}]{node }\end{DoxyParamCaption}) const}
 
 
 
@@ -552,7 +566,7 @@ If any pointer passed is null, or if the given node is not found in this graph, 
 \index{Graph@{Graph}!get\+Inverse\+Arc\+Set@{get\+Inverse\+Arc\+Set}}
 \index{get\+Inverse\+Arc\+Set@{get\+Inverse\+Arc\+Set}!Graph@{Graph}}
 \subsubsection{\texorpdfstring{get\+Inverse\+Arc\+Set()}{getInverseArcSet()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
-{\footnotesize\ttfamily const \mbox{\hyperlink{classSet}{Set}}$<$ Arc\+Type $\ast$ $>$ get\+Inverse\+Arc\+Set (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{name }\end{DoxyParamCaption}) const}
+{\footnotesize\ttfamily const \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ Arc\+Type $\ast$ $>$ get\+Inverse\+Arc\+Set (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{name }\end{DoxyParamCaption}) const}
 
 
 
@@ -566,7 +580,7 @@ If the given node is not found in this graph, returns an empty set. \begin{DoxyR
 \index{Graph@{Graph}!get\+Inverse\+Neighbor\+Names@{get\+Inverse\+Neighbor\+Names}}
 \index{get\+Inverse\+Neighbor\+Names@{get\+Inverse\+Neighbor\+Names}!Graph@{Graph}}
 \subsubsection{\texorpdfstring{get\+Inverse\+Neighbor\+Names()}{getInverseNeighborNames()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
-{\footnotesize\ttfamily \mbox{\hyperlink{classSet}{Set}}$<$ std\+::string $>$ get\+Inverse\+Neighbor\+Names (\begin{DoxyParamCaption}\item[{Node\+Type $\ast$}]{node }\end{DoxyParamCaption}) const}
+{\footnotesize\ttfamily \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ std\+::string $>$ get\+Inverse\+Neighbor\+Names (\begin{DoxyParamCaption}\item[{Node\+Type $\ast$}]{node }\end{DoxyParamCaption}) const}
 
 
 
@@ -580,7 +594,7 @@ If any pointer passed is null, or if the given node is not found in this graph, 
 \index{Graph@{Graph}!get\+Inverse\+Neighbor\+Names@{get\+Inverse\+Neighbor\+Names}}
 \index{get\+Inverse\+Neighbor\+Names@{get\+Inverse\+Neighbor\+Names}!Graph@{Graph}}
 \subsubsection{\texorpdfstring{get\+Inverse\+Neighbor\+Names()}{getInverseNeighborNames()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
-{\footnotesize\ttfamily \mbox{\hyperlink{classSet}{Set}}$<$ std\+::string $>$ get\+Inverse\+Neighbor\+Names (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{node }\end{DoxyParamCaption}) const}
+{\footnotesize\ttfamily \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ std\+::string $>$ get\+Inverse\+Neighbor\+Names (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{node }\end{DoxyParamCaption}) const}
 
 
 
@@ -594,7 +608,7 @@ If the given node is not found in this graph, returns an empty set. \begin{DoxyR
 \index{Graph@{Graph}!get\+Inverse\+Neighbors@{get\+Inverse\+Neighbors}}
 \index{get\+Inverse\+Neighbors@{get\+Inverse\+Neighbors}!Graph@{Graph}}
 \subsubsection{\texorpdfstring{get\+Inverse\+Neighbors()}{getInverseNeighbors()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
-{\footnotesize\ttfamily \mbox{\hyperlink{classSet}{Set}}$<$ Node\+Type $\ast$ $>$ get\+Inverse\+Neighbors (\begin{DoxyParamCaption}\item[{Node\+Type $\ast$}]{node }\end{DoxyParamCaption}) const}
+{\footnotesize\ttfamily \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ Node\+Type $\ast$ $>$ get\+Inverse\+Neighbors (\begin{DoxyParamCaption}\item[{Node\+Type $\ast$}]{node }\end{DoxyParamCaption}) const}
 
 
 
@@ -608,7 +622,7 @@ If any pointer passed is null, or if the given node is not found in this graph, 
 \index{Graph@{Graph}!get\+Inverse\+Neighbors@{get\+Inverse\+Neighbors}}
 \index{get\+Inverse\+Neighbors@{get\+Inverse\+Neighbors}!Graph@{Graph}}
 \subsubsection{\texorpdfstring{get\+Inverse\+Neighbors()}{getInverseNeighbors()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
-{\footnotesize\ttfamily \mbox{\hyperlink{classSet}{Set}}$<$ Node\+Type $\ast$ $>$ get\+Inverse\+Neighbors (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{node }\end{DoxyParamCaption}) const}
+{\footnotesize\ttfamily \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ Node\+Type $\ast$ $>$ get\+Inverse\+Neighbors (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{node }\end{DoxyParamCaption}) const}
 
 
 
@@ -622,7 +636,7 @@ If the given node is not found in this graph, returns an empty set. \begin{DoxyR
 \index{Graph@{Graph}!get\+Neighbor\+Names@{get\+Neighbor\+Names}}
 \index{get\+Neighbor\+Names@{get\+Neighbor\+Names}!Graph@{Graph}}
 \subsubsection{\texorpdfstring{get\+Neighbor\+Names()}{getNeighborNames()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
-{\footnotesize\ttfamily \mbox{\hyperlink{classSet}{Set}}$<$ std\+::string $>$ get\+Neighbor\+Names (\begin{DoxyParamCaption}\item[{Node\+Type $\ast$}]{node }\end{DoxyParamCaption}) const}
+{\footnotesize\ttfamily \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ std\+::string $>$ get\+Neighbor\+Names (\begin{DoxyParamCaption}\item[{Node\+Type $\ast$}]{node }\end{DoxyParamCaption}) const}
 
 
 
@@ -636,7 +650,7 @@ If any pointer passed is null, or if the given node is not found in this graph, 
 \index{Graph@{Graph}!get\+Neighbor\+Names@{get\+Neighbor\+Names}}
 \index{get\+Neighbor\+Names@{get\+Neighbor\+Names}!Graph@{Graph}}
 \subsubsection{\texorpdfstring{get\+Neighbor\+Names()}{getNeighborNames()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
-{\footnotesize\ttfamily \mbox{\hyperlink{classSet}{Set}}$<$ std\+::string $>$ get\+Neighbor\+Names (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{node }\end{DoxyParamCaption}) const}
+{\footnotesize\ttfamily \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ std\+::string $>$ get\+Neighbor\+Names (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{node }\end{DoxyParamCaption}) const}
 
 
 
@@ -650,7 +664,7 @@ If the given node is not found in this graph, returns an empty set. \begin{DoxyR
 \index{Graph@{Graph}!get\+Neighbors@{get\+Neighbors}}
 \index{get\+Neighbors@{get\+Neighbors}!Graph@{Graph}}
 \subsubsection{\texorpdfstring{get\+Neighbors()}{getNeighbors()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
-{\footnotesize\ttfamily \mbox{\hyperlink{classSet}{Set}}$<$ Node\+Type $\ast$ $>$ get\+Neighbors (\begin{DoxyParamCaption}\item[{Node\+Type $\ast$}]{node }\end{DoxyParamCaption}) const}
+{\footnotesize\ttfamily \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ Node\+Type $\ast$ $>$ get\+Neighbors (\begin{DoxyParamCaption}\item[{Node\+Type $\ast$}]{node }\end{DoxyParamCaption}) const}
 
 
 
@@ -664,7 +678,7 @@ If any pointer passed is null, or if the given node is not found in this graph, 
 \index{Graph@{Graph}!get\+Neighbors@{get\+Neighbors}}
 \index{get\+Neighbors@{get\+Neighbors}!Graph@{Graph}}
 \subsubsection{\texorpdfstring{get\+Neighbors()}{getNeighbors()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
-{\footnotesize\ttfamily \mbox{\hyperlink{classSet}{Set}}$<$ Node\+Type $\ast$ $>$ get\+Neighbors (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{node }\end{DoxyParamCaption}) const}
+{\footnotesize\ttfamily \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ Node\+Type $\ast$ $>$ get\+Neighbors (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{node }\end{DoxyParamCaption}) const}
 
 
 
@@ -690,7 +704,7 @@ If no node with the specified name exists, returns {\ttfamily nullptr}. \begin{D
 \index{Graph@{Graph}!get\+Node\+Names@{get\+Node\+Names}}
 \index{get\+Node\+Names@{get\+Node\+Names}!Graph@{Graph}}
 \subsubsection{\texorpdfstring{get\+Node\+Names()}{getNodeNames()}}
-{\footnotesize\ttfamily \mbox{\hyperlink{classSet}{Set}}$<$ std\+::string $>$ get\+Node\+Names (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+{\footnotesize\ttfamily \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ std\+::string $>$ get\+Node\+Names (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
 
 
 
@@ -702,7 +716,7 @@ Similar to get\+Node\+Set but returns a set of strings rather than a set of poin
 \index{Graph@{Graph}!get\+Node\+Set@{get\+Node\+Set}}
 \index{get\+Node\+Set@{get\+Node\+Set}!Graph@{Graph}}
 \subsubsection{\texorpdfstring{get\+Node\+Set()}{getNodeSet()}}
-{\footnotesize\ttfamily const \mbox{\hyperlink{classSet}{Set}}$<$ Node\+Type $\ast$ $>$ \& get\+Node\+Set (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+{\footnotesize\ttfamily const \mbox{\hyperlink{classstanfordcpplib_1_1collections_1_1GenericSet}{Set}}$<$ Node\+Type $\ast$ $>$ \& get\+Node\+Set (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
 
 
 

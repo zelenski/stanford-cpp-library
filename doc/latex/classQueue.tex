@@ -7,23 +7,19 @@
 \subsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-\mbox{\hyperlink{classQueue_a9419268280646dc4ab7b01d6fa3741c8}{Queue}} ()
+\mbox{\hyperlink{classQueue_a661ad33bec307cc237c318c39970e78f}{Queue}} ()=default
 \item 
 \mbox{\hyperlink{classQueue_a0ad6572f7c8e567d440ef6735d2f4a32}{Queue}} (std\+::initializer\+\_\+list$<$ Value\+Type $>$ list)
 \item 
-virtual \mbox{\hyperlink{classQueue_a240bdcfcc136e53aeaac3aa454cc26bf}{$\sim$\+Queue}} ()
+virtual \mbox{\hyperlink{classQueue_ae83407b742657a6444a1ce04f5ad6606}{$\sim$\+Queue}} ()=default
 \item 
 void \mbox{\hyperlink{classQueue_ab901606bf3a8019c986f0cf9a9f298dc}{add}} (const Value\+Type \&value)
 \item 
 const Value\+Type \& \mbox{\hyperlink{classQueue_adc761c91bdacd01bed5c96e25fd9486a}{back}} () const
 \item 
-iterator \mbox{\hyperlink{classQueue_a0c62c15c8ed609e7e5e9518cf5f5c712}{begin}} () const
-\item 
 void \mbox{\hyperlink{classQueue_ac8bb3912a3ce86b15842e79d0b421204}{clear}} ()
 \item 
 Value\+Type \mbox{\hyperlink{classQueue_aaee07e371e2370e76e6c42bada727ba2}{dequeue}} ()
-\item 
-iterator \mbox{\hyperlink{classQueue_a68b688a51bd0cf6fb5bc2cba292209a8}{end}} () const
 \item 
 void \mbox{\hyperlink{classQueue_a663f69ed5d98f3f167202e9b2d7e7a9a}{enqueue}} (const Value\+Type \&value)
 \item 
@@ -52,17 +48,15 @@ Value\+Type \mbox{\hyperlink{classQueue_a025ec97fa5b04552f5ad0902c1f02ac1}{remov
 int \mbox{\hyperlink{classQueue_af9593d4a5ff4274efaf429cb4f9e57cc}{size}} () const
 \item 
 std\+::string \mbox{\hyperlink{classQueue_a1fe5121d6528fdea3f243321b3fa3a49}{to\+String}} () const
-\item 
-unsigned int \mbox{\hyperlink{classQueue_a0aa696ccb72cbf928535d6b646bac1aa}{version}} () const
 \end{DoxyCompactItemize}
 
 
 \subsection{Constructor \& Destructor Documentation}
-\mbox{\Hypertarget{classQueue_a9419268280646dc4ab7b01d6fa3741c8}\label{classQueue_a9419268280646dc4ab7b01d6fa3741c8}} 
+\mbox{\Hypertarget{classQueue_a661ad33bec307cc237c318c39970e78f}\label{classQueue_a661ad33bec307cc237c318c39970e78f}} 
 \index{Queue@{Queue}!Queue@{Queue}}
 \index{Queue@{Queue}!Queue@{Queue}}
 \subsubsection{\texorpdfstring{Queue()}{Queue()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
-{\footnotesize\ttfamily \mbox{\hyperlink{classQueue}{Queue}} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily \mbox{\hyperlink{classQueue}{Queue}} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
 
 \mbox{\Hypertarget{classQueue_a0ad6572f7c8e567d440ef6735d2f4a32}\label{classQueue_a0ad6572f7c8e567d440ef6735d2f4a32}} 
 \index{Queue@{Queue}!Queue@{Queue}}
@@ -70,11 +64,11 @@ unsigned int \mbox{\hyperlink{classQueue_a0aa696ccb72cbf928535d6b646bac1aa}{vers
 \subsubsection{\texorpdfstring{Queue()}{Queue()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
 {\footnotesize\ttfamily \mbox{\hyperlink{classQueue}{Queue}} (\begin{DoxyParamCaption}\item[{std\+::initializer\+\_\+list$<$ Value\+Type $>$}]{list }\end{DoxyParamCaption})}
 
-\mbox{\Hypertarget{classQueue_a240bdcfcc136e53aeaac3aa454cc26bf}\label{classQueue_a240bdcfcc136e53aeaac3aa454cc26bf}} 
+\mbox{\Hypertarget{classQueue_ae83407b742657a6444a1ce04f5ad6606}\label{classQueue_ae83407b742657a6444a1ce04f5ad6606}} 
 \index{Queue@{Queue}!````~Queue@{$\sim$\+Queue}}
 \index{````~Queue@{$\sim$\+Queue}!Queue@{Queue}}
 \subsubsection{\texorpdfstring{$\sim$\+Queue()}{~Queue()}}
-{\footnotesize\ttfamily $\sim$\mbox{\hyperlink{classQueue}{Queue}} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+{\footnotesize\ttfamily virtual $\sim$\mbox{\hyperlink{classQueue}{Queue}} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}, {\ttfamily [default]}}
 
 
 
@@ -91,12 +85,6 @@ unsigned int \mbox{\hyperlink{classQueue_a0aa696ccb72cbf928535d6b646bac1aa}{vers
 \subsubsection{\texorpdfstring{back()}{back()}}
 {\footnotesize\ttfamily const Value\+Type \& back (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
 
-\mbox{\Hypertarget{classQueue_a0c62c15c8ed609e7e5e9518cf5f5c712}\label{classQueue_a0c62c15c8ed609e7e5e9518cf5f5c712}} 
-\index{Queue@{Queue}!begin@{begin}}
-\index{begin@{begin}!Queue@{Queue}}
-\subsubsection{\texorpdfstring{begin()}{begin()}}
-{\footnotesize\ttfamily iterator begin (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
-
 \mbox{\Hypertarget{classQueue_ac8bb3912a3ce86b15842e79d0b421204}\label{classQueue_ac8bb3912a3ce86b15842e79d0b421204}} 
 \index{Queue@{Queue}!clear@{clear}}
 \index{clear@{clear}!Queue@{Queue}}
@@ -108,12 +96,6 @@ unsigned int \mbox{\hyperlink{classQueue_a0aa696ccb72cbf928535d6b646bac1aa}{vers
 \index{dequeue@{dequeue}!Queue@{Queue}}
 \subsubsection{\texorpdfstring{dequeue()}{dequeue()}}
 {\footnotesize\ttfamily Value\+Type dequeue (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
-
-\mbox{\Hypertarget{classQueue_a68b688a51bd0cf6fb5bc2cba292209a8}\label{classQueue_a68b688a51bd0cf6fb5bc2cba292209a8}} 
-\index{Queue@{Queue}!end@{end}}
-\index{end@{end}!Queue@{Queue}}
-\subsubsection{\texorpdfstring{end()}{end()}}
-{\footnotesize\ttfamily iterator end (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
 
 \mbox{\Hypertarget{classQueue_a663f69ed5d98f3f167202e9b2d7e7a9a}\label{classQueue_a663f69ed5d98f3f167202e9b2d7e7a9a}} 
 \index{Queue@{Queue}!enqueue@{enqueue}}
@@ -198,12 +180,6 @@ unsigned int \mbox{\hyperlink{classQueue_a0aa696ccb72cbf928535d6b646bac1aa}{vers
 \index{to\+String@{to\+String}!Queue@{Queue}}
 \subsubsection{\texorpdfstring{to\+String()}{toString()}}
 {\footnotesize\ttfamily std\+::string to\+String (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
-
-\mbox{\Hypertarget{classQueue_a0aa696ccb72cbf928535d6b646bac1aa}\label{classQueue_a0aa696ccb72cbf928535d6b646bac1aa}} 
-\index{Queue@{Queue}!version@{version}}
-\index{version@{version}!Queue@{Queue}}
-\subsubsection{\texorpdfstring{version()}{version()}}
-{\footnotesize\ttfamily unsigned int version (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
 
 
 

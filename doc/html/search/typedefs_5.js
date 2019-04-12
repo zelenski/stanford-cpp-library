@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['pstream',['pstream',['../namespaceredi.html#a85c3ba20ca5244e214138372b3a61c35',1,'redi']]],
-  ['pstreambuf',['pstreambuf',['../namespaceredi.html#a4e3c818f3c5ee38281ff623f420fedb5',1,'redi']]]
+  ['pointer',['pointer',['../classstanfordcpplib_1_1collections_1_1CheckedIterator.html#aec43e3dd6c5819f52268692c4f174d89',1,'stanfordcpplib::collections::CheckedIterator::pointer()'],['../classstanfordcpplib_1_1collections_1_1ProjectingIterator.html#a6bfec6a77e6f8fac8b106db3094ac7f6',1,'stanfordcpplib::collections::ProjectingIterator::pointer()']]]
 ];

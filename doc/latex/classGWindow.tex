@@ -66,6 +66,8 @@ virtual Q\+Action $\ast$ \mbox{\hyperlink{classGWindow_a43efd24277d68e749443cb7c
 \begin{DoxyCompactList}\small\item\em Adds a new menu item to the given menu. \end{DoxyCompactList}\item 
 virtual Q\+Action $\ast$ \mbox{\hyperlink{classGWindow_ad57e2955efbfb5a0cccc981332945c8e}{add\+Menu\+Item}} (const std\+::string \&menu, const std\+::string \&item, const std\+::string \&icon, G\+Event\+Listener\+Void func)
 \begin{DoxyCompactList}\small\item\em Adds a new menu item to the given menu. \end{DoxyCompactList}\item 
+virtual Q\+Action $\ast$ \mbox{\hyperlink{classGWindow_a9c1d62659ac23b6752a59dc657c5140c}{add\+Menu\+Item}} (const std\+::string \&menu, const std\+::string \&item, const Q\+Icon \&icon, G\+Event\+Listener\+Void func)
+\begin{DoxyCompactList}\small\item\em Adds a new menu item to the given menu. \end{DoxyCompactList}\item 
 virtual Q\+Action $\ast$ \mbox{\hyperlink{classGWindow_ae363de5d4c0d5848a5936563b12c3288}{add\+Menu\+Item\+Check\+Box}} (const std\+::string \&menu, const std\+::string \&item, bool checked=false, const std\+::string \&icon=\char`\"{}\char`\"{})
 \begin{DoxyCompactList}\small\item\em Adds a new checkbox menu item to the given menu. \end{DoxyCompactList}\item 
 virtual Q\+Action $\ast$ \mbox{\hyperlink{classGWindow_aab18d66dc7ed71468da3611b28450995}{add\+Menu\+Item\+Check\+Box}} (const std\+::string \&menu, const std\+::string \&item, bool checked, const std\+::string \&icon, G\+Event\+Listener\+Void func)
@@ -74,6 +76,16 @@ virtual Q\+Action $\ast$ \mbox{\hyperlink{classGWindow_abdf4f167a7135e31ecb8f336
 \begin{DoxyCompactList}\small\item\em Adds a horizontal line separator to the end of the given menu. \end{DoxyCompactList}\item 
 virtual Q\+Menu $\ast$ \mbox{\hyperlink{classGWindow_a557f7b2372831420546b73239027d2ae}{add\+Sub\+Menu}} (const std\+::string \&menu, const std\+::string \&submenu)
 \begin{DoxyCompactList}\small\item\em Adds a sub-\/menu within an existing menu. \end{DoxyCompactList}\item 
+virtual void \mbox{\hyperlink{classGWindow_ab523bda15e486bc3c968059c8b23a8d9}{add\+Toolbar}} (const std\+::string \&title=\char`\"{}\char`\"{})
+\begin{DoxyCompactList}\small\item\em Adds a toolbar to this window where action buttons can be placed. \end{DoxyCompactList}\item 
+virtual Q\+Action $\ast$ \mbox{\hyperlink{classGWindow_ac34ab48bd20d31312ccbf90b7120c5bb}{add\+Toolbar\+Item}} (const std\+::string \&item, const std\+::string \&icon=\char`\"{}\char`\"{})
+\begin{DoxyCompactList}\small\item\em Adds a new item to the window\textquotesingle{}s toolbar. \end{DoxyCompactList}\item 
+virtual Q\+Action $\ast$ \mbox{\hyperlink{classGWindow_a2fceadd3b04b459bb16e560b095eb93d}{add\+Toolbar\+Item}} (const std\+::string \&item, const std\+::string \&icon, G\+Event\+Listener\+Void func)
+\begin{DoxyCompactList}\small\item\em Adds a new item to the window\textquotesingle{}s toolbar. \end{DoxyCompactList}\item 
+virtual Q\+Action $\ast$ \mbox{\hyperlink{classGWindow_a1cd26d8c9004f7cbd81cecfbd323f418}{add\+Toolbar\+Item}} (const std\+::string \&item, const Q\+Icon \&icon, G\+Event\+Listener\+Void func)
+\begin{DoxyCompactList}\small\item\em Adds a new item to the window\textquotesingle{}s toolbar. \end{DoxyCompactList}\item 
+virtual Q\+Action $\ast$ \mbox{\hyperlink{classGWindow_a885470a4fc1b578a76f6fddc2b1950a2}{add\+Toolbar\+Separator}} ()
+\begin{DoxyCompactList}\small\item\em Adds a separator to the window\textquotesingle{}s toolbar. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGWindow_aab55413917cdbb2e0560ab415d59fd1f}{add\+To\+Region}} (\mbox{\hyperlink{classGInteractor}{G\+Interactor}} $\ast$interactor, \mbox{\hyperlink{classGWindow_a81a01a86de31071a92e6cce0bab9bc4b}{Region}} region)
 \begin{DoxyCompactList}\small\item\em Adds the given interactor to the given region in this window. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGWindow_a9c8e600889001e6e72d3548918a6baff}{add\+To\+Region}} (\mbox{\hyperlink{classGInteractor}{G\+Interactor}} $\ast$interactor, const std\+::string \&region=\char`\"{}Center\char`\"{})
@@ -96,6 +108,8 @@ virtual void \mbox{\hyperlink{classGWindow_a47f0cc45498a78757fa4d0e6befc2981}{cl
 \begin{DoxyCompactList}\small\item\em Removes all interactors from the given region of this window. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGWindow_aeba526cb4d6d6f3d8d6f376656af8dc8}{clear\+Region}} (const std\+::string \&region)
 \begin{DoxyCompactList}\small\item\em Removes all interactors from the given region of this window. \end{DoxyCompactList}\item 
+virtual void \mbox{\hyperlink{classGWindow_a7f7fac3c967032599677ee0087af2220}{clear\+Toolbar\+Items}} ()
+\begin{DoxyCompactList}\small\item\em Removes all items from the window\textquotesingle{}s toolbar, if present. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGWindow_a5ae591df94fc66ccb85cbb6565368bca}{close}} ()
 \begin{DoxyCompactList}\small\item\em Closes the window. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGDrawingSurface_a221b3e75bb3d9d0bfea62b3364e6773b}{conditional\+Repaint}} ()
@@ -242,6 +256,8 @@ virtual double \mbox{\hyperlink{classGWindow_a344385751bee0720059403940d57a13e}{
 \begin{DoxyCompactList}\small\item\em Returns the x location of the left edge of the window on screen. \end{DoxyCompactList}\item 
 virtual double \mbox{\hyperlink{classGWindow_aafa51c7f8f38a09febbb9ce7853f77b4}{getY}} () const
 \begin{DoxyCompactList}\small\item\em Returns the y location of the top edge of the window on screen. \end{DoxyCompactList}\item 
+virtual bool \mbox{\hyperlink{classGWindow_af69d0a7ce84cbbef65e40d861ef097c5}{has\+Toolbar}} () const
+\begin{DoxyCompactList}\small\item\em Returns true if this window has a toolbar. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGWindow_ade42eb4da4eb77db85a8d1e4b92e7be4}{hide}} ()
 \begin{DoxyCompactList}\small\item\em Makes the window be not visible on the screen. \end{DoxyCompactList}\item 
 virtual bool \mbox{\hyperlink{classGWindow_afc480f652b8c5f1fb255e2269ce68879}{in\+Bounds}} (double x, double y) const
@@ -298,6 +314,8 @@ virtual void \mbox{\hyperlink{classGWindow_aff47f71ce47e688a07c9d38dc92fcc11}{re
 \begin{DoxyCompactList}\small\item\em Removes the mouse listener from this window so that it will no longer call it when events occur. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGWindow_a8ca9bf0f8dfd3755d73d07ee01e3455f}{remove\+Timer\+Listener}} ()
 \begin{DoxyCompactList}\small\item\em Removes the timer listener from this window so that it will no longer call it when events occur. \end{DoxyCompactList}\item 
+virtual void \mbox{\hyperlink{classGWindow_a3d1c6ae17962b89115a4bf1c2f6142eb}{remove\+Toolbar}} ()
+\begin{DoxyCompactList}\small\item\em Removes the toolbar from this window, if one was present. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGWindow_ab1ea252520cc160b329cfb5b038add83}{remove\+Window\+Listener}} ()
 \begin{DoxyCompactList}\small\item\em Removes the window listener from this window so that it will no longer call it when events occur. \end{DoxyCompactList}\item 
 virtual void {\bfseries repaint} () Q\+\_\+\+D\+E\+C\+L\+\_\+\+O\+V\+E\+R\+R\+I\+DE
@@ -845,7 +863,7 @@ Adds a menu with the given text to the window\textquotesingle{}s top menu bar.
 If the given menu already exists, returns it without adding it again. \mbox{\Hypertarget{classGWindow_a43efd24277d68e749443cb7c36b65f4b}\label{classGWindow_a43efd24277d68e749443cb7c36b65f4b}} 
 \index{G\+Window@{G\+Window}!add\+Menu\+Item@{add\+Menu\+Item}}
 \index{add\+Menu\+Item@{add\+Menu\+Item}!G\+Window@{G\+Window}}
-\subsubsection{\texorpdfstring{add\+Menu\+Item()}{addMenuItem()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+\subsubsection{\texorpdfstring{add\+Menu\+Item()}{addMenuItem()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
 {\footnotesize\ttfamily Q\+Action $\ast$ add\+Menu\+Item (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{menu,  }\item[{const std\+::string \&}]{item,  }\item[{const std\+::string \&}]{icon = {\ttfamily \char`\"{}\char`\"{}} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
 
 
@@ -860,8 +878,23 @@ If the given menu item already exists in this menu, returns it without adding it
 \mbox{\Hypertarget{classGWindow_ad57e2955efbfb5a0cccc981332945c8e}\label{classGWindow_ad57e2955efbfb5a0cccc981332945c8e}} 
 \index{G\+Window@{G\+Window}!add\+Menu\+Item@{add\+Menu\+Item}}
 \index{add\+Menu\+Item@{add\+Menu\+Item}!G\+Window@{G\+Window}}
-\subsubsection{\texorpdfstring{add\+Menu\+Item()}{addMenuItem()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+\subsubsection{\texorpdfstring{add\+Menu\+Item()}{addMenuItem()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
 {\footnotesize\ttfamily Q\+Action $\ast$ add\+Menu\+Item (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{menu,  }\item[{const std\+::string \&}]{item,  }\item[{const std\+::string \&}]{icon,  }\item[{G\+Event\+Listener\+Void}]{func }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Adds a new menu item to the given menu. 
+
+If the given menu item already exists in this menu, returns it without adding it again. You can supply an optional icon to show next to the menu item. When the menu item is clicked, the given listener function will be called. 
+\begin{DoxyExceptions}{Exceptions}
+{\em \mbox{\hyperlink{classErrorException}{Error\+Exception}}} & if the given menu does not exist \\
+\hline
+\end{DoxyExceptions}
+\mbox{\Hypertarget{classGWindow_a9c1d62659ac23b6752a59dc657c5140c}\label{classGWindow_a9c1d62659ac23b6752a59dc657c5140c}} 
+\index{G\+Window@{G\+Window}!add\+Menu\+Item@{add\+Menu\+Item}}
+\index{add\+Menu\+Item@{add\+Menu\+Item}!G\+Window@{G\+Window}}
+\subsubsection{\texorpdfstring{add\+Menu\+Item()}{addMenuItem()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily Q\+Action $\ast$ add\+Menu\+Item (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{menu,  }\item[{const std\+::string \&}]{item,  }\item[{const Q\+Icon \&}]{icon,  }\item[{G\+Event\+Listener\+Void}]{func }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
 
 
 
@@ -934,7 +967,57 @@ my\+Window-\/$>$add\+Menu\+Item(menu + \char`\"{}/\char`\"{} + submenu, item);
 {\em \mbox{\hyperlink{classErrorException}{Error\+Exception}}} & if the given menu does not exist \\
 \hline
 \end{DoxyExceptions}
-\mbox{\Hypertarget{classGWindow_aab55413917cdbb2e0560ab415d59fd1f}\label{classGWindow_aab55413917cdbb2e0560ab415d59fd1f}} 
+\mbox{\Hypertarget{classGWindow_ab523bda15e486bc3c968059c8b23a8d9}\label{classGWindow_ab523bda15e486bc3c968059c8b23a8d9}} 
+\index{G\+Window@{G\+Window}!add\+Toolbar@{add\+Toolbar}}
+\index{add\+Toolbar@{add\+Toolbar}!G\+Window@{G\+Window}}
+\subsubsection{\texorpdfstring{add\+Toolbar()}{addToolbar()}}
+{\footnotesize\ttfamily void add\+Toolbar (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{title = {\ttfamily \char`\"{}\char`\"{}} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Adds a toolbar to this window where action buttons can be placed. 
+
+\mbox{\Hypertarget{classGWindow_ac34ab48bd20d31312ccbf90b7120c5bb}\label{classGWindow_ac34ab48bd20d31312ccbf90b7120c5bb}} 
+\index{G\+Window@{G\+Window}!add\+Toolbar\+Item@{add\+Toolbar\+Item}}
+\index{add\+Toolbar\+Item@{add\+Toolbar\+Item}!G\+Window@{G\+Window}}
+\subsubsection{\texorpdfstring{add\+Toolbar\+Item()}{addToolbarItem()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily Q\+Action $\ast$ add\+Toolbar\+Item (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{item,  }\item[{const std\+::string \&}]{icon = {\ttfamily \char`\"{}\char`\"{}} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Adds a new item to the window\textquotesingle{}s toolbar. 
+
+If the window does not have a toolbar, one is added. You can supply an optional icon to show next to the menu item. When the menu item is clicked, an A\+C\+T\+I\+O\+N\+\_\+\+M\+E\+NU action event will occur. \mbox{\Hypertarget{classGWindow_a2fceadd3b04b459bb16e560b095eb93d}\label{classGWindow_a2fceadd3b04b459bb16e560b095eb93d}} 
+\index{G\+Window@{G\+Window}!add\+Toolbar\+Item@{add\+Toolbar\+Item}}
+\index{add\+Toolbar\+Item@{add\+Toolbar\+Item}!G\+Window@{G\+Window}}
+\subsubsection{\texorpdfstring{add\+Toolbar\+Item()}{addToolbarItem()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily Q\+Action $\ast$ add\+Toolbar\+Item (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{item,  }\item[{const std\+::string \&}]{icon,  }\item[{G\+Event\+Listener\+Void}]{func }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Adds a new item to the window\textquotesingle{}s toolbar. 
+
+If the window does not have a toolbar, one is added. You can supply an optional icon to show next to the menu item. When the menu item is clicked, the given listener function will be called. \mbox{\Hypertarget{classGWindow_a1cd26d8c9004f7cbd81cecfbd323f418}\label{classGWindow_a1cd26d8c9004f7cbd81cecfbd323f418}} 
+\index{G\+Window@{G\+Window}!add\+Toolbar\+Item@{add\+Toolbar\+Item}}
+\index{add\+Toolbar\+Item@{add\+Toolbar\+Item}!G\+Window@{G\+Window}}
+\subsubsection{\texorpdfstring{add\+Toolbar\+Item()}{addToolbarItem()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily Q\+Action $\ast$ add\+Toolbar\+Item (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{item,  }\item[{const Q\+Icon \&}]{icon,  }\item[{G\+Event\+Listener\+Void}]{func }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Adds a new item to the window\textquotesingle{}s toolbar. 
+
+If the window does not have a toolbar, one is added. You can supply an optional icon to show next to the menu item. When the menu item is clicked, the given listener function will be called. \mbox{\Hypertarget{classGWindow_a885470a4fc1b578a76f6fddc2b1950a2}\label{classGWindow_a885470a4fc1b578a76f6fddc2b1950a2}} 
+\index{G\+Window@{G\+Window}!add\+Toolbar\+Separator@{add\+Toolbar\+Separator}}
+\index{add\+Toolbar\+Separator@{add\+Toolbar\+Separator}!G\+Window@{G\+Window}}
+\subsubsection{\texorpdfstring{add\+Toolbar\+Separator()}{addToolbarSeparator()}}
+{\footnotesize\ttfamily Q\+Action $\ast$ add\+Toolbar\+Separator (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Adds a separator to the window\textquotesingle{}s toolbar. 
+
+If the window does not have a toolbar, one is added. \mbox{\Hypertarget{classGWindow_aab55413917cdbb2e0560ab415d59fd1f}\label{classGWindow_aab55413917cdbb2e0560ab415d59fd1f}} 
 \index{G\+Window@{G\+Window}!add\+To\+Region@{add\+To\+Region}}
 \index{add\+To\+Region@{add\+To\+Region}!G\+Window@{G\+Window}}
 \subsubsection{\texorpdfstring{add\+To\+Region()}{addToRegion()}\hspace{0.1cm}{\footnotesize\ttfamily [1/4]}}
@@ -1097,6 +1180,16 @@ Removes all interactors from the given region of this window.
 
 
 Removes all interactors from the given region of this window. 
+
+\mbox{\Hypertarget{classGWindow_a7f7fac3c967032599677ee0087af2220}\label{classGWindow_a7f7fac3c967032599677ee0087af2220}} 
+\index{G\+Window@{G\+Window}!clear\+Toolbar\+Items@{clear\+Toolbar\+Items}}
+\index{clear\+Toolbar\+Items@{clear\+Toolbar\+Items}!G\+Window@{G\+Window}}
+\subsubsection{\texorpdfstring{clear\+Toolbar\+Items()}{clearToolbarItems()}}
+{\footnotesize\ttfamily void clear\+Toolbar\+Items (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Removes all items from the window\textquotesingle{}s toolbar, if present. 
 
 \mbox{\Hypertarget{classGWindow_a5ae591df94fc66ccb85cbb6565368bca}\label{classGWindow_a5ae591df94fc66ccb85cbb6565368bca}} 
 \index{G\+Window@{G\+Window}!close@{close}}
@@ -2000,6 +2093,16 @@ Returns the y location of the top edge of the window on screen.
 
 Returns true if the observable object has a listener for the given type of event. 
 
+\mbox{\Hypertarget{classGWindow_af69d0a7ce84cbbef65e40d861ef097c5}\label{classGWindow_af69d0a7ce84cbbef65e40d861ef097c5}} 
+\index{G\+Window@{G\+Window}!has\+Toolbar@{has\+Toolbar}}
+\index{has\+Toolbar@{has\+Toolbar}!G\+Window@{G\+Window}}
+\subsubsection{\texorpdfstring{has\+Toolbar()}{hasToolbar()}}
+{\footnotesize\ttfamily bool has\+Toolbar (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Returns true if this window has a toolbar. 
+
 \mbox{\Hypertarget{classGWindow_ade42eb4da4eb77db85a8d1e4b92e7be4}\label{classGWindow_ade42eb4da4eb77db85a8d1e4b92e7be4}} 
 \index{G\+Window@{G\+Window}!hide@{hide}}
 \index{hide@{hide}!G\+Window@{G\+Window}}
@@ -2399,6 +2502,16 @@ Removes the mouse listener from this window so that it will no longer call it wh
 
 
 Removes the timer listener from this window so that it will no longer call it when events occur. 
+
+\mbox{\Hypertarget{classGWindow_a3d1c6ae17962b89115a4bf1c2f6142eb}\label{classGWindow_a3d1c6ae17962b89115a4bf1c2f6142eb}} 
+\index{G\+Window@{G\+Window}!remove\+Toolbar@{remove\+Toolbar}}
+\index{remove\+Toolbar@{remove\+Toolbar}!G\+Window@{G\+Window}}
+\subsubsection{\texorpdfstring{remove\+Toolbar()}{removeToolbar()}}
+{\footnotesize\ttfamily void remove\+Toolbar (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Removes the toolbar from this window, if one was present. 
 
 \mbox{\Hypertarget{classGWindow_ab1ea252520cc160b329cfb5b038add83}\label{classGWindow_ab1ea252520cc160b329cfb5b038add83}} 
 \index{G\+Window@{G\+Window}!remove\+Window\+Listener@{remove\+Window\+Listener}}

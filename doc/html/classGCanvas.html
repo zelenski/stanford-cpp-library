@@ -118,6 +118,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a0a9de139286d0fc9146928aff8f0538c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGCanvas.html#a0a9de139286d0fc9146928aff8f0538c">GCanvas</a>(string filename, QWidget* parent=nullptr)</td></tr>
 <tr class="memdesc:a0a9de139286d0fc9146928aff8f0538c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a canvas that loads its background layer pixel data from the given image file name.  <a href="#a0a9de139286d0fc9146928aff8f0538c">More...</a><br /></td></tr>
 <tr class="separator:a0a9de139286d0fc9146928aff8f0538c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a18f1866349219dd73545c6b548ff3b0e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGCanvas.html#a18f1866349219dd73545c6b548ff3b0e">GCanvas</a>(std::istream &amp;filename, QWidget* parent=nullptr)</td></tr>
+<tr class="memdesc:a18f1866349219dd73545c6b548ff3b0e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a canvas that loads its background layer pixel data from the given input stream.  <a href="#a18f1866349219dd73545c6b548ff3b0e">More...</a><br /></td></tr>
+<tr class="separator:a18f1866349219dd73545c6b548ff3b0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a235f6b1b700354d6737607562df06581"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGCanvas.html#a235f6b1b700354d6737607562df06581">GCanvas</a>(double width, double height, int rgbBackground, QWidget* parent=nullptr)</td></tr>
 <tr class="memdesc:a235f6b1b700354d6737607562df06581"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an empty canvas of the specified size and optional background color.  <a href="#a235f6b1b700354d6737607562df06581">More...</a><br /></td></tr>
 <tr class="separator:a235f6b1b700354d6737607562df06581"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -452,7 +455,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a6c21edd9d285c925527e3209fca54b01"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads the canvas's pixel contents from the given image file.  <a href="#a6c21edd9d285c925527e3209fca54b01">More...</a><br /></td></tr>
 <tr class="separator:a6c21edd9d285c925527e3209fca54b01"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a49dc57a2ce4caa354a5fff6acdde2e7d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGCanvas.html#a49dc57a2ce4caa354a5fff6acdde2e7d">remove</a>(<a class="el" href="classGObject.html">GObject</a> *gobj)</td></tr>
-<tr class="memdesc:a49dc57a2ce4caa354a5fff6acdde2e7d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes the given graphical object from the foreground layer of the canvas, if it was present.  <a href="#a49dc57a2ce4caa354a5fff6acdde2e7d">More...</a><br /></td></tr>
+<tr class="memdesc:a49dc57a2ce4caa354a5fff6acdde2e7d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads the canvas's pixel contents from the given input stream.  <a href="#a49dc57a2ce4caa354a5fff6acdde2e7d">More...</a><br /></td></tr>
 <tr class="separator:a49dc57a2ce4caa354a5fff6acdde2e7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0c0ae4d69b584602ff3cba0d9cf330a4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGCanvas.html#a0c0ae4d69b584602ff3cba0d9cf330a4">remove</a>(<a class="el" href="classGObject.html">GObject</a> &amp;gobj)</td></tr>
 <tr class="memdesc:a0c0ae4d69b584602ff3cba0d9cf330a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes the given graphical object from the foreground layer of the canvas, if it was present.  <a href="#a0c0ae4d69b584602ff3cba0d9cf330a4">More...</a><br /></td></tr>
@@ -841,7 +844,7 @@ Protected Attributes</h2></td></tr>
 </div>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="abb7f95d00cbfadedab276958e1eb2af1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abb7f95d00cbfadedab276958e1eb2af1">&#9670;&nbsp;</a></span>GCanvas() <span class="overload">[1/4]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#abb7f95d00cbfadedab276958e1eb2af1">&#9670;&nbsp;</a></span>GCanvas() <span class="overload">[1/5]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -861,7 +864,7 @@ Protected Attributes</h2></td></tr>
 </div>
 </div>
 <a id="a0a9de139286d0fc9146928aff8f0538c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0a9de139286d0fc9146928aff8f0538c">&#9670;&nbsp;</a></span>GCanvas() <span class="overload">[2/4]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a9de139286d0fc9146928aff8f0538c">&#9670;&nbsp;</a></span>GCanvas() <span class="overload">[2/5]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -896,8 +899,44 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="a18f1866349219dd73545c6b548ff3b0e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a18f1866349219dd73545c6b548ff3b0e">&#9670;&nbsp;</a></span>GCanvas() <span class="overload">[3/5]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classGCanvas.html">GCanvas</a> </td>
+          <td>(</td>
+          <td class="paramtype">std::istream &amp;&#160;</td>
+          <td class="paramname"><em>filename</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">QWidget* &#160;</td>
+          <td class="paramname"><em>parent</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates a canvas that loads its background layer pixel data from the given input stream. </p>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classErrorException.html" title="  This exception is thrown by calls to the error function. ">ErrorException</a></td><td>if the given stream cannot be read as a valid image file </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="a235f6b1b700354d6737607562df06581"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a235f6b1b700354d6737607562df06581">&#9670;&nbsp;</a></span>GCanvas() <span class="overload">[3/4]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a235f6b1b700354d6737607562df06581">&#9670;&nbsp;</a></span>GCanvas() <span class="overload">[4/5]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -946,7 +985,7 @@ Protected Attributes</h2></td></tr>
 </div>
 </div>
 <a id="af8bb8bd29201bbb5d0f90016a1d8df2c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af8bb8bd29201bbb5d0f90016a1d8df2c">&#9670;&nbsp;</a></span>GCanvas() <span class="overload">[4/4]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#af8bb8bd29201bbb5d0f90016a1d8df2c">&#9670;&nbsp;</a></span>GCanvas() <span class="overload">[5/5]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -5827,9 +5866,10 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Removes the given graphical object from the foreground layer of the canvas, if it was present. </p>
+<p>Reads the canvas's pixel contents from the given input stream. </p>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classErrorException.html" title="  This exception is thrown by calls to the error function. ">ErrorException</a></td><td>if the given file does not exist or cannot be read as a valid image file Removes the given graphical object from the foreground layer of the canvas, if it was present. </td></tr>
     <tr><td class="paramname"><a class="el" href="classErrorException.html" title="  This exception is thrown by calls to the error function. ">ErrorException</a></td><td>if the graphical object is null </td></tr>
   </table>
   </dd>
@@ -8288,7 +8328,7 @@ Protected Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Sets a "tooltip" that will appear if the user hovers their mouse over the interactor. </p>
-<p><a class="el" href="classSet.html">Set</a> an empty string to clear the tooltip. </p>
+<p>Set an empty string to clear the tooltip. </p>
 
 </div>
 </div>

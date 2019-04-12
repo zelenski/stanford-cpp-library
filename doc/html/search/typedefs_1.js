@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['opstream',['opstream',['../namespaceredi.html#afdfd2eccec7c6badbbc1cd16d2ff60fd',1,'redi']]]
+  ['difference_5ftype',['difference_type',['../classstanfordcpplib_1_1collections_1_1CheckedIterator.html#ad050e8e82b0962bb9ebd0e7c23b436ac',1,'stanfordcpplib::collections::CheckedIterator::difference_type()'],['../classstanfordcpplib_1_1collections_1_1ProjectingIterator.html#ad050e8e82b0962bb9ebd0e7c23b436ac',1,'stanfordcpplib::collections::ProjectingIterator::difference_type()']]]
 ];

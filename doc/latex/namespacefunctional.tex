@@ -3,102 +3,79 @@
 \subsection*{Functions}
 \begin{DoxyCompactItemize}
 \item 
-{\footnotesize template$<$typename Collection\+Type , typename Element\+Type $>$ }\\Collection\+Type \mbox{\hyperlink{namespacefunctional_a18cb8a9ea2f81ed7b9697cac15b03453}{filter}} (Collection\+Type collection, bool($\ast$predicate)(Element\+Type))
-\item 
-{\footnotesize template$<$typename Collection\+Type , typename Element\+Type $>$ }\\Collection\+Type \mbox{\hyperlink{namespacefunctional_a90c12ee7295b32ccf6bbffa3e71ae37b}{filter}} (Collection\+Type collection, bool($\ast$predicate)(const Element\+Type \&))
-\item 
-{\footnotesize template$<$typename Collection\+Type , typename Element\+Type $>$ }\\Collection\+Type \& \mbox{\hyperlink{namespacefunctional_a58614b761fe14f3d495a1ab30281650e}{filter}} (Collection\+Type collection, bool($\ast$predicate)(Element\+Type), Collection\+Type \&result)
-\item 
-{\footnotesize template$<$typename Collection\+Type , typename Element\+Type $>$ }\\Collection\+Type \& \mbox{\hyperlink{namespacefunctional_a594945f3d85ae414fe97ff74fe8f37cf}{filter}} (Collection\+Type collection, bool($\ast$predicate)(const Element\+Type \&), Collection\+Type \&result)
-\item 
-{\footnotesize template$<$typename Collection\+Type , typename Element\+Type $>$ }\\Collection\+Type \mbox{\hyperlink{namespacefunctional_ab335718655fa5514cec86fba6ff9d17b}{map}} (Collection\+Type collection, Element\+Type($\ast$fn)(Element\+Type))
-\item 
-{\footnotesize template$<$typename Collection\+Type , typename Element\+Type $>$ }\\Collection\+Type \mbox{\hyperlink{namespacefunctional_ad8c726e74a75223fe88a00c22fc8142b}{map}} (Collection\+Type collection, Element\+Type($\ast$fn)(const Element\+Type \&))
-\item 
-{\footnotesize template$<$typename Collection\+Type , typename Element\+Type , typename Collection\+Type2 , typename Element\+Type2 $>$ }\\Collection\+Type2 \& \mbox{\hyperlink{namespacefunctional_a434d0f617a331cc413c711d1039e6466}{map}} (Collection\+Type collection, Element\+Type2($\ast$fn)(Element\+Type), Collection\+Type2 \&result)
-\item 
-{\footnotesize template$<$typename Collection\+Type , typename Element\+Type , typename Collection\+Type2 , typename Element\+Type2 $>$ }\\Collection\+Type2 \& \mbox{\hyperlink{namespacefunctional_a953a6d73bb5771ed9d20dc56eac0959f}{map}} (Collection\+Type collection, Element\+Type2($\ast$fn)(const Element\+Type \&), Collection\+Type2 \&result)
-\item 
-{\footnotesize template$<$typename Collection\+Type , typename Element\+Type $>$ }\\Element\+Type \mbox{\hyperlink{namespacefunctional_a5399d3c6ee43124afca8e8bce539312a}{reduce}} (Collection\+Type collection, Element\+Type($\ast$fn)(Element\+Type e1, Element\+Type e2), Element\+Type start\+Value)
-\item 
-{\footnotesize template$<$typename Collection\+Type , typename Element\+Type $>$ }\\Element\+Type \mbox{\hyperlink{namespacefunctional_a707ee32d465e1aac105f7e58e0212e5a}{reduce}} (Collection\+Type collection, Element\+Type($\ast$fn)(Element\+Type e1, Element\+Type e2))
-\item 
-{\footnotesize template$<$typename Collection\+Type , typename Element\+Type $>$ }\\Element\+Type \mbox{\hyperlink{namespacefunctional_a06b2f43d0a2b896f975500f36b38246e}{reduce}} (Collection\+Type collection, Element\+Type($\ast$fn)(const Element\+Type \&e1, const Element\+Type \&e2), Element\+Type start\+Value)
-\item 
-{\footnotesize template$<$typename Collection\+Type , typename Element\+Type $>$ }\\Element\+Type \mbox{\hyperlink{namespacefunctional_a8c8e88003f7c24bbdd1d9a2d029dde1d}{reduce}} (Collection\+Type collection, Element\+Type($\ast$fn)(const Element\+Type \&e1, const Element\+Type \&e2))
-\end{DoxyCompactItemize}
+{\footnotesize template$<$typename Collection\+Type , typename Element\+Type $>$ }\\Collection\+Type \mbox{\hyperlink{namespacefunctional_ae3bb7f21cd2f266a98d6ca42bea725bc}{filter}} (Collection\+Type collection, std\+::function$<$ bool(const Element\+Type \&)$>$ predicate)
+\begin{DoxyCompactList}\small\item\em Performs a filter operation on the given collection, returning a new collection that retains only the elements for which the given predicate function returns true. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename Collection\+Type , typename Element\+Type $>$ }\\Collection\+Type \& \mbox{\hyperlink{namespacefunctional_a842a5adba549e33315c451238f6bb6aa}{filter}} (Collection\+Type collection, std\+::function$<$ bool(const Element\+Type \&)$>$ predicate, Collection\+Type \&result)
+\begin{DoxyCompactList}\small\item\em Performs a filter operation on the given collection, building a new collection that retains only the elements for which the given predicate function returns true. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename Collection\+Type , typename Element\+Type $>$ }\\Collection\+Type \mbox{\hyperlink{namespacefunctional_a101598b614dde8ff3020b779fec982df}{map}} (Collection\+Type collection, std\+::function$<$ Element\+Type(const Element\+Type \&)$>$ fn)
+\begin{DoxyCompactList}\small\item\em Applies the given function to each element of the given collection, producing and returning a new collection containing the results. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename Collection\+Type , typename Element\+Type , typename Collection\+Type2 , typename Element\+Type2 $>$ }\\Collection\+Type2 \& \mbox{\hyperlink{namespacefunctional_a51165ce4b506c99325632c62390ea71d}{map}} (Collection\+Type collection, std\+::function$<$ Element\+Type(const Element\+Type \&)$>$ fn, Collection\+Type2 \&result)
+\begin{DoxyCompactList}\small\item\em Applies the given function to each element of the given collection, producing a new collection containing the results. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename Collection\+Type , typename Element\+Type $>$ }\\Element\+Type \mbox{\hyperlink{namespacefunctional_af6242058989d7f1416afaf20fb503c2c}{reduce}} (Collection\+Type collection, std\+::function$<$ Element\+Type(const Element\+Type \&, const Element\+Type \&)$>$ fn)
+\begin{DoxyCompactList}\small\item\em Performs a reduction operation, applying a function to each neighboring pair of elements of the collection until they are all combined (reduced) into a single value, which is then returned. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename Collection\+Type , typename Element\+Type $>$ }\\Element\+Type \mbox{\hyperlink{namespacefunctional_a224d4a051c11150b90638e511dad2a6b}{reduce}} (Collection\+Type collection, std\+::function$<$ Element\+Type(const Element\+Type \&, const Element\+Type \&)$>$ fn, Element\+Type start\+Value)
+\begin{DoxyCompactList}\small\item\em Performs a reduction operation, applying a function to each neighboring pair of elements of the collection until they are all combined (reduced) into a single value, which is then returned. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
 \subsection{Function Documentation}
-\mbox{\Hypertarget{namespacefunctional_a18cb8a9ea2f81ed7b9697cac15b03453}\label{namespacefunctional_a18cb8a9ea2f81ed7b9697cac15b03453}} 
+\mbox{\Hypertarget{namespacefunctional_ae3bb7f21cd2f266a98d6ca42bea725bc}\label{namespacefunctional_ae3bb7f21cd2f266a98d6ca42bea725bc}} 
 \index{functional@{functional}!filter@{filter}}
 \index{filter@{filter}!functional@{functional}}
-\subsubsection{\texorpdfstring{filter()}{filter()}\hspace{0.1cm}{\footnotesize\ttfamily [1/4]}}
-{\footnotesize\ttfamily Collection\+Type functional\+::filter (\begin{DoxyParamCaption}\item[{Collection\+Type}]{collection,  }\item[{bool($\ast$)(Element\+Type)}]{predicate }\end{DoxyParamCaption})}
+\subsubsection{\texorpdfstring{filter()}{filter()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily Collection\+Type functional\+::filter (\begin{DoxyParamCaption}\item[{Collection\+Type}]{collection,  }\item[{std\+::function$<$ bool(const Element\+Type \&)$>$}]{predicate }\end{DoxyParamCaption})}
 
-\mbox{\Hypertarget{namespacefunctional_a90c12ee7295b32ccf6bbffa3e71ae37b}\label{namespacefunctional_a90c12ee7295b32ccf6bbffa3e71ae37b}} 
+
+
+Performs a filter operation on the given collection, returning a new collection that retains only the elements for which the given predicate function returns true. 
+
+\mbox{\Hypertarget{namespacefunctional_a842a5adba549e33315c451238f6bb6aa}\label{namespacefunctional_a842a5adba549e33315c451238f6bb6aa}} 
 \index{functional@{functional}!filter@{filter}}
 \index{filter@{filter}!functional@{functional}}
-\subsubsection{\texorpdfstring{filter()}{filter()}\hspace{0.1cm}{\footnotesize\ttfamily [2/4]}}
-{\footnotesize\ttfamily Collection\+Type functional\+::filter (\begin{DoxyParamCaption}\item[{Collection\+Type}]{collection,  }\item[{bool($\ast$)(const Element\+Type \&)}]{predicate }\end{DoxyParamCaption})}
+\subsubsection{\texorpdfstring{filter()}{filter()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily Collection\+Type\& functional\+::filter (\begin{DoxyParamCaption}\item[{Collection\+Type}]{collection,  }\item[{std\+::function$<$ bool(const Element\+Type \&)$>$}]{predicate,  }\item[{Collection\+Type \&}]{result }\end{DoxyParamCaption})}
 
-\mbox{\Hypertarget{namespacefunctional_a58614b761fe14f3d495a1ab30281650e}\label{namespacefunctional_a58614b761fe14f3d495a1ab30281650e}} 
-\index{functional@{functional}!filter@{filter}}
-\index{filter@{filter}!functional@{functional}}
-\subsubsection{\texorpdfstring{filter()}{filter()}\hspace{0.1cm}{\footnotesize\ttfamily [3/4]}}
-{\footnotesize\ttfamily Collection\+Type\& functional\+::filter (\begin{DoxyParamCaption}\item[{Collection\+Type}]{collection,  }\item[{bool($\ast$)(Element\+Type)}]{predicate,  }\item[{Collection\+Type \&}]{result }\end{DoxyParamCaption})}
 
-\mbox{\Hypertarget{namespacefunctional_a594945f3d85ae414fe97ff74fe8f37cf}\label{namespacefunctional_a594945f3d85ae414fe97ff74fe8f37cf}} 
-\index{functional@{functional}!filter@{filter}}
-\index{filter@{filter}!functional@{functional}}
-\subsubsection{\texorpdfstring{filter()}{filter()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
-{\footnotesize\ttfamily Collection\+Type\& functional\+::filter (\begin{DoxyParamCaption}\item[{Collection\+Type}]{collection,  }\item[{bool($\ast$)(const Element\+Type \&)}]{predicate,  }\item[{Collection\+Type \&}]{result }\end{DoxyParamCaption})}
 
-\mbox{\Hypertarget{namespacefunctional_ab335718655fa5514cec86fba6ff9d17b}\label{namespacefunctional_ab335718655fa5514cec86fba6ff9d17b}} 
+Performs a filter operation on the given collection, building a new collection that retains only the elements for which the given predicate function returns true. 
+
+The new collection is stored in the given \textquotesingle{}result\textquotesingle{} variable. A reference to that same result is returned for convenience. \mbox{\Hypertarget{namespacefunctional_a101598b614dde8ff3020b779fec982df}\label{namespacefunctional_a101598b614dde8ff3020b779fec982df}} 
 \index{functional@{functional}!map@{map}}
 \index{map@{map}!functional@{functional}}
-\subsubsection{\texorpdfstring{map()}{map()}\hspace{0.1cm}{\footnotesize\ttfamily [1/4]}}
-{\footnotesize\ttfamily Collection\+Type functional\+::map (\begin{DoxyParamCaption}\item[{Collection\+Type}]{collection,  }\item[{Element\+Type($\ast$)(Element\+Type)}]{fn }\end{DoxyParamCaption})}
+\subsubsection{\texorpdfstring{map()}{map()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily Collection\+Type functional\+::map (\begin{DoxyParamCaption}\item[{Collection\+Type}]{collection,  }\item[{std\+::function$<$ Element\+Type(const Element\+Type \&)$>$}]{fn }\end{DoxyParamCaption})}
 
-\mbox{\Hypertarget{namespacefunctional_ad8c726e74a75223fe88a00c22fc8142b}\label{namespacefunctional_ad8c726e74a75223fe88a00c22fc8142b}} 
+
+
+Applies the given function to each element of the given collection, producing and returning a new collection containing the results. 
+
+\mbox{\Hypertarget{namespacefunctional_a51165ce4b506c99325632c62390ea71d}\label{namespacefunctional_a51165ce4b506c99325632c62390ea71d}} 
 \index{functional@{functional}!map@{map}}
 \index{map@{map}!functional@{functional}}
-\subsubsection{\texorpdfstring{map()}{map()}\hspace{0.1cm}{\footnotesize\ttfamily [2/4]}}
-{\footnotesize\ttfamily Collection\+Type functional\+::map (\begin{DoxyParamCaption}\item[{Collection\+Type}]{collection,  }\item[{Element\+Type($\ast$)(const Element\+Type \&)}]{fn }\end{DoxyParamCaption})}
+\subsubsection{\texorpdfstring{map()}{map()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily Collection\+Type2\& functional\+::map (\begin{DoxyParamCaption}\item[{Collection\+Type}]{collection,  }\item[{std\+::function$<$ Element\+Type(const Element\+Type \&)$>$}]{fn,  }\item[{Collection\+Type2 \&}]{result }\end{DoxyParamCaption})}
 
-\mbox{\Hypertarget{namespacefunctional_a434d0f617a331cc413c711d1039e6466}\label{namespacefunctional_a434d0f617a331cc413c711d1039e6466}} 
-\index{functional@{functional}!map@{map}}
-\index{map@{map}!functional@{functional}}
-\subsubsection{\texorpdfstring{map()}{map()}\hspace{0.1cm}{\footnotesize\ttfamily [3/4]}}
-{\footnotesize\ttfamily Collection\+Type2\& functional\+::map (\begin{DoxyParamCaption}\item[{Collection\+Type}]{collection,  }\item[{Element\+Type2($\ast$)(Element\+Type)}]{fn,  }\item[{Collection\+Type2 \&}]{result }\end{DoxyParamCaption})}
 
-\mbox{\Hypertarget{namespacefunctional_a953a6d73bb5771ed9d20dc56eac0959f}\label{namespacefunctional_a953a6d73bb5771ed9d20dc56eac0959f}} 
-\index{functional@{functional}!map@{map}}
-\index{map@{map}!functional@{functional}}
-\subsubsection{\texorpdfstring{map()}{map()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
-{\footnotesize\ttfamily Collection\+Type2\& functional\+::map (\begin{DoxyParamCaption}\item[{Collection\+Type}]{collection,  }\item[{Element\+Type2($\ast$)(const Element\+Type \&)}]{fn,  }\item[{Collection\+Type2 \&}]{result }\end{DoxyParamCaption})}
 
-\mbox{\Hypertarget{namespacefunctional_a5399d3c6ee43124afca8e8bce539312a}\label{namespacefunctional_a5399d3c6ee43124afca8e8bce539312a}} 
+Applies the given function to each element of the given collection, producing a new collection containing the results. 
+
+The new collection is stored in the \textquotesingle{}result\textquotesingle{} variable. A reference to that same result is returned for convenience. \mbox{\Hypertarget{namespacefunctional_af6242058989d7f1416afaf20fb503c2c}\label{namespacefunctional_af6242058989d7f1416afaf20fb503c2c}} 
 \index{functional@{functional}!reduce@{reduce}}
 \index{reduce@{reduce}!functional@{functional}}
-\subsubsection{\texorpdfstring{reduce()}{reduce()}\hspace{0.1cm}{\footnotesize\ttfamily [1/4]}}
-{\footnotesize\ttfamily Element\+Type functional\+::reduce (\begin{DoxyParamCaption}\item[{Collection\+Type}]{collection,  }\item[{Element\+Type($\ast$)(Element\+Type e1, Element\+Type e2)}]{fn,  }\item[{Element\+Type}]{start\+Value }\end{DoxyParamCaption})}
+\subsubsection{\texorpdfstring{reduce()}{reduce()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily Element\+Type functional\+::reduce (\begin{DoxyParamCaption}\item[{Collection\+Type}]{collection,  }\item[{std\+::function$<$ Element\+Type(const Element\+Type \&, const Element\+Type \&)$>$}]{fn }\end{DoxyParamCaption})}
 
-\mbox{\Hypertarget{namespacefunctional_a707ee32d465e1aac105f7e58e0212e5a}\label{namespacefunctional_a707ee32d465e1aac105f7e58e0212e5a}} 
+
+
+Performs a reduction operation, applying a function to each neighboring pair of elements of the collection until they are all combined (reduced) into a single value, which is then returned. 
+
+Begins with a \char`\"{}default\char`\"{} value of the starting type. \mbox{\Hypertarget{namespacefunctional_a224d4a051c11150b90638e511dad2a6b}\label{namespacefunctional_a224d4a051c11150b90638e511dad2a6b}} 
 \index{functional@{functional}!reduce@{reduce}}
 \index{reduce@{reduce}!functional@{functional}}
-\subsubsection{\texorpdfstring{reduce()}{reduce()}\hspace{0.1cm}{\footnotesize\ttfamily [2/4]}}
-{\footnotesize\ttfamily Element\+Type functional\+::reduce (\begin{DoxyParamCaption}\item[{Collection\+Type}]{collection,  }\item[{Element\+Type($\ast$)(Element\+Type e1, Element\+Type e2)}]{fn }\end{DoxyParamCaption})}
+\subsubsection{\texorpdfstring{reduce()}{reduce()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily Element\+Type functional\+::reduce (\begin{DoxyParamCaption}\item[{Collection\+Type}]{collection,  }\item[{std\+::function$<$ Element\+Type(const Element\+Type \&, const Element\+Type \&)$>$}]{fn,  }\item[{Element\+Type}]{start\+Value }\end{DoxyParamCaption})}
 
-\mbox{\Hypertarget{namespacefunctional_a06b2f43d0a2b896f975500f36b38246e}\label{namespacefunctional_a06b2f43d0a2b896f975500f36b38246e}} 
-\index{functional@{functional}!reduce@{reduce}}
-\index{reduce@{reduce}!functional@{functional}}
-\subsubsection{\texorpdfstring{reduce()}{reduce()}\hspace{0.1cm}{\footnotesize\ttfamily [3/4]}}
-{\footnotesize\ttfamily Element\+Type functional\+::reduce (\begin{DoxyParamCaption}\item[{Collection\+Type}]{collection,  }\item[{Element\+Type($\ast$)(const Element\+Type \&e1, const Element\+Type \&e2)}]{fn,  }\item[{Element\+Type}]{start\+Value }\end{DoxyParamCaption})}
 
-\mbox{\Hypertarget{namespacefunctional_a8c8e88003f7c24bbdd1d9a2d029dde1d}\label{namespacefunctional_a8c8e88003f7c24bbdd1d9a2d029dde1d}} 
-\index{functional@{functional}!reduce@{reduce}}
-\index{reduce@{reduce}!functional@{functional}}
-\subsubsection{\texorpdfstring{reduce()}{reduce()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
-{\footnotesize\ttfamily Element\+Type functional\+::reduce (\begin{DoxyParamCaption}\item[{Collection\+Type}]{collection,  }\item[{Element\+Type($\ast$)(const Element\+Type \&e1, const Element\+Type \&e2)}]{fn }\end{DoxyParamCaption})}
 
+Performs a reduction operation, applying a function to each neighboring pair of elements of the collection until they are all combined (reduced) into a single value, which is then returned. 
+
+Begins the reduction with the given starting value, which is then merged with each value from the collection one at a time. 

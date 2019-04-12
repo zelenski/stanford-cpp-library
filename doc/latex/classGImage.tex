@@ -31,6 +31,8 @@ enum \mbox{\hyperlink{classGObject_a86e0f5648542856159bb40775c854aa7}{Line\+Styl
 \item 
 \mbox{\hyperlink{classGImage_ae37cc9f566bd18108a4efed39c16e505}{G\+Image}} (const std\+::string \&filename=\char`\"{}\char`\"{}, double x=0, double y=0)
 \begin{DoxyCompactList}\small\item\em Constructs a new image by loading the image from the specified file. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classGImage_abbdf80157620710ca03d6ff2b869333d}{G\+Image}} (std\+::istream \&source, double x=0, double y=0)
+\begin{DoxyCompactList}\small\item\em Constructs a new image by loading the image from the specified input stream. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classGImage_ac106706c2a94c64f002934a273f8f4e7}{G\+Image}} (double width, double height)
 \begin{DoxyCompactList}\small\item\em Creates a blank \mbox{\hyperlink{classGImage}{G\+Image}} of the given width and height. \end{DoxyCompactList}\item 
 virtual \mbox{\hyperlink{classGImage_aff2de2de9e75e1d6bf56248c2fdcc615}{$\sim$\+G\+Image}} ()
@@ -286,7 +288,7 @@ L\+I\+N\+E\+\_\+\+D\+A\+S\+H\+\_\+\+D\+O\+T\+\_\+\+D\+OT&\\
 \mbox{\Hypertarget{classGImage_ae37cc9f566bd18108a4efed39c16e505}\label{classGImage_ae37cc9f566bd18108a4efed39c16e505}} 
 \index{G\+Image@{G\+Image}!G\+Image@{G\+Image}}
 \index{G\+Image@{G\+Image}!G\+Image@{G\+Image}}
-\subsubsection{\texorpdfstring{G\+Image()}{GImage()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+\subsubsection{\texorpdfstring{G\+Image()}{GImage()}\hspace{0.1cm}{\footnotesize\ttfamily [1/4]}}
 {\footnotesize\ttfamily \mbox{\hyperlink{classGImage}{G\+Image}} (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{filename = {\ttfamily \char`\"{}\char`\"{}},  }\item[{double}]{x = {\ttfamily 0},  }\item[{double}]{y = {\ttfamily 0} }\end{DoxyParamCaption})}
 
 
@@ -298,10 +300,25 @@ By default, the upper left corner of the image appears at the origin, but you ca
 {\em \mbox{\hyperlink{classErrorException}{Error\+Exception}}} & if the given file is not found or cannot be loaded as a valid image file \\
 \hline
 \end{DoxyExceptions}
+\mbox{\Hypertarget{classGImage_abbdf80157620710ca03d6ff2b869333d}\label{classGImage_abbdf80157620710ca03d6ff2b869333d}} 
+\index{G\+Image@{G\+Image}!G\+Image@{G\+Image}}
+\index{G\+Image@{G\+Image}!G\+Image@{G\+Image}}
+\subsubsection{\texorpdfstring{G\+Image()}{GImage()}\hspace{0.1cm}{\footnotesize\ttfamily [2/4]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classGImage}{G\+Image}} (\begin{DoxyParamCaption}\item[{std\+::istream \&}]{source,  }\item[{double}]{x = {\ttfamily 0},  }\item[{double}]{y = {\ttfamily 0} }\end{DoxyParamCaption})}
+
+
+
+Constructs a new image by loading the image from the specified input stream. 
+
+By default, the upper left corner of the image appears at the origin, but you can pass coordinates to move it to the point ({\ttfamily x}, {\ttfamily y}). 
+\begin{DoxyExceptions}{Exceptions}
+{\em \mbox{\hyperlink{classErrorException}{Error\+Exception}}} & if the given file is not found or cannot be loaded as a valid image file \\
+\hline
+\end{DoxyExceptions}
 \mbox{\Hypertarget{classGImage_ac106706c2a94c64f002934a273f8f4e7}\label{classGImage_ac106706c2a94c64f002934a273f8f4e7}} 
 \index{G\+Image@{G\+Image}!G\+Image@{G\+Image}}
 \index{G\+Image@{G\+Image}!G\+Image@{G\+Image}}
-\subsubsection{\texorpdfstring{G\+Image()}{GImage()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+\subsubsection{\texorpdfstring{G\+Image()}{GImage()}\hspace{0.1cm}{\footnotesize\ttfamily [3/4]}}
 {\footnotesize\ttfamily \mbox{\hyperlink{classGImage}{G\+Image}} (\begin{DoxyParamCaption}\item[{double}]{width,  }\item[{double}]{height }\end{DoxyParamCaption})}
 
 
@@ -321,7 +338,7 @@ Frees memory allocated internally by the image.
 \mbox{\Hypertarget{classGImage_a3444f37769d2b073dacd164dc2a1f45a}\label{classGImage_a3444f37769d2b073dacd164dc2a1f45a}} 
 \index{G\+Image@{G\+Image}!G\+Image@{G\+Image}}
 \index{G\+Image@{G\+Image}!G\+Image@{G\+Image}}
-\subsubsection{\texorpdfstring{G\+Image()}{GImage()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+\subsubsection{\texorpdfstring{G\+Image()}{GImage()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
 {\footnotesize\ttfamily \mbox{\hyperlink{classGImage}{G\+Image}} (\begin{DoxyParamCaption}\item[{Q\+Image $\ast$}]{qimage }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
 
 

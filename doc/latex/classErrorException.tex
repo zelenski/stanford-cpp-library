@@ -21,7 +21,7 @@ Inheritance diagram for Error\+Exception\+:\begin{figure}[H]
 \item 
 \mbox{\hyperlink{classErrorException_a4f422b01fff7cc16eea81e00638f44d2}{Error\+Exception}} (std\+::string msg)
 \begin{DoxyCompactList}\small\item\em Creates a new \mbox{\hyperlink{classErrorException}{Error\+Exception}} with the given error message. \end{DoxyCompactList}\item 
-virtual \mbox{\hyperlink{classErrorException_a8a69609bdba32e156392e54dadadcb18}{$\sim$\+Error\+Exception}} ()  throw ()
+virtual \mbox{\hyperlink{classErrorException_a61c8f6114a93ea2ff11a5f08e3640d76}{$\sim$\+Error\+Exception}} () noexcept=default
 \begin{DoxyCompactList}\small\item\em Frees any memory allocated by the exception. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classErrorException_af1e6a5fb477a95a876e86ceadf065ffd}{dump}} () const
 \begin{DoxyCompactList}\small\item\em Prints the exception to the standard error stream (cerr), including its message and stack trace if any. \end{DoxyCompactList}\item 
@@ -37,7 +37,7 @@ virtual bool \mbox{\hyperlink{classErrorException_ae7ccac41c27ba02a30bdec527db0a
 \begin{DoxyCompactList}\small\item\em Returns whether this exception has a non-\/empty stack trace. \end{DoxyCompactList}\item 
 void \mbox{\hyperlink{classErrorException_a896ae13e5a5b1b89f058f7de9697c3cd}{set\+Kind}} (const std\+::string \&kind)
 \begin{DoxyCompactList}\small\item\em Sets what kind of exception this is. \end{DoxyCompactList}\item 
-virtual const char $\ast$ \mbox{\hyperlink{classErrorException_a8d4b96162e93e11e5816d83702578af8}{what}} () const  throw ()
+virtual const char $\ast$ \mbox{\hyperlink{classErrorException_a576a441c2b1e2f01d271e237b314eac3}{what}} () const noexcept
 \begin{DoxyCompactList}\small\item\em Returns the exception\textquotesingle{}s error message as a C string. \end{DoxyCompactList}\end{DoxyCompactItemize}
 \subsection*{Protected Member Functions}
 \begin{DoxyCompactItemize}
@@ -75,11 +75,11 @@ If an {\ttfamily \mbox{\hyperlink{classErrorException}{Error\+Exception}}} is th
 
 Creates a new \mbox{\hyperlink{classErrorException}{Error\+Exception}} with the given error message. 
 
-\mbox{\Hypertarget{classErrorException_a8a69609bdba32e156392e54dadadcb18}\label{classErrorException_a8a69609bdba32e156392e54dadadcb18}} 
+\mbox{\Hypertarget{classErrorException_a61c8f6114a93ea2ff11a5f08e3640d76}\label{classErrorException_a61c8f6114a93ea2ff11a5f08e3640d76}} 
 \index{Error\+Exception@{Error\+Exception}!````~Error\+Exception@{$\sim$\+Error\+Exception}}
 \index{````~Error\+Exception@{$\sim$\+Error\+Exception}!Error\+Exception@{Error\+Exception}}
 \subsubsection{\texorpdfstring{$\sim$\+Error\+Exception()}{~ErrorException()}}
-{\footnotesize\ttfamily $\sim$\mbox{\hyperlink{classErrorException}{Error\+Exception}} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) throw  ) \hspace{0.3cm}{\ttfamily [virtual]}}
+{\footnotesize\ttfamily virtual $\sim$\mbox{\hyperlink{classErrorException}{Error\+Exception}} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}, {\ttfamily [default]}, {\ttfamily [noexcept]}}
 
 
 
@@ -168,11 +168,11 @@ Default is \char`\"{}error\char`\"{}. \mbox{\Hypertarget{classErrorException_aaa
 
 Sets this exception\textquotesingle{}s stack trace to the given multi-\/line string. 
 
-\mbox{\Hypertarget{classErrorException_a8d4b96162e93e11e5816d83702578af8}\label{classErrorException_a8d4b96162e93e11e5816d83702578af8}} 
+\mbox{\Hypertarget{classErrorException_a576a441c2b1e2f01d271e237b314eac3}\label{classErrorException_a576a441c2b1e2f01d271e237b314eac3}} 
 \index{Error\+Exception@{Error\+Exception}!what@{what}}
 \index{what@{what}!Error\+Exception@{Error\+Exception}}
 \subsubsection{\texorpdfstring{what()}{what()}}
-{\footnotesize\ttfamily const char $\ast$ what (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const throw  ) \hspace{0.3cm}{\ttfamily [virtual]}}
+{\footnotesize\ttfamily const char $\ast$ what (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [virtual]}, {\ttfamily [noexcept]}}
 
 
 

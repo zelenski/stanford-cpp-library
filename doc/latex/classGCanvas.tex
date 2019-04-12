@@ -30,6 +30,8 @@ enum \mbox{\hyperlink{classGInteractor_a8e0d441725a81d2bbdebbea09078260e}{Text\+
 \begin{DoxyCompactList}\small\item\em Creates an empty canvas with a default size of 0x0 pixels and a default background and foreground color of black. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classGCanvas_a0a9de139286d0fc9146928aff8f0538c}{G\+Canvas}} (const std\+::string \&filename, Q\+Widget $\ast$parent=nullptr)
 \begin{DoxyCompactList}\small\item\em Creates a canvas that loads its background layer pixel data from the given image file name. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classGCanvas_a18f1866349219dd73545c6b548ff3b0e}{G\+Canvas}} (std\+::istream \&filename, Q\+Widget $\ast$parent=nullptr)
+\begin{DoxyCompactList}\small\item\em Creates a canvas that loads its background layer pixel data from the given input stream. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classGCanvas_a235f6b1b700354d6737607562df06581}{G\+Canvas}} (double width, double height, int rgb\+Background, Q\+Widget $\ast$parent=nullptr)
 \begin{DoxyCompactList}\small\item\em Creates an empty canvas of the specified size and optional background color. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classGCanvas_af8bb8bd29201bbb5d0f90016a1d8df2c}{G\+Canvas}} (double width, double height, const std\+::string \&rgb\+Background=\char`\"{}\#00000000\char`\"{}, Q\+Widget $\ast$parent=nullptr)
@@ -253,7 +255,7 @@ virtual bool \mbox{\hyperlink{classGInteractor_a9d8a6cfb13917785c143e74d40e4e2be
 virtual void \mbox{\hyperlink{classGCanvas_a6c21edd9d285c925527e3209fca54b01}{load}} (const std\+::string \&filename)
 \begin{DoxyCompactList}\small\item\em Reads the canvas\textquotesingle{}s pixel contents from the given image file. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGCanvas_a49dc57a2ce4caa354a5fff6acdde2e7d}{remove}} (\mbox{\hyperlink{classGObject}{G\+Object}} $\ast$gobj)
-\begin{DoxyCompactList}\small\item\em Removes the given graphical object from the foreground layer of the canvas, if it was present. \end{DoxyCompactList}\item 
+\begin{DoxyCompactList}\small\item\em Reads the canvas\textquotesingle{}s pixel contents from the given input stream. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGCanvas_a0c0ae4d69b584602ff3cba0d9cf330a4}{remove}} (\mbox{\hyperlink{classGObject}{G\+Object}} \&gobj)
 \begin{DoxyCompactList}\small\item\em Removes the given graphical object from the foreground layer of the canvas, if it was present. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{classGCanvas_a9b0a5a3ad9972ab0e8eb0b54873aac6b}{remove\+All}} ()
@@ -544,7 +546,7 @@ T\+E\+X\+T\+\_\+\+O\+N\+LY&\\
 \mbox{\Hypertarget{classGCanvas_abb7f95d00cbfadedab276958e1eb2af1}\label{classGCanvas_abb7f95d00cbfadedab276958e1eb2af1}} 
 \index{G\+Canvas@{G\+Canvas}!G\+Canvas@{G\+Canvas}}
 \index{G\+Canvas@{G\+Canvas}!G\+Canvas@{G\+Canvas}}
-\subsubsection{\texorpdfstring{G\+Canvas()}{GCanvas()}\hspace{0.1cm}{\footnotesize\ttfamily [1/4]}}
+\subsubsection{\texorpdfstring{G\+Canvas()}{GCanvas()}\hspace{0.1cm}{\footnotesize\ttfamily [1/5]}}
 {\footnotesize\ttfamily \mbox{\hyperlink{classGCanvas}{G\+Canvas}} (\begin{DoxyParamCaption}\item[{Q\+Widget $\ast$}]{parent = {\ttfamily nullptr} }\end{DoxyParamCaption})}
 
 
@@ -554,7 +556,7 @@ Creates an empty canvas with a default size of 0x0 pixels and a default backgrou
 \mbox{\Hypertarget{classGCanvas_a0a9de139286d0fc9146928aff8f0538c}\label{classGCanvas_a0a9de139286d0fc9146928aff8f0538c}} 
 \index{G\+Canvas@{G\+Canvas}!G\+Canvas@{G\+Canvas}}
 \index{G\+Canvas@{G\+Canvas}!G\+Canvas@{G\+Canvas}}
-\subsubsection{\texorpdfstring{G\+Canvas()}{GCanvas()}\hspace{0.1cm}{\footnotesize\ttfamily [2/4]}}
+\subsubsection{\texorpdfstring{G\+Canvas()}{GCanvas()}\hspace{0.1cm}{\footnotesize\ttfamily [2/5]}}
 {\footnotesize\ttfamily \mbox{\hyperlink{classGCanvas}{G\+Canvas}} (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{filename,  }\item[{Q\+Widget $\ast$}]{parent = {\ttfamily nullptr} }\end{DoxyParamCaption})}
 
 
@@ -566,10 +568,25 @@ Creates a canvas that loads its background layer pixel data from the given image
 {\em \mbox{\hyperlink{classErrorException}{Error\+Exception}}} & if the given file does not exist or cannot be read as a valid image file \\
 \hline
 \end{DoxyExceptions}
+\mbox{\Hypertarget{classGCanvas_a18f1866349219dd73545c6b548ff3b0e}\label{classGCanvas_a18f1866349219dd73545c6b548ff3b0e}} 
+\index{G\+Canvas@{G\+Canvas}!G\+Canvas@{G\+Canvas}}
+\index{G\+Canvas@{G\+Canvas}!G\+Canvas@{G\+Canvas}}
+\subsubsection{\texorpdfstring{G\+Canvas()}{GCanvas()}\hspace{0.1cm}{\footnotesize\ttfamily [3/5]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classGCanvas}{G\+Canvas}} (\begin{DoxyParamCaption}\item[{std\+::istream \&}]{filename,  }\item[{Q\+Widget $\ast$}]{parent = {\ttfamily nullptr} }\end{DoxyParamCaption})}
+
+
+
+Creates a canvas that loads its background layer pixel data from the given input stream. 
+
+
+\begin{DoxyExceptions}{Exceptions}
+{\em \mbox{\hyperlink{classErrorException}{Error\+Exception}}} & if the given stream cannot be read as a valid image file \\
+\hline
+\end{DoxyExceptions}
 \mbox{\Hypertarget{classGCanvas_a235f6b1b700354d6737607562df06581}\label{classGCanvas_a235f6b1b700354d6737607562df06581}} 
 \index{G\+Canvas@{G\+Canvas}!G\+Canvas@{G\+Canvas}}
 \index{G\+Canvas@{G\+Canvas}!G\+Canvas@{G\+Canvas}}
-\subsubsection{\texorpdfstring{G\+Canvas()}{GCanvas()}\hspace{0.1cm}{\footnotesize\ttfamily [3/4]}}
+\subsubsection{\texorpdfstring{G\+Canvas()}{GCanvas()}\hspace{0.1cm}{\footnotesize\ttfamily [4/5]}}
 {\footnotesize\ttfamily \mbox{\hyperlink{classGCanvas}{G\+Canvas}} (\begin{DoxyParamCaption}\item[{double}]{width,  }\item[{double}]{height,  }\item[{int}]{rgb\+Background,  }\item[{Q\+Widget $\ast$}]{parent = {\ttfamily nullptr} }\end{DoxyParamCaption})}
 
 
@@ -586,7 +603,7 @@ If no background color is passed, a default transparent background is used.
 \mbox{\Hypertarget{classGCanvas_af8bb8bd29201bbb5d0f90016a1d8df2c}\label{classGCanvas_af8bb8bd29201bbb5d0f90016a1d8df2c}} 
 \index{G\+Canvas@{G\+Canvas}!G\+Canvas@{G\+Canvas}}
 \index{G\+Canvas@{G\+Canvas}!G\+Canvas@{G\+Canvas}}
-\subsubsection{\texorpdfstring{G\+Canvas()}{GCanvas()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
+\subsubsection{\texorpdfstring{G\+Canvas()}{GCanvas()}\hspace{0.1cm}{\footnotesize\ttfamily [5/5]}}
 {\footnotesize\ttfamily \mbox{\hyperlink{classGCanvas}{G\+Canvas}} (\begin{DoxyParamCaption}\item[{double}]{width,  }\item[{double}]{height,  }\item[{const std\+::string \&}]{rgb\+Background = {\ttfamily \char`\"{}\#00000000\char`\"{}},  }\item[{Q\+Widget $\ast$}]{parent = {\ttfamily nullptr} }\end{DoxyParamCaption})}
 
 
@@ -2165,10 +2182,12 @@ Reads the canvas\textquotesingle{}s pixel contents from the given image file.
 
 
 
-Removes the given graphical object from the foreground layer of the canvas, if it was present. 
+Reads the canvas\textquotesingle{}s pixel contents from the given input stream. 
 
 
 \begin{DoxyExceptions}{Exceptions}
+{\em \mbox{\hyperlink{classErrorException}{Error\+Exception}}} & if the given file does not exist or cannot be read as a valid image file Removes the given graphical object from the foreground layer of the canvas, if it was present. \\
+\hline
 {\em \mbox{\hyperlink{classErrorException}{Error\+Exception}}} & if the graphical object is null \\
 \hline
 \end{DoxyExceptions}
@@ -3074,7 +3093,7 @@ Reimplemented in \mbox{\hyperlink{classGLabel_a0fe8cce1a80750f36fa14ee99ca34014}
 
 Sets a \char`\"{}tooltip\char`\"{} that will appear if the user hovers their mouse over the interactor. 
 
-\mbox{\hyperlink{classSet}{Set}} an empty string to clear the tooltip. \mbox{\Hypertarget{classGInteractor_a18e44e30b31525a243960ca3928125aa}\label{classGInteractor_a18e44e30b31525a243960ca3928125aa}} 
+Set an empty string to clear the tooltip. \mbox{\Hypertarget{classGInteractor_a18e44e30b31525a243960ca3928125aa}\label{classGInteractor_a18e44e30b31525a243960ca3928125aa}} 
 \index{G\+Canvas@{G\+Canvas}!set\+Visible@{set\+Visible}}
 \index{set\+Visible@{set\+Visible}!G\+Canvas@{G\+Canvas}}
 \subsubsection{\texorpdfstring{set\+Visible()}{setVisible()}}
