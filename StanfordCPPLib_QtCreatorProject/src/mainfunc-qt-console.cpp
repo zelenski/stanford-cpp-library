@@ -7,6 +7,7 @@
 #include "error.h"
 #include "consoletext.h"
 #include "regexpr.h"
+#include "set.h"
 #include "simpio.h"
 #include "timer.h"
 using namespace std;
@@ -58,8 +59,32 @@ void testQtConsole() {
     cout << "How about a nasty error?!" << endl;
 
     // produce an error
-//    string s;
-//    s.erase(5, 0);
+//    Vector<int> v;
+//    cout << v[99] << endl;
+
+    Set<char> letters {'\n', '\t', '\\'};
+    cout << "letters = " << letters << endl;
+
+    std::ostringstream out;
+    out << letters;
+
+    std::istringstream input(out.str());
+    Set<char> set2;
+    input >> set2;
+    cout << "letters after write/read = " << set2 << endl;
+
+    // try to get Set in a stack trace
+//    Set<int> set1 {1, 2, 3};
+//    Set<int> set2 {2, 3, 5};
+//    Set<int> set3 = set1;
+//    set3.unionWith(set2);
+//    cout << "union = " << set3 << endl;
+//    Set<int> set4 = set1;
+//    set4.intersect(set2);
+//    cout << "intersect = " << set4 << endl;
+//    Set<int> set5 = set1;
+//    set5.difference(set2);
+//    cout << "difference = " << set5 << endl;
 
     // user input
     std::string line = getLine("Type: ");

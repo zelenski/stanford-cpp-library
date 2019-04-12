@@ -2,6 +2,8 @@
  * File: gwindow.cpp
  * -----------------
  *
+ * @version 2019/04/12
+ * - moved pause() headless mode implementation (empty) to console.cpp
  * @version 2019/04/09
  * - added toolbar support
  * @version 2019/02/02
@@ -243,6 +245,35 @@ QAction* GWindow::addMenuItem(const std::string& menu, const std::string& item, 
     return action;
 }
 
+QAction* GWindow::addMenuItem(const std::string& menu, const std::string& item, const QIcon& icon, GEventListenerVoid func) {
+    std::string menuKey = toLowerCase(stringReplace(menu, "&", ""));
+    if (!_menuMap.containsKey(menuKey)) {
+        error("GWindow::addMenuItem: menu \"" + menu + "\" does not exist");
+        return nullptr;
+    }
+
+    std::string itemKey = toLowerCase(stringReplace(item, "&", ""));
+    std::string menuItemKey = menuKey + "/" + itemKey;
+    if (_menuActionMap.containsKey(menuItemKey)) {
+        // duplicate; do not create again
+        return _menuActionMap[menuItemKey];
+    }
+
+    QAction* action = nullptr;
+    GThread::runOnQtGuiThread([this, menu, item, icon, func, menuKey, menuItemKey, &action]() {
+        QMenu* qmenu = _menuMap[menuKey];
+        action = qmenu->addAction(QString::fromStdString(item));
+        action->setIcon(icon);
+
+        // when menu item is clicked, call the function the user gave us
+        _iqmainwindow->connect(action, &QAction::triggered, _iqmainwindow, [func]() {
+            func();
+        });
+        _menuActionMap[menuItemKey] = action;
+    });
+    return action;
+}
+
 QAction* GWindow::addMenuItemCheckBox(const std::string& menu,
                                       const std::string& item,
                                       bool checked,
@@ -391,6 +422,36 @@ QAction* GWindow::addToolbarItem(const std::string& item,
             action = _toolbar->addAction(qicon, QString::fromStdString(""));
             action->setToolTip(QString::fromStdString(item));
         }
+
+        // when menu item is clicked, call the function the user gave us
+        _iqmainwindow->connect(action, &QAction::triggered, _iqmainwindow, [func]() {
+            func();
+        });
+        _menuActionMap[menuItemKey] = action;
+
+    });
+    return action;
+}
+
+QAction* GWindow::addToolbarItem(const std::string& item,
+                                 const QIcon& icon,
+                                 GEventListenerVoid func) {
+    if (!_toolbar) {
+        addToolbar();
+    }
+
+    std::string itemKey = toLowerCase(stringReplace(item, "&", ""));
+    std::string menuItemKey = "toolbar/" + itemKey;
+    if (_menuActionMap.containsKey(menuItemKey)) {
+        // duplicate; do not create again
+        return _menuActionMap[menuItemKey];
+    }
+
+    QAction* action = nullptr;
+    GThread::runOnQtGuiThread([this, item, icon, func, menuItemKey, &action]() {
+        // toolbar item with icon doesn't show text
+        action = _toolbar->addAction(icon, QString::fromStdString(""));
+        action->setToolTip(QString::fromStdString(item));
 
         // when menu item is clicked, call the function the user gave us
         _iqmainwindow->connect(action, &QAction::triggered, _iqmainwindow, [func]() {
@@ -1195,10 +1256,6 @@ double getScreenWidth() {
 #ifndef SPL_HEADLESS_MODE
 void pause(double milliseconds) {
     GThread::sleep(milliseconds);
-}
-#else
-void pause(double /*milliseconds*/) {
-    // empty
 }
 #endif // SPL_HEADLESS_MODE
 

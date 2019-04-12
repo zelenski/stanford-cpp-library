@@ -4,6 +4,8 @@
  * This file implements the console .h interface.
  *
  * @author Marty Stepp
+ * @version 2019/04/12
+ * - added pause() implementation (empty) in headless mode
  * @version 2018/11/22
  * - added headless mode support
  * @version 2018/10/01
@@ -90,6 +92,10 @@ double getConsoleWidth() {
 
 std::string getConsoleWindowTitle() {
     return "";
+}
+
+void pause(double /*milliseconds*/) {
+    // empty
 }
 
 void setConsoleClearEnabled(bool /*value*/) {

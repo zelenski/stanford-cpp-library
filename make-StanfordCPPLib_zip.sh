@@ -9,6 +9,7 @@ echo "Building $CPPLIBZIPFILE ..."
 rm $CPPLIBZIPFILE 2>/dev/null
 zip -rq $CPPLIBZIPFILE StanfordCPPLib/
 zip -q --update $CPPLIBZIPFILE -j $OUTDIR/addr2line.exe
+zip -q --update $CPPLIBZIPFILE -j $OUTDIR/iconstrip.png
 
 EMPTYPROJECTZIPFILE=cppdoc/dist/empty-project.zip
 echo "Building $EMPTYPROJECTZIPFILE ..."

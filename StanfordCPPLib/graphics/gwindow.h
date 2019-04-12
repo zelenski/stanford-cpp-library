@@ -269,6 +269,17 @@ public:
                                  const std::string& icon, GEventListenerVoid func);
 
     /**
+     * Adds a new menu item to the given menu.
+     * If the given menu item already exists in this menu, returns it without
+     * adding it again.
+     * You can supply an optional icon to show next to the menu item.
+     * When the menu item is clicked, the given listener function will be called.
+     * @throw ErrorException if the given menu does not exist
+     */
+    virtual QAction* addMenuItem(const std::string& menu, const std::string& item,
+                                 const QIcon& icon, GEventListenerVoid func);
+
+    /**
      * Adds a new checkbox menu item to the given menu.
      * If the given menu item already exists in this menu, returns it without
      * adding it again.
@@ -351,6 +362,16 @@ public:
      */
     virtual QAction* addToolbarItem(const std::string& item,
                                     const std::string& icon,
+                                    GEventListenerVoid func);
+
+    /**
+     * Adds a new item to the window's toolbar.
+     * If the window does not have a toolbar, one is added.
+     * You can supply an optional icon to show next to the menu item.
+     * When the menu item is clicked, the given listener function will be called.
+     */
+    virtual QAction* addToolbarItem(const std::string& item,
+                                    const QIcon& icon,
                                     GEventListenerVoid func);
 
     /**

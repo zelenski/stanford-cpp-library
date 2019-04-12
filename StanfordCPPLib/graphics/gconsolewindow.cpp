@@ -4,6 +4,8 @@
  * This file implements the gconsolewindow.h interface.
  *
  * @author Marty Stepp
+ * @version 2019/04/10
+ * - toolbar support with icons from icon strip image
  * @version 2019/04/09
  * - bug fix for premature input script / compare output popup
  * - changed default Mac font to Courier New from Menlo
@@ -154,104 +156,162 @@ GConsoleWindow::GConsoleWindow()
     loadConfiguration();
 }
 
-void GConsoleWindow::_initMenuBar() {
-    const std::string ICON_FOLDER = "icons/";
+static Map<std::string, QIcon> unpackImageStrip() {
+    const std::string ICON_STRIP_FILE = "iconstrip.png";
+    const int ICON_SIZE = 16;
+    int iconOffset = 0;
+    Vector<std::string> IMAGES = {
+        "save.gif",
+        "save_as.gif",
+        "print.gif",
+        "script.gif",
+        "compare_output.gif",
+        "quit.gif",
+        "cut.gif",
+        "copy.gif",
+        "paste.gif",
+        "select_all.gif",
+        "clear_console.gif",
+        "font.gif",
+        "background_color.gif",
+        "text_color.gif",
+        "about.gif",
+        "check_for_updates.gif"
+    };
 
+    Map<std::string, QIcon> imageMap;
+    if (fileExists(ICON_STRIP_FILE)) {
+        QPixmap pixmap(QString::fromStdString(ICON_STRIP_FILE));
+        for (std::string image : IMAGES) {
+            QPixmap pixcopy = pixmap.copy(iconOffset, 0, ICON_SIZE, ICON_SIZE);
+            imageMap[image] = pixcopy;
+            iconOffset += ICON_SIZE;
+        }
+    }
+    return imageMap;
+}
+
+void GConsoleWindow::_initMenuBar() {
     addToolbar();
+    Map<std::string, QIcon> imageMap = unpackImageStrip();
 
     // File menu
     addMenu("&File");
-    addMenuItem("File", "&Save", ICON_FOLDER + "save.gif",
+    addMenuItem("File", "&Save", imageMap["save.gif"],
                 [this]() { this->save(); })
                 ->setShortcut(QKeySequence::Save);
 
-    addMenuItem("File", "Save &As...", ICON_FOLDER + "save_as.gif",
+    addMenuItem("File", "Save &As...", imageMap["save_as.gif"],
                 [this]() { this->saveAs(); })
                 ->setShortcut(QKeySequence::SaveAs);
     addMenuSeparator("File");
 
-    addMenuItem("File", "&Print", ICON_FOLDER + "print.gif",
+    addMenuItem("File", "&Print", imageMap["print.gif"],
                 [this]() { this->showPrintDialog(); })
                 ->setShortcut(QKeySequence::Print);
     setMenuItemEnabled("File", "Print", false);
     addMenuSeparator("File");
 
-    addMenuItem("File", "&Load Input Script...", ICON_FOLDER + "script.gif",
+    addMenuItem("File", "&Load Input Script...", imageMap["script.gif"],
                 [this]() { this->showInputScriptDialog(); });
-    addToolbarItem("Load Input Script...", ICON_FOLDER + "script.gif",
-                   [this]() { this->showInputScriptDialog(); });
+    if (!imageMap.isEmpty()) {
+        addToolbarItem("Load Input Script...", imageMap["script.gif"],
+                       [this]() { this->showInputScriptDialog(); });
+    }
 
-    addMenuItem("File", "&Compare Output...", ICON_FOLDER + "compare_output.gif",
+    addMenuItem("File", "&Compare Output...", imageMap["compare_output.gif"],
                 [this]() { this->showCompareOutputDialog(); });
-    addToolbarItem("Compare Output...", ICON_FOLDER + "compare_output.gif",
-                   [this]() { this->showCompareOutputDialog(); });
+    if (!imageMap.isEmpty()) {
+        addToolbarItem("Compare Output...", imageMap["compare_output.gif"],
+                       [this]() { this->showCompareOutputDialog(); });
+    }
 
-    addMenuItem("File", "&Quit", ICON_FOLDER + "quit.gif",
+    addMenuItem("File", "&Quit", imageMap["quit.gif"],
                 [this]() { this->close(); /* TODO: exit app */ })
                 ->setShortcut(QKeySequence::Quit);
-    addToolbarSeparator();
+    if (!imageMap.isEmpty()) {
+        addToolbarSeparator();
+    }
 
     // Edit menu
     addMenu("&Edit");
-    addMenuItem("Edit", "Cu&t", ICON_FOLDER + "cut.gif",
+    addMenuItem("Edit", "Cu&t", imageMap["cut.gif"],
                 [this]() { this->clipboardCut(); })
                 ->setShortcut(QKeySequence::Cut);
-    addToolbarItem("Cut", ICON_FOLDER + "cut.gif",
-                   [this]() { this->clipboardCut(); });
+    if (!imageMap.isEmpty()) {
+        addToolbarItem("Cut", imageMap["cut.gif"],
+                       [this]() { this->clipboardCut(); });
+    }
 
-    addMenuItem("Edit", "&Copy", ICON_FOLDER + "copy.gif",
+    addMenuItem("Edit", "&Copy", imageMap["copy.gif"],
                 [this]() { this->clipboardCopy(); })
                 ->setShortcut(QKeySequence::Copy);
-    addToolbarItem("Copy", ICON_FOLDER + "copy.gif",
-                   [this]() { this->clipboardCopy(); });
+    if (!imageMap.isEmpty()) {
+        addToolbarItem("Copy", imageMap["copy.gif"],
+                       [this]() { this->clipboardCopy(); });
+    }
 
-    addMenuItem("Edit", "&Paste", ICON_FOLDER + "paste.gif",
+    addMenuItem("Edit", "&Paste", imageMap["paste.gif"],
                 [this]() { this->clipboardPaste(); })
                 ->setShortcut(QKeySequence::Paste);
-    addToolbarItem("Paste", ICON_FOLDER + "paste.gif",
-                   [this]() { this->clipboardPaste(); });
+    if (!imageMap.isEmpty()) {
+        addToolbarItem("Paste", imageMap["paste.gif"],
+                       [this]() { this->clipboardPaste(); });
+    }
 
-    addMenuItem("Edit", "Select &All", ICON_FOLDER + "select_all.gif",
+    addMenuItem("Edit", "Select &All", imageMap["select_all.gif"],
                 [this]() { this->selectAll(); })
                 ->setShortcut(QKeySequence::SelectAll);
 
-    addMenuItem("Edit", "C&lear Console", ICON_FOLDER + "clear_console.gif",
+    addMenuItem("Edit", "C&lear Console", imageMap["clear_console.gif"],
                 [this]() { this->clearConsole(); })
                 ->setShortcut(QKeySequence(QString::fromStdString("Ctrl+L")));
-    addToolbarItem("Clear Console", ICON_FOLDER + "clear_console.gif",
-                   [this]() { this->clearConsole(); });
-    addToolbarSeparator();
+    if (!imageMap.isEmpty()) {
+        addToolbarItem("Clear Console", imageMap["clear_console.gif"],
+                       [this]() { this->clearConsole(); });
+        addToolbarSeparator();
+    }
 
     // Options menu
     addMenu("&Options");
-    addMenuItem("Options", "&Font...", ICON_FOLDER + "font.gif",
+    addMenuItem("Options", "&Font...", imageMap["font.gif"],
                 [this]() { this->showFontDialog(); });
-    addToolbarItem("Font...", ICON_FOLDER + "font.gif",
-                   [this]() { this->showFontDialog(); });
+    if (!imageMap.isEmpty()) {
+        addToolbarItem("Font...", imageMap["font.gif"],
+                       [this]() { this->showFontDialog(); });
+    }
 
-    addMenuItem("Options", "&Background Color...", ICON_FOLDER + "background_color.gif",
+    addMenuItem("Options", "&Background Color...", imageMap["background_color.gif"],
                 [this]() { this->showColorDialog(/* background */ true); });
-    addToolbarItem("Background Color...", ICON_FOLDER + "background_color.gif",
-                   [this]() { this->showColorDialog(/* background */ true); });
+    if (!imageMap.isEmpty()) {
+        addToolbarItem("Background Color...", imageMap["background_color.gif"],
+                       [this]() { this->showColorDialog(/* background */ true); });
+    }
 
-    addMenuItem("Options", "&Text Color...", ICON_FOLDER + "text_color.gif",
+    addMenuItem("Options", "&Text Color...", imageMap["text_color.gif"],
                 [this]() { this->showColorDialog(/* background */ false); });
-    addToolbarItem("Text Color...", ICON_FOLDER + "text_color.gif",
-                   [this]() { this->showColorDialog(/* background */ false); });
-    addToolbarSeparator();
+    if (!imageMap.isEmpty()) {
+        addToolbarItem("Text Color...", imageMap["text_color.gif"],
+                       [this]() { this->showColorDialog(/* background */ false); });
+        addToolbarSeparator();
+    }
 
     // Help menu
     addMenu("&Help");
-    addMenuItem("Help", "&About...", ICON_FOLDER + "about.gif",
+    addMenuItem("Help", "&About...", imageMap["about.gif"],
                 [this]() { this->showAboutDialog(); })
                 ->setShortcut(QKeySequence::HelpContents);
-    addToolbarItem("About...", ICON_FOLDER + "about.gif",
-                   [this]() { this->showAboutDialog(); });
+    if (!imageMap.isEmpty()) {
+        addToolbarItem("About...", imageMap["about.gif"],
+                       [this]() { this->showAboutDialog(); });
+    }
 
-    addMenuItem("Help", "&Check for Updates", ICON_FOLDER + "check_for_updates.gif",
+    addMenuItem("Help", "&Check for Updates", imageMap["check_for_updates.gif"],
                 [this]() { this->checkForUpdates(); });
-    addToolbarItem("Check for Updates", ICON_FOLDER + "check_for_updates.gif",
-                   [this]() { this->checkForUpdates(); });
+    if (!imageMap.isEmpty()) {
+        addToolbarItem("Check for Updates", imageMap["check_for_updates.gif"],
+                       [this]() { this->checkForUpdates(); });
+    }
 }
 
 void GConsoleWindow::_initStreams() {

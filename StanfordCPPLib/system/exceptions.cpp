@@ -118,6 +118,7 @@ std::string cleanupFunctionNameForStackTrace(std::string function) {
     stringReplaceInPlace(function, "basic_ofstream", "ofstream");
     stringReplaceInPlace(function, "basic_ifstream", "ifstream");
     stringReplaceInPlace(function, "basic_string", "string");
+    stringReplaceInPlace(function, "stanfordcpplib::collections::GenericSet", "Set");
 
     // remove empty/unknown function names
     stringReplaceInPlace(function, "?? ??:0", "");

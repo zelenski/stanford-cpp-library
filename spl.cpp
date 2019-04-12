@@ -1,6 +1,6 @@
 // Stanford C++ library (extracted)
 // @author Marty Stepp
-// @version Fri Dec 28 19:05:02 PST 2018
+// @version Fri Apr 12 09:03:18 PDT 2019
 //
 // This library has been merged into a single .h and .cpp file by an automatic script
 // to make it easier to include and use with the CodeStepByStep tool.
@@ -214,6 +214,8 @@ void __stanfordcpplib__exitLibrary(int status) {
  * ---------------------
  * This file implements the collections.h interface.
  * 
+ * @version 2019/04/11
+ * - added functions to read/write quoted char values
  * @version 2018/10/20
  * - initial version
  */
@@ -242,6 +244,56 @@ bool stringNeedsQuoting(const std::string& str) {
         if (STATIC_VARIABLE(STRING_DELIMITERS).find(ch) != std::string::npos) return true;
     }
     return false;
+}
+
+bool readQuotedChar(std::istream& is, char& ch, bool throwOnError) {
+    // skip whitespace
+    char temp;
+    while (is.get(temp) && isspace(temp)) {
+        // empty
+    }
+    if (is.fail()) {
+        return true;
+    }
+
+    // now we are either at a character, like X, or at the start of a quoted
+    // character such as 'X' or '\n'
+    if (temp == '\'' || temp == '"') {
+        // quoted character; defer to string-reading code
+        is.unget();
+        std::string s;
+        bool result = readQuotedString(is, s, throwOnError);
+        if (result && !s.empty()) {
+            ch = s[0];
+        }
+        return result;
+    } else {
+        // unquoted character; read it ourselves
+        // special case: \ (e.g. \n, \t)
+        if (temp == '\\') {
+            // TODO
+            char temp2;
+            if (is.get(temp2)) {
+                switch (temp2) {
+                    case 'a':  ch = '\a'; break;
+                    case 'b':  ch = '\b'; break;
+                    case 'f':  ch = '\f'; break;
+                    case 'n':  ch = '\n'; break;
+                    case 'r':  ch = '\r'; break;
+                    case 't':  ch = '\t'; break;
+                    case 'v':  ch = '\v'; break;
+                    case '0':  ch = '\0'; break;
+                    case '\\': ch = '\\'; break;
+                    case '\'': ch = '\''; break;
+                    case '"':  ch = '"'; break;
+                    default:   ch = '\0'; break;
+                }
+            }
+        } else {
+            ch = temp;
+        }
+        return true;
+    }
 }
 
 bool readQuotedString(std::istream& is, std::string& str, bool throwOnError) {
@@ -320,12 +372,42 @@ bool readQuotedString(std::istream& is, std::string& str, bool throwOnError) {
         int endTrim = 0;
         while (is.get(ch) && STATIC_VARIABLE(STRING_DELIMITERS).find(ch) == std::string::npos) {
             str += ch;
-            if (!isspace(ch)) endTrim = str.length();
+            if (!isspace(ch)) {
+                endTrim = str.length();
+            }
         }
         if (is) is.unget();
         str = str.substr(0, endTrim);
     }
     return true;   // read successfully
+}
+
+std::ostream& writeQuotedChar(std::ostream& os, char ch, bool forceQuotes) {
+    if (forceQuotes) {
+        os << '\'';
+    }
+    switch (ch) {
+    case '\a': os << "\\a"; break;
+    case '\b': os << "\\b"; break;
+    case '\f': os << "\\f"; break;
+    case '\n': os << "\\n"; break;
+    case '\r': os << "\\r"; break;
+    case '\t': os << "\\t"; break;
+    case '\v': os << "\\v"; break;
+    case '\\': os << "\\\\"; break;
+    default:
+        if (isprint(ch) && ch != '\'') {
+            os << ch;
+        } else {
+            std::ostringstream oss;
+            oss << std::oct << std::setw(3) << std::setfill('0') << (int(ch) & 0xFF);
+            os << "\\" << oss.str();
+        }
+    }
+    if (forceQuotes) {
+        os << '\'';
+    }
+    return os;
 }
 
 std::ostream& writeQuotedString(std::ostream& os, const std::string& str, bool forceQuotes) {
@@ -467,48 +549,48 @@ static uint32_t my_ntohl(uint32_t arg);
  */
 
 DawgLexicon::DawgLexicon() :
-        edges(nullptr),
-        start(nullptr),
-        numEdges(0),
-        numDawgWords(0) {
+        _edges(nullptr),
+        _start(nullptr),
+        _edgeCount(0),
+        _dawgWordsCount(0) {
     // empty
 }
 
 DawgLexicon::DawgLexicon(std::istream& input) :
-        edges(nullptr),
-        start(nullptr),
-        numEdges(0),
-        numDawgWords(0) {
+        _edges(nullptr),
+        _start(nullptr),
+        _edgeCount(0),
+        _dawgWordsCount(0) {
     addWordsFromFile(input);
 }
 
 DawgLexicon::DawgLexicon(const std::string& filename) :
-        edges(nullptr),
-        start(nullptr),
-        numEdges(0),
-        numDawgWords(0) {
+        _edges(nullptr),
+        _start(nullptr),
+        _edgeCount(0),
+        _dawgWordsCount(0) {
     addWordsFromFile(filename);
 }
 
 DawgLexicon::DawgLexicon(const DawgLexicon& src) :
-        edges(nullptr),
-        start(nullptr),
-        numEdges(0),
-        numDawgWords(0) {
+        _edges(nullptr),
+        _start(nullptr),
+        _edgeCount(0),
+        _dawgWordsCount(0) {
     deepCopy(src);
 }
 
 DawgLexicon::DawgLexicon(std::initializer_list<std::string> list) :
-        edges(nullptr),
-        start(nullptr),
-        numEdges(0),
-        numDawgWords(0) {
+        _edges(nullptr),
+        _start(nullptr),
+        _edgeCount(0),
+        _dawgWordsCount(0) {
     addAll(list);
 }
 
 DawgLexicon::~DawgLexicon() {
-    if (edges) {
-        delete[] edges;
+    if (_edges) {
+        delete[] _edges;
     }
 }
 
@@ -516,7 +598,7 @@ void DawgLexicon::add(const std::string& word) {
     std::string copy = word;
     toLowerCaseInPlace(copy);
     if (!contains(copy)) {
-        otherWords.add(copy);
+        _otherWords.add(copy);
     }
 }
 
@@ -545,7 +627,7 @@ void DawgLexicon::addWordsFromFile(std::istream& input) {
     }
     input.read(firstFour, 4);
     if (strncmp(firstFour, expected, 4) == 0) {
-        if (otherWords.size() != 0) {
+        if (_otherWords.size() != 0) {
             error("DawgLexicon::addWordsFromFile: Binary files require an empty lexicon");
         }
         readBinaryFile(input);
@@ -573,12 +655,12 @@ void DawgLexicon::addWordsFromFile(const std::string& filename) {
 }
 
 void DawgLexicon::clear() {
-    if (edges) {
-        delete[] edges;
+    if (_edges) {
+        delete[] _edges;
     }
-    edges = start = nullptr;
-    numEdges = numDawgWords = 0;
-    otherWords.clear();
+    _edges = _start = nullptr;
+    _edgeCount = _dawgWordsCount = 0;
+    _otherWords.clear();
 }
 
 bool DawgLexicon::contains(const std::string& word) const {
@@ -588,7 +670,7 @@ bool DawgLexicon::contains(const std::string& word) const {
     if (lastEdge && lastEdge->accept) {
         return true;
     }
-    return otherWords.contains(copy);
+    return _otherWords.contains(copy);
 }
 
 bool DawgLexicon::containsAll(const DawgLexicon& lex2) const {
@@ -618,7 +700,7 @@ bool DawgLexicon::containsPrefix(const std::string& prefix) const {
     if (traceToLastEdge(copy)) {
         return true;
     }
-    for (std::string word : otherWords) {
+    for (std::string word : _otherWords) {
         if (startsWith(word, copy)) {
             return true;
         }
@@ -687,7 +769,7 @@ void DawgLexicon::mapAll(void (*fn)(const std::string &)) const {
 }
 
 int DawgLexicon::size() const {
-    return numDawgWords + otherWords.size();
+    return _dawgWordsCount + _otherWords.size();
 }
 
 std::string DawgLexicon::toString() const {
@@ -768,7 +850,7 @@ int DawgLexicon::countDawgWords(Edge* ep) const {
     while (true) {
         if (ep->accept) count++;
         if (ep->children != 0) {
-            count += countDawgWords(&edges[ep->children]);
+            count += countDawgWords(&_edges[ep->children]);
         }
         if (ep->lastEdge) break;
         ep++;
@@ -777,17 +859,17 @@ int DawgLexicon::countDawgWords(Edge* ep) const {
 }
 
 void DawgLexicon::deepCopy(const DawgLexicon& src) {
-    if (!src.edges) {
-        edges = nullptr;
-        start = nullptr;
+    if (!src._edges) {
+        _edges = nullptr;
+        _start = nullptr;
     } else {
-        numEdges = src.numEdges;
-        edges = new Edge[src.numEdges];
-        memcpy(edges, src.edges, sizeof(Edge)*src.numEdges);
-        start = edges + (src.start - src.edges);
+        _edgeCount = src._edgeCount;
+        _edges = new Edge[src._edgeCount];
+        memcpy(_edges, src._edges, sizeof(Edge)*src._edgeCount);
+        _start = _edges + (src._start - src._edges);
     }
-    numDawgWords = src.numDawgWords;
-    otherWords = src.otherWords;
+    _dawgWordsCount = src._dawgWordsCount;
+    _otherWords = src._otherWords;
 }
 
 /*
@@ -835,23 +917,23 @@ void DawgLexicon::readBinaryFile(std::istream& input) {
             || startIndex < 0 || numBytes < 0) {
         error("DawgLexicon::addWordsFromFile: Improperly formed lexicon file");
     }
-    numEdges = numBytes / sizeof(Edge);
-    edges = new Edge[numEdges];
-    start = &edges[startIndex];
-    input.read((char*) edges, numBytes);
+    _edgeCount = numBytes / sizeof(Edge);
+    _edges = new Edge[_edgeCount];
+    _start = &_edges[startIndex];
+    input.read((char*) _edges, numBytes);
     if (input.fail() && !input.eof()) {
         error("DawgLexicon::addWordsFromFile: Improperly formed lexicon file");
     }
 
 #if defined(BYTE_ORDER) && BYTE_ORDER == LITTLE_ENDIAN
     // uint32_t* cur = (uint32_t*) edges;
-    uint32_t* cur = reinterpret_cast<uint32_t*>(edges);
-    for (int i = 0; i < numEdges; i++, cur++) {
+    uint32_t* cur = reinterpret_cast<uint32_t*>(_edges);
+    for (int i = 0; i < _edgeCount; i++, cur++) {
         *cur = my_ntohl(*cur);
     }
 #endif
 
-    numDawgWords = countDawgWords(start);
+    _dawgWordsCount = countDawgWords(_start);
 }
 
 /*
@@ -881,24 +963,24 @@ void DawgLexicon::readBinaryFile(const std::string& filename) {
  */
 
 DawgLexicon::Edge* DawgLexicon::traceToLastEdge(const std::string& s) const {
-    if (!start) {
+    if (!_start) {
         return nullptr;
     }
-    Edge* curEdge = findEdgeForChar(start, s[0]);
+    Edge* curEdge = findEdgeForChar(_start, s[0]);
     int len = (int) s.length();
     for (int i = 1; i < len; i++) {
         if (!curEdge || !curEdge->children) {
             return nullptr;
         }
-        curEdge = findEdgeForChar(&edges[curEdge->children], s[i]);
+        curEdge = findEdgeForChar(&_edges[curEdge->children], s[i]);
     }
     return curEdge;
 }
 
 DawgLexicon& DawgLexicon::operator =(const DawgLexicon& src) {
     if (this != &src) {
-        if (edges) {
-            delete[] edges;
+        if (_edges) {
+            delete[] _edges;
         }
         deepCopy(src);
     }
@@ -930,13 +1012,13 @@ void DawgLexicon::iterator::advanceToNextEdge() {
     } else {
         stack.push(ep);
         currentDawgPrefix.push_back(lp->ordToChar(ep->letter));
-        edgePtr = &lp->edges[ep->children];
+        edgePtr = &lp->_edges[ep->children];
     }
 }
 
 void DawgLexicon::iterator::advanceToNextWordInDawg() {
     if (!edgePtr) {
-        edgePtr = lp->start;
+        edgePtr = lp->_start;
     } else {
         advanceToNextEdge();
     }
@@ -977,6 +1059,8 @@ static uint32_t my_ntohl(uint32_t arg) {
  * ------------------
  * This file implements the interface declared in hashcode.h.
  *
+ * @version 2019/04/02
+ * - bugfix for win64 involving hashCode for void* pointers
  * @version 2018/08/10
  * - bugfixes involving negative hash codes, unified string hashing
  * @version 2017/10/21
@@ -1061,7 +1145,12 @@ int hashCode(unsigned short key) {
  * overloads just treats the pointer value numerically.
  */
 int hashCode(void* key) {
+#if _WIN64
+    long temp = (long) static_cast<uint32_t>(reinterpret_cast<uintptr_t>(key));
+    return hashCode(temp);
+#else
     return hashCode(reinterpret_cast<long>(key));
+#endif // _WIN64
 }
 
 /*
@@ -1171,37 +1260,37 @@ int hashCode(long double key) {
 static bool scrub(std::string& str);
 
 Lexicon::Lexicon() :
-        m_root(nullptr),
-        m_size(0),
-        m_removeFlag(false) {
+        _root(nullptr),
+        _size(0),
+        _removeFlag(false) {
     // empty
 }
 
 Lexicon::Lexicon(std::istream& input) :
-        m_root(nullptr),
-        m_size(0),
-        m_removeFlag(false) {
+        _root(nullptr),
+        _size(0),
+        _removeFlag(false) {
     addWordsFromFile(input);
 }
 
 Lexicon::Lexicon(const std::string& filename) :
-        m_root(nullptr),
-        m_size(0),
-        m_removeFlag(false) {
+        _root(nullptr),
+        _size(0),
+        _removeFlag(false) {
     addWordsFromFile(filename);
 }
 
 Lexicon::Lexicon(std::initializer_list<std::string> list) :
-        m_root(nullptr),
-        m_size(0),
-        m_removeFlag(false) {
+        _root(nullptr),
+        _size(0),
+        _removeFlag(false) {
     addAll(list);
 }
 
 Lexicon::Lexicon(const Lexicon& src) :
-        m_root(nullptr),
-        m_size(0),
-        m_removeFlag(false) {
+        _root(nullptr),
+        _size(0),
+        _removeFlag(false) {
     deepCopy(src);
 }
 
@@ -1217,7 +1306,7 @@ bool Lexicon::add(const std::string& word) {
     if (!scrub(scrubbed)) {
         return false;
     }
-    return addHelper(m_root, scrubbed, /* originalWord */ scrubbed);
+    return addHelper(_root, scrubbed, /* originalWord */ scrubbed);
 }
 
 Lexicon& Lexicon::addAll(const Lexicon& lex) {
@@ -1263,14 +1352,14 @@ std::string Lexicon::back() const {
     if (isEmpty()) {
         error("Lexicon::back: lexicon is empty");
     }
-    return m_allWords.back();
+    return _allWords.back();
 }
 
 void Lexicon::clear() {
-    m_size = 0;
-    m_allWords.clear();
-    deleteTree(m_root);
-    m_root = nullptr;
+    _size = 0;
+    _allWords.clear();
+    deleteTree(_root);
+    _root = nullptr;
 }
 
 bool Lexicon::contains(const std::string& word) const {
@@ -1281,7 +1370,7 @@ bool Lexicon::contains(const std::string& word) const {
     if (!scrub(scrubbed)) {
         return false;
     }
-    return containsHelper(m_root, scrubbed, /* isPrefix */ false);
+    return containsHelper(_root, scrubbed, /* isPrefix */ false);
 }
 
 bool Lexicon::containsAll(const Lexicon& lex2) const {
@@ -1310,7 +1399,7 @@ bool Lexicon::containsPrefix(const std::string& prefix) const {
     if (!scrub(scrubbed)) {
         return false;
     }
-    return containsHelper(m_root, scrubbed, /* isPrefix */ true);
+    return containsHelper(_root, scrubbed, /* isPrefix */ true);
 }
 
 bool Lexicon::equals(const Lexicon& lex2) const {
@@ -1321,14 +1410,14 @@ std::string Lexicon::first() const {
     if (isEmpty()) {
         error("Lexicon::first: lexicon is empty");
     }
-    return m_allWords.front();
+    return _allWords.front();
 }
 
 std::string Lexicon::front() const {
     if (isEmpty()) {
         error("Lexicon::front: lexicon is empty");
     }
-    return m_allWords.front();
+    return _allWords.front();
 }
 
 void Lexicon::insert(const std::string& word) {
@@ -1365,13 +1454,13 @@ bool Lexicon::isSupersetOf(std::initializer_list<std::string> list) const {
 }
 
 void Lexicon::mapAll(void (*fn)(std::string)) const {
-    for (std::string word : m_allWords) {
+    for (std::string word : _allWords) {
         fn(word);
     }
 }
 
 void Lexicon::mapAll(void (*fn)(const std::string&)) const {
-    for (std::string word : m_allWords) {
+    for (std::string word : _allWords) {
         fn(word);
     }
 }
@@ -1384,7 +1473,7 @@ bool Lexicon::remove(const std::string& word) {
     if (!scrub(scrubbed)) {
         return false;
     }
-    return removeHelper(m_root, scrubbed, /* originalWord */ scrubbed, /* isPrefix */ false);
+    return removeHelper(_root, scrubbed, /* originalWord */ scrubbed, /* isPrefix */ false);
 }
 
 Lexicon& Lexicon::removeAll(const Lexicon& lex2) {
@@ -1418,7 +1507,7 @@ bool Lexicon::removePrefix(const std::string& prefix) {
         return false;
     }
     
-    return removeHelper(m_root, scrubbed, /* originalWord */ scrubbed, /* isPrefix */ true);
+    return removeHelper(_root, scrubbed, /* originalWord */ scrubbed, /* isPrefix */ true);
 }
 
 Lexicon& Lexicon::retainAll(const Lexicon& lex2) {
@@ -1440,7 +1529,7 @@ Lexicon& Lexicon::retainAll(std::initializer_list<std::string> list) {
 }
 
 int Lexicon::size() const {
-    return m_size;
+    return _size;
 }
 
 std::string Lexicon::toString() const {
@@ -1530,7 +1619,7 @@ Lexicon& Lexicon::operator +=(std::initializer_list<std::string> list) {
 
 Lexicon& Lexicon::operator +=(const std::string& word) {
     add(word);
-    m_removeFlag = false;
+    _removeFlag = false;
     return *this;
 }
 
@@ -1552,14 +1641,14 @@ Lexicon& Lexicon::operator -=(std::initializer_list<std::string> list) {
 
 Lexicon& Lexicon::operator -=(const std::string& word) {
     remove(word);
-    m_removeFlag = true;
+    _removeFlag = true;
     return *this;
 }
 
 /* private helpers implementation */
 
 Lexicon& Lexicon::operator ,(const std::string& word) {
-    if (m_removeFlag) {
+    if (_removeFlag) {
         remove(word);
     } else {
         add(word);
@@ -1581,8 +1670,8 @@ bool Lexicon::addHelper(TrieNode*& node, const std::string& word, const std::str
         } else {
             // new word; add it
             node->setWord(true);
-            m_size++;
-            m_allWords.add(originalWord);
+            _size++;
+            _allWords.add(originalWord);
             return true;
         }
     } else {
@@ -1634,8 +1723,8 @@ bool Lexicon::removeHelper(TrieNode*& node, const std::string& word, const std::
                     node->setWord(false);
                 }
             }
-            m_allWords.remove(originalWord);
-            m_size--;
+            _allWords.remove(originalWord);
+            _size--;
         }
         return true;
     } else {
@@ -1661,8 +1750,8 @@ void Lexicon::removeSubtreeHelper(TrieNode*& node, const std::string& originalWo
             removeSubtreeHelper(node->child(letter), originalWord + letter);
         }
         if (node->isWord()) {
-            m_allWords.remove(originalWord);
-            m_size--;
+            _allWords.remove(originalWord);
+            _size--;
         }
         delete node;
         node = nullptr;
@@ -1670,7 +1759,7 @@ void Lexicon::removeSubtreeHelper(TrieNode*& node, const std::string& originalWo
 }
 
 void Lexicon::deepCopy(const Lexicon& src) {
-    for (std::string word : src.m_allWords) {
+    for (std::string word : src._allWords) {
         add(word);
     }
 }
@@ -1743,7 +1832,7 @@ Lexicon& Lexicon::operator =(const Lexicon& src) {
 }
 
 std::ostream& operator <<(std::ostream& out, const Lexicon& lex) {
-    out << lex.m_allWords;
+    out << lex._allWords;
     return out;
 }
 
@@ -2504,11 +2593,11 @@ void ofbitstream::open(const char* filename) {
     // Very Bad Idea.
     if (endsWith(filename, ".cpp") || endsWith(filename, ".h") ||
             endsWith(filename, ".hh") || endsWith(filename, ".cc")) {
+        setstate(std::ios::failbit);
         error(std::string("ofbitstream::open: It is potentially dangerous to write to file ")
               + filename + ", because that might be your own source code.  "
               + "We are explicitly disallowing this operation.  Please choose a "
               + "different filename.");
-        setstate(std::ios::failbit);
     } else {
         if (!fb.open(filename, std::ios::out | std::ios::binary)) {
             setstate(std::ios::failbit);
@@ -4639,10 +4728,6 @@ ErrorException::ErrorException(std::string msg)
 #endif // SPL_CONSOLE_PRINT_EXCEPTIONS
 }
 
-ErrorException::~ErrorException() throw () {
-    /* Empty */
-}
-
 void ErrorException::dump() const {
     dump(std::cerr);
 }
@@ -4697,7 +4782,7 @@ void ErrorException::setStackTrace(const std::string& stackTrace) {
     _stackTrace = stackTrace;
 }
 
-const char* ErrorException::what() const throw () {
+const char* ErrorException::what() const noexcept {
     // stepp : The original "Error: " prefix is commented out here,
     // because in many error cases, the attempt to do the string concatenation
     // ends up garbling the string and leading to garbage exception text
@@ -4935,6 +5020,8 @@ void setEcho(bool value) {
  * by student code on the console.
  * 
  * @author Marty Stepp
+ * @version 2019/04/02
+ * - small fix for warning about -Wreturn-std-move on string exception
  * @version 2018/10/18
  * - added set_unexpected handler (used by autograders when errors are thrown)
  * - added some new function names to filter from stack traces
@@ -5046,6 +5133,7 @@ std::string cleanupFunctionNameForStackTrace(std::string function) {
     stringReplaceInPlace(function, "basic_ofstream", "ofstream");
     stringReplaceInPlace(function, "basic_ifstream", "ifstream");
     stringReplaceInPlace(function, "basic_string", "string");
+    stringReplaceInPlace(function, "stanfordcpplib::collections::GenericSet", "Set");
 
     // remove empty/unknown function names
     stringReplaceInPlace(function, "?? ??:0", "");
@@ -5119,10 +5207,15 @@ LONG WINAPI UnhandledException(LPEXCEPTION_POINTERS exceptionInfo) {
     // it means you're using a 64-bit compiler like the MS Visual C++ compiler,
     // and not the 32-bit MinGW compiler we instructed you to install.
     // Please re-install Qt Creator with the proper compiler (MinGW 32-bit) enabled.
-    if (exceptionInfo && exceptionInfo->ContextRecord && exceptionInfo->ContextRecord->Eip) {
-        // stacktrace::fakeCallStackPointer() = (void*) exceptionInfo->ContextRecord->Eip;
+#if _WIN64
+    if (exceptionInfo && exceptionInfo->ContextRecord && exceptionInfo->ContextRecord->Rip) {
         stacktrace::fakeCallStackPointer() = (void*) exceptionInfo;
     }
+#else
+    if (exceptionInfo && exceptionInfo->ContextRecord && exceptionInfo->ContextRecord->Eip) {
+        stacktrace::fakeCallStackPointer() = (void*) exceptionInfo;
+    }
+#endif // _WIN64
     DWORD code = exceptionInfo->ExceptionRecord->ExceptionCode;
     if (code == EXCEPTION_STACK_OVERFLOW || code == EXCEPTION_FLT_STACK_CHECK) {
         stanfordCppLibSignalHandler(SIGSTACK);
@@ -5594,7 +5687,7 @@ static void stanfordCppLibTerminateHandler() {
         }
     } catch (const std::exception& ex) {
         FILL_IN_EXCEPTION_TRACE(ex, "A C++ exception", insertStarsBeforeEachLine(ex.what()));
-    } catch (std::string str) {
+    } catch (const std::string& str) {
         FILL_IN_EXCEPTION_TRACE(str, "A string exception", insertStarsBeforeEachLine(str));
     } catch (char const* str) {
         FILL_IN_EXCEPTION_TRACE(str, "A string exception", insertStarsBeforeEachLine(str));
@@ -7027,6 +7120,8 @@ long Timer::currentTimeMS() {
  * This file implements the console .h interface.
  *
  * @author Marty Stepp
+ * @version 2019/04/12
+ * - added pause() implementation (empty) in headless mode
  * @version 2018/11/22
  * - added headless mode support
  * @version 2018/10/01

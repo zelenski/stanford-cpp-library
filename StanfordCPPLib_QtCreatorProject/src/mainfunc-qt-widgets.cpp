@@ -47,6 +47,7 @@ void testQwindow() {
 
     GLabel* label = new GLabel("Type <b>stuff</b> <i>now</i> (North):");
     // label->setIcon("triangle-icon.png");
+    label->setBackground("yellow");
     label->setColor(GColor::GREEN);
     // label->setBackground(GColor::YELLOW);
     label->setActionListener([=]() {
@@ -59,6 +60,7 @@ void testQwindow() {
 
     //        static GTextField* textField = new GTextField(42.0);
     GTextField* textField = new GTextField("Marty");
+    textField->setBackground("green");
     textField->setPlaceholder("type your name");
     // textField->setEditable(false);
     textField->setAutocompleteList({"matt", "Marty", "Stuart", "steve", "yana", "yes", "no"});
@@ -72,6 +74,7 @@ void testQwindow() {
     cout << "textfield: " << textField->toString() << endl;
 
     GSlider* slider = new GSlider();
+    slider->setBackground("blue");
     slider->setMinorTickSpacing(20);
     slider->setPaintLabels(true);
     slider->setPaintTicks(true);
@@ -89,6 +92,7 @@ void testQwindow() {
     // WEST AREA
 
     GCheckBox* checkBox = new GCheckBox("Question?", true);
+    checkBox->setBackground("red");
     checkBox->setActionListener([checkBox](const GEvent&) {
         cout << "checkbox clicked! " << boolalpha << checkBox->isChecked() << endl;
     });
@@ -106,6 +110,7 @@ void testQwindow() {
     GRadioButton* radio3group1 = new GRadioButton("C", "group1");
     GRadioButton* radio1group2 = new GRadioButton("XX", "group2", true);
     GRadioButton* radio2group2 = new GRadioButton("YY", "group2");
+    radio1group1->setBackground("red");
 
     GEventListenerVoid radioChangeHandler = [radio1group1, radio2group1,
             radio3group1, radio1group2, radio2group2]() {
@@ -257,6 +262,7 @@ void testQwindow() {
 //    window->addToRegion(textArea, "Center");
 
     GBrowserPane* pane = new GBrowserPane();
+    pane->setBackground("red");
     pane->readTextFromFile("resfile3.html");
     pane->setLinkListener([](GEvent event) {
         cout << "event: " << event << ", url: " << event.getRequestURL() << endl;

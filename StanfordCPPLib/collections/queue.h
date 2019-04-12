@@ -44,11 +44,12 @@
 #ifndef _queue_h
 #define _queue_h
 
-#include "deque.h"
 #include <initializer_list>
 
 #define INTERNAL_INCLUDE 1
 #include "collections.h"
+#define INTERNAL_INCLUDE 1
+#include "deque.h"
 #define INTERNAL_INCLUDE 1
 #include "error.h"
 #define INTERNAL_INCLUDE 1

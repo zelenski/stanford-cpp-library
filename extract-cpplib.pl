@@ -44,9 +44,9 @@ my @ALL_FILES = (
 "$basedir/util/stringutils.h",               # deps: none
 "$basedir/util/intrange.h",                  # deps: error, Point
 "$basedir/io/filelib.h",                     # deps: vector.h
+"$basedir/collections/deque.h",
 "$basedir/collections/queue.h",
 "$basedir/collections/stack.h",
-"$basedir/collections/deque.h",
 # "$basedir/private/tokenpatch.h",
 "$basedir/io/tokenscanner.h",
 "$basedir/collections/map.h",

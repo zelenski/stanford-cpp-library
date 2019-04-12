@@ -3,6 +3,8 @@
  * ---------------------
  *
  * @author Marty Stepp
+ * @version 2019/04/10
+ * - bug fix for setBackground on GTextArea and GBrowserPane
  * @version 2018/09/20
  * - bug fix for requestFocus threading
  * @version 2018/09/04
@@ -268,6 +270,9 @@ void GInteractor::setBackground(int rgb) {
             palette.setColor(QPalette::Base, QColor(rgb));
             palette.setColor(QPalette::Active, QPalette::Button, QColor(rgb));
             palette.setColor(QPalette::Inactive, QPalette::Button, QColor(rgb));
+        } else if (getType() == "GTextArea"
+                   || getType() == "GBrowserPane") {
+            palette.setColor(QPalette::Base, QColor(rgb));
         }
 
         getWidget()->setAutoFillBackground(true);
@@ -289,6 +294,9 @@ void GInteractor::setBackground(const std::string& color) {
                 palette.setColor(QPalette::Base, qcolor);
                 palette.setColor(QPalette::Active, QPalette::Button, qcolor);
                 palette.setColor(QPalette::Inactive, QPalette::Button, qcolor);
+            } else if (getType() == "GTextArea"
+                       || getType() == "GBrowserPane") {
+                palette.setColor(QPalette::Base, qcolor);
             }
 
             getWidget()->setAutoFillBackground(true);

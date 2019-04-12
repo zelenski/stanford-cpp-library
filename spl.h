@@ -1,6 +1,6 @@
 // Stanford C++ library (extracted)
 // @author Marty Stepp
-// @version Fri Dec 28 19:05:02 PST 2018
+// @version Fri Apr 12 09:03:18 PDT 2019
 //
 // This library has been merged into a single .h and .cpp file by an automatic script
 // to make it easier to include and use with the CodeStepByStep tool.
@@ -304,7 +304,7 @@ public:
     /**
      * Frees any memory allocated by the exception.
      */
-    virtual ~ErrorException() throw ();
+    virtual ~ErrorException() noexcept = default;
 
     /**
      * Prints the exception to the standard error stream (cerr),
@@ -357,7 +357,7 @@ public:
     /**
      * Returns the exception's error message as a C string.
      */
-    virtual const char* what() const throw ();
+    virtual const char* what() const noexcept;
 
 protected:
     /**
@@ -382,14 +382,11 @@ private:
  */
 std::ostream& operator <<(std::ostream& out, const ErrorException& ex);
 
-// TODO: use [[noreturn]] or Q_NO_RETURN to indicate that function does not ever return
-// (added in c++11; still incompatible with some compilers?)
-
 /**
  * Signals an error condition in a program by throwing an
  * <code>ErrorException</code> with the specified message.
  */
-/* [[noreturn]] */ void error(const std::string& msg);
+[[noreturn]] void error(const std::string& msg);
 
 #endif // _error_h
 
@@ -1150,16 +1147,18 @@ bool getYesOrNo(const std::string& prompt = "",
 #ifndef _functional_h
 #define _functional_h
 
+#include <functional> // The standard header one. :-)
+
 namespace functional {
 
-/*
+/**
  * Performs a filter operation on the given collection,
  * returning a new collection that retains only the elements
  * for which the given predicate function returns true.
  */
 template <typename CollectionType, typename ElementType>
 CollectionType filter(CollectionType collection,
-                      bool (*predicate)(ElementType)) {
+                      std::function<bool (const ElementType &)> predicate) {
     CollectionType result;
     for (const ElementType& element : collection) {
         if (predicate(element)) {
@@ -1169,24 +1168,7 @@ CollectionType filter(CollectionType collection,
     return result;
 }
 
-/*
- * Performs a filter operation on the given collection,
- * returning a new collection that retains only the elements
- * for which the given predicate function returns true.
- */
-template <typename CollectionType, typename ElementType>
-CollectionType filter(CollectionType collection,
-                      bool (*predicate)(const ElementType&)) {
-    CollectionType result;
-    for (const ElementType& element : collection) {
-        if (predicate(element)) {
-            result.add(element);
-        }
-    }
-    return result;
-}
-
-/*
+/**
  * Performs a filter operation on the given collection,
  * building a new collection that retains only the elements
  * for which the given predicate function returns true.
@@ -1195,7 +1177,7 @@ CollectionType filter(CollectionType collection,
  */
 template <typename CollectionType, typename ElementType>
 CollectionType& filter(CollectionType collection,
-                       bool (*predicate)(ElementType),
+                       std::function<bool (const ElementType &)> predicate,
                        CollectionType& result) {
     for (const ElementType& element : collection) {
         if (predicate(element)) {
@@ -1205,32 +1187,13 @@ CollectionType& filter(CollectionType collection,
     return result;
 }
 
-/*
- * Performs a filter operation on the given collection,
- * building a new collection that retains only the elements
- * for which the given predicate function returns true.
- * The new collection is stored in the given 'result' variable.
- * A reference to that same result is returned for convenience.
- */
-template <typename CollectionType, typename ElementType>
-CollectionType& filter(CollectionType collection,
-                       bool (*predicate)(const ElementType&),
-                       CollectionType& result) {
-    for (const ElementType& element : collection) {
-        if (predicate(element)) {
-            result.add(element);
-        }
-    }
-    return result;
-}
-
-/*
+/**
  * Applies the given function to each element of the given collection,
  * producing and returning a new collection containing the results.
  */
 template <typename CollectionType, typename ElementType>
 CollectionType map(CollectionType collection,
-                   ElementType (*fn)(ElementType)) {
+                   std::function<ElementType (const ElementType &)> fn) {
     CollectionType result;
     for (const ElementType& element : collection) {
         result.add(fn(element));
@@ -1238,21 +1201,7 @@ CollectionType map(CollectionType collection,
     return result;
 }
 
-/*
- * Applies the given function to each element of the given collection,
- * producing and returning a new collection containing the results.
- */
-template <typename CollectionType, typename ElementType>
-CollectionType map(CollectionType collection,
-                   ElementType (*fn)(const ElementType&)) {
-    CollectionType result;
-    for (const ElementType& element : collection) {
-        result.add(fn(element));
-    }
-    return result;
-}
-
-/*
+/**
  * Applies the given function to each element of the given collection,
  * producing a new collection containing the results.
  * The new collection is stored in the 'result' variable.
@@ -1261,7 +1210,7 @@ CollectionType map(CollectionType collection,
 template <typename CollectionType, typename ElementType,
           typename CollectionType2, typename ElementType2>
 CollectionType2& map(CollectionType collection,
-                     ElementType2 (*fn)(ElementType),
+                     std::function<ElementType (const ElementType &)> fn,
                      CollectionType2& result) {
     for (const ElementType& element : collection) {
         result.add(fn(element));
@@ -1269,61 +1218,23 @@ CollectionType2& map(CollectionType collection,
     return result;
 }
 
-/*
- * Applies the given function to each element of the given collection,
- * producing a new collection containing the results.
- * The new collection is stored in the 'result' variable.
- * A reference to that same result is returned for convenience.
- */
-template <typename CollectionType, typename ElementType,
-          typename CollectionType2, typename ElementType2>
-CollectionType2& map(CollectionType collection,
-                     ElementType2 (*fn)(const ElementType&),
-                     CollectionType2& result) {
-    for (const ElementType& element : collection) {
-        result.add(fn(element));
-    }
-    return result;
-}
-
-/*
+/**
  * Performs a reduction operation, applying a function to each neighboring pair
  * of elements of the collection until they are all combined (reduced) into a
  * single value, which is then returned.
+ * Begins with a "default" value of the starting type.
  */
 template <typename CollectionType, typename ElementType>
 ElementType reduce(CollectionType collection,
-                   ElementType (*fn)(ElementType e1, ElementType e2),
-                   ElementType startValue) {
-    ElementType prev = startValue;
+                   std::function<ElementType (const ElementType&, const ElementType &)> fn) {
+    ElementType prev;
     for (const ElementType& element : collection) {
         prev = fn(prev, element);
     }
     return prev;
 }
 
-/*
- * Performs a reduction operation, applying a function to each neighboring pair
- * of elements of the collection until they are all combined (reduced) into a
- * single value, which is then returned.
- */
-template <typename CollectionType, typename ElementType>
-ElementType reduce(CollectionType collection,
-                   ElementType (*fn)(ElementType e1, ElementType e2)) {
-    bool first = true;
-    ElementType prev;
-    for (const ElementType& element : collection) {
-        if (first) {
-            prev = element;
-            first = false;
-        } else {
-            prev = fn(prev, element);
-        }
-    }
-    return prev;
-}
-
-/*
+/**
  * Performs a reduction operation, applying a function to each neighboring pair
  * of elements of the collection until they are all combined (reduced) into a
  * single value, which is then returned.
@@ -1332,34 +1243,11 @@ ElementType reduce(CollectionType collection,
  */
 template <typename CollectionType, typename ElementType>
 ElementType reduce(CollectionType collection,
-                   ElementType (*fn)(const ElementType& e1, const ElementType& e2),
+                   std::function<ElementType (const ElementType&, const ElementType &)> fn,
                    ElementType startValue) {
     ElementType prev = startValue;
     for (const ElementType& element : collection) {
         prev = fn(prev, element);
-    }
-    return prev;
-}
-
-/*
- * Performs a reduction operation, applying a function to each neighboring pair
- * of elements of the collection until they are all combined (reduced) into a
- * single value, which is then returned.
- * Begins the reduction with the given starting value, which is then merged
- * with each value from the collection one at a time.
- */
-template <typename CollectionType, typename ElementType>
-ElementType reduce(CollectionType collection,
-                   ElementType (*fn)(const ElementType& e1, const ElementType& e2)) {
-    bool first = true;
-    ElementType prev;
-    for (const ElementType& element : collection) {
-        if (first) {
-            prev = element;
-            first = false;
-        } else {
-            prev = fn(prev, element);
-        }
     }
     return prev;
 }
@@ -1598,6 +1486,7 @@ double vectorDistance(const Point& pt);
 #define _shuffle_h
 
 #include <string>
+#include <algorithm>
 
 #define INTERNAL_INCLUDE 1
 
@@ -1612,11 +1501,7 @@ template <typename T>
 void shuffle(T* array, int length) {
     for (int i = 0; i < length; i++) {
         int j = randomInteger(i, length - 1);
-        if (i != j) {
-            T temp = array[i];
-            array[i] = array[j];
-            array[j] = temp;
-        }
+        if (i != j) std::swap(array[i], array[j]);
     }
 }
 
@@ -1637,9 +1522,7 @@ void shuffle(T** array2d, int rows, int cols) {
             int r2 = j / cols;
             int c2 = j % cols;
 
-            T temp = array2d[r1][c1];
-            array2d[r1][c1] = array2d[r2][c2];
-            array2d[r2][c2] = temp;
+            std::swap(array2d[r1][c1], array2d[r2][c2]);
         }
     }
 }
@@ -1665,6 +1548,10 @@ std::string shuffle(std::string s);
  * Used to implement comparison operators like < and >= on collections.
  *
  * @author Marty Stepp
+ * @version 2019/04/12
+ * - added GenericSet unionWith, intersect, difference methods
+ * - added functions to read/write quoted char values
+ * - changed comment formatting
  * @version 2017/12/12
  * - added equalsDouble for collections of double values (can't compare with ==)
  * @version 2017/10/18
@@ -1692,6 +1579,7 @@ std::string shuffle(std::string s);
 
 #include <iostream>
 #include <sstream>
+#include <type_traits>
 
 #define INTERNAL_INCLUDE 1
 
@@ -1706,16 +1594,38 @@ std::string shuffle(std::string s);
 // begin global namespace string read/writing functions from strlib.h
 
 /**
+ * Reads the next char from infile into the reference parameter ch.
+ * If the first character (other than whitespace) is either a single
+ * or a double quote, this function reads characters up to the
+ * matching quote, processing standard escape sequences as it goes.
+ * If not, readQuotedChar reads characters up to any of the characters
+ * in the string STRING_DELIMITERS in the implementation file.
+ *
+ * @private
+ */
+bool readQuotedChar(std::istream& is, char& ch, bool throwOnError = true);
+
+/**
  * Reads the next string from infile into the reference parameter str.
  * If the first character (other than whitespace) is either a single
  * or a double quote, this function reads characters up to the
  * matching quote, processing standard escape sequences as it goes.
- * If not, readString reads characters up to any of the characters
+ * If not, readQuoted String reads characters up to any of the characters
  * in the string STRING_DELIMITERS in the implementation file.
  *
  * @private
  */
 bool readQuotedString(std::istream& is, std::string& str, bool throwOnError = true);
+
+/**
+ * Writes the char ch to outfile surrounded by single quotes, converting
+ * special characters to escape sequences, as necessary.  If the optional
+ * parameter forceQuotes is explicitly set to false, quotes are included
+ * in the output only if necessary.
+ *
+ * @private
+ */
+std::ostream& writeQuotedChar(std::ostream& os, char ch, bool forceQuotes = true);
 
 /**
  * Writes the string str to outfile surrounded by double quotes, converting
@@ -1741,13 +1651,16 @@ bool stringNeedsQuoting(const std::string& str);
  */
 template <typename ValueType>
 std::ostream& writeGenericValue(std::ostream& os, const ValueType& value, bool) {
-    os << std::boolalpha << value;
-    return os;
+    return os << std::boolalpha << value;
 }
 
-template <>
+inline std::ostream& writeGenericValue(std::ostream& os, char value,
+                                       bool forceQuotes) {
+    return writeQuotedChar(os, value, forceQuotes);
+}
+
 inline std::ostream& writeGenericValue(std::ostream& os, const std::string& value,
-                              bool forceQuotes) {
+                                       bool forceQuotes) {
     return writeQuotedString(os, value, forceQuotes);
 }
 
@@ -1759,7 +1672,6 @@ inline std::string genericValueToString(const ValueType& value,
     return os.str();
 }
 
-template <>
 inline std::string genericValueToString(const std::string& value,
                                         bool forceQuotes) {
     std::ostringstream os;
@@ -1777,7 +1689,10 @@ bool readGenericValue(std::istream& is, ValueType& value) {
     return (bool) (is >> value);
 }
 
-template <>
+inline bool readGenericValue(std::istream& is, char& value) {
+    return readQuotedChar(is, value, /* throwOnError */ false);
+}
+
 inline bool readGenericValue(std::istream& is, std::string& value) {
     return readQuotedString(is, value, /* throwOnError */ false);
 }
@@ -1826,9 +1741,9 @@ int compare(const CollectionType& coll1, const CollectionType& coll2) {
     }
     
     auto itr1 = coll1.begin(),
-            itr2 = coll2.begin(),
-            end1 = coll1.end(),
-            end2 = coll2.end();
+         itr2 = coll2.begin(),
+         end1 = coll1.end(),
+         end2 = coll2.end();
     for (;
          itr1 != end1 && itr2 != end2;
          ++itr1, ++itr2) {
@@ -1879,9 +1794,9 @@ int compareMaps(const MapType& map1, const MapType& map2) {
     }
     
     auto itr1 = map1.begin(),
-            itr2 = map2.begin(),
-            end1 = map1.end(),
-            end2 = map2.end();
+         itr2 = map2.begin(),
+         end1 = map1.end(),
+         end2 = map2.end();
     for (;
          itr1 != end1 && itr2 != end2;
          ++itr1, ++itr2) {
@@ -1924,112 +1839,20 @@ int compareMaps(const MapType& map1, const MapType& map2) {
 }
 
 /*
- * Compares two values and returns an integer indicating their relative order,
- * in the general style of Java's compareTo method:
+ * Template functions to compare two interleaved sequences of values, returning
  * -1 if the first value is less than the second,
  *  0 if the values are equal,
  *  1 if the first value is greater than the second.
  * The type passed must support a < less-than operator.
  */
-template <typename T>
-int compareTo(T t1, T t2) {
-    if (t1 < t2) {
-        return -1;
-    } else if (t2 < t1) {
-        return 1;
-    } else {
-        return 0;
-    }
+inline int compareTo() {
+    return 0;
 }
-
-/*
- * Compares two pairs of values and returns an integer indicating their relative order,
- * in the general style of Java's compareTo method.
- * First the values t1 and t2 are compared.
- * If they are equal, ties are broken by comparing t3 and t4.
- * -1 if the first value is less than the second,
- *  0 if the values are equal,
- *  1 if the first value is greater than the second.
- * The types passed must support a < less-than operator.
- */
-template <typename T1, typename T2>
-int compareTo2(T1 t1, T1 t2, T2 t3, T2 t4) {
-    if (t3 < t4) {
-        return -1;
-    } else if (t4 < t3) {
-        return 1;
-    } else {
-        return compareTo(t1, t2);
-    }
-}
-
-/*
- * Compares three pairs of values and returns an integer indicating their relative order,
- * in the general style of Java's compareTo method.
- * First the values t1 and t2 are compared.
- * If t1 and t2 are equal, ties are broken by comparing t3 and t4.
- * If t3 and t4 are equal, ties are broken by comparing t5 and t6.
- * -1 if the first value is less than the second,
- *  0 if the values are equal,
- *  1 if the first value is greater than the second.
- * The types passed must support a < less-than operator.
- */
-template <typename T1, typename T2, typename T3>
-int compareTo3(T1 t1, T1 t2, T2 t3, T2 t4, T3 t5, T3 t6) {
-    if (t5 < t6) {
-        return -1;
-    } else if (t6 < t5) {
-        return 1;
-    } else {
-        return compareTo2(t1, t2, t3, t4);
-    }
-}
-
-/*
- * Compares four pairs of values and returns an integer indicating their relative order,
- * in the general style of Java's compareTo method.
- * First the values t1 and t2 are compared.
- * If t1 and t2 are equal, ties are broken by comparing t3 and t4.
- * If t3 and t4 are equal, ties are broken by comparing t5 and t6.
- * If t5 and t6 are equal, ties are broken by comparing t7 and t8.
- * -1 if the first value is less than the second,
- *  0 if the values are equal,
- *  1 if the first value is greater than the second.
- * The types passed must support a < less-than operator.
- */
-template <typename T1, typename T2, typename T3, typename T4>
-int compareTo4(T1 t1, T1 t2, T2 t3, T2 t4, T3 t5, T3 t6, T4 t7, T4 t8) {
-    if (t7 < t8) {
-        return -1;
-    } else if (t8 < t7) {
-        return 1;
-    } else {
-        return compareTo3(t1, t2, t3, t4, t5, t6);
-    }
-}
-
-/*
- * Compares five pairs of values and returns an integer indicating their relative order,
- * in the general style of Java's compareTo method.
- * First the values t1 and t2 are compared.
- * If t1 and t2 are equal, ties are broken by comparing t3 and t4.
- * If t3 and t4 are equal, ties are broken by comparing t5 and t6.
- * If t5 and t6 are equal, ties are broken by comparing t7 and t8.
- * If t7 and t8 are equal, ties are broken by comparing t9 and t10.
- * -1 if the first value is less than the second,
- *  0 if the values are equal,
- *  1 if the first value is greater than the second.
- * The types passed must support a < less-than operator.
- */
-template <typename T1, typename T2, typename T3, typename T4, typename T5>
-int compareTo5(T1 t1, T1 t2, T2 t3, T2 t4, T3 t5, T3 t6, T4 t7, T4 t8, T5 t9, T5 t10) {
-    if (t9 < t10) {
-        return -1;
-    } else if (t10 < t9) {
-        return 1;
-    } else {
-        return compareTo4(t1, t2, t3, t4, t5, t6, t7, t8);
-    }
+template <typename T, typename... Rest>
+int compareTo(const T& first, const T& second, const Rest&... rest) {
+    if (first < second) return -1;
+    if (second < first) return +1;
+    return compareTo(rest...);
 }
 
 /*
@@ -2051,7 +1874,7 @@ bool equals(const CollectionType& coll1, const CollectionType& coll2) {
     auto itr1 = coll1.begin();
     auto end1 = coll1.end();
     auto itr2 = coll2.begin();
-    auto end2 = coll1.end();
+    auto end2 = coll2.end();
     while (itr1 != end1 && itr2 != end2) {
         if (!(*itr1 == *itr2)) {
             return false;
@@ -2081,7 +1904,7 @@ bool equalsDouble(const CollectionType& coll1, const CollectionType& coll2) {
     auto itr1 = coll1.begin();
     auto end1 = coll1.end();
     auto itr2 = coll2.begin();
-    auto end2 = coll1.end();
+    auto end2 = coll2.end();
     while (itr1 != end1 && itr2 != end2) {
         if (!floatingPointEqual(*itr1, *itr2)) {
             return false;
@@ -2109,15 +1932,10 @@ bool equalsMap(const MapType& map1, const MapType& map2) {
         return false;
     }
 
-    // check each pair of key/value pairs for equality;
-    // compare both ways; each must be subset of the other
+    // check whether each element in the first map is also in the second.
+    // since the sizes are the same, if this is true, the maps are equal.
     for (auto itr1 = map1.begin(), end1 = map1.end(); itr1 != end1; ++itr1) {
         if (!map2.containsKey(*itr1) || !(map1.get(*itr1) == map2.get(*itr1))) {
-            return false;
-        }
-    }
-    for (auto itr2 = map2.begin(), end2 = map2.end(); itr2 != end2; ++itr2) {
-        if (!map1.containsKey(*itr2) || !(map1.get(*itr2) == map2.get(*itr2))) {
             return false;
         }
     }
@@ -2180,17 +1998,12 @@ int hashCodeMap(const MapType& map, bool orderMatters = true) {
  * Returns a randomly chosen element of the given collection.
  * Throws an error if the set is empty.
  */
-template <template <typename> class CollectionType, class ElementType>
-const ElementType& randomElement(const CollectionType<ElementType>& collection) {
+template <typename Collection>
+auto randomElement(const Collection& collection) -> const decltype(*collection.begin())& {
     if (collection.isEmpty()) {
         error("randomElement: empty collection was passed");
     }
-    int index = randomInteger(0, collection.size() - 1);
-    auto itr = collection.begin();
-    for (int i = 0; i < index; i++) {
-        ++itr;
-    }
-    return *itr;
+    return *std::next(collection.begin(), randomInteger(0, collection.size() - 1));
 }
 
 /*
@@ -2403,6 +2216,1287 @@ std::ostream& writeMap(std::ostream& out, const MapType& map) {
     out << "}";
     return out;
 }
+
+/*
+ * Type responsible for tracking the version of some object. This is factored out into
+ * its own object with unusual copy functions so that any time the underlying object
+ * is moved or assigned the underlying version number is updated.
+ */
+class VersionTracker {
+public:
+    /* Assigning a VersionTracker increments the underlying version number. */
+    VersionTracker& operator= (VersionTracker) {
+        ++mVersion;
+        return *this;
+    }
+
+    /* Move-constructing a VersionTracker implements the version number of the
+     * object being moved.
+     */
+    VersionTracker(VersionTracker&& rhs) {
+        rhs.mVersion++;
+    }
+
+    /* Use default constructor and default copy constructor. */
+    VersionTracker() = default;
+    VersionTracker(const VersionTracker &) = default;
+
+    /* Marks that the version must be updated. */
+    void update() {
+        ++mVersion;
+    }
+
+    /* Returns the version number. */
+    unsigned int version() const {
+        return mVersion;
+    }
+
+private:
+    unsigned int mVersion = 0;
+};
+
+/*
+ * Checked iterator type that wraps an underlying iterator type, adding in bounds-checking
+ * and version-checking.
+ */
+template <typename Iterator> class CheckedIterator {
+public:
+    /* We're whatever sort of iterator we're wrapping. */
+    using difference_type   = typename std::iterator_traits<Iterator>::difference_type;
+    using iterator_category = typename std::iterator_traits<Iterator>::iterator_category;
+    using pointer           = typename std::iterator_traits<Iterator>::pointer;
+    using reference         = typename std::iterator_traits<Iterator>::reference;
+    using value_type        = typename std::iterator_traits<Iterator>::value_type;
+
+    /*
+     * Default constructor must be explicitly declared so that the private constructor
+     * doesn't shadow us.
+     */
+    CheckedIterator() = default;
+
+    /* Constructs an iterator given information about the underlying container. */
+    template <typename Container>
+    CheckedIterator(const VersionTracker* owner, Iterator iter, Container& c)
+        : mVersion(owner->version()), mOwner(owner), mIter(iter), mBegin(c.begin()), mEnd(c.end()) {
+
+    }
+
+    /*
+     * We're friends with all other CheckedIterator types, allowing for cross-construction
+     * and the like.
+     */
+    template <typename OtherItr> friend class CheckedIterator;
+
+    /* Conversion constructor, when permitted. */
+    template <typename OtherItr> CheckedIterator(const CheckedIterator<OtherItr>& rhs)
+        : mVersion(rhs.mVersion),
+          mOwner(rhs.mOwner),
+          mIter(rhs.mIter),
+          mBegin(rhs.mBegin),
+          mEnd(rhs.mEnd) {
+
+    }
+
+    template <typename OtherItr> operator CheckedIterator<OtherItr>() const {
+        return CheckedIterator<OtherItr>{mVersion, mOwner, mIter, mBegin, mEnd};
+    }
+
+    /* All possible iterator functions. */
+
+    /* Comparison operators. */
+    template <typename OtherItr> bool operator ==(const CheckedIterator<OtherItr>& rhs) const {
+        if (!mOwner || !rhs.mOwner) {
+            error("Cannot compare an uninitialized iterator.");
+        }
+        if ( mOwner !=  rhs.mOwner) {
+            error("Cannot compare iterators from two different containers.");
+        }
+        return mIter == rhs.mIter;
+    }
+    template <typename OtherItr> bool operator !=(const CheckedIterator<OtherItr>& rhs) const {
+        return !(*this == rhs);
+    }
+
+    /*
+     * We report errors if the underlying owners are different, since otherwise
+     * the behavior is undefined.
+     */
+    template <typename OtherItr> bool operator <(const CheckedIterator<OtherItr>& rhs) const {
+        if (!mOwner || !rhs.mOwner) {
+            error("Cannot compare an uninitialized iterator.");
+        }
+        if (mOwner != rhs.mOwner) {
+            error("Cannot compare iterators from different containers.");
+        }
+        return mIter < rhs.mIter;
+    }
+    template <typename OtherItr> bool operator >(const CheckedIterator<OtherItr>& rhs) const {
+        return rhs < *this;
+    }
+    template <typename OtherItr> bool operator <=(const CheckedIterator<OtherItr>& rhs) const {
+        return !(*this > rhs);
+    }
+    template <typename OtherItr> bool operator >=(const CheckedIterator<OtherItr>& rhs) const {
+        return !(*this < rhs);
+    }
+
+    /* Random access. */
+    reference operator [](difference_type index) const {
+        if (!mOwner) {
+            error("Cannot access elements through an uninitialized iterator.");
+        }
+        ::stanfordcpplib::collections::checkVersion(*mOwner, *this);
+        if (index >= 0 &&  index >= mEnd - mIter) {
+            error("Out of bounds.");
+        }
+        if (index <  0 && -index >  mIter - mBegin) {
+            error("Out of bounds.");
+        }
+
+        return mIter[index];
+    }
+
+    CheckedIterator& operator +=(difference_type index) {
+        if (!mOwner) error("Cannot advance uninitialized iterators.");
+        ::stanfordcpplib::collections::checkVersion(*mOwner, *this);
+        mIter += index;
+        return *this;
+    }
+    CheckedIterator& operator -=(difference_type index) {
+        return *this += (-index);
+    }
+
+    CheckedIterator operator +(difference_type index) const {
+        auto result = *this;
+        return result += index;
+    }
+    CheckedIterator operator -(difference_type index) const {
+        return *this + (-index);
+    }
+
+    template <typename OtherItr>
+    difference_type operator -(const CheckedIterator<OtherItr>& rhs) const {
+        if (!mOwner || !rhs.mOwner) {
+            error("Cannot subtract uninitialized iterators.");
+        }
+
+        ::stanfordcpplib::collections::checkVersion(*mOwner, *this);
+        if (mOwner != rhs.mOwner) {
+            error("Cannot subtract iterators from two different containers.");
+        }
+
+        return mIter - rhs.mIter;
+    }
+
+    /* Forwards and backwards. */
+    CheckedIterator& operator ++() {
+        if (!mOwner) {
+            error("Cannot advance an uninitialized iterator.");
+        }
+
+        ::stanfordcpplib::collections::checkVersion(*mOwner, *this);
+        if (mIter == mEnd) {
+            error("Cannot advance an iterator past end of range.");
+        }
+        ++mIter;
+        return *this;
+    }
+    CheckedIterator operator ++(int) {
+        auto result = *this;
+        ++*this;
+        return result;
+    }
+
+    CheckedIterator& operator --() {
+        if (!mOwner) {
+            error("Cannot back up an uninitialized iterator.");
+        }
+
+        ::stanfordcpplib::collections::checkVersion(*mOwner, *this);
+        if (mIter == mBegin) {
+            error("Cannot back up an iteartor before start of range.");
+        }
+
+        --mIter;
+        return *this;
+    }
+    CheckedIterator operator --(int) {
+        auto result = *this;
+        --*this;
+        return result;
+    }
+
+    /* Dereferencing. */
+    reference operator *() const {
+        if (!mOwner) {
+            error("Cannot dereference an uninitialized iterator.");
+        }
+        ::stanfordcpplib::collections::checkVersion(*mOwner, *this);
+
+        if (mIter == mEnd) {
+            error("Iterator out of range.");
+        }
+        return *mIter;
+    }
+    pointer operator ->() const {
+        return &**this;
+    }
+
+    /* Direct version access. */
+    unsigned int version() const {
+        if (!mOwner) {
+            error("Cannot get version from an uninitialized iterator.");
+        }
+        return mVersion;
+    }
+
+private:
+    unsigned int mVersion = 0;
+    const VersionTracker* mOwner = nullptr;
+    Iterator mIter;
+    Iterator mBegin, mEnd;
+};
+
+/*
+ * Iterator over a pairs that projects out the first component. Essentially, this turns an
+ * iterator over pair<const Key, Value> into an iterator over const Key.
+ *
+ * All bounds-checking, error-handling, etc. are presumed to come from the underlying
+ * iterator type.
+ */
+template <typename Iterator> class ProjectingIterator {
+public:
+    /* The sort of thing that we're wrapping. */
+    using value_type       = typename std::remove_reference<decltype(std::declval<Iterator>()->first)>::type;
+
+    /* We're whatever sort of iterator we're wrapping. */
+    using difference_type   = typename std::iterator_traits<Iterator>::difference_type;
+    using iterator_category = typename std::iterator_traits<Iterator>::iterator_category;
+    using pointer           = const value_type *;
+    using reference         = const value_type &;
+
+    /*
+     * Default constructor must be explicitly declared so that the private constructor
+     * doesn't shadow us.
+     */
+    ProjectingIterator() = default;
+
+    /* Wraps an existing iterator. */
+    explicit ProjectingIterator(Iterator iter) : mIter(iter) {
+        // Empty
+    }
+
+    /*
+     * We're friends with all other related types, allowing for cross-construction
+     * and the like.
+     */
+    template <typename OtherItr> friend class ProjectingIterator;
+
+    /* Conversion constructor, when permitted. */
+    template <typename OtherItr> ProjectingIterator(const ProjectingIterator<OtherItr>& rhs)
+        : mIter(rhs.mIter) {
+        // Empty
+    }
+
+    template <typename OtherItr> operator ProjectingIterator<OtherItr>() const {
+        return ProjectingIterator<OtherItr>(mIter);
+    }
+
+    /* All possible iterator functions. */
+
+    /* Comparison operators. */
+    template <typename OtherItr> bool operator ==(const ProjectingIterator<OtherItr>& rhs) {
+        return mIter == rhs.mIter;
+    }
+    template <typename OtherItr> bool operator !=(const ProjectingIterator<OtherItr>& rhs) {
+        return !(*this == rhs);
+    }
+
+    template <typename OtherItr> bool operator <(const ProjectingIterator<OtherItr>& rhs) {
+        return mIter < rhs.mIter;
+    }
+    template <typename OtherItr> bool operator >(const ProjectingIterator<OtherItr>& rhs) {
+        return rhs < *this;
+    }
+    template <typename OtherItr> bool operator <=(const ProjectingIterator<OtherItr>& rhs) {
+        return !(*this > rhs);
+    }
+    template <typename OtherItr> bool operator >=(const ProjectingIterator<OtherItr>& rhs) {
+        return !(*this < rhs);
+    }
+
+    /* Random access. */
+    reference operator [](difference_type index) const {
+        return mIter[index];
+    }
+    ProjectingIterator& operator +=(difference_type index) {
+        mIter += index;
+        return *this;
+    }
+    ProjectingIterator& operator -=(difference_type index) {
+        return *this += (-index);
+    }
+    ProjectingIterator operator +(difference_type index) const {
+        auto result = *this;
+        return result += index;
+    }
+    ProjectingIterator operator -(difference_type index) const {
+        return *this + (-index);
+    }
+    template <typename OtherItr>
+    difference_type operator -(const ProjectingIterator<OtherItr>& rhs) const {
+        return mIter - rhs.mIter;
+    }
+
+    /* Forwards and backwards. */
+    ProjectingIterator& operator ++() {
+        ++mIter;
+        return *this;
+    }
+    ProjectingIterator operator ++(int) {
+        auto result = *this;
+        ++*this;
+        return result;
+    }
+
+    ProjectingIterator& operator --() {
+        --mIter;
+        return *this;
+    }
+    ProjectingIterator operator --(int) {
+        auto result = *this;
+        --*this;
+        return result;
+    }
+
+    /* Dereferencing. */
+    reference operator *() const {
+        return mIter->first;
+    }
+    pointer operator ->() const {
+        return &**this;
+    }
+
+private:
+    Iterator mIter;
+};
+
+/**
+ * Class: GenericSet<SetTraits>
+ * ----------------------------
+ * This class stores a collection of distinct elements. SetTraits should be
+ * a type containing the following:
+ *
+ *     typename ValueType:          whatever is stored in the map
+ *     typename MapType:            should be a Map<ValueType, bool>
+ *     static std::string name():   should return the name of the type.
+ *
+ * There's one more requirement: you need to define a function
+ *
+ *     template <typename... Args>
+ *        static MapType construct(Args&&... args)
+ *
+ * that constructs an internal MapType object with the specified arguments.
+ * This function should do something creative or clever to ensure that there
+ * is a nice compiler error generated in the event that the arguments are
+ * invalid, since otherwise the error is going to be deeply nested inside the
+ * GenericSet template.
+ *
+ * This is not meant to be used directly by students.
+ */
+template <typename SetTraits>
+class GenericSet {
+public:
+    /**
+     * Utility alias to make things easier to work with.
+     */
+    using value_type = typename SetTraits::ValueType;
+
+    /**
+     * Constructor: GenericSet
+     * Usage: GenericSet<ValueType, SetTraits> set;
+     * --------------------------------------------
+     * Initializes an empty set of the specified element type.
+     */
+    GenericSet() = default;
+
+    /**
+     * Constructor: GenericSet
+     * Usage: GenericSet<ValueType, SetTraits> set {1, 2, 3};
+     * ------------------------------------------------------
+     * Initializes a new set that stores the given elements.
+     */
+    GenericSet(std::initializer_list<value_type> list);
+
+    /**
+     * Constructor: GenericSet
+     * Usage: GenericSet<ValueType, SetTraits> set(... things for the map ...);
+     * ------------------------------------------------------------------------
+     * Forwards the specified arguments down to the underlying Map type.
+     */
+    template <typename... Args>
+    explicit GenericSet(Args... args);
+
+    /**
+     * Constructor: GenericSet
+     * Usage: GenericSet<ValueType, SetTraits> set({1, 2, 3}, ... things for the map ...);
+     * -----------------------------------------------------------------------------------
+     * Constructs a set using the specified elements, forwarding the arguments to the
+     * underlying map.
+     */
+    template <typename... Args>
+    GenericSet(std::initializer_list<value_type> list,
+               Args... args);
+
+    /**
+     * Destructor: ~Set
+     * ----------------
+     * Frees any heap storage associated with this set.
+     */
+    virtual ~GenericSet() = default;
+
+    /**
+     * Method: add
+     * Usage: set.add(value);
+     * ----------------------
+     * Adds an element to this set, if it was not already there.  For
+     * compatibility with the STL <code>set</code> class, this method
+     * is also exported as <code>insert</code>.
+     */
+    void add(const value_type& value);
+
+    /**
+     * Method: addAll
+     * Usage: set.addAll(set2);
+     * ------------------------
+     * Adds all elements of the given other set to this set.
+     * You can also pass an initializer list such as {1, 2, 3}.
+     * Returns a reference to this set.
+     *
+     * Note that this function modifies the current set in place rather than
+     * returning a new set. If you want a new set, consider using the + operator
+     * instead (not +=), which returns a newly created copy set.
+     *
+     * Identical in behavior to the += operator.
+     */
+    GenericSet& addAll(const GenericSet& set);
+
+    /**
+     * Method: back
+     * Usage: ValueType value = set.back();
+     * ------------------------------------
+     * Returns the last value in the set in the order established by the
+     * <code>foreach</code> macro.  If the set is empty, generates an error.
+     */
+    value_type back() const;
+
+    /**
+     * Method: clear
+     * Usage: set.clear();
+     * -------------------
+     * Removes all elements from this set.
+     */
+    void clear();
+
+    /**
+     * Method: contains
+     * Usage: if (set.contains(value)) ...
+     * -----------------------------------
+     * Returns <code>true</code> if the specified value is in this set.
+     */
+    bool contains(const value_type& value) const;
+
+    /**
+     * Method: containsAll
+     * Usage: if (set.containsAll(set2)) ...
+     * -------------------------------------
+     * Returns <code>true</code> if every value from the given other set
+     * is also found in this set.
+     * You can also pass an initializer list such as {1, 2, 3}.
+     * Equivalent in behavior to isSupersetOf.
+     */
+    bool containsAll(const GenericSet& set2) const;
+
+    /**
+     * Method: difference
+     * Usage: set.difference(set2);
+     * ----------------------------
+     * Removes all elements of the given other set from this set.
+     * You can also pass an initializer list such as {1, 2, 3}.
+     * Returns a reference to this set.
+     *
+     * Note that this function modifies the current set in place rather than
+     * returning a new set. If you want a new set, consider using the - operator
+     * instead (not -=), which returns a newly created copy set.
+     *
+     * Identical in behavior to the -= operator and the removeAll function.
+     */
+    GenericSet& difference(const GenericSet& set);
+
+    /**
+     * Method: equals
+     * Usage: if (set.equals(set2)) ...
+     * --------------------------------
+     * Returns <code>true</code> if this set contains exactly the same values
+     * as the given other set.
+     * Identical in behavior to the == operator.
+     */
+    bool equals(const GenericSet& set2) const;
+
+    /**
+     * Method: first
+     * Usage: ValueType value = set.first();
+     * -------------------------------------
+     * Returns the first value in the set in the order established by the
+     * <code>foreach</code> macro.  If the set is empty, <code>first</code>
+     * generates an error.
+     * Equivalent to front.
+     */
+    value_type first() const;
+
+    /**
+     * Method: front
+     * Usage: ValueType value = set.front();
+     * -------------------------------------
+     * Returns the first value in the set in the order established by the
+     * <code>foreach</code> macro.  If the set is empty, generates an error.
+     * Equivalent to first.
+     */
+    value_type front() const;
+
+    /**
+     * Method: insert
+     * Usage: set.insert(value);
+     * -------------------------
+     * Adds an element to this set, if it was not already there.  This
+     * method is exported for compatibility with the STL <code>set</code> class.
+     */
+    void insert(const value_type& value);
+
+    /**
+     * Method: intersect
+     * Usage: set.intersect(set2);
+     * ---------------------------
+     * Removes all elements from this set that are not contained in the given
+     * other set.
+     * You can also pass an initializer list such as {1, 2, 3}.
+     * Returns a reference to this set.
+     *
+     * Note that this function modifies the current set in place rather than
+     * returning a new set. If you want a new set, consider using the * operator
+     * instead (not *=), which returns a newly created copy set.
+     *
+     * Identical in behavior to the *= operator and the retainAll function.
+     */
+    GenericSet& intersect(const GenericSet& set);
+
+    /**
+     * Method: isEmpty
+     * Usage: if (set.isEmpty()) ...
+     * -----------------------------
+     * Returns <code>true</code> if this set contains no elements.
+     */
+    bool isEmpty() const;
+
+    /**
+     * Method: isSubsetOf
+     * Usage: if (set.isSubsetOf(set2)) ...
+     * ------------------------------------
+     * Implements the subset relation on sets.  It returns
+     * <code>true</code> if every element of this set is
+     * contained in <code>set2</code>.
+     * You can also pass an initializer list such as {1, 2, 3}.
+     */
+    bool isSubsetOf(const GenericSet& set2) const;
+
+    /**
+     * Method: isSupersetOf
+     * Usage: if (set.isSupersetOf(set2)) ...
+     * --------------------------------------
+     * Implements the superset relation on sets.  It returns
+     * <code>true</code> if every element of this set is
+     * contained in <code>set2</code>.
+     * You can also pass an initializer list such as {1, 2, 3}.
+     * Equivalent in behavior to containsAll.
+     */
+    bool isSupersetOf(const GenericSet& set2) const;
+
+    /**
+     * Method: mapAll
+     * Usage: set.mapAll(fn);
+     * ----------------------
+     * Iterates through the elements of the set and calls <code>fn(value)</code>
+     * for each one.  The iteration order matches the underlying order in which
+     * the elements are stored.  For Set, this is sorted order according to the
+     * comparison function; for LinkedHashSet, this is the insertion order; and
+     * for HashSet, this is whatever order the elements happen to be in.
+     */
+    void mapAll(std::function<void (const value_type&)> fn) const;
+
+    /**
+     * Method: remove
+     * Usage: set.remove(value);
+     * -------------------------
+     * Removes an element from this set.  If the value was not
+     * contained in the set, no error is generated and the set
+     * remains unchanged.
+     */
+    void remove(const value_type& value);
+
+    /**
+     * Method: removeAll
+     * Usage: set.removeAll(set2);
+     * ---------------------------
+     * Removes all elements of the given other set from this set.
+     * You can also pass an initializer list such as {1, 2, 3}.
+     * Returns a reference to this set.
+     *
+     * Note that this function modifies the current set in place rather than
+     * returning a new set. If you want a new set, consider using the - operator
+     * instead (not -=), which returns a newly created copy set.
+     *
+     * Identical in behavior to the -= operator and the difference function.
+     */
+    GenericSet& removeAll(const GenericSet& set);
+
+    /**
+     * Method: retainAll
+     * Usage: set.retainAll(set2);
+     * ---------------------------
+     * Removes all elements from this set that are not contained in the given
+     * other set.
+     * You can also pass an initializer list such as {1, 2, 3}.
+     * Returns a reference to this set.
+     *
+     * Note that this function modifies the current set in place rather than
+     * returning a new set. If you want a new set, consider using the * operator
+     * instead (not *=), which returns a newly created copy set.
+     *
+     * Identical in behavior to the *= operator and the intersect function.
+     */
+    GenericSet& retainAll(const GenericSet& set);
+
+    /**
+     * Method: size
+     * Usage: count = set.size();
+     * --------------------------
+     * Returns the number of elements in this set.
+     */
+    int size() const;
+
+    /**
+     * Method: toString
+     * Usage: string str = set.toString();
+     * -----------------------------------
+     * Converts the set to a printable string representation.
+     */
+    std::string toString() const;
+
+    /**
+     * Method: unionWith
+     * Usage: set.unionWith(set2);
+     * ---------------------------
+     * Adds all elements of the given other set to this set.
+     * You can also pass an initializer list such as {1, 2, 3}.
+     * Returns a reference to this set.
+     * Identical in behavior to the += operator and the addAll function.
+     *
+     * Note that this function modifies the current set in place rather than
+     * returning a new set. If you want a new set, consider using the + operator
+     * instead (not +=), which returns a newly created copy set.
+     *
+     * (Implementation note: This function cannot be named 'union' because
+     * that is a C/C++ keyword.)
+     */
+    GenericSet& unionWith(const GenericSet& set);
+
+    /**
+     * Operator: ==
+     * Usage: set1 == set2
+     * -------------------
+     * Returns <code>true</code> if <code>set1</code> and <code>set2</code>
+     * contain the same elements.
+     */
+    bool operator ==(const GenericSet& set2) const;
+
+    /**
+     * Operator: !=
+     * Usage: set1 != set2
+     * -------------------
+     * Returns <code>true</code> if <code>set1</code> and <code>set2</code>
+     * are different.
+     */
+    bool operator !=(const GenericSet& set2) const;
+
+    /**
+     * Operators: <, >, <=, >=
+     * Usage: if (set1 <= set2) ...
+     * ...
+     * ----------------------------
+     * Relational operators to compare two sets.
+     * The <, >, <=, >= operators require that the value type has a < operator
+     * so that the elements can be compared pairwise.
+     *
+     * These are implemented as friend functions so that if we fully instantiate
+     * this type, we don't get errors when using relational operators.
+     */
+    template <typename Traits>
+    friend bool operator <(const GenericSet<Traits>& set1, const GenericSet<Traits>& set2);
+    template <typename Traits>
+    friend bool operator <=(const GenericSet<Traits>& set1, const GenericSet<Traits>& set2);
+    template <typename Traits>
+    friend bool operator >(const GenericSet<Traits>& set1, const GenericSet<Traits>& set2);
+    template <typename Traits>
+    friend bool operator >=(const GenericSet<Traits>& set1, const GenericSet<Traits>& set2);
+
+    /**
+     * Operator: +
+     * Usage: set1 + set2
+     *        set1 + element
+     * ---------------------
+     * Returns the union of sets <code>set1</code> and <code>set2</code>, which
+     * is the set of elements that appear in at least one of the two sets.
+     * You can also pass an initializer list such as {1, 2, 3}.
+     * The right hand set can be replaced by an element of the value type, in
+     * which case the operator returns a new set formed by adding that element.
+     */
+    GenericSet operator +(const GenericSet& set2) const;
+    GenericSet operator +(const value_type& element) const;
+
+    /**
+     * Operator: *
+     * Usage: set1 * set2
+     * ------------------
+     * Returns the intersection of sets <code>set1</code> and <code>set2</code>,
+     * which is the set of all elements that appear in both.
+     * You can also pass an initializer list such as {1, 2, 3}.
+     */
+    GenericSet operator *(const GenericSet& set2) const;
+
+    /**
+     * Operator: -
+     * Usage: set1 - set2
+     *        set1 - element
+     * ---------------------
+     * Returns the difference of sets <code>set1</code> and <code>set2</code>,
+     * which is all of the elements that appear in <code>set1</code> but
+     * not <code>set2</code>.
+     * You can also pass an initializer list such as {1, 2, 3}.
+     * The right hand set can be replaced by an element of the value type, in
+     * which case the operator returns a new set formed by removing that element.
+     */
+    GenericSet operator -(const GenericSet& set2) const;
+    GenericSet operator -(const value_type& element) const;
+
+    /**
+     * Operator: +=
+     * Usage: set1 += set2;
+     *        set1 += value;
+     * ---------------------
+     * Adds all of the elements from <code>set2</code> (or the single
+     * specified value) to <code>set1</code>.
+     * You can also pass an initializer list such as {1, 2, 3}.
+     * As a convenience, the <code>Set</code> package also overloads the comma
+     * operator so that it is possible to initialize a set like this:
+     *
+     *<pre>
+     *    Set&lt;int&gt; digits;
+     *    digits += 0, 1, 2, 3, 4, 5, 6, 7, 8, 9;
+     *</pre>
+     */
+    GenericSet& operator +=(const GenericSet& set2);
+    GenericSet& operator +=(const value_type& value);
+
+    /**
+     * Operator: *=
+     * Usage: set1 *= set2;
+     * --------------------
+     * Removes any elements from <code>set1</code> that are not present in
+     * <code>set2</code>.
+     * You can also pass an initializer list such as {1, 2, 3}.
+     */
+    GenericSet& operator *=(const GenericSet& set2);
+
+    /**
+     * Operator: -=
+     * Usage: set1 -= set2;
+     *        set1 -= value;
+     * ---------------------
+     * Removes the elements from <code>set2</code> (or the single
+     * specified value) from <code>set1</code>.
+     * You can also pass an initializer list such as {1, 2, 3}.
+     * As a convenience, the <code>Set</code> package also overloads the comma
+     * operator so that it is possible to remove multiple elements from a set
+     * like this:
+     *
+     *<pre>
+     *    digits -= 0, 2, 4, 6, 8;
+     *</pre>
+     *
+     * which removes the values 0, 2, 4, 6, and 8 from the set
+     * <code>digits</code>.
+     */
+    GenericSet& operator -=(const GenericSet& set2);
+    GenericSet& operator -=(const value_type& value);
+
+    /*
+     * Additional Set operations
+     * -------------------------
+     * In addition to the methods listed in this interface, the Set
+     * class supports the following operations:
+     *
+     *   - Stream I/O using the << and >> operators
+     *   - Deep copying for the copy constructor and assignment operator
+     *   - Iteration using the range-based for statement and STL iterators
+     *
+     * The iteration forms process the Set in ascending order.
+     */
+
+    /* Private section */
+
+    /**********************************************************************/
+    /* Note: Everything below this point in the file is logically part    */
+    /* of the implementation and should not be of interest to clients.    */
+    /**********************************************************************/
+
+private:
+    typename SetTraits::MapType map = SetTraits::construct();  /* Map used to store the elements    */
+    bool removeFlag = false;                                   /* Flag to differentiate += and -=   */
+
+public:
+    /*
+     * Hidden features
+     * ---------------
+     * The remainder of this file consists of the code required to
+     * support the comma operator, copying, and iteration.
+     *
+     * Including these methods in the public interface would make
+     * that interface more difficult to understand for the average client.
+     */
+    GenericSet& operator ,(const value_type& value) {
+        if (this->removeFlag) {
+            this->remove(value);
+        } else {
+            this->add(value);
+        }
+        return *this;
+    }
+
+    using const_iterator = typename SetTraits::MapType::const_iterator;
+    using iterator = const_iterator;
+
+    iterator begin() const {
+        return map.begin();
+    }
+
+    iterator end() const {
+        return map.end();
+    }
+
+    friend int hashCode(const GenericSet& set) {
+        return hashCode(set.map);
+    }
+};
+
+template <typename SetTraits>
+GenericSet<SetTraits>::GenericSet(std::initializer_list<value_type> list)
+    : map(SetTraits::construct()) {
+    /* Can't do addAll because that would recursively try constructing a GenericSet.
+     * Instead, directly add everything here. This becomes the focal point for
+     * all initializer_list conversions.
+     */
+    for (const auto& elem: list) {
+        add(elem);
+    }
+}
+
+template <typename SetTraits>
+template <typename... Args>
+GenericSet<SetTraits>::GenericSet(Args... args) : GenericSet({}, std::move(args)...) {
+    // Handled by other constructor
+}
+
+template <typename SetTraits>
+template <typename... Args>
+GenericSet<SetTraits>::GenericSet(std::initializer_list<value_type> list, Args... args)
+    : map(SetTraits::construct(std::move(args)...)) {
+
+    /* Can't do addAll because that would recursively try constructing a GenericSet.
+     * Instead, directly add everything here. This becomes the focal point for
+     * all initializer_list conversions.
+     */
+    for (const auto& elem: list) {
+        add(elem);
+    }
+}
+
+template <typename SetTraits>
+void GenericSet<SetTraits>::add(const value_type& value) {
+    map.put(value, true);
+}
+
+template <typename SetTraits>
+GenericSet<SetTraits>& GenericSet<SetTraits>::addAll(const GenericSet& set2) {
+    for (const auto& value : set2) {
+        add(value);
+    }
+    return *this;
+}
+
+template <typename SetTraits>
+typename GenericSet<SetTraits>::value_type
+GenericSet<SetTraits>::back() const {
+    if (isEmpty()) {
+        error(SetTraits::name() + "::back: set is empty");
+    }
+    return map.back();
+}
+
+template <typename SetTraits>
+void GenericSet<SetTraits>::clear() {
+    map.clear();
+}
+
+template <typename SetTraits>
+bool GenericSet<SetTraits>::contains(const value_type& value) const {
+    return map.containsKey(value);
+}
+
+template <typename SetTraits>
+bool GenericSet<SetTraits>::containsAll(const GenericSet& set2) const {
+    for (const auto& value: set2) {
+        if (!contains(value)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+template <typename SetTraits>
+GenericSet<SetTraits>& GenericSet<SetTraits>::difference(const GenericSet<SetTraits>& set) {
+    return removeAll(set);
+}
+
+template <typename SetTraits>
+bool GenericSet<SetTraits>::equals(const GenericSet& set2) const {
+    // optimization: if literally same set, stop
+    if (this == &set2) {
+        return true;
+    }
+
+    /* We are equal if we have the same size and we're a subset of the other
+     * set.
+     */
+    if (size() != set2.size()) {
+        return false;
+    }
+    return isSubsetOf(set2);
+}
+
+template <typename SetTraits>
+typename GenericSet<SetTraits>::value_type
+GenericSet<SetTraits>::first() const {
+    if (isEmpty()) {
+        error(SetTraits::name() + "::first: set is empty");
+    }
+    return *begin();
+}
+
+template <typename SetTraits>
+typename GenericSet<SetTraits>::value_type
+GenericSet<SetTraits>::front() const {
+    if (isEmpty()) {
+        error(SetTraits::name() + "::front: set is empty");
+    }
+    return map.front();
+}
+
+template <typename SetTraits>
+void GenericSet<SetTraits>::insert(const value_type& value) {
+    map.put(value, true);
+}
+
+template <typename SetTraits>
+GenericSet<SetTraits>& GenericSet<SetTraits>::intersect(const GenericSet<SetTraits>& set) {
+    return retainAll(set);
+}
+
+template <typename SetTraits>
+bool GenericSet<SetTraits>::isEmpty() const {
+    return map.isEmpty();
+}
+
+template <typename SetTraits>
+bool GenericSet<SetTraits>::isSubsetOf(const GenericSet& set2) const {
+    for (const auto& elem: *this) {
+        if (!set2.contains(elem)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+template <typename SetTraits>
+bool GenericSet<SetTraits>::isSupersetOf(const GenericSet& set2) const {
+    return containsAll(set2);
+}
+
+template <typename SetTraits>
+void GenericSet<SetTraits>::mapAll(std::function<void (const value_type &)> fn) const {
+    map.mapAll([&](const value_type& elem, bool) {
+        fn(elem);
+    });
+}
+
+template <typename SetTraits>
+void GenericSet<SetTraits>::remove(const value_type& value) {
+    map.remove(value);
+}
+
+template <typename SetTraits>
+GenericSet<SetTraits>& GenericSet<SetTraits>::removeAll(const GenericSet& set2) {
+    map.removeAll(set2.map);
+    return *this;
+}
+
+template <typename SetTraits>
+GenericSet<SetTraits>& GenericSet<SetTraits>::retainAll(const GenericSet& set2) {
+    map.retainAll(set2.map);
+    return *this;
+}
+
+template <typename SetTraits>
+int GenericSet<SetTraits>::size() const {
+    return map.size();
+}
+
+template <typename SetTraits>
+std::string GenericSet<SetTraits>::toString() const {
+    std::ostringstream os;
+    os << *this;
+    return os.str();
+}
+
+template <typename SetTraits>
+GenericSet<SetTraits>& GenericSet<SetTraits>::unionWith(const GenericSet<SetTraits>& set) {
+    return addAll(set);
+}
+
+
+/*
+ * Implementation notes: set operators
+ * -----------------------------------
+ * The implementations for the set operators use iteration to walk
+ * over the elements in one or both sets.
+ */
+template <typename SetTraits>
+bool GenericSet<SetTraits>::operator ==(const GenericSet& set2) const {
+    return equals(set2);
+}
+
+template <typename SetTraits>
+bool GenericSet<SetTraits>::operator !=(const GenericSet& set2) const {
+    return !equals(set2);
+}
+
+template <typename SetTraits>
+bool operator <(const GenericSet<SetTraits>& set1, const GenericSet<SetTraits>& set2) {
+    return set1.map < set2.map;
+}
+
+template <typename SetTraits>
+bool operator <=(const GenericSet<SetTraits>& set1, const GenericSet<SetTraits>& set2) {
+    return set1.map <= set2.map;
+}
+
+template <typename SetTraits>
+bool operator >(const GenericSet<SetTraits>& set1, const GenericSet<SetTraits>& set2) {
+    return set1.map > set2.map;
+}
+
+template <typename SetTraits>
+bool operator >=(const GenericSet<SetTraits>& set1, const GenericSet<SetTraits>& set2) {
+    return set1.map >= set2.map;
+}
+
+template <typename SetTraits>
+GenericSet<SetTraits> GenericSet<SetTraits>::operator +(const GenericSet& set2) const {
+    return GenericSet(*this).addAll(set2);
+}
+
+template <typename SetTraits>
+GenericSet<SetTraits> GenericSet<SetTraits>::operator +(const value_type& element) const {
+    GenericSet result = *this;
+    result.add(element);
+    return result;
+}
+
+template <typename SetTraits>
+GenericSet<SetTraits> GenericSet<SetTraits>::operator *(const GenericSet& set2) const {
+    return GenericSet(*this).retainAll(set2);
+}
+
+template <typename SetTraits>
+GenericSet<SetTraits> GenericSet<SetTraits>::operator -(const GenericSet& set2) const {
+    return GenericSet(*this).removeAll(set2);
+}
+
+template <typename SetTraits>
+GenericSet<SetTraits> GenericSet<SetTraits>::operator -(const value_type& element) const {
+    GenericSet result = *this;
+    result.remove(element);
+    return result;
+}
+
+template <typename SetTraits>
+GenericSet<SetTraits>& GenericSet<SetTraits>::operator +=(const GenericSet& set2) {
+    removeFlag = false;
+    return addAll(set2);
+}
+
+template <typename SetTraits>
+GenericSet<SetTraits>& GenericSet<SetTraits>::operator +=(const value_type& value) {
+    add(value);
+    removeFlag = false;
+    return *this;
+}
+
+template <typename SetTraits>
+GenericSet<SetTraits>& GenericSet<SetTraits>::operator *=(const GenericSet& set2) {
+    return retainAll(set2);
+}
+
+template <typename SetTraits>
+GenericSet<SetTraits>& GenericSet<SetTraits>::operator -=(const GenericSet& set2) {
+    removeFlag = true;
+    return removeAll(set2);
+}
+
+template <typename SetTraits>
+GenericSet<SetTraits>& GenericSet<SetTraits>::operator -=(const value_type& value) {
+    remove(value);
+    removeFlag = true;
+    return *this;
+}
+
+template <typename SetTraits>
+std::ostream& operator <<(std::ostream& os, const GenericSet<SetTraits>& set) {
+    return stanfordcpplib::collections::writeCollection(os, set);
+}
+
+template <typename SetTraits>
+std::istream& operator >>(std::istream& is, GenericSet<SetTraits>& set) {
+    typename SetTraits::ValueType element;
+    return stanfordcpplib::collections::readCollection(is, set, element, /* descriptor */ SetTraits::name() + "::operator >>");
+}
+
+
+/*
+ * Types used to automatically check whether a type is comparable using
+ * the < operator and whether a type supports operator== and hashCode.
+ *
+ * This is used to provide better compiler diagnostics to students when
+ * they try to instantiate our times incorrectly.
+ *
+ * Later on, when C++20 concepts are rolled out, we should consider
+ * replacing this code with concepts.
+ */
+template <typename T>
+struct IsLessThanComparable {
+private:
+    /* Use SFNIAE overloading to detect which of these two options to pick. */
+    struct Yes{};
+    struct No {};
+
+    template <typename U>
+    static Yes check(int,
+                     decltype(std::declval<U>() < std::declval<U>()) = 0);
+    template <typename U> static No  check(...);
+
+public:
+    static constexpr bool value =
+            std::conditional<std::is_same<decltype(check<T>(0)), Yes>::value,
+                             std::true_type,
+                             std::false_type>::type::value;
+};
+
+template <typename T>
+struct IsHashable {
+private:
+    /* Use SFNIAE overloading to detect which of these two options to pick. */
+    struct Yes{};
+    struct No {};
+
+    template <typename U>
+    static Yes check(int,
+                     decltype(hashCode(std::declval<U>())) = 0,
+                     decltype(std::declval<U>() == std::declval<U>()) = 0);
+    template <typename U> static No  check(...);
+
+public:
+    static constexpr bool value =
+            std::conditional<std::is_same<decltype(check<T>(0)), Yes>::value,
+                             std::true_type,
+                             std::false_type>::type::value;
+};
+
+/*
+ * Returns std::less<T>, except with a nice static assertion wrapped around it to
+ * make sure that in the event that T isn't comparable via <, the error message is
+ * more readable.
+ */
+template <typename T>
+std::function<bool (const T&, const T&)> checkedLess() {
+    static_assert(IsLessThanComparable<T>::value,
+                  "Oops! You tried using a type as a key in our Map without making it comparable. Click this error for more details.");
+    /*
+     * Hello CS106 students! If you got directed to this line of code in a compiler error,
+     * it probably means that you tried making a Map with a custom struct or class type
+     * as the key type or a Set with a custom struct as a value type.
+     *
+     * In order to have a type be a key type in a Map - or to have a type be a value type
+     * in a Set - it needs to have be comparable using the < operator. By default, types in C++
+     * can't be compared using the < operator, hence the error.
+     *
+     * There are two ways to fix this. The first option would simply be to not use your custom
+     * type as a key in the Map or value in a Set. This is probably the easiest option.
+     *
+     * The second way to fix this is to explicitly define an operator< function for your custom
+     * type. Here's the syntax for doing that:
+     *
+     *     bool operator< (const YourCustomType& lhs, const YourCustomType& rhs) {
+     *         return compareTo(lhs.data1, rhs.data1,
+     *                          lhs.data2, rhs.data2,
+     *                          ...
+     *                          lhs.dataN, rhs.dataN);
+     *     }
+     *
+     * where data1, data2, ... dataN are the data members of your type. For example, if you had
+     * a custom type
+     *
+     *     struct MyType {
+     *         int myInt;
+     *         string myString;
+     *     };
+     *
+     * you would define the function
+     *
+     *     bool operator< (const MyType& lhs, const MyType& rhs) {
+     *         return compareTo(lhs.myInt,    rhs.myInt,
+     *                          lhs.myString, rhs.myString);
+     *     }
+     *
+     * Hope this helps!
+     */
+    return std::less<T>();
+}
+
+/*
+ * Utility traits type that always contains a value that's false.
+ */
+template <typename... Args> struct Fail {
+    static constexpr bool value = false;
+};
 
 } // namespace collections
 } // namespace stanfordcpplib
@@ -2714,6 +3808,10 @@ bool shouldFilterOutFromStackTrace(const std::string& function);
  * This file exports the <code>Vector</code> class, which provides an
  * efficient, safe, convenient replacement for the array type in C++.
  *
+ * @version 2019/04/09
+ * - renamed private members with underscore naming scheme for consistency
+ * @version 2019/02/04
+ * - changed internal implementation to wrap std collections
  * @version 2018/09/06
  * - refreshed doc comments for new documentation generation
  * @version 2018/01/07
@@ -2766,6 +3864,10 @@ bool shouldFilterOutFromStackTrace(const std::string& function);
 #include <iterator>
 #include <sstream>
 #include <string>
+#include <vector>
+#include <deque>
+#include <type_traits>
+#include <functional>
 
 #define INTERNAL_INCLUDE 1
 
@@ -2791,7 +3893,7 @@ public:
      * Initializes a new empty vector.
      * @bigoh O(1)
      */
-    Vector();
+    Vector() = default;
 
     /**
      * Initializes a new vector, creating an array with <code>n</code>
@@ -2812,7 +3914,7 @@ public:
      * Frees any heap storage allocated by this vector.
      * @bigoh O(1)
      */
-    virtual ~Vector();
+    virtual ~Vector() = default;
 
     /**
      * Adds a new value to the end of this vector.
@@ -2827,14 +3929,6 @@ public:
      * @bigoh O(N)
      */
     Vector<ValueType>& addAll(const Vector<ValueType>& v);
-
-    /**
-     * Adds all elements of the given initializer list to this vector.
-     * Returns a reference to this vector.
-     * Identical in behavior to the += operator.
-     * @bigoh O(N)
-     */
-    Vector<ValueType>& addAll(std::initializer_list<ValueType> list);
 
     /**
      * Returns the element at index (size - 1) in this vector (without removing it).
@@ -2937,22 +4031,7 @@ public:
      * ascending index order.
      * @bigoh O(N)
      */
-    void mapAll(void (*fn)(ValueType)) const;
-
-    /**
-     * Calls the specified function on each element of the vector in
-     * ascending index order.
-     * @bigoh O(N)
-     */
-    void mapAll(void (*fn)(const ValueType&)) const;
-
-    /**
-     * Calls the specified function on each element of the vector in
-     * ascending index order.
-     * @bigoh O(N)
-     */
-    template <typename FunctorType>
-    void mapAll(FunctorType fn) const;
+    void mapAll(std::function<void (const ValueType&)> fn) const;
 
     /**
      * Removes and returns the first value of this vector.
@@ -3063,6 +4142,15 @@ public:
     Vector<ValueType> subList(int start, int length) const;
 
     /**
+     * Returns a new vector containing the elements from the start position
+     * to the end of the vector.
+     *
+     * @throw ErrorException if start > size()
+     * @bigoh O(N)
+     */
+    Vector<ValueType> subList(int start) const;
+
+    /**
      * Converts the vector to a printable string representation
      * such as "{10, 20, 30, 40}".
      * @bigoh O(N)
@@ -3094,24 +4182,16 @@ public:
     Vector operator +(const Vector& v2) const;
 
     /**
-     * Concatenates this vector with an initializer list such as {1, 2, 3},
-     * returning the result.
+     * Produces a vector formed by appending the given element to this vector.
      * @bigoh O(N)
      */
-    Vector operator +(std::initializer_list<ValueType> list) const;
+    Vector operator +(const ValueType& elem) const;
 
     /**
      * Adds all of the elements from <code>v2</code> to the end of this vector.
      * @bigoh O(N)
      */
     Vector& operator +=(const Vector& v2);
-
-    /**
-     * Adds all of the elements from the given initializer list to the end of
-     * the vector.
-     * @bigoh O(N)
-     */
-    Vector& operator +=(std::initializer_list<ValueType> list);
 
     /**
      * Adds the single specified value) to the end of the vector.
@@ -3202,16 +4282,25 @@ private:
     /*
      * Implementation notes: Vector data structure
      * -------------------------------------------
-     * The elements of the Vector are stored in a dynamic array of
-     * the specified element type.  If the space in the array is ever
-     * exhausted, the implementation doubles the array capacity.
+     * The elements are stored in a std::vector, the regular C++ library
+     * type representing a sequence of elements. We wrap std::vector because
+     * it has no runtime safety checks, something that's tricky to get used
+     * to when you're first learning to use these types.
+     *
+     * There's an edge case in the C++ libraries where std::vector<bool> doesn't
+     * work as you might think it does. This is widely regarded as a mistake
+     * in the language design and there's been a proposal to fix it for many
+     * years now. In the interim, we get around this by falling back on the
+     * std::deque type in the event that the client wants to make a
+     * Vector<bool>
      */
+    using ContainerType = typename std::conditional<std::is_same<ValueType, bool>::value,
+                                                    std::deque<bool>,
+                                                    std::vector<ValueType>>::type;
 
     /* Instance variables */
-    ValueType* elements;        // a dynamic array of the elements
-    int capacity;               // the allocated size of the array
-    int count;                  // the number of elements in use
-    unsigned int m_version = 0; // structure version for detecting invalid iterators
+    ContainerType _elements;
+    stanfordcpplib::collections::VersionTracker _version;
 
     /* Private methods */
 
@@ -3222,11 +4311,11 @@ private:
      * accept index parameters.
      * The prefix parameter represents a text string to place at the start of
      * the error message, generally to help indicate which member threw the error.
+     *
+     * We make prefix a const char* rather than a std::string to avoid having to
+     * construct and then destroy the prefix with each call.
      */
-    void checkIndex(int index, int min, int max, std::string prefix) const;
-
-    void expandCapacity();
-    void deepCopy(const Vector& src);
+    void checkIndex(int index, int min, int max, const char* prefix) const;
 
     /*
      * Hidden features
@@ -3239,256 +4328,38 @@ private:
 
 public:
     /**
-     * Makes a deep copy, making it possible to pass or return vectors by value
-     * and assign from one vector to another.
-     * @bigoh O(N)
-     * @private
-     */
-    Vector(const Vector& src);
-
-    /**
-     * Makes a deep copy, making it possible to pass or return vectors by value
-     * and assign from one vector to another.
-     * @bigoh O(N)
-     * @private
-     */
-    Vector& operator =(const Vector& src);
-
-    /**
      * Adds an element to the vector passed as the left-hand operatand.
      * This form makes it easier to initialize vectors in old versions of C++.
      * @bigoh O(1)
      */
     Vector& operator ,(const ValueType& value);
 
-    /**
-     * The classes in the StanfordCPPLib collection implement input
-     * iterators so that they work symmetrically with respect to the
-     * corresponding STL classes.
-     * @private
+    using iterator = stanfordcpplib::collections::CheckedIterator<typename ContainerType::iterator>;
+    using const_iterator = stanfordcpplib::collections::CheckedIterator<typename ContainerType::const_iterator>;
+
+    iterator begin();
+    iterator end();
+    const_iterator begin() const;
+    const_iterator end() const;
+
+    /* Updates the internal version count. Only our libraries need this, and they only
+     * need it in rare cases where an operation that's semantically mutating but bitwise
+     * non-mutating occurs.
      */
-    class iterator :
-            public std::iterator<std::random_access_iterator_tag, ValueType> {
-    private:
-        const Vector* vp;
-        int index;
-        unsigned int itr_version;
-
-    public:
-        iterator()
-                : vp(nullptr),
-                  index(0),
-                  itr_version(0) {
-            // empty
-        }
-
-        iterator(const iterator& it)
-                : vp(it.vp),
-                  index(it.index),
-                  itr_version(it.itr_version) {
-            // empty
-        }
-
-        iterator(const Vector* theVec, int theIndex)
-                : vp(theVec),
-                  index(theIndex) {
-            itr_version = vp->version();
-        }
-
-        iterator& operator ++() {
-            stanfordcpplib::collections::checkVersion(*vp, *this);
-            index++;
-            return *this;
-        }
-
-        iterator operator ++(int) {
-            stanfordcpplib::collections::checkVersion(*vp, *this);
-            iterator copy(*this);
-            operator++();
-            return copy;
-        }
-
-        iterator& operator --() {
-            stanfordcpplib::collections::checkVersion(*vp, *this);
-            index--;
-            return *this;
-        }
-
-        iterator operator --(int) {
-            stanfordcpplib::collections::checkVersion(*vp, *this);
-            iterator copy(*this);
-            operator--();
-            return copy;
-        }
-
-        bool operator ==(const iterator& rhs) {
-            return vp == rhs.vp && index == rhs.index;
-        }
-
-        bool operator !=(const iterator& rhs) {
-            return !(*this == rhs);
-        }
-
-        bool operator <(const iterator& rhs) {
-            if (vp != rhs.vp) {
-                error("Vector Iterator::operator <: Iterators are in different vectors");
-            }
-            return index < rhs.index;
-        }
-
-        bool operator <=(const iterator& rhs) {
-            if (vp != rhs.vp) {
-                error("Vector Iterator::operator <=: Iterators are in different vectors");
-            }
-            return index <= rhs.index;
-        }
-
-        bool operator >(const iterator& rhs) {
-            if (vp != rhs.vp) {
-                error("Vector Iterator::operator >: Iterators are in different vectors");
-            }
-            return index > rhs.index;
-        }
-
-        bool operator >=(const iterator& rhs) {
-            if (vp != rhs.vp) {
-                error("Vector Iterator::operator >=: Iterators are in different vectors");
-            }
-            return index >= rhs.index;
-        }
-
-        iterator operator +(const int& rhs) {
-            stanfordcpplib::collections::checkVersion(*vp, *this);
-            return iterator(vp, index + rhs);
-        }
-
-        iterator operator +=(const int& rhs) {
-            stanfordcpplib::collections::checkVersion(*vp, *this);
-            index += rhs;
-            return *this;
-        }
-
-        iterator operator -(const int& rhs) {
-            stanfordcpplib::collections::checkVersion(*vp, *this);
-            return iterator(vp, index - rhs);
-        }
-
-        iterator operator -=(const int& rhs) {
-            stanfordcpplib::collections::checkVersion(*vp, *this);
-            index -= rhs;
-            return *this;
-        }
-
-        int operator -(const iterator& rhs) {
-            stanfordcpplib::collections::checkVersion(*vp, *this);
-            extern void error(const std::string& msg);
-            if (vp != rhs.vp) {
-                error("Vector Iterator::operator -: Iterators are in different vectors");
-            }
-            return index - rhs.index;
-        }
-
-        ValueType& operator *() {
-            stanfordcpplib::collections::checkVersion(*vp, *this);
-            return vp->elements[index];
-        }
-
-        ValueType* operator ->() {
-            stanfordcpplib::collections::checkVersion(*vp, *this);
-            return &vp->elements[index];
-        }
-
-        ValueType& operator [](int k) {
-            stanfordcpplib::collections::checkVersion(*vp, *this);
-            return vp->elements[index + k];
-        }
-
-        unsigned int version() const {
-            return itr_version;
-        }
-    };
-
-    /**
-     * Returns an iterator pointed at the beginning of this vector.
-     * @bigoh O(1)
-     */
-    iterator begin() const {
-        return iterator(this, 0);
-    }
-
-    /**
-     * Returns an iterator pointed just past the end of this vector.
-     * @bigoh O(1)
-     */
-    iterator end() const {
-        return iterator(this, count);
-    }
-
-    /**
-     * Returns the internal version of this collection.
-     * This is used to check for invalid iterators and issue error messages.
-     * @bigoh O(1)
-     */
-    unsigned int version() const;
+    void updateVersion();
 };
 
 /* Implementation section */
 
-/*
- * Implementation notes: Vector constructor and destructor
- * -------------------------------------------------------
- * The constructor allocates storage for the dynamic array
- * and initializes the other fields of the object.  The
- * destructor frees the memory used for the array.
- */
 template <typename ValueType>
-Vector<ValueType>::Vector()
-        : elements(nullptr),
-          capacity(0),
-          count(0) {
-    // empty
-}
-
-template <typename ValueType>
-Vector<ValueType>::Vector(int n, ValueType value)
-        : elements(nullptr),
-          capacity(n),
-          count(n) {
-    if (n < 0) {
-        error("Vector::constructor: n cannot be negative");
-    } else if (n > 0) {
-        elements = new ValueType[n];
-        for (int i = 0; i < n; i++) {
-            elements[i] = value;
-        }
-    }
+Vector<ValueType>::Vector(int n, ValueType value) {
+    if (n < 0) error("Cannot create a Vector with a negative number of elements.");
+    _elements.assign(n, value);
 }
 
 template <typename ValueType>
 Vector<ValueType>::Vector(std::initializer_list<ValueType> list)
-        : count(0) {
-    capacity = list.size();
-    elements = new ValueType[capacity];
-    addAll(list);
-}
-
-/*
- * Implementation notes: copy constructor and assignment operator
- * --------------------------------------------------------------
- * The constructor and assignment operators follow a standard paradigm,
- * as described in the associated textbook.
- */
-template <typename ValueType>
-Vector<ValueType>::Vector(const Vector& src) {
-    deepCopy(src);
-}
-
-template <typename ValueType>
-Vector<ValueType>::~Vector() {
-    if (elements) {
-        delete[] elements;
-        elements = nullptr;
-    }
+        : _elements(list) {
 }
 
 /*
@@ -3499,7 +4370,7 @@ Vector<ValueType>::~Vector() {
  */
 template <typename ValueType>
 void Vector<ValueType>::add(const ValueType& value) {
-    insert(count, value);
+    insert(size(), value);
 }
 
 template <typename ValueType>
@@ -3511,19 +4382,8 @@ Vector<ValueType>& Vector<ValueType>::addAll(const Vector<ValueType>& v) {
 }
 
 template <typename ValueType>
-Vector<ValueType>& Vector<ValueType>::addAll(std::initializer_list<ValueType> list) {
-    for (const ValueType& value : list) {
-        add(value);
-    }
-    return *this;
-}
-
-template <typename ValueType>
 ValueType& Vector<ValueType>::back() {
-    if (isEmpty()) {
-        error("Vector::back: vector is empty");
-    }
-    return elements[count - 1];
+    return const_cast<ValueType&>(static_cast<const Vector &>(*this).back());
 }
 
 template <typename ValueType>
@@ -3531,18 +4391,13 @@ const ValueType& Vector<ValueType>::back() const {
     if (isEmpty()) {
         error("Vector::back: vector is empty");
     }
-    return elements[count - 1];
+    return _elements.back();
 }
 
 template <typename ValueType>
 void Vector<ValueType>::clear() {
-    if (elements) {
-        delete[] elements;
-    }
-    count = 0;
-    capacity = 0;
-    elements = nullptr;
-    m_version++;
+    _elements.clear();
+    _version.update();
 }
 
 template <typename ValueType>
@@ -3550,55 +4405,14 @@ bool Vector<ValueType>::contains(const ValueType& value) const {
     return indexOf(value) >= 0;
 }
 
-// implementation note: This method is public so clients can guarantee a given
-// capacity.  Internal resizing is automatically done by expandCapacity.
-// See also: expandCapacity
-template <typename ValueType>
-void Vector<ValueType>::ensureCapacity(int cap) {
-    if (cap >= 1 && capacity < cap) {
-        capacity = std::max(cap, capacity * 2);
-        ValueType* array = new ValueType[capacity];
-        if (elements) {
-            for (int i = 0; i < count; i++) {
-                array[i] = elements[i];
-            }
-            delete[] elements;
-        }
-        elements = array;
-    }
-}
-
 template <typename ValueType>
 bool Vector<ValueType>::equals(const Vector<ValueType>& v) const {
     return stanfordcpplib::collections::equals(*this, v);
 }
 
-/*
- * Implementation notes: expandCapacity
- * ------------------------------------
- * This function doubles the array capacity, copies the old elements
- * into the new array, and then frees the old one.
- * See also: ensureCapacity
- */
-template <typename ValueType>
-void Vector<ValueType>::expandCapacity() {
-    capacity = std::max(1, capacity * 2);
-    ValueType* array = new ValueType[capacity];
-    if (elements) {
-        for (int i = 0; i < count; i++) {
-            array[i] = elements[i];
-        }
-        delete[] elements;
-    }
-    elements = array;
-}
-
 template <typename ValueType>
 ValueType& Vector<ValueType>::front() {
-    if (isEmpty()) {
-        error("Vector::front: vector is empty");
-    }
-    return elements[0];
+    return const_cast<ValueType&>(static_cast<const Vector &>(*this).front());
 }
 
 template <typename ValueType>
@@ -3606,59 +4420,44 @@ const ValueType& Vector<ValueType>::front() const {
     if (isEmpty()) {
         error("Vector::front: vector is empty");
     }
-    return elements[0];
+    return _elements.front();
 }
 
 template <typename ValueType>
 const ValueType& Vector<ValueType>::get(int index) const {
-    checkIndex(index, 0, count-1, "get");
-    return elements[index];
+    checkIndex(index, 0, size()-1, "get");
+    return _elements[index];
 }
 
 template <typename ValueType>
 int Vector<ValueType>::indexOf(const ValueType& value) const {
-    for (int i = 0; i < count; i++) {
-        if (elements[i] == value) {
-            return i;
-        }
-    }
-    return -1;
+    auto result = std::find(_elements.begin(), _elements.end(), value);
+    if (result == _elements.end()) return -1;
+    return result - _elements.begin();
 }
 
-/*
- * Implementation notes: insert, remove, add
- * -----------------------------------------
- * These methods must shift the existing elements in the array to
- * make room for a new element or to close up the space left by a
- * deleted one.
- */
 template <typename ValueType>
 void Vector<ValueType>::insert(int index, const ValueType& value) {
-    checkIndex(index, 0, count, "insert");
-    if (count == capacity) {
-        expandCapacity();
-    }
-    for (int i = count; i > index; i--) {
-        elements[i] = elements[i - 1];
-    }
-    elements[index] = value;
-    count++;
-    m_version++;
+    checkIndex(index, 0, size(), "insert");
+    _elements.insert(_elements.begin() + index, value);
+    _version.update();
 }
 
 template <typename ValueType>
 bool Vector<ValueType>::isEmpty() const {
-    return count == 0;
+    return _elements.empty();
 }
 
 template <typename ValueType>
 int Vector<ValueType>::lastIndexOf(const ValueType& value) const {
-    for (int i = count - 1; i >= 0; i--) {
-        if (elements[i] == value) {
-            return i;
-        }
-    }
-    return -1;
+    auto result = std::find(_elements.rbegin(), _elements.rend(), value);
+    if (result == _elements.rend()) return -1;
+
+    /* These iterators are going in the reverse direction, and so the index they give is the number of
+     * steps from the end of the range, not from the beginning. Reverse this before returning the
+     * value.
+     */
+    return (size() - 1) - (result - _elements.rbegin());
 }
 
 /*
@@ -3668,24 +4467,9 @@ int Vector<ValueType>::lastIndexOf(const ValueType& value) const {
  * function object to each element in ascending index order.
  */
 template <typename ValueType>
-void Vector<ValueType>::mapAll(void (*fn)(ValueType)) const {
-    for (int i = 0; i < count; i++) {
-        fn(elements[i]);
-    }
-}
-
-template <typename ValueType>
-void Vector<ValueType>::mapAll(void (*fn)(const ValueType&)) const {
-    for (int i = 0; i < count; i++) {
-        fn(elements[i]);
-    }
-}
-
-template <typename ValueType>
-template <typename FunctorType>
-void Vector<ValueType>::mapAll(FunctorType fn) const {
-    for (int i = 0; i < count; i++) {
-        fn(elements[i]);
+void Vector<ValueType>::mapAll(std::function<void (const ValueType&)> fn) const {
+    for (const auto& elem: _elements) {
+        fn(elem);
     }
 }
 
@@ -3694,9 +4478,10 @@ ValueType Vector<ValueType>::pop_back() {
     if (isEmpty()) {
         error("Vector::pop_back: vector is empty");
     }
-    ValueType last = elements[count - 1];
-    remove(count - 1);
-    return last;
+    auto result = _elements.back();
+    _elements.pop_back();
+    _version.update();
+    return result;
 }
 
 template <typename ValueType>
@@ -3704,14 +4489,15 @@ ValueType Vector<ValueType>::pop_front() {
     if (isEmpty()) {
         error("Vector::pop_front: vector is empty");
     }
-    ValueType first = elements[0];
-    remove(0);
-    return first;
+    auto result = _elements.front();
+    _elements.erase(_elements.begin());
+    _version.update();
+    return result;
 }
 
 template <typename ValueType>
 void Vector<ValueType>::push_back(const ValueType& value) {
-    insert(count, value);
+    insert(size(), value);
 }
 
 template <typename ValueType>
@@ -3721,12 +4507,9 @@ void Vector<ValueType>::push_front(const ValueType& value) {
 
 template <typename ValueType>
 void Vector<ValueType>::remove(int index) {
-    checkIndex(index, 0, count-1, "remove");
-    for (int i = index; i < count - 1; i++) {
-        elements[i] = elements[i + 1];
-    }
-    count--;
-    m_version++;
+    checkIndex(index, 0, size() - 1, "remove");
+    _elements.erase(_elements.begin() + index);
+    _version.update();
 }
 
 template <typename ValueType>
@@ -3749,29 +4532,24 @@ void Vector<ValueType>::removeValue(const ValueType& value) {
 
 template <typename ValueType>
 void Vector<ValueType>::reverse() {
-    for (int i = 0; i < count / 2; i++) {
-        std::swap(elements[i], elements[count - 1 - i]);
-    }
+    std::reverse(begin(), end());
 }
 
 template <typename ValueType>
 void Vector<ValueType>::set(int index, const ValueType& value) {
-    checkIndex(index, 0, count-1, "set");
-    elements[index] = value;
+    checkIndex(index, 0, size()-1, "set");
+    _elements[index] = value;
 }
 
 template <typename ValueType>
 int Vector<ValueType>::size() const {
-    return count;
+    return _elements.size();
 }
 
 template <typename ValueType>
 void Vector<ValueType>::shuffle() {
-    for (int i = 0; i < count; i++) {
-        int j = randomInteger(i, count - 1);
-        if (i != j) {
-            std::swap(elements[i], elements[j]);
-        }
+    for (int i = 0; i < size() - 1; i++) {
+        std::swap(_elements[i], _elements[randomInteger(i, size() - 1)]);
     }
 }
 
@@ -3782,8 +4560,8 @@ void Vector<ValueType>::sort() {
 
 template <typename ValueType>
 Vector<ValueType> Vector<ValueType>::subList(int start, int length) const {
-    checkIndex(start, 0, count, "subList");
-    checkIndex(start + length, 0, count, "subList");
+    checkIndex(start, 0, size(), "subList");
+    checkIndex(start + length, 0, size(), "subList");
     if (length < 0) {
         error("Vector::subList: length cannot be negative");
     }
@@ -3795,15 +4573,15 @@ Vector<ValueType> Vector<ValueType>::subList(int start, int length) const {
 }
 
 template <typename ValueType>
+Vector<ValueType> Vector<ValueType>::subList(int start) const {
+    return subList(start, size() - start);
+}
+
+template <typename ValueType>
 std::string Vector<ValueType>::toString() const {
     std::ostringstream os;
     os << *this;
     return os.str();
-}
-
-template <typename ValueType>
-unsigned int Vector<ValueType>::version() const {
-    return m_version;
 }
 
 /*
@@ -3814,13 +4592,12 @@ unsigned int Vector<ValueType>::version() const {
  */
 template <typename ValueType>
 ValueType& Vector<ValueType>::operator [](int index) {
-    checkIndex(index, 0, count-1, "operator []");
-    return elements[index];
+    return const_cast<ValueType&>(static_cast<const Vector &>(*this)[index]);
 }
 template <typename ValueType>
 const ValueType& Vector<ValueType>::operator [](int index) const {
-    checkIndex(index, 0, count-1, "operator []");
-    return elements[index];
+    checkIndex(index, 0, size()-1, "operator []");
+    return _elements[index];
 }
 
 template <typename ValueType>
@@ -3830,19 +4607,14 @@ Vector<ValueType> Vector<ValueType>::operator +(const Vector& v2) const {
 }
 
 template <typename ValueType>
-Vector<ValueType> Vector<ValueType>::operator +(std::initializer_list<ValueType> list) const {
+Vector<ValueType> Vector<ValueType>::operator +(const ValueType& elem) const {
     Vector<ValueType> result = *this;
-    return result.addAll(list);
+    return result += elem;
 }
 
 template <typename ValueType>
 Vector<ValueType>& Vector<ValueType>::operator +=(const Vector& v2) {
     return addAll(v2);
-}
-
-template <typename ValueType>
-Vector<ValueType>& Vector<ValueType>::operator +=(std::initializer_list<ValueType> list) {
-    return addAll(list);
 }
 
 template <typename ValueType>
@@ -3882,18 +4654,7 @@ bool Vector<ValueType>::operator >=(const Vector& v2) const {
 }
 
 template <typename ValueType>
-Vector<ValueType> & Vector<ValueType>::operator =(const Vector& src) {
-    if (this != &src) {
-        if (elements) {
-            delete[] elements;
-        }
-        deepCopy(src);
-    }
-    return *this;
-}
-
-template <typename ValueType>
-void Vector<ValueType>::checkIndex(int index, int min, int max, std::string prefix) const {
+void Vector<ValueType>::checkIndex(int index, int min, int max, const char* prefix) const {
     if (index < min || index > max) {
         std::ostringstream out;
         out << "Vector::" << prefix << ": index of " << index
@@ -3911,20 +4672,6 @@ void Vector<ValueType>::checkIndex(int index, int min, int max, std::string pref
         }
         error(out.str());
     }
-}
-
-// implementation notes:
-// doesn't free this->elements because deepCopy is only called in cases where
-// elements is either null (at construction) or has just been freed (operator =)
-template <typename ValueType>
-void Vector<ValueType>::deepCopy(const Vector& src) {
-    count = src.count;
-    capacity = src.count;
-    elements = (capacity == 0) ? nullptr : new ValueType[capacity];
-    for (int i = 0; i < count; i++) {
-        elements[i] = src.elements[i];
-    }
-    m_version++;
 }
 
 /*
@@ -3956,6 +4703,35 @@ template <typename ValueType>
 std::istream& operator >>(std::istream& is, Vector<ValueType>& vec) {
     ValueType element;
     return stanfordcpplib::collections::readCollection(is, vec, element, /* descriptor */ "Vector::operator >>");
+}
+
+
+/*
+ * Implementation notes: Iterator support
+ * --------------------------------------
+ * We used the checked iterator type, which requires us to provide information
+ * about the full range of values available.
+ */
+template <typename ValueType>
+typename Vector<ValueType>::iterator Vector<ValueType>::begin() {
+    return { &_version, _elements.begin(), _elements };
+}
+template <typename ValueType>
+typename Vector<ValueType>::const_iterator Vector<ValueType>::begin() const {
+    return { &_version, _elements.begin(), _elements };
+}
+template <typename ValueType>
+typename Vector<ValueType>::iterator Vector<ValueType>::end() {
+    return { &_version, _elements.end(), _elements };
+}
+template <typename ValueType>
+typename Vector<ValueType>::const_iterator Vector<ValueType>::end() const {
+    return { &_version, _elements.end(), _elements };
+}
+
+template <typename ValueType>
+void Vector<ValueType>::updateVersion() {
+    _version.update();
 }
 
 /*
@@ -5640,6 +6416,491 @@ namespace platform {
 
 /////////////////////// END code extracted from StanfordCPPLib/io/filelib.h ///////////////////////
 
+/////////////////////// BEGIN code extracted from StanfordCPPLib/collections/deque.h ///////////////////////
+/*
+ * File: deque.h
+ * -------------
+ * This file exports the <code>Deque</code> class, a collection
+ * in which values can be added and removed from the front or back.
+ * It combines much of the functionality of a stack and a queue.
+ * 
+ * @version 2019/04/09
+ * - renamed private members with underscore naming scheme for consistency
+ * @version 2019/02/04
+ * - changed internal implementation to wrap std collections
+ * @version 2017/11/14
+ * - added iterator version checking support
+ * @version 2016/09/24
+ * - refactored to use collections.h utility functions
+ * @version 2016/09/22
+ * - added constructor support for std initializer_list usage, such as {1, 2, 3}
+ * @version 2016/08/04
+ * - fixed operator >> to not throw errors
+ * @version 2015/07/05
+ * - using global hashing functions rather than global variables
+ * @version 2014/10/29
+ * - added comparison operators ==, !=, <, etc.
+ * @since 2014/10/29
+ */
+
+
+
+#ifndef INTERNAL_INCLUDE
+
+#endif // INTERNAL_INCLUDE
+
+#ifndef _deque_h
+#define _deque_h
+
+#include <deque>
+#include <initializer_list>
+
+#define INTERNAL_INCLUDE 1
+
+#define INTERNAL_INCLUDE 1
+
+#define INTERNAL_INCLUDE 1
+
+#undef INTERNAL_INCLUDE
+
+/*
+ * Class: Deque<ValueType>
+ * -----------------------
+ * This class models a linear structure called a <b><i>deque</i></b>
+ * in which values can be added and removed at either end.
+ * This discipline allows first-in/first-out (FIFO) and/or
+ * last-in/first-out (LIFO) behavior. That is the defining
+ * feature of deques.
+ */
+template <typename ValueType>
+class Deque {
+public:
+    /*
+     * Constructor: Deque
+     * Usage: Deque<ValueType> deque;
+     * ------------------------------
+     * Initializes a new empty deque.
+     */
+    Deque() = default;
+
+    /*
+     * Constructor: Deque
+     * Usage: Deque<ValueType> queue {1, 2, 3};
+     * ----------------------------------------
+     * Initializes a new deque that stores the given elements from front-back.
+     */
+    Deque(std::initializer_list<ValueType> list);
+
+    /*
+     * Destructor: ~Deque
+     * ------------------
+     * Frees any heap storage associated with this deque.
+     */
+    virtual ~Deque() = default;
+    
+    /*
+     * Method: add
+     * Usage: deque.add(value);
+     * ------------------------
+     * Adds <code>value</code> to the end of the deque.
+     * A synonym for the enqueueBack method.
+     */
+    void add(const ValueType& value);
+    void addBack(const ValueType& value);
+    void addFront(const ValueType& value);
+
+    /*
+     * Method: back
+     * Usage: ValueType last = deque.back();
+     * -------------------------------------
+     * Returns the last value in the deque by reference.
+     */
+    const ValueType& back() const;
+
+    /*
+     * Method: clear
+     * Usage: deque.clear();
+     * ---------------------
+     * Removes all elements from the deque.
+     */
+    void clear();
+    
+    /*
+     * Method: dequeue
+     * Usage: ValueType first = deque.dequeue();
+     * -----------------------------------------
+     * Removes and returns the first item in the deque.
+     * A synonym for the dequeueFront method.
+     */
+    ValueType dequeue();
+    ValueType dequeueBack();
+    ValueType dequeueFront();
+
+    /*
+     * Method: enqueue
+     * Usage: deque.enqueue(value);
+     * ----------------------------
+     * Adds <code>value</code> to the end of the deque.
+     * A synonym for the enqueueBack method.
+     */
+    void enqueue(const ValueType& value);
+    void enqueueBack(const ValueType& value);
+    void enqueueFront(const ValueType& value);
+    
+    /*
+     * Method: equals
+     * Usage: if (deque.equals(deque2)) ...
+     * ------------------------------------
+     * Compares two deques for equality.
+     * Returns <code>true</code> if this deque contains exactly the same
+     * values as the given other deque.
+     * Identical in behavior to the == operator.
+     */
+    bool equals(const Deque<ValueType>& deque2) const;
+    
+    /*
+     * Method: front
+     * Usage: ValueType first = deque.front();
+     * ---------------------------------------
+     * Returns the first value in the deque by reference.
+     */
+    const ValueType& front() const;
+
+    /*
+     * Method: isEmpty
+     * Usage: if (deque.isEmpty()) ...
+     * -------------------------------
+     * Returns <code>true</code> if the deque contains no elements.
+     */
+    bool isEmpty() const;
+    
+    /*
+     * Method: peek
+     * Usage: ValueType first = deque.peek();
+     * --------------------------------------
+     * Returns the first value in the deque, without removing it.  For
+     * compatibility with the STL classes, this method is also exported
+     * under the name <code>front</code>, in which case it returns the
+     * value by reference.
+     * A synonym for the peekFront method.
+     */
+    const ValueType& peek() const;
+    const ValueType& peekBack() const;
+    const ValueType& peekFront() const;
+
+    /*
+     * Method: remove
+     * Usage: ValueType first = deque.remove();
+     * ----------------------------------------
+     * Removes and returns the first item in the deque.
+     * A synonym for the dequeue method.
+     */
+    ValueType remove();
+    ValueType removeBack();
+    ValueType removeFront();
+
+    /*
+     * Method: size
+     * Usage: int n = deque.size();
+     * ----------------------------
+     * Returns the number of values in the deque.
+     */
+    int size() const;
+    
+    /*
+     * Returns an STL deque object with the same elements as this Deque.
+     */
+    std::deque<ValueType> toStlDeque() const;
+    
+    /*
+     * Method: toString
+     * Usage: string str = deque.toString();
+     * -------------------------------------
+     * Converts the deque to a printable string representation.
+     */
+    std::string toString() const;
+
+    /*
+     * Operators: ==, !=, <, >, <=, >=
+     * Usage: if (deque1 == deque2) ...
+     * Usage: if (deque1 < deque2) ...
+     * ...
+     * --------------------------------
+     * Relational operators to compare two deques.
+     * The ==, != operators require that the ValueType has a == operator
+     * so that the elements can be tested for equality.
+     * The <, >, <=, >= operators require that the ValueType has a < operator
+     * so that the elements can be compared pairwise.
+     */
+    bool operator ==(const Deque& deque2) const;
+    bool operator !=(const Deque& deque2) const;
+    bool operator <(const Deque& deque2) const;
+    bool operator <=(const Deque& deque2) const;
+    bool operator >(const Deque& deque2) const;
+    bool operator >=(const Deque& deque2) const;
+
+    /* Private section */
+
+    /**********************************************************************/
+    /* Note: Everything below this point in the file is logically part    */
+    /* of the implementation and should not be of interest to clients.    */
+    /**********************************************************************/
+
+    template <typename T>
+    friend int hashCode(const Deque<T>& s);
+    
+    template <typename T>
+    friend std::ostream& operator <<(std::ostream& os, const Deque<T>& deque);
+
+private:
+    // Instance variables
+    std::deque<ValueType> _elements;
+    stanfordcpplib::collections::VersionTracker _version;
+
+public:
+
+    using iterator = stanfordcpplib::collections::CheckedIterator<typename std::deque<ValueType>::iterator>;
+    using const_iterator = stanfordcpplib::collections::CheckedIterator<typename std::deque<ValueType>::const_iterator>;
+
+    iterator begin();
+    iterator end();
+    const_iterator begin() const;
+    const_iterator end() const;
+};
+
+template <typename ValueType>
+Deque<ValueType>::Deque(std::initializer_list<ValueType> list) : _elements(list) {
+
+}
+
+template <typename ValueType>
+void Deque<ValueType>::add(const ValueType& value) {
+    enqueue(value);
+}
+
+template <typename ValueType>
+void Deque<ValueType>::addBack(const ValueType& value) {
+    enqueueBack(value);
+}
+
+template <typename ValueType>
+void Deque<ValueType>::addFront(const ValueType& value) {
+    enqueueFront(value);
+}
+
+template <typename ValueType>
+const ValueType& Deque<ValueType>::back() const {
+    if (isEmpty()) {
+        error("Deque::back: Attempting to read back of an empty deque");
+    }
+    return _elements.back();
+}
+
+template <typename ValueType>
+void Deque<ValueType>::clear() {
+    _elements.clear();
+    _version.update();
+}
+
+/*
+ * Implementation notes: dequeue, peek
+ * -----------------------------------
+ * These methods must check for an empty deque and report an error
+ * if there is no first element.
+ */
+template <typename ValueType>
+ValueType Deque<ValueType>::dequeue() {
+    return dequeueFront();
+}
+
+template <typename ValueType>
+ValueType Deque<ValueType>::dequeueBack() {
+    if (isEmpty()) {
+        error("Deque::dequeueBack: Attempting to dequeue from an empty deque");
+    }
+    auto result = _elements.back();
+    _elements.pop_back();
+    _version.update();
+    return result;
+}
+
+template <typename ValueType>
+ValueType Deque<ValueType>::dequeueFront() {
+    if (isEmpty()) {
+        error("Deque::dequeueFront: Attempting to dequeue from an empty deque");
+    }
+    auto result = _elements.front();
+    _elements.pop_front();
+    _version.update();
+    return result;
+}
+
+template <typename ValueType>
+void Deque<ValueType>::enqueue(const ValueType& value) {
+    enqueueBack(value);
+}
+
+template <typename ValueType>
+void Deque<ValueType>::enqueueBack(const ValueType& value) {
+    _elements.push_back(value);
+    _version.update();
+}
+
+template <typename ValueType>
+void Deque<ValueType>::enqueueFront(const ValueType& value) {
+    _elements.push_front(value);
+    _version.update();
+}
+
+template <typename ValueType>
+bool Deque<ValueType>::equals(const Deque<ValueType>& deque2) const {
+    return _elements == deque2._elements;
+}
+
+template <typename ValueType>
+const ValueType& Deque<ValueType>::front() const {
+    if (isEmpty()) {
+        error("Deque::front: Attempting to read front of an empty deque");
+    }
+    return _elements.front();
+}
+
+template <typename ValueType>
+bool Deque<ValueType>::isEmpty() const {
+    return _elements.empty();
+}
+
+template <typename ValueType>
+const ValueType& Deque<ValueType>::peek() const {
+    return peekFront();
+}
+
+template <typename ValueType>
+const ValueType& Deque<ValueType>::peekBack() const {
+    if (isEmpty()) {
+        error("Deque::peekBack: Attempting to peek at an empty deque");
+    }
+    return back();
+}
+
+template <typename ValueType>
+const ValueType& Deque<ValueType>::peekFront() const {
+    if (isEmpty()) {
+        error("Deque::peekFront: Attempting to peek at an empty deque");
+    }
+    return front();
+}
+
+template <typename ValueType>
+ValueType Deque<ValueType>::remove() {
+    return dequeue();
+}
+
+template <typename ValueType>
+ValueType Deque<ValueType>::removeBack() {
+    if (isEmpty()) {
+        error("Deque::removeBack: Attempting to remove from an empty deque");
+    }
+    return dequeueBack();
+}
+
+template <typename ValueType>
+ValueType Deque<ValueType>::removeFront() {
+    if (isEmpty()) {
+        error("Deque::removeFront: Attempting to remove from an empty deque");
+    }
+    return dequeueFront();
+}
+
+template <typename ValueType>
+int Deque<ValueType>::size() const {
+    return _elements.size();
+}
+
+template <typename ValueType>
+std::deque<ValueType> Deque<ValueType>::toStlDeque() const {
+    return _elements;
+}
+
+template <typename ValueType>
+std::string Deque<ValueType>::toString() const {
+    std::ostringstream os;
+    os << *this;
+    return os.str();
+}
+
+template <typename ValueType>
+bool Deque<ValueType>::operator ==(const Deque& deque2) const {
+    return equals(deque2);
+}
+
+template <typename ValueType>
+bool Deque<ValueType>::operator !=(const Deque& deque2) const {
+    return !equals(deque2);
+}
+
+template <typename ValueType>
+bool Deque<ValueType>::operator <(const Deque& deque2) const {
+    return stanfordcpplib::collections::compare(_elements, deque2._elements) < 0;
+}
+
+template <typename ValueType>
+bool Deque<ValueType>::operator <=(const Deque& deque2) const {
+    return stanfordcpplib::collections::compare(_elements, deque2._elements) <= 0;
+}
+
+template <typename ValueType>
+bool Deque<ValueType>::operator >(const Deque& deque2) const {
+    return stanfordcpplib::collections::compare(_elements, deque2._elements) > 0;
+}
+
+template <typename ValueType>
+bool Deque<ValueType>::operator >=(const Deque& deque2) const {
+    return stanfordcpplib::collections::compare(_elements, deque2._elements) >= 0;
+}
+
+template <typename ValueType>
+std::ostream& operator <<(std::ostream& os, const Deque<ValueType>& deque) {
+    return stanfordcpplib::collections::writeCollection(os, deque);
+}
+
+template <typename ValueType>
+std::istream& operator >>(std::istream& is, Deque<ValueType>& deque) {
+    ValueType element;
+    return stanfordcpplib::collections::readCollection(is, deque, element, /* descriptor */ "Deque::operator >>");
+}
+
+template <typename ValueType>
+typename Deque<ValueType>::iterator Deque<ValueType>::begin() {
+    return { &_version, _elements.begin(), _elements };
+}
+template <typename ValueType>
+typename Deque<ValueType>::const_iterator Deque<ValueType>::begin() const {
+    return { &_version, _elements.begin(), _elements };
+}
+
+template <typename ValueType>
+typename Deque<ValueType>::iterator Deque<ValueType>::end() {
+    return { &_version, _elements.end(), _elements };
+}
+template <typename ValueType>
+typename Deque<ValueType>::const_iterator Deque<ValueType>::end() const {
+    return { &_version, _elements.end(), _elements };
+}
+
+/*
+ * Template hash function for deques.
+ * Requires the element type in the deque to have a hashCode function.
+ */
+template <typename T>
+int hashCode(const Deque<T>& deq) {
+    return stanfordcpplib::collections::hashCodeCollection(deq);
+}
+
+#endif // _deque_h
+
+/////////////////////// END code extracted from StanfordCPPLib/collections/deque.h ///////////////////////
+
 /////////////////////// BEGIN code extracted from StanfordCPPLib/collections/queue.h ///////////////////////
 /*
  * File: queue.h
@@ -5648,6 +6909,10 @@ namespace platform {
  * in which values are ordinarily processed in a first-in/first-out
  * (FIFO) order.
  * 
+ * @version 2019/04/09
+ * - renamed private members with underscore naming scheme for consistency
+ * @version 2019/02/04
+ * - changed internal implementation to wrap std collections
  * @version 2018/01/23
  * - fixed bad reference bug on queue.enqueue(queue.peek())
  * @version 2017/11/14
@@ -5683,9 +6948,9 @@ namespace platform {
 #ifndef _queue_h
 #define _queue_h
 
-#include <deque>
 #include <initializer_list>
-#include <iterator>
+
+#define INTERNAL_INCLUDE 1
 
 #define INTERNAL_INCLUDE 1
 
@@ -5714,7 +6979,7 @@ public:
      * ------------------------------
      * Initializes a new empty queue.
      */
-    Queue();
+    Queue() = default;
 
     /*
      * Constructor: Queue
@@ -5729,7 +6994,7 @@ public:
      * ------------------
      * Frees any heap storage associated with this queue.
      */
-    virtual ~Queue();
+    virtual ~Queue() = default;
     
     /*
      * Method: add
@@ -5879,149 +7144,13 @@ public:
     /* of the implementation and should not be of interest to clients.    */
     /**********************************************************************/
 
-    /*
-     * Implementation notes: Queue data structure
-     * ------------------------------------------
-     * The Queue class is implemented using a ring buffer.
-     */
-
 private:
     /* Instance variables */
-    Vector<ValueType> ringBuffer;
-    int count;
-    int capacity;
-    int head;
-    int tail;
-
-    /* Private functions */
-    void expandRingBufferCapacity();
-    int queueCompare(const Queue& queue2) const;
-
-    /*
-     * Iterator support
-     * ----------------
-     * The classes in the StanfordCPPLib collection implement input
-     * iterators so that they work symmetrically with respect to the
-     * corresponding STL classes.
-     */
-    class iterator : public std::iterator<std::input_iterator_tag, ValueType> {
-    public:
-        iterator(const Queue* gp, int index)
-                : gp(gp),
-                  index(index) {
-            itr_version = gp->version();
-        }
-
-        iterator(const iterator& it)
-                : gp(it.gp),
-                  index(it.index),
-                  itr_version(it.itr_version) {
-            // empty
-        }
-
-        iterator& operator ++() {
-            stanfordcpplib::collections::checkVersion(*gp, *this);
-            index = (index + 1) % gp->capacity;
-            return *this;
-        }
-
-        iterator operator ++(int) {
-            stanfordcpplib::collections::checkVersion(*gp, *this);
-            iterator copy(*this);
-            operator++();
-            return copy;
-        }
-
-        bool operator ==(const iterator& rhs) {
-            return gp == rhs.gp && index == rhs.index;
-        }
-
-        bool operator !=(const iterator& rhs) {
-            return !(*this == rhs);
-        }
-
-        const ValueType& operator *() {
-            stanfordcpplib::collections::checkVersion(*gp, *this);
-            return gp->ringBuffer[index];
-        }
-
-        ValueType* operator ->() {
-            stanfordcpplib::collections::checkVersion(*gp, *this);
-            return &gp->ringBuffer[index];
-        }
-
-        unsigned int version() const {
-            return itr_version;
-        }
-
-    private:
-        const Queue* gp;
-        int index;
-        unsigned int itr_version;
-    };
-
-public:
-    iterator begin() const {
-        return iterator(this, /* index */ head);
-    }
-
-    iterator end() const {
-        return iterator(this, /* index */ tail);
-    }
-
-    /*
-     * Returns the internal version of this collection.
-     * This is used to check for invalid iterators and issue error messages.
-     */
-    unsigned int version() const;
+    Deque<ValueType> _elements;
 };
 
-/*
- * Implementation notes: Queue data structure
- * ------------------------------------------
- * The array-based queue stores the elements in successive index
- * positions in a vector, just as a stack does.  What makes the
- * queue structure more complex is the need to avoid shifting
- * elements as the queue expands and contracts.  In the array
- * model, this goal is achieved by keeping track of both the
- * head and tail indices.  The tail index increases by one each
- * time an element is enqueued, and the head index increases by
- * one each time an element is dequeued.  Each index therefore
- * marches toward the end of the allocated vector and will
- * eventually reach the end.  Rather than allocate new memory,
- * this implementation lets each index wrap around back to the
- * beginning as if the ends of the array of elements were joined
- * to form a circle.  This representation is called a ring buffer.
- */
-static const int INITIAL_CAPACITY = 10;
-
-/*
- * Implementation notes: Queue constructor
- * ---------------------------------------
- * The constructor must allocate the array storage for the queue
- * elements and initialize the fields of the object.
- */
 template <typename ValueType>
-Queue<ValueType>::Queue() {
-    clear();
-}
-
-template <typename ValueType>
-Queue<ValueType>::Queue(std::initializer_list<ValueType> list) {
-    clear();
-    for (const ValueType& value : list) {
-        add(value);
-    }
-}
-
-/*
- * Implementation notes: ~Queue destructor
- * ---------------------------------------
- * All of the dynamic memory is allocated in the Vector class,
- * so no work is required at this level.
- */
-template <typename ValueType>
-Queue<ValueType>::~Queue() {
+Queue<ValueType>::Queue(std::initializer_list<ValueType> list) : _elements(list) {
     // empty
 }
 
@@ -6032,19 +7161,15 @@ void Queue<ValueType>::add(const ValueType& value) {
 
 template <typename ValueType>
 const ValueType& Queue<ValueType>::back() const {
-    if (count == 0) {
+    if (isEmpty()) {
         error("Queue::back: Attempting to read back of an empty queue");
     }
-    return ringBuffer[(tail + capacity - 1) % capacity];
+    return _elements.back();
 }
 
 template <typename ValueType>
 void Queue<ValueType>::clear() {
-    capacity = INITIAL_CAPACITY;
-    ringBuffer = Vector<ValueType>(capacity);
-    head = 0;
-    tail = 0;
-    count = 0;
+    _elements.clear();
 }
 
 /*
@@ -6055,58 +7180,38 @@ void Queue<ValueType>::clear() {
  */
 template <typename ValueType>
 ValueType Queue<ValueType>::dequeue() {
-    if (count == 0) {
+    if (isEmpty()) {
         error("Queue::dequeue: Attempting to dequeue an empty queue");
     }
-    ValueType result = ringBuffer[head];
-    head = (head + 1) % capacity;
-    count--;
-    return result;
+    return _elements.dequeueFront();
 }
 
 template <typename ValueType>
 void Queue<ValueType>::enqueue(const ValueType& value) {
-    if (count >= capacity - 1) {
-        // Buffer almost full; need to resize buffer to a larger capacity.
-        // BUGFIX: when calling queue.enqueue(queue.peek()), the resize here
-        // was causing the reference to become invalid.
-        // In this case we need to make a copy of the value so that we don't
-        // lose its value on resize.
-        const ValueType valueCopy = value;
-        expandRingBufferCapacity();
-        enqueue(valueCopy);
-    } else {
-        // standard add to end of ring buffer
-        ringBuffer[tail] = value;
-        tail = (tail + 1) % capacity;
-        count++;
-    }
+    _elements.enqueueBack(value);
 }
 
 template <typename ValueType>
 bool Queue<ValueType>::equals(const Queue<ValueType>& queue2) const {
-    return stanfordcpplib::collections::equals(*this, queue2);
+    return *this == queue2;
 }
 
 template <typename ValueType>
 const ValueType& Queue<ValueType>::front() const {
-    if (count == 0) {
+    if (isEmpty()) {
         error("Queue::front: Attempting to read front of an empty queue");
     }
-    return ringBuffer[head];
+    return _elements.front();
 }
 
 template <typename ValueType>
 bool Queue<ValueType>::isEmpty() const {
-    return count == 0;
+    return _elements.isEmpty();
 }
 
 template <typename ValueType>
 const ValueType& Queue<ValueType>::peek() const {
-    if (count == 0) {
-        error("Queue::peek: Attempting to peek at an empty queue");
-    }
-    return ringBuffer.get(head);
+    return front();
 }
 
 template <typename ValueType>
@@ -6121,7 +7226,7 @@ ValueType Queue<ValueType>::remove() {
 
 template <typename ValueType>
 int Queue<ValueType>::size() const {
-    return count;
+    return _elements.size();
 }
 
 template <typename ValueType>
@@ -6132,102 +7237,44 @@ std::string Queue<ValueType>::toString() const {
 }
 
 template <typename ValueType>
-unsigned int Queue<ValueType>::version() const {
-    return ringBuffer.version();
-}
-
-/*
- * Implementation notes: expandRingBufferCapacity
- * ----------------------------------------------
- * This private method doubles the capacity of the ringBuffer vector.
- * Note that this implementation also shifts all the elements back to
- * the beginning of the vector.
- */
-template <typename ValueType>
-void Queue<ValueType>::expandRingBufferCapacity() {
-    Vector<ValueType> copy = ringBuffer;
-    ringBuffer = Vector<ValueType>(2 * capacity);
-    for (int i = 0; i < count; i++) {
-        ringBuffer[i] = copy[(head + i) % capacity];
-    }
-    head = 0;
-    tail = count;
-    capacity *= 2;
-}
-
-template <typename ValueType>
-int Queue<ValueType>::queueCompare(const Queue& queue2) const {
-    if (this == &queue2) {
-        return 0;
-    }
-    
-    for (int i1 = 0, i2 = 0;
-         i1 < count && i2 < queue2.count;
-         i1++, i2++) {
-        if (ringBuffer[(head + i1) % capacity] < queue2.ringBuffer[(queue2.head + i2) % queue2.capacity]) {
-            return -1;
-        } else if (queue2.ringBuffer[(queue2.head + i2) % queue2.capacity] < ringBuffer[(head + i1) % capacity]) {
-            return 1;
-        }
-    }
-    
-    if (count < queue2.count) {
-        return -1;
-    } else if (count > queue2.count) {
-        return 1;
-    } else {
-        return 0;
-    }
-}
-
-template <typename ValueType>
 bool Queue<ValueType>::operator ==(const Queue& queue2) const {
-    return equals(queue2);
+    return _elements == queue2._elements;
 }
 
 template <typename ValueType>
 bool Queue<ValueType>::operator !=(const Queue& queue2) const {
-    return !equals(queue2);
+    return _elements != queue2._elements;
 }
 
 template <typename ValueType>
 bool Queue<ValueType>::operator <(const Queue& queue2) const {
-    return queueCompare(queue2) < 0;
+    return _elements < queue2._elements;
 }
 
 template <typename ValueType>
 bool Queue<ValueType>::operator <=(const Queue& queue2) const {
-    return queueCompare(queue2) <= 0;
+    return _elements <= queue2._elements;
 }
 
 template <typename ValueType>
 bool Queue<ValueType>::operator >(const Queue& queue2) const {
-    return queueCompare(queue2) > 0;
+    return _elements > queue2._elements;
 }
 
 template <typename ValueType>
 bool Queue<ValueType>::operator >=(const Queue& queue2) const {
-    return queueCompare(queue2) >= 0;
+    return _elements >= queue2._elements;
 }
 
 template <typename ValueType>
 std::ostream& operator <<(std::ostream& os, const Queue<ValueType>& queue) {
-    os << "{";
-    if (!queue.isEmpty()) {
-        writeGenericValue(os, queue.ringBuffer[queue.head], /* forceQuotes */ true);
-        for (int i = 1; i < queue.count; i++) {
-            os << ", ";
-            writeGenericValue(os, queue.ringBuffer[(queue.head + i) % queue.capacity], /* forceQuotes */ true);
-        }
-    }
-    os << "}";
-    return os;
+    return os << queue._elements;
 }
 
 template <typename ValueType>
 std::istream& operator >>(std::istream& is, Queue<ValueType>& queue) {
     ValueType element;
-    return stanfordcpplib::collections::readCollection(is, queue, element, /* descriptor */ "Queue::operator >>");
+    return stanfordcpplib::collections::readCollection(is, queue, queue._elements, /* descriptor */ "Queue::operator >>");
 }
 
 /*
@@ -6236,11 +7283,7 @@ std::istream& operator >>(std::istream& is, Queue<ValueType>& queue) {
  */
 template <typename T>
 int hashCode(const Queue<T>& q) {
-    int code = hashSeed();
-    for (int i = 0; i < q.count; i++) {
-        code = hashMultiplier() * code + hashCode(q.ringBuffer[(q.head + i) % q.capacity]);
-    }
-    return int(code & hashMask());
+    return hashCode(q._elements);
 }
 
 #endif // _queue_h
@@ -6254,6 +7297,10 @@ int hashCode(const Queue<T>& q) {
  * This file exports the <code>Stack</code> class, which implements
  * a collection that processes values in a last-in/first-out (LIFO) order.
  * 
+ * @version 2019/04/09
+ * - renamed private members with underscore naming scheme for consistency
+ * @version 2019/02/04
+ * - changed internal implementation to wrap std collections
  * @version 2016/12/09
  * - added iterator version checking support (implicitly via Vector)
  * @version 2016/09/24
@@ -6280,7 +7327,6 @@ int hashCode(const Queue<T>& q) {
 #define _stack_h
 
 #include <initializer_list>
-#include <iterator>
 
 #define INTERNAL_INCLUDE 1
 
@@ -6309,7 +7355,7 @@ public:
      * ------------------------------
      * Initializes a new empty stack.
      */
-    Stack();
+    Stack() = default;
 
     /*
      * Constructor: Stack
@@ -6324,7 +7370,7 @@ public:
      * ------------------
      * Frees any heap storage associated with this stack.
      */
-    virtual ~Stack();
+    virtual ~Stack() = default;
     
     /*
      * Method: add
@@ -6478,60 +7524,7 @@ public:
     friend std::ostream& operator <<(std::ostream& os, const Stack<T>& stack);
     
 private:
-    Vector<ValueType> elements;
-
-    /*
-     * Iterator support
-     * ----------------
-     * The classes in the StanfordCPPLib collection implement input
-     * iterators so that they work symmetrically with respect to the
-     * corresponding STL classes.
-     */
-    class iterator : public Vector<ValueType>::iterator {
-    public:
-        iterator() : Vector<ValueType>::iterator() {}
-        iterator(const iterator& it) : Vector<ValueType>::iterator(it) {}
-        iterator(const typename Vector<ValueType>::iterator& it) : Vector<ValueType>::iterator(it) {}
-    };
-    
-    class const_iterator : public Vector<ValueType>::const_iterator {
-    public:
-        const_iterator() : Vector<ValueType>::const_iterator() {}
-        const_iterator(const const_iterator& it) : Vector<ValueType>::const_iterator(it) {}
-        const_iterator(const typename Vector<ValueType>::const_iterator& it) : Vector<ValueType>::const_iterator(it) {}
-    };
-    
-public:
-    /*
-     * Returns an iterator positioned at the first element of the list.
-     */
-    iterator begin() {
-        return iterator(elements.begin());
-    }
-
-    /*
-     * Returns an iterator positioned at the last element of the list.
-     */
-    iterator end() {
-        auto itr = elements.end();
-        return iterator(itr);
-    }
-    
-    /*
-     * Returns an iterator positioned at the first element of the list.
-     */
-    const_iterator begin() const {
-        auto itr = elements.begin();
-        return const_iterator(itr);
-    }
-
-    /*
-     * Returns an iterator positioned at the last element of the list.
-     */
-    const_iterator end() const {
-        auto itr = elements.end();
-        return const_iterator(itr);
-    }
+    Vector<ValueType> _elements;
 };
 
 /*
@@ -6543,20 +7536,8 @@ public:
  */
 
 template <typename ValueType>
-Stack<ValueType>::Stack() {
-    /* Empty */
-}
+Stack<ValueType>::Stack(std::initializer_list<ValueType> list) : _elements(list) {
 
-template <typename ValueType>
-Stack<ValueType>::Stack(std::initializer_list<ValueType> list) {
-    for (const ValueType& element : list) {
-        push(element);
-    }
-}
-
-template <typename ValueType>
-Stack<ValueType>::~Stack() {
-    /* Empty */
 }
 
 template <typename ValueType>
@@ -6566,12 +7547,12 @@ void Stack<ValueType>::add(const ValueType& value) {
 
 template <typename ValueType>
 void Stack<ValueType>::clear() {
-    elements.clear();
+    _elements.clear();
 }
 
 template <typename ValueType>
 bool Stack<ValueType>::equals(const Stack<ValueType>& stack2) const {
-    return stanfordcpplib::collections::equals(*this, stack2);
+    return stanfordcpplib::collections::equals(_elements, stack2._elements);
 }
 
 template <typename ValueType>
@@ -6584,7 +7565,7 @@ ValueType Stack<ValueType>::peek() const {
     if (isEmpty()) {
         error("Stack::peek: Attempting to peek at an empty stack");
     }
-    return elements.get(elements.size() - 1);
+    return _elements.back();
 }
 
 template <typename ValueType>
@@ -6592,14 +7573,12 @@ ValueType Stack<ValueType>::pop() {
     if (isEmpty()) {
         error("Stack::pop: Attempting to pop an empty stack");
     }
-    ValueType top = elements[elements.size() - 1];
-    elements.remove(elements.size() - 1);
-    return top;
+    return _elements.pop_back();
 }
 
 template <typename ValueType>
 void Stack<ValueType>::push(const ValueType& value) {
-    elements.add(value);
+    _elements.push_back(value);
 }
 
 template <typename ValueType>
@@ -6609,7 +7588,7 @@ ValueType Stack<ValueType>::remove() {
 
 template <typename ValueType>
 int Stack<ValueType>::size() const {
-    return elements.size();
+    return _elements.size();
 }
 
 template <typename ValueType>
@@ -6617,7 +7596,7 @@ ValueType & Stack<ValueType>::top() {
     if (isEmpty()) {
         error("Stack::top: Attempting to read top of an empty stack");
     }
-    return elements[elements.size() - 1];
+    return _elements.back();
 }
 
 template <typename ValueType>
@@ -6629,37 +7608,37 @@ std::string Stack<ValueType>::toString() const {
 
 template <typename ValueType>
 bool Stack<ValueType>::operator ==(const Stack& stack2) const {
-    return elements == stack2.elements;
+    return _elements == stack2._elements;
 }
 
 template <typename ValueType>
 bool Stack<ValueType>::operator !=(const Stack & stack2) const {
-    return elements != stack2.elements;
+    return _elements != stack2._elements;
 }
 
 template <typename ValueType>
 bool Stack<ValueType>::operator <(const Stack & stack2) const {
-    return elements < stack2.elements;
+    return _elements < stack2._elements;
 }
 
 template <typename ValueType>
 bool Stack<ValueType>::operator <=(const Stack & stack2) const {
-    return elements <= stack2.elements;
+    return _elements <= stack2._elements;
 }
 
 template <typename ValueType>
 bool Stack<ValueType>::operator >(const Stack & stack2) const {
-    return elements > stack2.elements;
+    return _elements > stack2._elements;
 }
 
 template <typename ValueType>
 bool Stack<ValueType>::operator >=(const Stack & stack2) const {
-    return elements >= stack2.elements;
+    return _elements >= stack2._elements;
 }
 
 template <typename ValueType>
 std::ostream& operator <<(std::ostream& os, const Stack<ValueType>& stack) {
-    return os << stack.elements;
+    return os << stack._elements;
 }
 
 template <typename ValueType>
@@ -6674,642 +7653,12 @@ std::istream& operator >>(std::istream& is, Stack<ValueType>& stack) {
  */
 template <typename T>
 int hashCode(const Stack<T>& s) {
-    return hashCode(s.elements);
+    return hashCode(s._elements);
 }
 
 #endif // _stack_h
 
 /////////////////////// END code extracted from StanfordCPPLib/collections/stack.h ///////////////////////
-
-/////////////////////// BEGIN code extracted from StanfordCPPLib/collections/deque.h ///////////////////////
-/*
- * File: deque.h
- * -------------
- * This file exports the <code>Deque</code> class, a collection
- * in which values can be added and removed from the front or back.
- * It combines much of the functionality of a stack and a queue.
- * 
- * @version 2017/11/14
- * - added iterator version checking support
- * @version 2016/09/24
- * - refactored to use collections.h utility functions
- * @version 2016/09/22
- * - added constructor support for std initializer_list usage, such as {1, 2, 3}
- * @version 2016/08/04
- * - fixed operator >> to not throw errors
- * @version 2015/07/05
- * - using global hashing functions rather than global variables
- * @version 2014/10/29
- * - added comparison operators ==, !=, <, etc.
- * @since 2014/10/29
- */
-
-
-
-#ifndef INTERNAL_INCLUDE
-
-#endif // INTERNAL_INCLUDE
-
-#ifndef _deque_h
-#define _deque_h
-
-#include <deque>
-#include <initializer_list>
-
-#define INTERNAL_INCLUDE 1
-
-#define INTERNAL_INCLUDE 1
-
-#define INTERNAL_INCLUDE 1
-
-#undef INTERNAL_INCLUDE
-
-/*
- * Class: Deque<ValueType>
- * -----------------------
- * This class models a linear structure called a <b><i>deque</i></b>
- * in which values can be added and removed at either end.
- * This discipline allows first-in/first-out (FIFO) and/or
- * last-in/first-out (LIFO) behavior. That is the defining
- * feature of deques.
- */
-template <typename ValueType>
-class Deque {
-public:
-    /*
-     * Constructor: Deque
-     * Usage: Deque<ValueType> deque;
-     * ------------------------------
-     * Initializes a new empty deque.
-     */
-    Deque();
-
-    /*
-     * Constructor: Deque
-     * Usage: Deque<ValueType> queue {1, 2, 3};
-     * ----------------------------------------
-     * Initializes a new deque that stores the given elements from front-back.
-     */
-    Deque(std::initializer_list<ValueType> list);
-
-    /*
-     * Destructor: ~Deque
-     * ------------------
-     * Frees any heap storage associated with this deque.
-     */
-    virtual ~Deque();
-    
-    /*
-     * Method: add
-     * Usage: deque.add(value);
-     * ------------------------
-     * Adds <code>value</code> to the end of the deque.
-     * A synonym for the enqueueBack method.
-     */
-    void add(const ValueType& value);
-    void addBack(const ValueType& value);
-    void addFront(const ValueType& value);
-
-    /*
-     * Method: back
-     * Usage: ValueType last = deque.back();
-     * -------------------------------------
-     * Returns the last value in the deque by reference.
-     */
-    const ValueType& back() const;
-
-    /*
-     * Method: clear
-     * Usage: deque.clear();
-     * ---------------------
-     * Removes all elements from the deque.
-     */
-    void clear();
-    
-    /*
-     * Method: dequeue
-     * Usage: ValueType first = deque.dequeue();
-     * -----------------------------------------
-     * Removes and returns the first item in the deque.
-     * A synonym for the dequeueFront method.
-     */
-    ValueType dequeue();
-    ValueType dequeueBack();
-    ValueType dequeueFront();
-
-    /*
-     * Method: enqueue
-     * Usage: deque.enqueue(value);
-     * ----------------------------
-     * Adds <code>value</code> to the end of the deque.
-     * A synonym for the enqueueBack method.
-     */
-    void enqueue(const ValueType& value);
-    void enqueueBack(const ValueType& value);
-    void enqueueFront(const ValueType& value);
-    
-    /*
-     * Method: equals
-     * Usage: if (deque.equals(deque2)) ...
-     * ------------------------------------
-     * Compares two deques for equality.
-     * Returns <code>true</code> if this deque contains exactly the same
-     * values as the given other deque.
-     * Identical in behavior to the == operator.
-     */
-    bool equals(const Deque<ValueType>& deque2) const;
-    
-    /*
-     * Method: front
-     * Usage: ValueType first = deque.front();
-     * ---------------------------------------
-     * Returns the first value in the deque by reference.
-     */
-    const ValueType& front() const;
-
-    /*
-     * Method: isEmpty
-     * Usage: if (deque.isEmpty()) ...
-     * -------------------------------
-     * Returns <code>true</code> if the deque contains no elements.
-     */
-    bool isEmpty() const;
-    
-    /*
-     * Method: peek
-     * Usage: ValueType first = deque.peek();
-     * --------------------------------------
-     * Returns the first value in the deque, without removing it.  For
-     * compatibility with the STL classes, this method is also exported
-     * under the name <code>front</code>, in which case it returns the
-     * value by reference.
-     * A synonym for the peekFront method.
-     */
-    const ValueType& peek() const;
-    const ValueType& peekBack() const;
-    const ValueType& peekFront() const;
-
-    /*
-     * Method: remove
-     * Usage: ValueType first = deque.remove();
-     * ----------------------------------------
-     * Removes and returns the first item in the deque.
-     * A synonym for the dequeue method.
-     */
-    ValueType remove();
-    ValueType removeBack();
-    ValueType removeFront();
-
-    /*
-     * Method: size
-     * Usage: int n = deque.size();
-     * ----------------------------
-     * Returns the number of values in the deque.
-     */
-    int size() const;
-    
-    /*
-     * Returns an STL deque object with the same elements as this Deque.
-     */
-    std::deque<ValueType> toStlDeque() const;
-    
-    /*
-     * Method: toString
-     * Usage: string str = deque.toString();
-     * -------------------------------------
-     * Converts the deque to a printable string representation.
-     */
-    std::string toString() const;
-
-    /*
-     * Operators: ==, !=, <, >, <=, >=
-     * Usage: if (deque1 == deque2) ...
-     * Usage: if (deque1 < deque2) ...
-     * ...
-     * --------------------------------
-     * Relational operators to compare two deques.
-     * The ==, != operators require that the ValueType has a == operator
-     * so that the elements can be tested for equality.
-     * The <, >, <=, >= operators require that the ValueType has a < operator
-     * so that the elements can be compared pairwise.
-     */
-    bool operator ==(const Deque& deque2) const;
-    bool operator !=(const Deque& deque2) const;
-    bool operator <(const Deque& deque2) const;
-    bool operator <=(const Deque& deque2) const;
-    bool operator >(const Deque& deque2) const;
-    bool operator >=(const Deque& deque2) const;
-
-    /* Private section */
-
-    /**********************************************************************/
-    /* Note: Everything below this point in the file is logically part    */
-    /* of the implementation and should not be of interest to clients.    */
-    /**********************************************************************/
-
-    template <typename Collection>
-    friend int stanfordcpplib::collections::compare(const Collection& pq1, const Collection& pq2);
-    
-    template <typename T>
-    friend int hashCode(const Deque<T>& s);
-    
-    template <typename T>
-    friend std::ostream& operator <<(std::ostream& os, const Deque<T>& deque);
-
-private:
-    /* Instance variables */
-    std::deque<ValueType> elements;
-    unsigned int m_version = 0; // structure version for detecting invalid iterators
-
-public:
-    /*
-     * Iterator support
-     * ----------------
-     * The classes in the StanfordCPPLib collection implement input
-     * iterators so that they work symmetrically with respect to the
-     * corresponding STL classes.
-     */
-    class deque_iterator : public std::deque<ValueType>::iterator {
-    public:
-        deque_iterator()
-                : std::deque<ValueType>::iterator(),
-                  dp(nullptr),
-                  itr_version(0) {
-            // empty
-        }
-
-        deque_iterator(const deque_iterator& it)
-                : std::deque<ValueType>::iterator(it),
-                  dp(it.dp),
-                  itr_version(it.itr_version) {
-            // empty
-        }
-
-        deque_iterator(Deque<ValueType>* dp, const typename std::deque<ValueType>::iterator& it)
-                : std::deque<ValueType>::iterator(it),
-                  dp(dp),
-                  itr_version(dp->version()) {
-            // empty
-        }
-
-        ValueType& operator *() {
-            if (dp) {
-                stanfordcpplib::collections::checkVersion(*dp, *this);
-            }
-            return std::deque<ValueType>::iterator::operator *();   // call super
-        }
-
-        ValueType* operator ->() {
-            if (dp) {
-                stanfordcpplib::collections::checkVersion(*dp, *this);
-            }
-            return std::deque<ValueType>::iterator::operator ->();   // call super
-        }
-
-        unsigned int version() const {
-            return itr_version;
-        }
-
-    private:
-        const Deque* dp;
-        unsigned int itr_version;
-    };
-
-    class const_deque_iterator : public std::deque<ValueType>::const_iterator {
-    public:
-        const_deque_iterator()
-                : std::deque<ValueType>::const_iterator(),
-                  dp(nullptr),
-                  itr_version(0) {
-            // empty
-        }
-
-        const_deque_iterator(const const_deque_iterator& it)
-                : std::deque<ValueType>::const_iterator(it),
-                  dp(it.dp),
-                  itr_version(it.itr_version) {
-            // empty
-        }
-
-        const_deque_iterator(const Deque<ValueType>* const dp, const typename std::deque<ValueType>::const_iterator& it)
-                : std::deque<ValueType>::const_iterator(it),
-                  dp(dp),
-                  itr_version(dp->version()) {
-            // empty
-        }
-
-        const ValueType& operator *() {
-            if (dp) {
-                stanfordcpplib::collections::checkVersion(*dp, *this);
-            }
-            return std::deque<ValueType>::const_iterator::operator *();   // call super
-        }
-
-        const ValueType* operator ->() {
-            if (dp) {
-                stanfordcpplib::collections::checkVersion(*dp, *this);
-            }
-            return std::deque<ValueType>::const_iterator::operator ->();   // call super
-        }
-
-        unsigned int version() const {
-            return itr_version;
-        }
-
-    private:
-        const Deque* dp;
-        unsigned int itr_version;
-    };
-
-    /*
-     * Returns an iterator positioned at the first element of the deque.
-     */
-    deque_iterator begin() {
-        return deque_iterator(this, elements.begin());
-    }
-
-    /*
-     * Returns an iterator positioned at the first element of the deque.
-     */
-    const_deque_iterator begin() const {
-        auto itr = elements.begin();
-        return const_deque_iterator(this, itr);
-    }
-    
-    /*
-     * Returns an iterator positioned at the last element of the deque.
-     */
-    deque_iterator end() {
-        auto itr = elements.end();
-        return deque_iterator(this, itr);
-    }
-    
-    /*
-     * Returns an iterator positioned at the last element of the deque.
-     */
-    const_deque_iterator end() const {
-        auto itr = elements.end();
-        return const_deque_iterator(this, itr);
-    }
-
-    /*
-     * Returns the internal version of this collection.
-     * This is used to check for invalid iterators and issue error messages.
-     */
-    unsigned int version() const;
-    
-    /* Assignment behavior. */
-    Deque& operator =(const Deque& other) {
-      if (this != &other) {
-          elements = other.elements;
-          m_version++;
-      }
-      return *this;
-    }    
-};
-
-/*
- * Implementation notes: Deque constructor
- * ---------------------------------------
- * None.
- */
-template <typename ValueType>
-Deque<ValueType>::Deque() {
-    // empty
-}
-
-template <typename ValueType>
-Deque<ValueType>::Deque(std::initializer_list<ValueType> list) {
-    clear();
-    for (const ValueType& value : list) {
-        add(value);
-    }
-}
-
-/*
- * Implementation notes: ~Deque destructor
- * ---------------------------------------
- * None.
- */
-template <typename ValueType>
-Deque<ValueType>::~Deque() {
-    // empty
-}
-
-template <typename ValueType>
-void Deque<ValueType>::add(const ValueType& value) {
-    enqueue(value);
-}
-
-template <typename ValueType>
-void Deque<ValueType>::addBack(const ValueType& value) {
-    enqueueBack(value);
-}
-
-template <typename ValueType>
-void Deque<ValueType>::addFront(const ValueType& value) {
-    enqueueFront(value);
-}
-
-template <typename ValueType>
-const ValueType& Deque<ValueType>::back() const {
-    if (isEmpty()) {
-        error("Deque::back: Attempting to read back of an empty deque");
-    }
-    return elements.back();
-}
-
-template <typename ValueType>
-void Deque<ValueType>::clear() {
-    elements.clear();
-    m_version++;
-}
-
-/*
- * Implementation notes: dequeue, peek
- * -----------------------------------
- * These methods must check for an empty deque and report an error
- * if there is no first element.
- */
-template <typename ValueType>
-ValueType Deque<ValueType>::dequeue() {
-    return dequeueFront();
-}
-
-template <typename ValueType>
-ValueType Deque<ValueType>::dequeueBack() {
-    if (isEmpty()) {
-        error("Deque::dequeueBack: Attempting to dequeue from an empty deque");
-    }
-    ValueType result = elements.back();
-    elements.pop_back();
-    m_version++;
-    return result;
-}
-
-template <typename ValueType>
-ValueType Deque<ValueType>::dequeueFront() {
-    if (isEmpty()) {
-        error("Deque::dequeueFront: Attempting to dequeue from an empty deque");
-    }
-    ValueType result = elements.front();
-    elements.pop_front();
-    m_version++;
-    return result;
-}
-
-template <typename ValueType>
-void Deque<ValueType>::enqueue(const ValueType& value) {
-    enqueueBack(value);
-}
-
-template <typename ValueType>
-void Deque<ValueType>::enqueueBack(const ValueType& value) {
-    elements.push_back(value);
-    m_version++;
-}
-
-template <typename ValueType>
-void Deque<ValueType>::enqueueFront(const ValueType& value) {
-    elements.push_front(value);
-    m_version++;
-}
-
-template <typename ValueType>
-bool Deque<ValueType>::equals(const Deque<ValueType>& deque2) const {
-    return elements == deque2.elements;
-}
-
-template <typename ValueType>
-const ValueType& Deque<ValueType>::front() const {
-    if (isEmpty()) {
-        error("Deque::front: Attempting to read front of an empty deque");
-    }
-    return elements.front();
-}
-
-template <typename ValueType>
-bool Deque<ValueType>::isEmpty() const {
-    return elements.empty();
-}
-
-template <typename ValueType>
-const ValueType& Deque<ValueType>::peek() const {
-    return peekFront();
-}
-
-template <typename ValueType>
-const ValueType& Deque<ValueType>::peekBack() const {
-    if (isEmpty()) {
-        error("Deque::peekBack: Attempting to peek at an empty deque");
-    }
-    return back();
-}
-
-template <typename ValueType>
-const ValueType& Deque<ValueType>::peekFront() const {
-    if (isEmpty()) {
-        error("Deque::peekFront: Attempting to peek at an empty deque");
-    }
-    return front();
-}
-
-template <typename ValueType>
-ValueType Deque<ValueType>::remove() {
-    return dequeue();
-}
-
-template <typename ValueType>
-ValueType Deque<ValueType>::removeBack() {
-    if (isEmpty()) {
-        error("Deque::removeBack: Attempting to remove from an empty deque");
-    }
-    return dequeueBack();
-}
-
-template <typename ValueType>
-ValueType Deque<ValueType>::removeFront() {
-    if (isEmpty()) {
-        error("Deque::removeFront: Attempting to remove from an empty deque");
-    }
-    return dequeueFront();
-}
-
-template <typename ValueType>
-int Deque<ValueType>::size() const {
-    return elements.size();
-}
-
-template <typename ValueType>
-std::deque<ValueType> Deque<ValueType>::toStlDeque() const {
-    return elements;
-}
-
-template <typename ValueType>
-std::string Deque<ValueType>::toString() const {
-    std::ostringstream os;
-    os << *this;
-    return os.str();
-}
-
-template <typename ValueType>
-unsigned int Deque<ValueType>::version() const {
-    return m_version;
-}
-
-template <typename ValueType>
-bool Deque<ValueType>::operator ==(const Deque& deque2) const {
-    return equals(deque2);
-}
-
-template <typename ValueType>
-bool Deque<ValueType>::operator !=(const Deque& deque2) const {
-    return !equals(deque2);
-}
-
-template <typename ValueType>
-bool Deque<ValueType>::operator <(const Deque& deque2) const {
-    return stanfordcpplib::collections::compare(*this, deque2) < 0;
-}
-
-template <typename ValueType>
-bool Deque<ValueType>::operator <=(const Deque& deque2) const {
-    return stanfordcpplib::collections::compare(*this, deque2) <= 0;
-}
-
-template <typename ValueType>
-bool Deque<ValueType>::operator >(const Deque& deque2) const {
-    return stanfordcpplib::collections::compare(*this, deque2) > 0;
-}
-
-template <typename ValueType>
-bool Deque<ValueType>::operator >=(const Deque& deque2) const {
-    return stanfordcpplib::collections::compare(*this, deque2) >= 0;
-}
-
-template <typename ValueType>
-std::ostream& operator <<(std::ostream& os, const Deque<ValueType>& deque) {
-    return stanfordcpplib::collections::writeCollection(os, deque);
-}
-
-template <typename ValueType>
-std::istream& operator >>(std::istream& is, Deque<ValueType>& deque) {
-    ValueType element;
-    return stanfordcpplib::collections::readCollection(is, deque, element, /* descriptor */ "Deque::operator >>");
-}
-
-/*
- * Template hash function for deques.
- * Requires the element type in the deque to have a hashCode function.
- */
-template <typename T>
-int hashCode(const Deque<T>& deq) {
-    return stanfordcpplib::collections::hashCodeCollection(deq);
-}
-
-#endif // _deque_h
-
-/////////////////////// END code extracted from StanfordCPPLib/collections/deque.h ///////////////////////
 
 /////////////////////// BEGIN code extracted from StanfordCPPLib/io/tokenscanner.h ///////////////////////
 /*
@@ -7623,6 +7972,10 @@ std::ostream& operator <<(std::ostream& out, const TokenScanner& scanner);
  * This file exports the template class <code>Map</code>, which
  * maintains a collection of <i>key</i>-<i>value</i> pairs.
  * 
+ * @version 2019/04/09
+ * - renamed private members with underscore naming scheme for consistency
+ * @version 2019/02/04
+ * - changed internal implementation to wrap std collections
  * @version 2018/03/19
  * - added constructors that accept a comparison function
  * @version 2018/03/10
@@ -7667,6 +8020,9 @@ std::ostream& operator <<(std::ostream& out, const TokenScanner& scanner);
 #include <cstdlib>
 #include <initializer_list>
 #include <utility>
+#include <type_traits>
+#include <map>
+#include <functional>
 
 #define INTERNAL_INCLUDE 1
 
@@ -7710,8 +8066,7 @@ public:
      * The function can accept the two keys to compare either by value
      * or by const reference.
      */
-    Map(bool lessFunc(KeyType, KeyType));
-    Map(bool lessFunc(const KeyType&, const KeyType&));
+    Map(std::function<bool (const KeyType&, const KeyType&)> lessFunc);
 
     /*
      * Constructor: Map
@@ -7721,7 +8076,7 @@ public:
      * Note that the pairs are stored in key-sorted order internally and not
      * necessarily the order in which they are written in the initializer list.
      */
-    Map(std::initializer_list<std::pair<KeyType, ValueType> > list);
+    Map(std::initializer_list<std::pair<const KeyType, ValueType>> list);
 
     /*
      * Constructor: Map
@@ -7733,15 +8088,15 @@ public:
      * The function can accept the two keys to compare either by value
      * or by const reference.
      */
-    Map(std::initializer_list<std::pair<KeyType, ValueType> > list, bool lessFunc(KeyType, KeyType));
-    Map(std::initializer_list<std::pair<KeyType, ValueType> > list, bool lessFunc(const KeyType&, const KeyType&));
+    Map(std::initializer_list<std::pair<const KeyType, ValueType>> list,
+        std::function<bool (const KeyType&, const KeyType&)> lessFunc);
 
     /*
      * Destructor: ~Map
      * ----------------
      * Frees any heap storage associated with this map.
      */
-    virtual ~Map();
+    virtual ~Map() = default;
     
     /*
      * Method: add
@@ -7764,7 +8119,6 @@ public:
      * Identical in behavior to putAll.
      */
     Map& addAll(const Map& map2);
-    Map& addAll(std::initializer_list<std::pair<KeyType, ValueType> > list);
 
     /*
      * Method: back
@@ -7846,11 +8200,7 @@ public:
      * for each one.  The keys are processed in ascending order, as defined
      * by the comparison function.
      */
-    void mapAll(void (*fn)(KeyType, ValueType)) const;
-    void mapAll(void (*fn)(const KeyType&, const ValueType&)) const;
-    
-    template <typename FunctorType>
-    void mapAll(FunctorType fn) const;
+    void mapAll(std::function<void (const KeyType&, const ValueType&)> fn) const;
 
     /*
      * Method: put
@@ -7874,7 +8224,6 @@ public:
      * Identical in behavior to addAll.
      */
     Map& putAll(const Map& map2);
-    Map& putAll(std::initializer_list<std::pair<KeyType, ValueType> > list);
 
     /*
      * Method: remove
@@ -7895,7 +8244,6 @@ public:
      * Returns a reference to this map.
      */
     Map& removeAll(const Map& map2);
-    Map& removeAll(std::initializer_list<std::pair<KeyType, ValueType> > list);
 
     /*
      * Method: retainAll
@@ -7908,7 +8256,6 @@ public:
      * Returns a reference to this map.
      */
     Map& retainAll(const Map& map2);
-    Map& retainAll(std::initializer_list<std::pair<KeyType, ValueType> > list);
 
     /*
      * Method: size
@@ -7990,7 +8337,6 @@ public:
      * You can also pass an initializer list of pairs such as {{"a", 1}, {"b", 2}, {"c", 3}}.
      */
     Map operator +(const Map& map2) const;
-    Map operator +(std::initializer_list<std::pair<KeyType, ValueType> > list) const;
 
     /*
      * Operator: +=
@@ -8001,7 +8347,6 @@ public:
      * You can also pass an initializer list of pairs such as {{"a", 1}, {"b", 2}, {"c", 3}}.
      */
     Map& operator +=(const Map& map2);
-    Map& operator +=(std::initializer_list<std::pair<KeyType, ValueType> > list);
 
     /*
      * Operator: -
@@ -8012,7 +8357,6 @@ public:
      * You can also pass an initializer list of pairs such as {{"a", 1}, {"b", 2}, {"c", 3}}.
      */
     Map operator -(const Map& map2) const;
-    Map operator -(std::initializer_list<std::pair<KeyType, ValueType> > list) const;
 
     /*
      * Operator: -=
@@ -8023,7 +8367,6 @@ public:
      * You can also pass an initializer list of pairs such as {{"a", 1}, {"b", 2}, {"c", 3}}.
      */
     Map& operator -=(const Map& map2);
-    Map& operator -=(std::initializer_list<std::pair<KeyType, ValueType> > list);
 
     /*
      * Operator: *
@@ -8034,7 +8377,6 @@ public:
      * You can also pass an initializer list of pairs such as {{"a", 1}, {"b", 2}, {"c", 3}}.
      */
     Map operator *(const Map& map2) const;
-    Map operator *(std::initializer_list<std::pair<KeyType, ValueType> > list) const;
 
     /*
      * Operator: *=
@@ -8045,7 +8387,6 @@ public:
      * You can also pass an initializer list of pairs such as {{"a", 1}, {"b", 2}, {"c", 3}}.
      */
     Map& operator *=(const Map& map2);
-    Map& operator *=(std::initializer_list<std::pair<KeyType, ValueType> > list);
 
     /*
      * Additional Map operations
@@ -8069,458 +8410,10 @@ public:
     /* of the implementation and should not be of interest to clients.    */
     /**********************************************************************/
 
-    /*
-     * Implementation notes:
-     * ---------------------
-     * The map class is represented using a binary search tree.  The
-     * specific implementation used here is the classic AVL algorithm
-     * developed by Georgii Adel'son-Vel'skii and Evgenii Landis in 1962.
-     */
-
 private:
-    /* Constant definitions */
-    static const int BST_LEFT_HEAVY = -1;
-    static const int BST_IN_BALANCE = 0;
-    static const int BST_RIGHT_HEAVY = +1;
-
-    /* Type definition for nodes in the binary search tree */
-    struct BSTNode {
-        KeyType key;             /* The key stored in this node         */
-        ValueType value;         /* The corresponding value             */
-        BSTNode* left;           /* Subtree containing all smaller keys */
-        BSTNode* right;          /* Subtree containing all larger keys  */
-        int bf;                  /* AVL balance factor                  */
-    };
-
-    /*
-     * Implementation notes: Comparator
-     * --------------------------------
-     * The Comparator class encapsulates a functor that compares two values
-     * of KeyType.  In contrast to the classes in the STL, all of which embed
-     * the comparator in the type, the Map class and its derivatives pass an
-     * optional Comparator value.  While this strategy results in a more
-     * complex implementation, it has the advantage of allowing maps and sets
-     * to carry their own comparators without forcing the client to include
-     * the comparator in the template declaration.  This simplification is
-     * particularly important for the Graph class.
-     *
-     * The allocation is required in the TemplateComparator class because
-     * the type std::binary_function has subclasses but does not define a
-     * virtual destructor.
-     */
-    class Comparator {
-    public:
-        virtual ~Comparator() { /* empty */ }
-        virtual bool lessThan(const KeyType& k1, const KeyType& k2) = 0;
-        virtual Comparator* clone() = 0;
-    };
-
-    /*
-     * Compares based on an external less-than function that is passed in
-     * by the client at construction.
-     */
-    class FunctionComparator : public Comparator {
-    public:
-        FunctionComparator(void* lessFunc) {
-            this->lessFunc = lessFunc;
-        }
-
-        virtual bool lessThan(const KeyType& k1, const KeyType& k2) {
-            bool (*less)(KeyType, KeyType) =
-                    (bool (*)(KeyType, KeyType)) this->lessFunc;
-            return less(k1, k2);
-        }
-
-        virtual Comparator* clone() {
-            return new FunctionComparator(lessFunc);
-        }
-
-    private:
-        void* lessFunc;
-    };
-
-    /*
-     * Compares based on an external less-than function that is passed in
-     * by the client at construction.
-     * This is the same as FunctionComparator except that it uses a comparison
-     * function that accepts its arguments by const reference.
-     */
-    class FunctionConstRefComparator : public Comparator {
-    public:
-        FunctionConstRefComparator(void* lessFunc) {
-            this->lessFunc = lessFunc;
-        }
-
-        virtual bool lessThan(const KeyType& k1, const KeyType& k2) {
-            bool (*less)(const KeyType&, const KeyType&) =
-                    (bool (*)(const KeyType&, const KeyType&)) this->lessFunc;
-            return less(k1, k2);
-        }
-
-        virtual Comparator* clone() {
-            return new FunctionConstRefComparator(lessFunc);
-        }
-
-    private:
-        void* lessFunc;
-    };
-
-    /*
-     * Compares based on an internal template less-than function derived from
-     * the language standard std::less comparison function mechanism.
-     */
-    template <typename CompareType>
-    class TemplateComparator : public Comparator {
-    public:
-        TemplateComparator(const CompareType& compareType) {
-            this->cmp = compareType;
-        }
-
-        virtual bool lessThan(const KeyType& k1, const KeyType& k2) {
-            return (cmp)(k1, k2);
-        }
-
-        virtual Comparator* clone() {
-            return new TemplateComparator<CompareType>(cmp);
-        }
-
-    private:
-        CompareType cmp;
-    };
-
-    Comparator& getComparator() const {
-        return *cmpp;
-    }
-
-    // instance variables
-    BSTNode* root;      // pointer to the root of the tree
-    int nodeCount;      // number of entries in the map
-    Comparator* cmpp;   // pointer to the comparator
-    unsigned int m_version = 0; // structure version for detecting invalid iterators
-
-    // private methods
-
-    /*
-     * Implementation notes: findNode(t, key)
-     * --------------------------------------
-     * Searches the tree rooted at t to find the specified key, searching
-     * in the left or right subtree, as approriate.  If a matching node
-     * is found, findNode returns a pointer to the value cell in that node.
-     * If no matching node exists in the tree, findNode returns nullptr.
-     */
-    ValueType* findNode(BSTNode* t, const KeyType& key) const {
-        if (!t) {
-            return nullptr;
-        }
-        int sign = compareKeys(key, t->key);
-        if (sign == 0) {
-            return &t->value;
-        }
-        if (sign < 0) {
-            return findNode(t->left, key);
-        } else {
-            return findNode(t->right, key);
-        }
-    }
-
-    /*
-     * Implementation notes: addNode(t, key, heightFlag)
-     * -------------------------------------------------
-     * Searches the tree rooted at t to find the specified key, searching
-     * in the left or right subtree, as approriate.  If a matching node
-     * is found, addNode returns a pointer to the value cell in that node,
-     * just like findNode.  If no matching node exists in the tree, addNode
-     * creates a new node with a default value.  The heightFlag reference
-     * parameter returns a bool indicating whether the height of the tree
-     * was changed by this operation.
-     */
-    ValueType* addNode(BSTNode*& t, const KeyType& key, bool& heightFlag) {
-        heightFlag = false;
-        if (!t)  {
-            t = new BSTNode();
-            t->key = key;
-            t->value = ValueType();
-            t->bf = BST_IN_BALANCE;
-            t->left = t->right = nullptr;
-            heightFlag = true;
-            nodeCount++;
-            return &t->value;
-        }
-        
-        int sign = compareKeys(key, t->key);
-        if (sign == 0) {
-            return &t->value;
-        }
-        ValueType* vp = nullptr;
-        int bfDelta = BST_IN_BALANCE;
-        if (sign < 0) {
-            vp = addNode(t->left, key, heightFlag);
-            if (heightFlag) {
-                bfDelta = BST_LEFT_HEAVY;
-            }
-        } else {
-            vp = addNode(t->right, key, heightFlag);
-            if (heightFlag) {
-                bfDelta = BST_RIGHT_HEAVY;
-            }
-        }
-        updateBF(t, bfDelta);
-        heightFlag = (bfDelta != 0 && t->bf != BST_IN_BALANCE);
-        return vp;
-    }
-
-    /*
-     * Implementation notes: removeNode(t, key)
-     * ----------------------------------------
-     * Removes the node containing the specified key from the tree rooted
-     * at t.  The return value is true if the height of this subtree
-     * changes.  The removeTargetNode method does the actual deletion.
-     */
-    bool removeNode(BSTNode*& t, const KeyType& key) {
-        if (!t) {
-            return false;
-        }
-        int sign = compareKeys(key, t->key);
-        if (sign == 0) {
-            return removeTargetNode(t);
-        }
-        int bfDelta = BST_IN_BALANCE;
-        if (sign < 0) {
-            if (removeNode(t->left, key)) {
-                bfDelta = BST_RIGHT_HEAVY;
-            }
-        } else {
-            if (removeNode(t->right, key)) {
-                bfDelta = BST_LEFT_HEAVY;
-            }
-        }
-        updateBF(t, bfDelta);
-        return bfDelta != 0 && t->bf == BST_IN_BALANCE;
-    }
-
-    /*
-     * Implementation notes: removeTargetNode(t)
-     * -----------------------------------------
-     * Removes the node which is passed by reference as t.  The easy case
-     * occurs when either (or both) of the children is null; all you need
-     * to do is replace the node with its non-null child, if any.  If both
-     * children are non-null, this code finds the rightmost descendent of
-     * the left child; this node may not be a leaf, but will have no right
-     * child.  Its left child replaces it in the tree, after which the
-     * replacement data is moved to the position occupied by the target node.
-     */
-    bool removeTargetNode(BSTNode*& t) {
-        BSTNode* toDelete = t;
-        if (!t->left) {
-            t = t->right;
-            delete toDelete;
-            nodeCount--;
-            return true;
-        } else if (!t->right) {
-            t = t->left;
-            delete toDelete;
-            nodeCount--;
-            return true;
-        } else {
-            BSTNode* successor = t->left;
-            while (successor->right) {
-                successor = successor->right;
-            }
-            t->key = successor->key;
-            t->value = successor->value;
-            if (removeNode(t->left, successor->key)) {
-                updateBF(t, BST_RIGHT_HEAVY);
-                return (t->bf == BST_IN_BALANCE);
-            }
-            return false;
-        }
-    }
-
-    /*
-     * Implementation notes: updateBF(t, bfDelta)
-     * ------------------------------------------
-     * Updates the balance factor in the node and rebalances the tree
-     * if necessary.
-     */
-    void updateBF(BSTNode*& t, int bfDelta) {
-        t->bf += bfDelta;
-        if (t->bf < BST_LEFT_HEAVY) {
-            fixLeftImbalance(t);
-        } else if (t->bf > BST_RIGHT_HEAVY) {
-            fixRightImbalance(t);
-        }
-    }
-
-    /*
-     * Implementation notes: fixLeftImbalance(t)
-     * -----------------------------------------
-     * This function is called when a node has been found that is out
-     * of balance with the longer subtree on the left.  Depending on
-     * the balance factor of the left child, the code performs a
-     * single or double rotation.
-     */
-    void fixLeftImbalance(BSTNode*& t) {
-        BSTNode *child = t->left;
-        if (child->bf == BST_RIGHT_HEAVY) {
-            int oldBF = child->right->bf;
-            rotateLeft(t->left);
-            rotateRight(t);
-            t->bf = BST_IN_BALANCE;
-            switch (oldBF) {
-            case BST_LEFT_HEAVY:
-                t->left->bf = BST_IN_BALANCE;
-                t->right->bf = BST_RIGHT_HEAVY;
-                break;
-            case BST_IN_BALANCE:
-                t->left->bf = t->right->bf = BST_IN_BALANCE;
-                break;
-            case BST_RIGHT_HEAVY:
-                t->left->bf = BST_LEFT_HEAVY;
-                t->right->bf = BST_IN_BALANCE;
-                break;
-            }
-        } else if (child->bf == BST_IN_BALANCE) {
-            rotateRight(t);
-            t->bf = BST_RIGHT_HEAVY;
-            t->right->bf = BST_LEFT_HEAVY;
-        } else {
-            rotateRight(t);
-            t->right->bf = t->bf = BST_IN_BALANCE;
-        }
-    }
-
-    /*
-     * Implementation notes: rotateLeft(t)
-     * -----------------------------------
-     * This function performs a single left rotation of the tree
-     * that is passed by reference.  The balance factors
-     * are unchanged by this function and must be corrected at a
-     * higher level of the algorithm.
-     */
-    void rotateLeft(BSTNode*& t) {
-        BSTNode* child = t->right;
-        t->right = child->left;
-        child->left = t;
-        t = child;
-    }
-
-    /*
-     * Implementation notes: fixRightImbalance(t)
-     * ------------------------------------------
-     * This function is called when a node has been found that
-     * is out of balance with the longer subtree on the right.
-     * Depending on the balance factor of the right child, the
-     * code performs a single or double rotation.
-     */
-    void fixRightImbalance(BSTNode*& t) {
-        BSTNode* child = t->right;
-        if (child->bf == BST_LEFT_HEAVY) {
-            int oldBF = child->left->bf;
-            rotateRight(t->right);
-            rotateLeft(t);
-            t->bf = BST_IN_BALANCE;
-            switch (oldBF) {
-            case BST_LEFT_HEAVY:
-                t->left->bf = BST_IN_BALANCE;
-                t->right->bf = BST_RIGHT_HEAVY;
-                break;
-            case BST_IN_BALANCE:
-                t->left->bf = t->right->bf = BST_IN_BALANCE;
-                break;
-            case BST_RIGHT_HEAVY:
-                t->left->bf = BST_LEFT_HEAVY;
-                t->right->bf = BST_IN_BALANCE;
-                break;
-            }
-        } else if (child->bf == BST_IN_BALANCE) {
-            rotateLeft(t);
-            t->bf = BST_LEFT_HEAVY;
-            t->left->bf = BST_RIGHT_HEAVY;
-        } else {
-            rotateLeft(t);
-            t->left->bf = t->bf = BST_IN_BALANCE;
-        }
-    }
-
-    /*
-     * Implementation notes: rotateRight(t)
-     * ------------------------------------
-     * This function performs a single right rotation of the tree
-     * that is passed by reference.  The balance factors
-     * are unchanged by this function and must be corrected at a
-     * higher level of the algorithm.
-     */
-    void rotateRight(BSTNode*& t) {
-        BSTNode* child = t->left;
-        t->left = child->right;
-        child->right = t;
-        t = child;
-    }
-
-    /*
-     * Implementation notes: deleteTree(t)
-     * -----------------------------------
-     * Deletes all the nodes in the tree.
-     */
-    void deleteTree(BSTNode* t) {
-        if (t) {
-            deleteTree(t->left);
-            deleteTree(t->right);
-            delete t;
-        }
-    }
-
-    /*
-     * Implementation notes: mapAll
-     * ----------------------------
-     * Calls fn(key, value) for every key-value pair in the tree.
-     */
-    void mapAll(BSTNode* t, void (*fn)(KeyType, ValueType)) const {
-        if (t) {
-            mapAll(t->left, fn);
-            fn(t->key, t->value);
-            mapAll(t->right, fn);
-        }
-    }
-
-    void mapAll(BSTNode* t,
-                void (*fn)(const KeyType&, const ValueType&)) const {
-        if (t) {
-            mapAll(t->left, fn);
-            fn(t->key, t->value);
-            mapAll(t->right, fn);
-        }
-    }
-
-    template <typename FunctorType>
-    void mapAll(BSTNode* t, FunctorType fn) const {
-        if (t) {
-            mapAll(t->left, fn);
-            fn(t->key, t->value);
-            mapAll(t->right, fn);
-        }
-    }
-
-    void deepCopy(const Map& other) {
-        root = copyTree(other.root);
-        nodeCount = other.nodeCount;
-        cmpp = (!other.cmpp) ? nullptr : other.cmpp->clone();
-        m_version++;
-    }
-
-    BSTNode* copyTree(BSTNode* const t) {
-        if (!t) {
-            return nullptr;
-        } else {
-            BSTNode* np = new BSTNode;
-            np->key = t->key;
-            np->value = t->value;
-            np->bf = t->bf;
-            np->left = copyTree(t->left);
-            np->right = copyTree(t->right);
-            return np;
-        }
-    }
+    using MapType = std::map<KeyType, ValueType, std::function<bool(const KeyType&, const KeyType&)>>;
+    MapType _elements;
+    stanfordcpplib::collections::VersionTracker _version;
 
 public:
     /*
@@ -8532,234 +8425,33 @@ public:
      * difficult to understand for the average client.
      */
 
-    /* Extended constructors */
-    template <typename CompareType>
-    explicit Map(CompareType cmp) {
-        root = nullptr;
-        nodeCount = 0;
-        cmpp = new TemplateComparator<CompareType>(cmp);
-    }
+    using const_iterator = stanfordcpplib::collections::ProjectingIterator<stanfordcpplib::collections::CheckedIterator<typename MapType::const_iterator>>;
+    using iterator = const_iterator;
 
-    /*
-     * Implementation notes: compareKeys(k1, k2)
-     * -----------------------------------------
-     * Compares the keys k1 and k2 and returns an integer (-1, 0, or +1)
-     * depending on whether k1 < k2, k1 == k2, or k1 > k2, respectively.
-     */
-    int compareKeys(const KeyType& k1, const KeyType& k2) const {
-        if (cmpp->lessThan(k1, k2)) {
-            return -1;
-        } else if (cmpp->lessThan(k2, k1)) {
-            return +1;
-        } else {
-            return 0;
-        }
-    }
-
-    /*
-     * Deep copying support
-     * --------------------
-     * This copy constructor and operator= are defined to make a
-     * deep copy, making it possible to pass/return maps by value
-     * and assign from one map to another.
-     */
-    Map& operator =(const Map& src) {
-        if (this != &src) {
-            clear();
-            if (cmpp) {
-                // because we are about to clone() the other map's comparator
-                delete cmpp;
-                cmpp = nullptr;
-            }
-            deepCopy(src);
-        }
-        return *this;
-    }
-
-    Map(const Map& src) : root(nullptr), nodeCount(0), cmpp(nullptr) {
-        deepCopy(src);
-    }
-
-    /*
-     * Iterator support
-     * ----------------
-     * The classes in the StanfordCPPLib collection implement input
-     * iterators so that they work symmetrically with respect to the
-     * corresponding STL classes.
-     */
-    class iterator : public std::iterator<std::input_iterator_tag, KeyType> {
-    private:
-        struct NodeMarker {
-            BSTNode* np;
-            bool processed;
-        };
-
-        const Map* mp;               // pointer to the map
-        int index;                   // index of current element
-        Stack<NodeMarker> stack;     // stack of unprocessed nodes
-        unsigned int itr_version;
-
-        void findLeftmostChild() {
-            BSTNode *np = stack.peek().np;
-            if (!np) {
-                return;
-            }
-            while (np->left) {
-                NodeMarker marker = { np->left,  false };
-                stack.push(marker);
-                np = np->left;
-            }
-        }
-
-    public:
-        iterator()
-                : mp(nullptr),
-                  index(0),
-                  itr_version(0) {
-            /* Empty */
-        }
-
-        iterator(const Map* theMap, bool end)
-                : mp(theMap) {
-            if (end || mp->nodeCount == 0) {
-                index = mp->nodeCount;
-            } else {
-                index = 0;
-                NodeMarker marker = { mp->root, false };
-                stack.push(marker);
-                findLeftmostChild();
-            }
-            itr_version = mp->version();
-        }
-
-        iterator(const iterator& it)
-                : mp(it.mp),
-                  index(it.index),
-                  stack(it.stack),
-                  itr_version(it.itr_version) {
-            // empty
-        }
-
-        iterator& operator ++() {
-            stanfordcpplib::collections::checkVersion(*mp, *this);
-            NodeMarker marker = stack.pop();
-            BSTNode* np = marker.np;
-            if (!np->right) {
-                while (!stack.isEmpty() && stack.peek().processed) {
-                    stack.pop();
-                }
-            } else {
-                marker.processed = true;
-                stack.push(marker);
-                marker.np = np->right;
-                marker.processed = false;
-                stack.push(marker);
-                findLeftmostChild();
-            }
-            index++;
-            return *this;
-        }
-
-        iterator operator ++(int) {
-            stanfordcpplib::collections::checkVersion(*mp, *this);
-            iterator copy(*this);
-            operator++();
-            return copy;
-        }
-
-        bool operator ==(const iterator& rhs) {
-            return mp == rhs.mp && index == rhs.index;
-        }
-
-        bool operator !=(const iterator& rhs) {
-            return !(*this == rhs);
-        }
-
-        KeyType& operator *() {
-            stanfordcpplib::collections::checkVersion(*mp, *this);
-            return stack.peek().np->key;
-        }
-
-        KeyType* operator ->() {
-            stanfordcpplib::collections::checkVersion(*mp, *this);
-            return &stack.peek().np->key;
-        }
-
-        unsigned int version() const {
-            return itr_version;
-        }
-
-        friend class Map;
-    };
-
-    /*
-     * Returns an iterator positioned at the first key of the map.
-     */
-    iterator begin() const {
-        return iterator(this, /* end */ false);
-    }
-
-    /*
-     * Returns an iterator positioned at the last key of the map.
-     */
-    iterator end() const {
-        return iterator(this, /* end */ true);
-    }
-
-    /*
-     * Returns the internal version of this collection.
-     * This is used to check for invalid iterators and issue error messages.
-     */
-    unsigned int version() const;
+    const_iterator begin() const;
+    const_iterator end() const;
 };
 
 template <typename KeyType, typename ValueType>
-Map<KeyType, ValueType>::Map() : root(nullptr), nodeCount(0) {
-    cmpp = new TemplateComparator<std::less<KeyType> >(std::less<KeyType>());
+Map<KeyType, ValueType>::Map() : _elements(stanfordcpplib::collections::checkedLess<KeyType>()) {
+    // Handled in initializer
 }
 
 template <typename KeyType, typename ValueType>
-Map<KeyType, ValueType>::Map(bool lessFunc(KeyType, KeyType))
-        : root(nullptr), nodeCount(0) {
-    cmpp = new FunctionComparator((void*) lessFunc);
+Map<KeyType, ValueType>::Map(std::function<bool(const KeyType&, const KeyType&)> lessFunc)
+        : _elements(lessFunc) {
 }
 
 template <typename KeyType, typename ValueType>
-Map<KeyType, ValueType>::Map(bool lessFunc(const KeyType&, const KeyType&))
-        : root(nullptr), nodeCount(0) {
-    cmpp = new FunctionConstRefComparator((void*) lessFunc);
+Map<KeyType, ValueType>::Map(std::initializer_list<std::pair<const KeyType, ValueType>> list)
+        : _elements(list, stanfordcpplib::collections::checkedLess<KeyType>()) {
+    // Handled in initializer
 }
 
 template <typename KeyType, typename ValueType>
-Map<KeyType, ValueType>::Map(std::initializer_list<std::pair<KeyType, ValueType> > list)
-        : root(nullptr), nodeCount(0) {
-    cmpp = new TemplateComparator<std::less<KeyType> >(std::less<KeyType>());
-    putAll(list);
-}
-
-template <typename KeyType, typename ValueType>
-Map<KeyType, ValueType>::Map(std::initializer_list<std::pair<KeyType, ValueType> > list,
-                             bool lessFunc(KeyType, KeyType))
-        : root(nullptr), nodeCount(0) {
-    cmpp = new FunctionComparator((void*) lessFunc);
-    putAll(list);
-}
-
-template <typename KeyType, typename ValueType>
-Map<KeyType, ValueType>::Map(std::initializer_list<std::pair<KeyType, ValueType> > list,
-                             bool lessFunc(const KeyType&, const KeyType&))
-        : root(nullptr), nodeCount(0) {
-    cmpp = new FunctionConstRefComparator((void*) lessFunc);
-    putAll(list);
-}
-
-template <typename KeyType, typename ValueType>
-Map<KeyType, ValueType>::~Map() {
-    clear();
-    if (cmpp) {
-        delete cmpp;
-        cmpp = nullptr;
-    }
+Map<KeyType, ValueType>::Map(std::initializer_list<std::pair<const KeyType, ValueType>> list,
+                             std::function<bool(const KeyType&, const KeyType&)> lessFunc)
+        : _elements(list, lessFunc) {
 }
 
 template <typename KeyType, typename ValueType>
@@ -8774,34 +8466,22 @@ Map<KeyType, ValueType>& Map<KeyType, ValueType>::addAll(const Map& map2) {
 }
 
 template <typename KeyType, typename ValueType>
-Map<KeyType, ValueType>& Map<KeyType, ValueType>::addAll(
-        std::initializer_list<std::pair<KeyType, ValueType> > list) {
-    return putAll(list);
-}
-
-template <typename KeyType, typename ValueType>
 KeyType Map<KeyType, ValueType>::back() const {
     if (isEmpty()) {
         error("Map::back: map is empty");
     }
-    BSTNode* node = root;
-    while (node && node->right) {
-        node = node->right;
-    }
-    return node->key;
+    return _elements.rbegin()->first;
 }
 
 template <typename KeyType, typename ValueType>
 void Map<KeyType, ValueType>::clear() {
-    deleteTree(root);
-    root = nullptr;
-    nodeCount = 0;
-    m_version++;
+    _elements.clear();
+    _version.update();
 }
 
 template <typename KeyType, typename ValueType>
 bool Map<KeyType, ValueType>::containsKey(const KeyType& key) const {
-    return findNode(root, key) != nullptr;
+    return !!_elements.count(key);
 }
 
 template <typename KeyType, typename ValueType>
@@ -8814,55 +8494,42 @@ KeyType Map<KeyType, ValueType>::front() const {
     if (isEmpty()) {
         error("Map::front: map is empty");
     }
-    return *begin();
+    return _elements.begin()->first;
 }
 
 template <typename KeyType, typename ValueType>
 ValueType Map<KeyType, ValueType>::get(const KeyType& key) const {
-    ValueType* vp = findNode(root, key);
-    if (!vp) {
-        return ValueType();
-    }
-    return *vp;
+    auto itr = _elements.find(key);
+    return itr == _elements.end()? ValueType() : itr->second;
 }
 
 template <typename KeyType, typename ValueType>
 bool Map<KeyType, ValueType>::isEmpty() const {
-    return nodeCount == 0;
+    return _elements.empty();
 }
 
 template <typename KeyType,typename ValueType>
 Vector<KeyType> Map<KeyType, ValueType>::keys() const {
     Vector<KeyType> keyset;
-    for (const KeyType& key : *this) {
-        keyset.add(key);
+    for (const auto& entry: _elements) {
+        keyset.add(entry.first);
     }
     return keyset;
 }
 
 template <typename KeyType, typename ValueType>
-void Map<KeyType, ValueType>::mapAll(void (*fn)(KeyType, ValueType)) const {
-    mapAll(root, fn);
-}
-
-template <typename KeyType, typename ValueType>
-void Map<KeyType, ValueType>::mapAll(void (*fn)(const KeyType &,
-                                                const ValueType &)) const {
-    mapAll(root, fn);
-}
-
-template <typename KeyType, typename ValueType>
-template <typename FunctorType>
-void Map<KeyType, ValueType>::mapAll(FunctorType fn) const {
-    mapAll(root, fn);
+void Map<KeyType, ValueType>::mapAll(std::function<void (const KeyType&, const ValueType&)> fn) const {
+    for (const auto& entry: _elements) {
+        fn(entry.first, entry.second);
+    }
 }
 
 template <typename KeyType, typename ValueType>
 void Map<KeyType, ValueType>::put(const KeyType& key,
                                   const ValueType& value) {
-    bool dummy;
-    *addNode(root, key, dummy) = value;
-    m_version++;
+    int presize = size();
+    _elements[key] = value;
+    if (presize != size()) _version.update();
 }
 
 template <typename KeyType, typename ValueType>
@@ -8874,18 +8541,9 @@ Map<KeyType, ValueType>& Map<KeyType, ValueType>::putAll(const Map& map2) {
 }
 
 template <typename KeyType, typename ValueType>
-Map<KeyType, ValueType>& Map<KeyType, ValueType>::putAll(
-        std::initializer_list<std::pair<KeyType, ValueType> > list) {
-    for (const std::pair<KeyType, ValueType>& pair : list) {
-        put(pair.first, pair.second);
-    }
-    return *this;
-}
-
-template <typename KeyType, typename ValueType>
 void Map<KeyType, ValueType>::remove(const KeyType& key) {
-    removeNode(root, key);
-    m_version++;
+    _elements.erase(key);
+    _version.update();
 }
 
 template <typename KeyType, typename ValueType>
@@ -8893,17 +8551,6 @@ Map<KeyType, ValueType>& Map<KeyType, ValueType>::removeAll(const Map& map2) {
     for (const KeyType& key : map2) {
         if (containsKey(key) && get(key) == map2.get(key)) {
             remove(key);
-        }
-    }
-    return *this;
-}
-
-template <typename KeyType, typename ValueType>
-Map<KeyType, ValueType>& Map<KeyType, ValueType>::removeAll(
-        std::initializer_list<std::pair<KeyType, ValueType> > list) {
-    for (const std::pair<KeyType, ValueType>& pair : list) {
-        if (containsKey(pair.first) && get(pair.first) == pair.second) {
-            remove(pair.first);
         }
     }
     return *this;
@@ -8924,16 +8571,8 @@ Map<KeyType, ValueType>& Map<KeyType, ValueType>::retainAll(const Map& map2) {
 }
 
 template <typename KeyType, typename ValueType>
-Map<KeyType, ValueType>& Map<KeyType, ValueType>::retainAll(
-        std::initializer_list<std::pair<KeyType, ValueType> > list) {
-    Map<KeyType, ValueType> map2(list);
-    retainAll(map2);
-    return *this;
-}
-
-template <typename KeyType, typename ValueType>
 int Map<KeyType, ValueType>::size() const {
-    return nodeCount;
+    return _elements.size();
 }
 
 template <typename KeyType, typename ValueType>
@@ -8946,21 +8585,20 @@ std::string Map<KeyType, ValueType>::toString() const {
 template <typename KeyType,typename ValueType>
 Vector<ValueType> Map<KeyType, ValueType>::values() const {
     Vector<ValueType> values;
-    for (const KeyType& key : *this) {
-        values.add(this->get(key));
+    for (const auto& entry: _elements) {
+        values.add(entry.second);
     }
     return values;
 }
 
-template <typename KeyType,typename ValueType>
-unsigned int  Map<KeyType, ValueType>::version() const {
-    return m_version;
-}
-
 template <typename KeyType, typename ValueType>
-ValueType & Map<KeyType, ValueType>::operator [](const KeyType& key) {
-    bool dummy;
-    return *addNode(root, key, dummy);
+ValueType& Map<KeyType, ValueType>::operator [](const KeyType& key) {
+    auto presize = size();
+    auto& result = _elements[key];
+
+    /* If the size was updated, we must have inserted something. */
+    if (presize != size()) _version.update();
+    return result;
 }
 
 template <typename KeyType, typename ValueType>
@@ -8975,21 +8613,8 @@ Map<KeyType, ValueType> Map<KeyType, ValueType>::operator +(const Map& map2) con
 }
 
 template <typename KeyType, typename ValueType>
-Map<KeyType, ValueType> Map<KeyType, ValueType>::operator +(
-        std::initializer_list<std::pair<KeyType, ValueType> > list) const {
-    Map<KeyType, ValueType> result = *this;
-    return result.putAll(list);
-}
-
-template <typename KeyType, typename ValueType>
 Map<KeyType, ValueType>& Map<KeyType, ValueType>::operator +=(const Map& map2) {
     return putAll(map2);
-}
-
-template <typename KeyType, typename ValueType>
-Map<KeyType, ValueType>& Map<KeyType, ValueType>::operator +=(
-        std::initializer_list<std::pair<KeyType, ValueType> > list) {
-    return putAll(list);
 }
 
 template <typename KeyType, typename ValueType>
@@ -8999,21 +8624,8 @@ Map<KeyType, ValueType> Map<KeyType, ValueType>::operator -(const Map& map2) con
 }
 
 template <typename KeyType, typename ValueType>
-Map<KeyType, ValueType> Map<KeyType, ValueType>::operator -(
-        std::initializer_list<std::pair<KeyType, ValueType> > list) const {
-    Map<KeyType, ValueType> result = *this;
-    return result.removeAll(list);
-}
-
-template <typename KeyType, typename ValueType>
 Map<KeyType, ValueType>& Map<KeyType, ValueType>::operator -=(const Map& map2) {
     return removeAll(map2);
-}
-
-template <typename KeyType, typename ValueType>
-Map<KeyType, ValueType>& Map<KeyType, ValueType>::operator -=(
-        std::initializer_list<std::pair<KeyType, ValueType> > list) {
-    return removeAll(list);
 }
 
 template <typename KeyType, typename ValueType>
@@ -9023,21 +8635,8 @@ Map<KeyType, ValueType> Map<KeyType, ValueType>::operator *(const Map& map2) con
 }
 
 template <typename KeyType, typename ValueType>
-Map<KeyType, ValueType> Map<KeyType, ValueType>::operator *(
-        std::initializer_list<std::pair<KeyType, ValueType> > list) const {
-    Map<KeyType, ValueType> result = *this;
-    return result.retainAll(list);
-}
-
-template <typename KeyType, typename ValueType>
 Map<KeyType, ValueType>& Map<KeyType, ValueType>::operator *=(const Map& map2) {
     return retainAll(map2);
-}
-
-template <typename KeyType, typename ValueType>
-Map<KeyType, ValueType>& Map<KeyType, ValueType>::operator *=(
-        std::initializer_list<std::pair<KeyType, ValueType> > list) {
-    return retainAll(list);
 }
 
 template <typename KeyType, typename ValueType>
@@ -9068,6 +8667,16 @@ bool Map<KeyType, ValueType>::operator >(const Map& map2) const {
 template <typename KeyType, typename ValueType>
 bool Map<KeyType, ValueType>::operator >=(const Map& map2) const {
     return stanfordcpplib::collections::compareMaps(*this, map2) >= 0;
+}
+
+template <typename KeyType, typename ValueType>
+typename Map<KeyType, ValueType>::iterator Map<KeyType, ValueType>::begin() const {
+    return iterator({ &_version, _elements.begin(), _elements });
+}
+
+template <typename KeyType, typename ValueType>
+typename Map<KeyType, ValueType>::iterator Map<KeyType, ValueType>::end() const {
+    return iterator({ &_version, _elements.end(), _elements });
 }
 
 /*
@@ -9108,21 +8717,7 @@ int hashCode(const Map<K, V>& map) {
  */
 template <typename K, typename V>
 const K& randomKey(const Map<K, V>& map) {
-    if (map.isEmpty()) {
-        error("randomKey: empty map was passed");
-    }
-    int index = randomInteger(0, map.size() - 1);
-    int i = 0;
-    for (const K& key : map) {
-        if (i == index) {
-            return key;
-        }
-        i++;
-    }
-    
-    // this code will never be reached
-    static Vector<K> v = map.keys();
-    return v[0];
+    return stanfordcpplib::collections::randomElement(map);
 }
 
 #endif // _map_h
@@ -9136,6 +8731,8 @@ const K& randomKey(const Map<K, V>& map) {
  * This file exports the <code>Set</code> class, which implements a
  * collection for storing a set of distinct elements.
  * 
+ * @version 2019/02/04
+ * - changed internal implementation to wrap std collections
  * @version 2018/03/19
  * - added constructors that accept a comparison function
  * @version 2018/03/10
@@ -9175,12 +8772,8 @@ const K& randomKey(const Map<K, V>& map) {
 #include <initializer_list>
 #include <iostream>
 #include <set>
-
-#define INTERNAL_INCLUDE 1
-
-#define INTERNAL_INCLUDE 1
-
-#define INTERNAL_INCLUDE 1
+#include <functional>
+#include <type_traits>
 
 #define INTERNAL_INCLUDE 1
 
@@ -9188,935 +8781,106 @@ const K& randomKey(const Map<K, V>& map) {
 
 #undef INTERNAL_INCLUDE
 
-/*
- * Class: Set<ValueType>
- * ---------------------
- * This class stores a collection of distinct elements.
- */
-template <typename ValueType>
-class Set {
-public:
-    /*
-     * Constructor: Set
-     * Usage: Set<ValueType> set;
-     * --------------------------
-     * Initializes an empty set of the specified element type.
-     * Elements will be ordered according to their "natural" less-than ordering
-     * as dictated by the operator <.
-     * The ValueType must have an operator < in order to be used in this set.
-     */
-    Set();
+/* Traits type for the Set, which wraps an underlying Map. */
+namespace stanfordcpplib {
+    namespace collections {
+        template <typename T> struct SetTraits {
+            using ValueType = T;
+            using MapType   = Map<T, bool>;
+            static std::string name() {
+                return "Set";
+            }
 
-    /*
-     * Constructor: Set
-     * Usage: Set<ValueType> set(lessFunc);
-     * -----------------------------------------------
-     * Initializes a new empty set, using the given "less-than" comparison
-     * function to order any elements that are later added.
-     * The function should return true if the first argument is less than the
-     * second, and false if not.
-     * The function can accept the two elements to compare either by value
-     * or by const reference.
-     * Note that the elements are stored in order sorted by lessFunc
-     * internally and not necessarily the order in which they are written
-     * in the initializer list.
-     */
-    Set(bool lessFunc(ValueType, ValueType));
-    Set(bool lessFunc(const ValueType&, const ValueType&));
+            /* The Set type does allow you to construct the underlying Map by handing
+             * along a std::function.
+             */
+            template <typename Function>
+            static MapType construct(Function comparator) {
+                static_assert(std::is_assignable<std::function<bool(const ValueType&, const ValueType&)>, Function>::value,
+                              "Oops! Seems like you tried to initialize a Set incorrectly. Click here for details.");
+                /*
+                 * Hello student! If you are reading this message, it means that you tried to
+                 * initialize a Set improperly. For example, you might have tried to write
+                 * something like this:
+                 *
+                 *     Set<int> mySet = 137; // Oops!
+                 *
+                 * Here, for example, you're trying to assign an int to a Set<int>.
+                 *
+                 * or perhaps you had a function like this one:
+                 *
+                 *     void myFunction(Set<int>& mySet);
+                 *
+                 * and you called it by writing
+                 *
+                 *     myFunction(someSet + someOtherSet); // Oops!
+                 *     myFunction({ });                    // Oops!
+                 *
+                 * In these cases, you're trying to pass a value into a function that takes
+                 * its argument by (non-const) reference. C++ doesn't allow you to do this.
+                 *
+                 * To see where the actual error comes from, look in the list of error messages
+                 * in Qt Creator. You should see a line that says "required from here" that
+                 * points somewhere in your code. That's the actual line you wrote that caused
+                 * the problem, so double-click on that error message and see where it takes
+                 * you. Now you know where to look!
+                 *
+                 * Hope this helps!
+                 */
+                return MapType(comparator);
+            }
 
-    /*
-     * Constructor: Set
-     * Usage: Set<ValueType> set {1, 2, 3};
-     * ------------------------------------
-     * Initializes a new set that stores the given elements.
-     * Note that the elements are stored in sorted order internally and not
-     * necessarily the order in which they are written in the initializer list.
-     */
-    Set(std::initializer_list<ValueType> list);
+            /* You can also default-construct it. */
+            static MapType construct() {
+                return {};
+            }
 
-    /*
-     * Constructor: Set
-     * Usage: Set<ValueType> set({1, 2, 3}, lessFunc);
-     * -----------------------------------------------
-     * Initializes a new set that stores the given elements, using the given
-     * "less-than" comparison function to order them.
-     * The function should return true if the first argument is less than the
-     * second, and false if not.
-     * The function can accept the two elements to compare either by value
-     * or by const reference.
-     * Note that the elements are stored in order sorted by lessFunc
-     * internally and not necessarily the order in which they are written
-     * in the initializer list.
-     */
-    Set(std::initializer_list<ValueType> list, bool lessFunc(ValueType, ValueType));
-    Set(std::initializer_list<ValueType> list, bool lessFunc(const ValueType&, const ValueType&));
+            /* However, you can't pass in any other arguments. */
+            template <typename... Args>
+            static void construct(MapType &, Args&&...) {
+                static_assert(Fail<Args...>::value, "Oops! Seems like you tried to initialize a Set incorrectly. Click here for details.");
 
-    /*
-     * Destructor: ~Set
-     * ----------------
-     * Frees any heap storage associated with this set.
-     */
-    virtual ~Set();
-    
-    /*
-     * Method: add
-     * Usage: set.add(value);
-     * ----------------------
-     * Adds an element to this set, if it was not already there.  For
-     * compatibility with the STL <code>set</code> class, this method
-     * is also exported as <code>insert</code>.
-     */
-    void add(const ValueType& value);
-    
-    /*
-     * Method: addAll
-     * Usage: set.addAll(set2);
-     * ------------------------
-     * Adds all elements of the given other set to this set.
-     * You can also pass an initializer list such as {1, 2, 3}.
-     * Returns a reference to this set.
-     * Identical in behavior to the += operator.
-     */
-    Set<ValueType>& addAll(const Set<ValueType>& set);
-    Set<ValueType>& addAll(std::initializer_list<ValueType> list);
-
-    /*
-     * Method: back
-     * Usage: ValueType value = set.back();
-     * ------------------------------------
-     * Returns the last value in the set in the order established by the
-     * <code>foreach</code> macro.  If the set is empty, generates an error.
-     */
-    ValueType back() const;
-
-    /*
-     * Method: clear
-     * Usage: set.clear();
-     * -------------------
-     * Removes all elements from this set.
-     */
-    void clear();
-
-    /*
-     * Method: contains
-     * Usage: if (set.contains(value)) ...
-     * -----------------------------------
-     * Returns <code>true</code> if the specified value is in this set.
-     */
-    bool contains(const ValueType& value) const;
-
-    /*
-     * Method: containsAll
-     * Usage: if (set.containsAll(set2)) ...
-     * -------------------------------------
-     * Returns <code>true</code> if every value from the given other set
-     * is also found in this set.
-     * You can also pass an initializer list such as {1, 2, 3}.
-     * Equivalent in behavior to isSupersetOf.
-     */
-    bool containsAll(const Set<ValueType>& set2) const;
-    bool containsAll(std::initializer_list<ValueType> list) const;
-
-    /*
-     * Method: equals
-     * Usage: if (set.equals(set2)) ...
-     * --------------------------------
-     * Returns <code>true</code> if this set contains exactly the same values
-     * as the given other set.
-     * Identical in behavior to the == operator.
-     */
-    bool equals(const Set<ValueType>& set2) const;
-    
-    /*
-     * Method: first
-     * Usage: ValueType value = set.first();
-     * -------------------------------------
-     * Returns the first value in the set in the order established by the
-     * <code>foreach</code> macro.  If the set is empty, <code>first</code>
-     * generates an error.
-     * Equivalent to front.
-     */
-    ValueType first() const;
-
-    /*
-     * Method: front
-     * Usage: ValueType value = set.front();
-     * -------------------------------------
-     * Returns the first value in the set in the order established by the
-     * <code>foreach</code> macro.  If the set is empty, generates an error.
-     * Equivalent to first.
-     */
-    ValueType front() const;
-
-    /*
-     * Method: insert
-     * Usage: set.insert(value);
-     * -------------------------
-     * Adds an element to this set, if it was not already there.  This
-     * method is exported for compatibility with the STL <code>set</code> class.
-     */
-    void insert(const ValueType& value);
-    
-    /*
-     * Method: isEmpty
-     * Usage: if (set.isEmpty()) ...
-     * -----------------------------
-     * Returns <code>true</code> if this set contains no elements.
-     */
-    bool isEmpty() const;
-
-    /*
-     * Method: isSubsetOf
-     * Usage: if (set.isSubsetOf(set2)) ...
-     * ------------------------------------
-     * Implements the subset relation on sets.  It returns
-     * <code>true</code> if every element of this set is
-     * contained in <code>set2</code>.
-     * You can also pass an initializer list such as {1, 2, 3}.
-     */
-    bool isSubsetOf(const Set& set2) const;
-    bool isSubsetOf(std::initializer_list<ValueType> list) const;
-
-    /*
-     * Method: isSupersetOf
-     * Usage: if (set.isSupersetOf(set2)) ...
-     * --------------------------------------
-     * Implements the superset relation on sets.  It returns
-     * <code>true</code> if every element of this set is
-     * contained in <code>set2</code>.
-     * You can also pass an initializer list such as {1, 2, 3}.
-     * Equivalent in behavior to containsAll.
-     */
-    bool isSupersetOf(const Set& set2) const;
-    bool isSupersetOf(std::initializer_list<ValueType> list) const;
-
-    /*
-     * Method: mapAll
-     * Usage: set.mapAll(fn);
-     * ----------------------
-     * Iterates through the elements of the set and calls <code>fn(value)</code>
-     * for each one.  The values are processed in ascending order, as defined
-     * by the comparison function.
-     */
-    void mapAll(void (*fn)(ValueType)) const;
-    void mapAll(void (*fn)(const ValueType&)) const;
-
-    template <typename FunctorType>
-    void mapAll(FunctorType fn) const;
-
-    /*
-     * Method: remove
-     * Usage: set.remove(value);
-     * -------------------------
-     * Removes an element from this set.  If the value was not
-     * contained in the set, no error is generated and the set
-     * remains unchanged.
-     */
-    void remove(const ValueType& value);
-    
-    /*
-     * Method: removeAll
-     * Usage: set.removeAll(set2);
-     * ---------------------------
-     * Removes all elements of the given other set from this set.
-     * You can also pass an initializer list such as {1, 2, 3}.
-     * Returns a reference to this set.
-     * Identical in behavior to the -= operator.
-     */
-    Set<ValueType>& removeAll(const Set<ValueType>& set);
-    Set<ValueType>& removeAll(std::initializer_list<ValueType> list);
-
-    /*
-     * Method: retainAll
-     * Usage: set.retainAll(set2);
-     * ---------------------------
-     * Removes all elements from this set that are not contained in the given
-     * other set.
-     * You can also pass an initializer list such as {1, 2, 3}.
-     * Returns a reference to this set.
-     * Identical in behavior to the *= operator.
-     */
-    Set<ValueType>& retainAll(const Set<ValueType>& set);
-    Set<ValueType>& retainAll(std::initializer_list<ValueType> list);
-
-    /*
-     * Method: size
-     * Usage: count = set.size();
-     * --------------------------
-     * Returns the number of elements in this set.
-     */
-    int size() const;
-    
-    /*
-     * Method: toStlset
-     * Usage: set<ValueType> set2 = set1.toStlSet();
-     * ---------------------------------------------
-     * Returns an STL set object with the same elements as this Set.
-     */
-    std::set<ValueType> toStlSet() const;
-
-    /*
-     * Method: toString
-     * Usage: string str = set.toString();
-     * -----------------------------------
-     * Converts the set to a printable string representation.
-     */
-    std::string toString() const;
-
-    /*
-     * Operator: ==
-     * Usage: set1 == set2
-     * -------------------
-     * Returns <code>true</code> if <code>set1</code> and <code>set2</code>
-     * contain the same elements.
-     */
-    bool operator ==(const Set& set2) const;
-
-    /*
-     * Operator: !=
-     * Usage: set1 != set2
-     * -------------------
-     * Returns <code>true</code> if <code>set1</code> and <code>set2</code>
-     * are different.
-     */
-    bool operator !=(const Set& set2) const;
-
-    /*
-     * Operators: <, >, <=, >=
-     * Usage: if (set1 <= set2) ...
-     * ...
-     * ----------------------------
-     * Relational operators to compare two sets.
-     * The <, >, <=, >= operators require that the ValueType has a < operator
-     * so that the elements can be compared pairwise.
-     */
-    bool operator <(const Set& set2) const;
-    bool operator <=(const Set& set2) const;
-    bool operator >(const Set& set2) const;
-    bool operator >=(const Set& set2) const;
-    
-    /*
-     * Operator: +
-     * Usage: set1 + set2
-     *        set1 + element
-     * ---------------------
-     * Returns the union of sets <code>set1</code> and <code>set2</code>, which
-     * is the set of elements that appear in at least one of the two sets.
-     * You can also pass an initializer list such as {1, 2, 3}.
-     * The right hand set can be replaced by an element of the value type, in
-     * which case the operator returns a new set formed by adding that element.
-     */
-    Set operator +(const Set& set2) const;
-    Set operator +(std::initializer_list<ValueType> list) const;
-    Set operator +(const ValueType& element) const;
-
-    /*
-     * Operator: *
-     * Usage: set1 * set2
-     * ------------------
-     * Returns the intersection of sets <code>set1</code> and <code>set2</code>,
-     * which is the set of all elements that appear in both.
-     * You can also pass an initializer list such as {1, 2, 3}.
-     */
-    Set operator *(const Set& set2) const;
-    Set operator *(std::initializer_list<ValueType> list) const;
-
-    /*
-     * Operator: -
-     * Usage: set1 - set2
-     *        set1 - element
-     * ---------------------
-     * Returns the difference of sets <code>set1</code> and <code>set2</code>,
-     * which is all of the elements that appear in <code>set1</code> but
-     * not <code>set2</code>.
-     * You can also pass an initializer list such as {1, 2, 3}.
-     * The right hand set can be replaced by an element of the value type, in
-     * which case the operator returns a new set formed by removing that element.
-     */
-    Set operator -(const Set& set2) const;
-    Set operator -(std::initializer_list<ValueType> list) const;
-    Set operator -(const ValueType& element) const;
-
-    /*
-     * Operator: +=
-     * Usage: set1 += set2;
-     *        set1 += value;
-     * ---------------------
-     * Adds all of the elements from <code>set2</code> (or the single
-     * specified value) to <code>set1</code>.
-     * You can also pass an initializer list such as {1, 2, 3}.
-     * As a convenience, the <code>Set</code> package also overloads the comma
-     * operator so that it is possible to initialize a set like this:
-     *
-     *<pre>
-     *    Set&lt;int&gt; digits;
-     *    digits += 0, 1, 2, 3, 4, 5, 6, 7, 8, 9;
-     *</pre>
-     */
-    Set& operator +=(const Set& set2);
-    Set& operator +=(std::initializer_list<ValueType> list);
-    Set& operator +=(const ValueType& value);
-
-    /*
-     * Operator: *=
-     * Usage: set1 *= set2;
-     * --------------------
-     * Removes any elements from <code>set1</code> that are not present in
-     * <code>set2</code>.
-     * You can also pass an initializer list such as {1, 2, 3}.
-     */
-    Set& operator *=(const Set& set2);
-    Set& operator *=(std::initializer_list<ValueType> list);
-
-    /*
-     * Operator: -=
-     * Usage: set1 -= set2;
-     *        set1 -= value;
-     * ---------------------
-     * Removes the elements from <code>set2</code> (or the single
-     * specified value) from <code>set1</code>.
-     * You can also pass an initializer list such as {1, 2, 3}.
-     * As a convenience, the <code>Set</code> package also overloads the comma
-     * operator so that it is possible to remove multiple elements from a set
-     * like this:
-     *
-     *<pre>
-     *    digits -= 0, 2, 4, 6, 8;
-     *</pre>
-     *
-     * which removes the values 0, 2, 4, 6, and 8 from the set
-     * <code>digits</code>.
-     */
-    Set& operator -=(const Set& set2);
-    Set& operator -=(std::initializer_list<ValueType> list);
-    Set& operator -=(const ValueType& value);
-
-    /*
-     * Additional Set operations
-     * -------------------------
-     * In addition to the methods listed in this interface, the Set
-     * class supports the following operations:
-     *
-     *   - Stream I/O using the << and >> operators
-     *   - Deep copying for the copy constructor and assignment operator
-     *   - Iteration using the range-based for statement and STL iterators
-     *
-     * The iteration forms process the Set in ascending order.
-     */
-
-    /* Private section */
-
-    /**********************************************************************/
-    /* Note: Everything below this point in the file is logically part    */
-    /* of the implementation and should not be of interest to clients.    */
-    /**********************************************************************/
-
-private:
-    Map<ValueType, bool> map;            /* Map used to store the element     */
-    bool removeFlag;                     /* Flag to differentiate += and -=   */
-
-public:
-    /*
-     * Hidden features
-     * ---------------
-     * The remainder of this file consists of the code required to
-     * support the comma operator, deep copying, and iteration.
-     * Including these methods in the public interface would make
-     * that interface more difficult to understand for the average client.
-     */
-
-    /* Extended constructors */
-    template <typename CompareType>
-    explicit Set(CompareType cmp) : map(Map<ValueType, bool>(cmp)), removeFlag(false) {
-        // Empty
+                /*
+                 * Hello student! If you are reading this message, it means that you tried to
+                 * initialize a Set improperly. For example, you might have tried to write
+                 * something like this:
+                 *
+                 *     Set<int> mySet = 137; // Oops!
+                 *
+                 * Here, for example, you're trying to assign an int to a Set<int>.
+                 *
+                 * or perhaps you had a function like this one:
+                 *
+                 *     void myFunction(Set<int>& mySet);
+                 *
+                 * and you called it by writing
+                 *
+                 *     myFunction(someSet + someOtherSet); // Oops!
+                 *     myFunction({ });                    // Oops!
+                 *
+                 * In these cases, you're trying to pass a value into a function that takes
+                 * its argument by (non-const) reference. C++ doesn't allow you to do this.
+                 *
+                 * To see where the actual error comes from, look in the list of error messages
+                 * in Qt Creator. You should see a line that says "required from here" that
+                 * points somewhere in your code. That's the actual line you wrote that caused
+                 * the problem, so double-click on that error message and see where it takes
+                 * you. Now you know where to look!
+                 *
+                 * Hope this helps!
+                 */
+                error("static_assert failed?");
+            }
+        };
     }
-
-    Set& operator ,(const ValueType& value) {
-        if (this->removeFlag) {
-            this->remove(value);
-        } else {
-            this->add(value);
-        }
-        return *this;
-    }
-
-    /*
-     * Iterator support
-     * ----------------
-     * The classes in the StanfordCPPLib collection implement input
-     * iterators so that they work symmetrically with respect to the
-     * corresponding STL classes.
-     */
-    class iterator : public std::iterator<std::input_iterator_tag,ValueType> {
-    private:
-        typename Map<ValueType,bool>::iterator mapit;  /* Iterator for the map */
-
-    public:
-        iterator() {
-            /* Empty */
-        }
-
-        iterator(typename Map<ValueType,bool>::iterator it) : mapit(it) {
-            /* Empty */
-        }
-
-        iterator(const iterator& it) {
-            mapit = it.mapit;
-        }
-
-        iterator& operator ++() {
-            ++mapit;
-            return *this;
-        }
-
-        iterator operator ++(int) {
-            iterator copy(*this);
-            operator++();
-            return copy;
-        }
-
-        bool operator ==(const iterator& rhs) {
-            return mapit == rhs.mapit;
-        }
-
-        bool operator !=(const iterator& rhs) {
-            return !(*this == rhs);
-        }
-
-        ValueType& operator *() {
-            return *mapit;
-        }
-
-        ValueType* operator ->() {
-            return &**this;
-        }
-    };
-
-    iterator begin() const {
-        return iterator(map.begin());
-    }
-
-    iterator end() const {
-        return iterator(map.end());
-    }
-};
-
-template <typename ValueType>
-Set<ValueType>::Set() : removeFlag(false) {
-    // empty
-}
-
-template <typename ValueType>
-Set<ValueType>::Set(bool lessFunc(ValueType, ValueType))
-        : map(lessFunc) {
-    // empty
-}
-
-template <typename ValueType>
-Set<ValueType>::Set(bool lessFunc(const ValueType&, const ValueType&))
-        : map(lessFunc) {
-    // empty
-}
-
-template <typename ValueType>
-Set<ValueType>::Set(std::initializer_list<ValueType> list) {
-    addAll(list);
-}
-
-template <typename ValueType>
-Set<ValueType>::Set(std::initializer_list<ValueType> list, bool lessFunc(ValueType, ValueType))
-        : map(lessFunc) {
-    addAll(list);
-}
-
-template <typename ValueType>
-Set<ValueType>::Set(std::initializer_list<ValueType> list, bool lessFunc(const ValueType&, const ValueType&))
-        : map(lessFunc) {
-    addAll(list);
-}
-
-template <typename ValueType>
-Set<ValueType>::~Set() {
-    /* Empty */
-}
-
-template <typename ValueType>
-void Set<ValueType>::add(const ValueType& value) {
-    map.put(value, true);
-}
-
-template <typename ValueType>
-Set<ValueType>& Set<ValueType>::addAll(const Set& set2) {
-    for (const ValueType& value : set2) {
-        this->add(value);
-    }
-    return *this;
-}
-
-template <typename ValueType>
-Set<ValueType>& Set<ValueType>::addAll(std::initializer_list<ValueType> list) {
-    for (const ValueType& value : list) {
-        this->add(value);
-    }
-    return *this;
-}
-
-template <typename ValueType>
-ValueType Set<ValueType>::back() const {
-    if (isEmpty()) {
-        error("Set::back: set is empty");
-    }
-    return map.back();
-}
-
-template <typename ValueType>
-void Set<ValueType>::clear() {
-    map.clear();
-}
-
-template <typename ValueType>
-bool Set<ValueType>::contains(const ValueType& value) const {
-    return map.containsKey(value);
-}
-
-template <typename ValueType>
-bool Set<ValueType>::containsAll(const Set<ValueType>& set2) const {
-    for (const ValueType& value : set2) {
-        if (!contains(value)) {
-            return false;
-        }
-    }
-    return true;
-}
-
-template <typename ValueType>
-bool Set<ValueType>::containsAll(std::initializer_list<ValueType> list) const {
-    for (const ValueType& value : list) {
-        if (!contains(value)) {
-            return false;
-        }
-    }
-    return true;
-}
-
-template <typename ValueType>
-bool Set<ValueType>::equals(const Set<ValueType>& set2) const {
-    // optimization: if literally same set, stop
-    if (this == &set2) {
-        return true;
-    }
-
-    if (size() != set2.size()) {
-        return false;
-    }
-
-    // BUGFIX: don't need to check set2.isSubsetOf(*this) because they are
-    // the same size - credit to Stanford student G. Boullanger 2016/12/05
-    return isSubsetOf(set2);
-}
-
-template <typename ValueType>
-ValueType Set<ValueType>::first() const {
-    if (isEmpty()) {
-        error("Set::first: set is empty");
-    }
-    return *begin();
-}
-
-template <typename ValueType>
-ValueType Set<ValueType>::front() const {
-    if (isEmpty()) {
-        error("Set::front: set is empty");
-    }
-    return map.front();
-}
-
-template <typename ValueType>
-void Set<ValueType>::insert(const ValueType& value) {
-    map.put(value, true);
-}
-
-template <typename ValueType>
-bool Set<ValueType>::isEmpty() const {
-    return map.isEmpty();
-}
-
-template <typename ValueType>
-bool Set<ValueType>::isSubsetOf(const Set& set2) const {
-    auto it = begin();
-    auto end = this->end();
-    while (it != end) {
-        if (!set2.map.containsKey(*it)) {
-            return false;
-        }
-        ++it;
-    }
-    return true;
-}
-
-template <typename ValueType>
-bool Set<ValueType>::isSubsetOf(std::initializer_list<ValueType> list) const {
-    Set<ValueType> set2(list);
-    return isSubsetOf(set2);
-}
-
-template <typename ValueType>
-bool Set<ValueType>::isSupersetOf(const Set& set2) const {
-    return containsAll(set2);
-}
-
-template <typename ValueType>
-bool Set<ValueType>::isSupersetOf(std::initializer_list<ValueType> list) const {
-    return containsAll(list);
-}
-
-template <typename ValueType>
-void Set<ValueType>::mapAll(void (*fn)(ValueType)) const {
-    map.mapAll(fn);
-}
-
-template <typename ValueType>
-void Set<ValueType>::mapAll(void (*fn)(const ValueType&)) const {
-    map.mapAll(fn);
-}
-
-template <typename ValueType>
-template <typename FunctorType>
-void Set<ValueType>::mapAll(FunctorType fn) const {
-    map.mapAll(fn);
-}
-
-template <typename ValueType>
-void Set<ValueType>::remove(const ValueType& value) {
-    map.remove(value);
-}
-
-template <typename ValueType>
-Set<ValueType>& Set<ValueType>::removeAll(const Set& set2) {
-    Vector<ValueType> toRemove;
-    for (const ValueType& value : *this) {
-        if (set2.map.containsKey(value)) {
-            toRemove.add(value);
-        }
-    }
-    for (const ValueType& value : toRemove) {
-        remove(value);
-    }
-    return *this;
-}
-
-template <typename ValueType>
-Set<ValueType>& Set<ValueType>::removeAll(std::initializer_list<ValueType> list) {
-    for (const ValueType& value : list) {
-        remove(value);
-    }
-    return *this;
-}
-
-template <typename ValueType>
-Set<ValueType>& Set<ValueType>::retainAll(const Set& set2) {
-    Vector<ValueType> toRemove;
-    for (ValueType value : *this) {
-        if (!set2.map.containsKey(value)) {
-            toRemove.add(value);
-        }
-    }
-    for (ValueType value : toRemove) {
-        this->remove(value);
-    }
-    return *this;
-}
-
-template <typename ValueType>
-Set<ValueType>& Set<ValueType>::retainAll(std::initializer_list<ValueType> list) {
-    Set<ValueType> set2(list);
-    return retainAll(set2);
-}
-
-template <typename ValueType>
-int Set<ValueType>::size() const {
-    return map.size();
-}
-
-template <typename ValueType>
-std::set<ValueType> Set<ValueType>::toStlSet() const {
-    std::set<ValueType> result;
-    for (ValueType value : *this) {
-        result.insert(value);
-    }
-    return result;
-}
-
-template <typename ValueType>
-std::string Set<ValueType>::toString() const {
-    std::ostringstream os;
-    os << *this;
-    return os.str();
 }
 
 /*
- * Implementation notes: set operators
- * -----------------------------------
- * The implementations for the set operators use iteration to walk
- * over the elements in one or both sets.
+ * A set of elements stored in sorted order. The elements must be comparable
+ * using the < operator in order to be stored here.
  */
 template <typename ValueType>
-bool Set<ValueType>::operator ==(const Set& set2) const {
-    return equals(set2);
-}
-
-template <typename ValueType>
-bool Set<ValueType>::operator !=(const Set& set2) const {
-    return !equals(set2);
-}
-
-template <typename ValueType>
-bool Set<ValueType>::operator <(const Set& set2) const {
-    return stanfordcpplib::collections::compare(*this, set2) < 0;
-}
-
-template <typename ValueType>
-bool Set<ValueType>::operator <=(const Set& set2) const {
-    return stanfordcpplib::collections::compare(*this, set2) <= 0;
-}
-
-template <typename ValueType>
-bool Set<ValueType>::operator >(const Set& set2) const {
-    return stanfordcpplib::collections::compare(*this, set2) > 0;
-}
-
-template <typename ValueType>
-bool Set<ValueType>::operator >=(const Set& set2) const {
-    return stanfordcpplib::collections::compare(*this, set2) >= 0;
-}
-
-template <typename ValueType>
-Set<ValueType> Set<ValueType>::operator +(const Set& set2) const {
-    Set<ValueType> set = *this;
-    set.addAll(set2);
-    return set;
-}
-
-template <typename ValueType>
-Set<ValueType> Set<ValueType>::operator +(std::initializer_list<ValueType> list) const {
-    Set<ValueType> set = *this;
-    set.addAll(list);
-    return set;
-}
-
-template <typename ValueType>
-Set<ValueType> Set<ValueType>::operator +(const ValueType& element) const {
-    Set<ValueType> set = *this;
-    set.add(element);
-    return set;
-}
-
-template <typename ValueType>
-Set<ValueType> Set<ValueType>::operator *(const Set& set2) const {
-    Set<ValueType> set = *this;
-    return set.retainAll(set2);
-}
-
-template <typename ValueType>
-Set<ValueType> Set<ValueType>::operator *(std::initializer_list<ValueType> list) const {
-    Set<ValueType> set = *this;
-    return set.retainAll(list);
-}
-
-template <typename ValueType>
-Set<ValueType> Set<ValueType>::operator -(const Set& set2) const {
-    Set<ValueType> set = *this;
-    return set.removeAll(set2);
-}
-
-template <typename ValueType>
-Set<ValueType> Set<ValueType>::operator -(std::initializer_list<ValueType> list) const {
-    Set<ValueType> set = *this;
-    return set.removeAll(list);
-}
-
-template <typename ValueType>
-Set<ValueType> Set<ValueType>::operator -(const ValueType& element) const {
-    Set<ValueType> set = *this;
-    set.remove(element);
-    return set;
-}
-
-template <typename ValueType>
-Set<ValueType>& Set<ValueType>::operator +=(const Set& set2) {
-    return addAll(set2);
-}
-
-template <typename ValueType>
-Set<ValueType>& Set<ValueType>::operator +=(std::initializer_list<ValueType> list) {
-    return addAll(list);
-}
-
-template <typename ValueType>
-Set<ValueType>& Set<ValueType>::operator +=(const ValueType& value) {
-    add(value);
-    removeFlag = false;
-    return *this;
-}
-
-template <typename ValueType>
-Set<ValueType>& Set<ValueType>::operator *=(const Set& set2) {
-    return retainAll(set2);
-}
-
-template <typename ValueType>
-Set<ValueType>& Set<ValueType>::operator *=(std::initializer_list<ValueType> list) {
-    return retainAll(list);
-}
-
-template <typename ValueType>
-Set<ValueType>& Set<ValueType>::operator -=(const Set& set2) {
-    return removeAll(set2);
-}
-
-template <typename ValueType>
-Set<ValueType>& Set<ValueType>::operator -=(std::initializer_list<ValueType> list) {
-    return removeAll(list);
-}
-
-template <typename ValueType>
-Set<ValueType>& Set<ValueType>::operator -=(const ValueType& value) {
-    remove(value);
-    removeFlag = true;
-    return *this;
-}
-
-template <typename ValueType>
-std::ostream& operator <<(std::ostream& os, const Set<ValueType>& set) {
-    return stanfordcpplib::collections::writeCollection(os, set);
-}
-
-template <typename ValueType>
-std::istream& operator >>(std::istream& is, Set<ValueType>& set) {
-    ValueType element;
-    return stanfordcpplib::collections::readCollection(is, set, element, /* descriptor */ "Set::operator >>");
-}
-
-/*
- * Template hash function for sets.
- * Requires the element type in the Set to have a hashCode function.
- */
-template <typename T>
-int hashCode(const Set<T>& set) {
-    return stanfordcpplib::collections::hashCodeCollection(set);
-}
-
-/*
- * Function: randomElement
- * Usage: element = randomElement(set);
- * ------------------------------------
- * Returns a randomly chosen element of the given set.
- * Throws an error if the set is empty.
- */
-template <typename T>
-const T& randomElement(const Set<T>& set) {
-    return stanfordcpplib::collections::randomElement(set);
-}
+    using Set = stanfordcpplib::collections::GenericSet<stanfordcpplib::collections::SetTraits<ValueType>>;
 
 #endif // _set_h
 
@@ -10129,6 +8893,10 @@ const T& randomElement(const Set<T>& set) {
  * This file exports the <code>HashMap</code> class, which stores
  * a set of <i>key</i>-<i>value</i> pairs.
  * 
+ * @version 2019/04/09
+ * - renamed private members with underscore naming scheme for consistency
+ * @version 2019/02/04
+ * - changed internal implementation to wrap std collections
  * @version 2018/03/10
  * - added methods front, back
  * @version 2017/11/30
@@ -10175,6 +8943,8 @@ const T& randomElement(const Set<T>& set) {
 #include <initializer_list>
 #include <string>
 #include <utility>
+#include <unordered_map>
+#include <functional>
 
 #define INTERNAL_INCLUDE 1
 
@@ -10217,7 +8987,7 @@ public:
      * exports <code>hashCode</code> functions for <code>string</code> and
      * the C++ primitive types.
      */
-    HashMap();
+    HashMap() = default;
 
     /*
      * Constructor: HashMap
@@ -10227,14 +8997,14 @@ public:
      * Note that the pairs are stored in unpredictable order internally and not
      * necessarily the order in which they are written in the initializer list.
      */
-    HashMap(std::initializer_list<std::pair<KeyType, ValueType> > list);
+    HashMap(std::initializer_list<std::pair<const KeyType, ValueType>> list);
 
     /*
      * Destructor: ~HashMap
      * --------------------
      * Frees any heap storage associated with this map.
      */
-    virtual ~HashMap();
+    virtual ~HashMap() = default;
 
     /*
      * Method: add
@@ -10257,7 +9027,6 @@ public:
      * Identical in behavior to putAll.
      */
     HashMap& addAll(const HashMap& map2);
-    HashMap& addAll(std::initializer_list<std::pair<KeyType, ValueType> > list);
 
     /*
      * Method: back
@@ -10348,11 +9117,7 @@ public:
      * Iterates through the map entries and calls <code>fn(key, value)</code>
      * for each one.  The keys are processed in an undetermined order.
      */
-    void mapAll(void (*fn)(KeyType, ValueType)) const;
-    void mapAll(void (*fn)(const KeyType&, const ValueType&)) const;
-    
-    template <typename FunctorType>
-    void mapAll(FunctorType fn) const;
+    void mapAll(std::function<void(const KeyType&, const ValueType&)> fn) const;
 
     /*
      * Method: put
@@ -10375,7 +9140,6 @@ public:
      * Returns a reference to this map.
      */
     HashMap& putAll(const HashMap& map2);
-    HashMap& putAll(std::initializer_list<std::pair<KeyType, ValueType> > list);
 
     /*
      * Method: remove
@@ -10397,7 +9161,6 @@ public:
      * Returns a reference to this map.
      */
     HashMap& removeAll(const HashMap& map2);
-    HashMap& removeAll(std::initializer_list<std::pair<KeyType, ValueType> > list);
 
     /*
      * Method: retainAll
@@ -10410,7 +9173,6 @@ public:
      * Returns a reference to this map.
      */
     HashMap& retainAll(const HashMap& map2);
-    HashMap& retainAll(std::initializer_list<std::pair<KeyType, ValueType> > list);
 
     /*
      * Method: size
@@ -10453,22 +9215,6 @@ public:
     ValueType operator [](const KeyType& key) const;
 
     /*
-     * Operator: ==
-     * Usage: if (map1 == map2) ...
-     * ----------------------------
-     * Compares two maps for equality.
-     */
-    bool operator ==(const HashMap& map2) const;
-
-    /*
-     * Operator: !=
-     * Usage: if (map1 != map2) ...
-     * ----------------------------
-     * Compares two maps for inequality.
-     */
-    bool operator !=(const HashMap& map2) const;
-
-    /*
      * Operator: +
      * Usage: map1 + map2
      * ------------------
@@ -10479,7 +9225,6 @@ public:
      * You can also pass an initializer list of pairs such as {{"a", 1}, {"b", 2}, {"c", 3}}.
      */
     HashMap operator +(const HashMap& map2) const;
-    HashMap operator +(std::initializer_list<std::pair<KeyType, ValueType> > list) const;
 
     /*
      * Operator: +=
@@ -10490,7 +9235,6 @@ public:
      * You can also pass an initializer list of pairs such as {{"a", 1}, {"b", 2}, {"c", 3}}.
      */
     HashMap& operator +=(const HashMap& map2);
-    HashMap& operator +=(std::initializer_list<std::pair<KeyType, ValueType> > list);
 
     /*
      * Operator: -
@@ -10501,7 +9245,6 @@ public:
      * You can also pass an initializer list of pairs such as {{"a", 1}, {"b", 2}, {"c", 3}}.
      */
     HashMap operator -(const HashMap& map2) const;
-    HashMap operator -(std::initializer_list<std::pair<KeyType, ValueType> > list) const;
 
     /*
      * Operator: -=
@@ -10512,7 +9255,6 @@ public:
      * You can also pass an initializer list of pairs such as {{"a", 1}, {"b", 2}, {"c", 3}}.
      */
     HashMap& operator -=(const HashMap& map2);
-    HashMap& operator -=(std::initializer_list<std::pair<KeyType, ValueType> > list);
 
     /*
      * Operator: *
@@ -10523,7 +9265,6 @@ public:
      * You can also pass an initializer list of pairs such as {{"a", 1}, {"b", 2}, {"c", 3}}.
      */
     HashMap operator *(const HashMap& map2) const;
-    HashMap operator *(std::initializer_list<std::pair<KeyType, ValueType> > list) const;
 
     /*
      * Operator: *=
@@ -10534,7 +9275,6 @@ public:
      * You can also pass an initializer list of pairs such as {{"a", 1}, {"b", 2}, {"c", 3}}.
      */
     HashMap& operator *=(const HashMap& map2);
-    HashMap& operator *=(std::initializer_list<std::pair<KeyType, ValueType> > list);
 
     /*
      * Additional HashMap operations
@@ -10556,144 +9296,72 @@ public:
     /* of the implementation and should not be of interest to clients.    */
     /**********************************************************************/
 
-    /*
-     * Implementation notes:
-     * ---------------------
-     * The HashMap class is represented using a hash table that uses
-     * bucket chaining to resolve collisions.
-    */
 private:
-    /* Constant definitions */
-    static const int INITIAL_BUCKET_COUNT = 101;
-    static const int MAX_LOAD_PERCENTAGE = 70;
+    static_assert(stanfordcpplib::collections::IsHashable<KeyType>::value,
+                  "Oops! You tried using a type as a key in our HashMap without making it hashable. Click this error for more details.");
+    /*
+     * Hello CS106 students! If you got directed to this line of code in a compiler error,
+     * it probably means that you tried making a HashMap with a custom struct or class type
+     * as the key type or a HashSet with a custom struct as a value type. (The same also
+     * applies for LinkedHashMap and LinkedHashSet.)
+     *
+     * In order to have a type be a key type in a HashMap - or to have a type be a value type
+     * in a HashSet - it needs to have a hashCode function defined and be capable of being
+     * compared using the == operator. If you were directed here, one of those two conditions
+     * wasn't met.
+     *
+     * There are two ways to fix this. The first option would simply be to not use your custom
+     * type as a key in the HashMap or value in a HashSet. This is probably the easiest option.
+     *
+     * The second way to fix this is to explicitly define a hashCode() and operator== function
+     * for your type. To do so, first define hashCode as follows:
+     *
+     *     int hashCode(const YourCustomType& obj) {
+     *         return hashCode(obj.data1, obj.data2, ..., obj.dataN);
+     *     }
+     *
+     * where data1, data2, ... dataN are the data members of your type. For example, if you had
+     * a custom type
+     *
+     *     struct MyType {
+     *         int myInt;
+     *         string myString;
+     *     };
+     *
+     * you would define the function
+     *
+     *     int hashCode(const MyType& obj) {
+     *         return hashCode(obj.myInt, obj.myString);
+     *     }
+     *
+     * Second, define operator== as follows:
+     *
+     *     bool operator== (const YourCustomType& lhs, const YourCustomType& rhs) {
+     *         return lhs.data1 == rhs.data1 &&
+     *                lhs.data2 == rhs.data2 &&
+     *                         ...
+     *                lhs.dataN == rhs.dataN;
+     *     }
+     *
+     * Using the MyType example from above, we'd write
+     *
+     *     bool operator== (const MyType& lhs, const MyType& rhs) {
+     *         return lhs.myInt == rhs.myInt && lhs.myString == rhs.myString;
+     *     }
+     *
+     * Hope this helps!
+     */
 
-    /* Type definition for cells in the bucket chain */
-    struct Cell {
-        KeyType key;
-        ValueType value;
-        Cell* next;
+    struct Hasher {
+        std::size_t operator()(const KeyType& key) const {
+            return hashCode(key);
+        }
     };
 
-    /* Instance variables */
-    Vector<Cell*> buckets;
-    int nBuckets;
-    int numEntries;
-    unsigned int m_version = 0; // structure version for detecting invalid iterators
+    std::unordered_map<KeyType, ValueType, Hasher> _elements;
+    stanfordcpplib::collections::VersionTracker _version;
 
     /* Private methods */
-
-    /*
-     * Private method: createBuckets
-     * Usage: createBuckets(nBuckets);
-     * -------------------------------
-     * Sets up the vector of buckets to have nBuckets entries, each null.
-     * If asked to make empty vector, makes one bucket just to simplify
-     * handling elsewhere.
-     */
-    void createBuckets(int nBuckets) {
-        if (nBuckets == 0) {
-            nBuckets = 1;
-        }
-        buckets = Vector<Cell*>(nBuckets, nullptr);
-        this->nBuckets = nBuckets;
-        numEntries = 0;
-    }
-
-    /*
-     * Private method: deleteBuckets
-     * Usage: deleteBuckets(buckets);
-     * ------------------------------
-     * Deletes all the cells in the linked lists contained in vector.
-     */
-    void deleteBuckets(Vector<Cell*>& buckets) {
-        for (int i = 0; i < buckets.size(); i++) {
-            Cell* cp = buckets[i];
-            while (cp) {
-                Cell* np = cp->next;
-                delete cp;
-                cp = np;
-            }
-            buckets[i] = nullptr;
-        }
-    }
-
-    /*
-     * Private method: expandAndRehash
-     * Usage: expandAndRehash();
-     * -------------------------
-     * This method is used to increase the number of buckets in the map
-     * and then rehashes all existing entries and adds them into new buckets.
-     * This operation is used when the load factor (i.e. the number of cells
-     * per bucket) has increased enough to warrant this O(N) operation to
-     * enlarge and redistribute the entries.
-     */
-    void expandAndRehash() {
-        Vector<Cell*> oldBuckets = buckets;
-        createBuckets(oldBuckets.size() * 2 + 1);
-        for (int i = 0; i < oldBuckets.size(); i++) {
-            for (Cell* cp = oldBuckets[i]; cp != nullptr; cp = cp->next) {
-                put(cp->key, cp->value);
-            }
-        }
-        deleteBuckets(oldBuckets);
-    }
-
-    /*
-     * Private method: findCell
-     * Usage: Cell* cp = findCell(bucket, key);
-     *        Cell* cp = findCell(bucket, key, parent);
-     * ------------------------------------------------
-     * Finds a cell in the chain for the specified bucket that matches key.
-     * If a match is found, the return value is a pointer to the cell containing
-     * the matching key.  If no match is found, the function returns nullptr.
-     * If the optional third argument is supplied, it is filled in with the
-     * cell preceding the matching cell to allow the client to splice out
-     * the target cell in the delete call.  If parent is null, it indicates
-     * that the cell is the first cell in the bucket chain.
-     */
-    Cell* findCell(int bucket, const KeyType& key) const {
-        Cell *dummy;
-        return findCell(bucket, key, dummy);
-    }
-
-    Cell* findCell(int bucket, const KeyType& key, Cell*& parent) const {
-        parent = nullptr;
-        Cell* cp = buckets.get(bucket);
-        while (cp && !(key == cp->key)) {
-            parent = cp;
-            cp = cp->next;
-        }
-        return cp;
-    }
-
-    void deepCopy(const HashMap& src) {
-        createBuckets(src.nBuckets);
-        for (int i = 0; i < src.nBuckets; i++) {
-            // BUGFIX: was just calling put(), which reversed the chains;
-            // now deep-copy the chains exactly as they were to preserve hashcode
-            Cell* endOfChain = nullptr;
-            for (Cell* cp = src.buckets.get(i); cp != nullptr; cp = cp->next) {
-                // put(cp->key, cp->value);
-                
-                // copy the cell and put at end of bucket list
-                Cell* copy = new Cell();
-                copy->key = cp->key;
-                copy->value = cp->value;
-                copy->next = nullptr;
-                if (!endOfChain) {
-                    // first node in bucket
-                    buckets.set(i, copy);
-                } else {
-                    // not first node; put after existing node
-                    endOfChain->next = copy;
-                    endOfChain = copy;
-                }
-                endOfChain = copy;
-                numEntries++;
-            }
-        }
-        m_version++;
-    }
 
 public:
     /*
@@ -10706,164 +9374,28 @@ public:
      */
 
     /*
-     * Deep copying support
-     * --------------------
-     * This copy constructor and operator= are defined to make a
-     * deep copy, making it possible to pass/return maps by value
-     * and assign from one map to another.
-     */
-    HashMap& operator =(const HashMap& src) {
-        if (this != &src) {
-            clear();
-            deepCopy(src);
-        }
-        return *this;
-    }
-
-    HashMap(const HashMap& src) {
-        deepCopy(src);
-    }
-
-    /*
      * Iterator support
-     * ----------------
-     * The classes in the StanfordCPPLib collection implement input
-     * iterators so that they work symmetrically with respect to the
-     * corresponding STL classes.
      */
-    class iterator : public std::iterator<std::input_iterator_tag, KeyType> {
-    private:
-        const HashMap* mp;           /* Pointer to the map           */
-        int bucket;                  /* Index of current bucket      */
-        unsigned int itr_version;    /* Version for checking for modification */
-        Cell* cp;                    /* Current cell in bucket chain */
 
-    public:
-        iterator()
-                : mp(nullptr),
-                  bucket(0),
-                  itr_version(0),
-                  cp(nullptr) {
-            // empty
-        }
+    using const_iterator = stanfordcpplib::collections::ProjectingIterator<stanfordcpplib::collections::CheckedIterator<typename std::unordered_map<KeyType, ValueType, Hasher>::const_iterator>>;
+    using iterator = const_iterator;
 
-        iterator(const HashMap* mp, bool end)
-                : mp(mp),
-                  bucket(0),
-                  itr_version(0),
-                  cp(nullptr) {
-            if (mp) {
-                itr_version = mp->version();
-            }
-            if (end) {
-                bucket = mp->nBuckets;
-            } else {
-                bucket = 0;
-                cp = mp->buckets.get(bucket);
-                while (!cp && ++bucket < mp->nBuckets) {
-                    cp = mp->buckets.get(bucket);
-                }
-            }
-        }
-
-        iterator(const iterator& it)
-                : mp(it.mp),
-                  bucket(it.bucket),
-                  itr_version(it.itr_version),
-                  cp(it.cp) {
-            // empty
-        }
-
-        iterator& operator ++() {
-            stanfordcpplib::collections::checkVersion(*mp, *this);
-            cp = cp->next;
-            while (!cp && ++bucket < mp->nBuckets) {
-                cp = mp->buckets.get(bucket);
-            }
-            return *this;
-        }
-
-        iterator operator ++(int) {
-            stanfordcpplib::collections::checkVersion(*mp, *this);
-            iterator copy(*this);
-            operator++();
-            return copy;
-        }
-
-        bool operator ==(const iterator& rhs) {
-            return mp == rhs.mp && bucket == rhs.bucket && cp == rhs.cp;
-        }
-
-        bool operator !=(const iterator& rhs) {
-            return !(*this == rhs);
-        }
-
-        KeyType& operator *() {
-            stanfordcpplib::collections::checkVersion(*mp, *this);
-            return cp->key;
-        }
-
-        KeyType* operator ->() {
-            stanfordcpplib::collections::checkVersion(*mp, *this);
-            return &cp->key;
-        }
-
-        unsigned int version() const {
-            return itr_version;
-        }
-
-        friend class HashMap;
-    };
+    iterator begin() const;
+    iterator end() const;
 
     /*
-     * Returns an iterator positioned at the first key of the map.
+     * Hashing support.
      */
-    iterator begin() const {
-        return iterator(this, /* end */ false);
-    }
+    bool operator== (const HashMap& rhs) const;
+    bool operator!= (const HashMap& rhs) const;
 
-    /*
-     * Returns an iterator positioned at the last key of the map.
-     */
-    iterator end() const {
-        return iterator(this, /* end */ true);
-    }
-
-    /*
-     * Returns the internal version of this collection.
-     * This is used to check for invalid iterators and issue error messages.
-     */
-    unsigned int version() const {
-        return m_version;
-    }
+    template <typename K, typename V>
+    friend int hashCode(const HashMap<K, V>& map);
 };
 
-/*
- * Implementation notes: HashMap class
- * -----------------------------------
- * In this map implementation, the entries are stored in a hashtable.
- * The hashtable keeps a vector of "buckets", where each bucket is a
- * linked list of elements that share the same hash code (i.e. hash
- * collisions are resolved by chaining). The buckets are dynamically
- * allocated so that we can change the the number of buckets (rehash)
- * when the load factor becomes too high. The map should provide O(1)
- * performance on the put/remove/get operations.
- */
 template <typename KeyType, typename ValueType>
-HashMap<KeyType, ValueType>::HashMap() {
-    createBuckets(INITIAL_BUCKET_COUNT);
-}
-
-template <typename KeyType, typename ValueType>
-HashMap<KeyType, ValueType>::HashMap(std::initializer_list<std::pair<KeyType, ValueType> > list) {
-    createBuckets(INITIAL_BUCKET_COUNT);
-    putAll(list);
-}
-
-template <typename KeyType, typename ValueType>
-HashMap<KeyType, ValueType>::~HashMap() {
-    deleteBuckets(buckets);
-    numEntries = 0;
+HashMap<KeyType, ValueType>::HashMap(std::initializer_list<std::pair<const KeyType, ValueType>> list)
+        : _elements(list) {
 }
 
 template <typename KeyType, typename ValueType>
@@ -10877,45 +9409,23 @@ HashMap<KeyType, ValueType>& HashMap<KeyType, ValueType>::addAll(const HashMap& 
 }
 
 template <typename KeyType, typename ValueType>
-HashMap<KeyType, ValueType>& HashMap<KeyType, ValueType>::addAll(
-        std::initializer_list<std::pair<KeyType, ValueType> > list) {
-    return putAll(list);
-}
-
-template <typename KeyType, typename ValueType>
 KeyType HashMap<KeyType, ValueType>::back() const {
     if (isEmpty()) {
         error("HashMap::back: map is empty");
     }
 
-    // find last non-null bucket
-    Cell* cell = nullptr;
-    for (int i = buckets.size() - 1; i >= 0; i--) {
-        cell = buckets[i];
-        if (cell) {
-            // find last non-null cell within bucket
-            while (cell->next) {
-                cell = cell->next;
-            }
-            return cell->key;
-        }
-    }
-
-    // we should never get here
-    error("HashMap::back: never found a non-empty cell bucket");
-    return cell->key;
+    return std::next(_elements.begin(), _elements.size() - 1)->first;
 }
 
 template <typename KeyType, typename ValueType>
 void HashMap<KeyType, ValueType>::clear() {
-    deleteBuckets(buckets);
-    numEntries = 0;
-    m_version++;
+    _elements.clear();
+    _version.update();
 }
 
 template <typename KeyType, typename ValueType>
 bool HashMap<KeyType, ValueType>::containsKey(const KeyType& key) const {
-    return findCell(hashCode(key) % nBuckets, key) != nullptr;
+    return !!_elements.count(key);
 }
 
 template <typename KeyType, typename ValueType>
@@ -10933,60 +9443,37 @@ KeyType HashMap<KeyType, ValueType>::front() const {
 
 template <typename KeyType, typename ValueType>
 ValueType HashMap<KeyType, ValueType>::get(const KeyType& key) const {
-    Cell* cp = findCell(hashCode(key) % nBuckets, key);
-    if (!cp) {
-        return ValueType();
-    }
-    return cp->value;
+    auto itr = _elements.find(key);
+    return itr == _elements.end()? ValueType() : itr->second;
 }
 
 template <typename KeyType, typename ValueType>
 bool HashMap<KeyType, ValueType>::isEmpty() const {
-    return size() == 0;
+    return _elements.empty();
 }
 
 template <typename KeyType, typename ValueType>
 Vector<KeyType> HashMap<KeyType, ValueType>::keys() const {
     Vector<KeyType> keyset;
-    for (const KeyType& key : *this) {
-        keyset.add(key);
+    for (const auto& entry: _elements) {
+        keyset.add(entry.first);
     }
     return keyset;
 }
 
 template <typename KeyType, typename ValueType>
-void HashMap<KeyType, ValueType>::mapAll(void (*fn)(KeyType, ValueType)) const {
-    for (int i = 0; i < buckets.size(); i++) {
-        for (Cell* cp = buckets.get(i); cp != nullptr; cp = cp->next) {
-            fn(cp->key, cp->value);
-        }
-    }
-}
-
-template <typename KeyType, typename ValueType>
-void HashMap<KeyType, ValueType>::mapAll(void (*fn)(const KeyType&,
-                                                   const ValueType&)) const {
-    for (int i = 0; i < buckets.size(); i++) {
-        for (Cell* cp = buckets.get(i); cp != nullptr; cp = cp->next) {
-            fn(cp->key, cp->value);
-        }
-    }
-}
-
-template <typename KeyType, typename ValueType>
-template <typename FunctorType>
-void HashMap<KeyType, ValueType>::mapAll(FunctorType fn) const {
-    for (int i = 0; i < buckets.size(); i++) {
-        for (Cell* cp = buckets.get(i); cp != nullptr; cp = cp->next) {
-            fn(cp->key, cp->value);
-        }
+void HashMap<KeyType, ValueType>::mapAll(std::function<void (const KeyType&, const ValueType&)> fn) const {
+    for (const auto& entry: _elements) {
+        fn(entry.first, entry.second);
     }
 }
 
 template <typename KeyType, typename ValueType>
 void HashMap<KeyType, ValueType>::put(const KeyType& key, const ValueType& value) {
-    (*this)[key] = value;
-    m_version++;
+    int presize = size();
+    _elements[key] = value;
+
+    if (presize != size()) _version.update();
 }
 
 template <typename KeyType, typename ValueType>
@@ -10998,28 +9485,11 @@ HashMap<KeyType, ValueType>& HashMap<KeyType, ValueType>::putAll(const HashMap& 
 }
 
 template <typename KeyType, typename ValueType>
-HashMap<KeyType, ValueType>& HashMap<KeyType, ValueType>::putAll(
-        std::initializer_list<std::pair<KeyType, ValueType> > list) {
-    for (const std::pair<KeyType, ValueType>& pair : list) {
-        put(pair.first, pair.second);
-    }
-    return *this;
-}
-
-template <typename KeyType, typename ValueType>
 void HashMap<KeyType, ValueType>::remove(const KeyType& key) {
-    int bucket = hashCode(key) % nBuckets;
-    Cell *parent;
-    Cell* cp = findCell(bucket, key, parent);
-    if (cp) {
-        if (!parent) {
-            buckets[bucket] = cp->next;
-        } else {
-            parent->next = cp->next;
-        }
-        delete cp;
-        numEntries--;
-        m_version++;
+    auto itr = _elements.find(key);
+    if (itr != _elements.end()) {
+        _elements.erase(itr);
+        _version.update();
     }
 }
 
@@ -11028,17 +9498,6 @@ HashMap<KeyType, ValueType>& HashMap<KeyType, ValueType>::removeAll(const HashMa
     for (const KeyType& key : map2) {
         if (containsKey(key) && get(key) == map2.get(key)) {
             remove(key);
-        }
-    }
-    return *this;
-}
-
-template <typename KeyType, typename ValueType>
-HashMap<KeyType, ValueType>& HashMap<KeyType, ValueType>::removeAll(
-        std::initializer_list<std::pair<KeyType, ValueType> > list) {
-    for (const std::pair<KeyType, ValueType>& pair : list) {
-        if (containsKey(pair.first) && get(pair.first) == pair.second) {
-            remove(pair.first);
         }
     }
     return *this;
@@ -11059,16 +9518,8 @@ HashMap<KeyType, ValueType>& HashMap<KeyType, ValueType>::retainAll(const HashMa
 }
 
 template <typename KeyType, typename ValueType>
-HashMap<KeyType, ValueType>& HashMap<KeyType, ValueType>::retainAll(
-        std::initializer_list<std::pair<KeyType, ValueType> > list) {
-    HashMap<KeyType, ValueType> map2(list);
-    retainAll(map2);
-    return *this;
-}
-
-template <typename KeyType, typename ValueType>
 int HashMap<KeyType, ValueType>::size() const {
-    return numEntries;
+    return _elements.size();
 }
 
 template <typename KeyType, typename ValueType>
@@ -11081,30 +9532,19 @@ std::string HashMap<KeyType, ValueType>::toString() const {
 template <typename KeyType, typename ValueType>
 Vector<ValueType> HashMap<KeyType, ValueType>::values() const {
     Vector<ValueType> values;
-    for (const KeyType& key : *this) {
-        values.add(this->get(key));
+    for (const auto& entry: _elements) {
+        values.add(entry.second);
     }
     return values;
 }
 
 template <typename KeyType, typename ValueType>
 ValueType& HashMap<KeyType, ValueType>::operator [](const KeyType& key) {
-    int bucket = hashCode(key) % nBuckets;
-    Cell* cp = findCell(bucket, key);
-    if (!cp) {
-        if (numEntries > MAX_LOAD_PERCENTAGE * nBuckets / 100.0) {
-            expandAndRehash();
-            bucket = hashCode(key) % nBuckets;
-        }
-        cp = new Cell;
-        cp->key = key;
-        cp->value = ValueType();
-        cp->next = buckets[bucket];
-        buckets[bucket] = cp;
-        numEntries++;
-        m_version++;
-    }
-    return cp->value;
+    int presize = size();
+    ValueType& result = _elements[key];
+
+    if (presize != size()) _version.update();
+    return result;
 }
 
 template <typename KeyType, typename ValueType>
@@ -11119,21 +9559,8 @@ HashMap<KeyType, ValueType> HashMap<KeyType, ValueType>::operator +(const HashMa
 }
 
 template <typename KeyType, typename ValueType>
-HashMap<KeyType, ValueType> HashMap<KeyType, ValueType>::operator +(
-        std::initializer_list<std::pair<KeyType, ValueType> > list) const {
-    HashMap<KeyType, ValueType> result = *this;
-    return result.putAll(list);
-}
-
-template <typename KeyType, typename ValueType>
 HashMap<KeyType, ValueType>& HashMap<KeyType, ValueType>::operator +=(const HashMap& map2) {
     return putAll(map2);
-}
-
-template <typename KeyType, typename ValueType>
-HashMap<KeyType, ValueType>& HashMap<KeyType, ValueType>::operator +=(
-        std::initializer_list<std::pair<KeyType, ValueType> > list) {
-    return putAll(list);
 }
 
 template <typename KeyType, typename ValueType>
@@ -11143,21 +9570,8 @@ HashMap<KeyType, ValueType> HashMap<KeyType, ValueType>::operator -(const HashMa
 }
 
 template <typename KeyType, typename ValueType>
-HashMap<KeyType, ValueType> HashMap<KeyType, ValueType>::operator -(
-        std::initializer_list<std::pair<KeyType, ValueType> > list) const {
-    HashMap<KeyType, ValueType> result = *this;
-    return result.removeAll(list);
-}
-
-template <typename KeyType, typename ValueType>
 HashMap<KeyType, ValueType>& HashMap<KeyType, ValueType>::operator -=(const HashMap& map2) {
     return removeAll(map2);
-}
-
-template <typename KeyType, typename ValueType>
-HashMap<KeyType, ValueType>& HashMap<KeyType, ValueType>::operator -=(
-        std::initializer_list<std::pair<KeyType, ValueType> > list) {
-    return removeAll(list);
 }
 
 template <typename KeyType, typename ValueType>
@@ -11167,31 +9581,33 @@ HashMap<KeyType, ValueType> HashMap<KeyType, ValueType>::operator *(const HashMa
 }
 
 template <typename KeyType, typename ValueType>
-HashMap<KeyType, ValueType> HashMap<KeyType, ValueType>::operator *(
-        std::initializer_list<std::pair<KeyType, ValueType> > list) const {
-    HashMap<KeyType, ValueType> result = *this;
-    return result.retainAll(list);
-}
-
-template <typename KeyType, typename ValueType>
 HashMap<KeyType, ValueType>& HashMap<KeyType, ValueType>::operator *=(const HashMap& map2) {
     return retainAll(map2);
 }
 
 template <typename KeyType, typename ValueType>
-HashMap<KeyType, ValueType>& HashMap<KeyType, ValueType>::operator *=(
-        std::initializer_list<std::pair<KeyType, ValueType> > list) {
-    return retainAll(list);
+typename HashMap<KeyType, ValueType>::iterator HashMap<KeyType, ValueType>::begin() const {
+    return iterator({ &_version, _elements.begin(), _elements });
 }
 
 template <typename KeyType, typename ValueType>
-bool HashMap<KeyType, ValueType>::operator ==(const HashMap& map2) const {
-    return equals(map2);
+typename HashMap<KeyType, ValueType>::iterator HashMap<KeyType, ValueType>::end() const {
+    return iterator({ &_version, _elements.end(), _elements });
 }
 
 template <typename KeyType, typename ValueType>
-bool HashMap<KeyType, ValueType>::operator !=(const HashMap& map2) const {
-    return !equals(map2);   // BUGFIX 2016/09/24
+bool HashMap<KeyType, ValueType>::operator == (const HashMap<KeyType, ValueType>& rhs) const {
+    return stanfordcpplib::collections::equalsMap(*this, rhs);
+}
+
+template <typename KeyType, typename ValueType>
+bool HashMap<KeyType, ValueType>::operator != (const HashMap<KeyType, ValueType>& rhs) const {
+    return !(*this == rhs);
+}
+
+template <typename KeyType, typename ValueType>
+int hashCode(const HashMap<KeyType, ValueType>& map) {
+    return stanfordcpplib::collections::hashCodeMap(map, false);
 }
 
 /*
@@ -11216,15 +9632,6 @@ std::istream& operator >>(std::istream& is,
 }
 
 /*
- * Template hash function for hash maps.
- * Requires the key and value types in the HashMap to have a hashCode function.
- */
-template <typename K, typename V>
-int hashCode(const HashMap<K, V>& map) {
-    return stanfordcpplib::collections::hashCodeMap(map, /* orderMatters */ false);
-}
-
-/*
  * Function: randomKey
  * Usage: element = randomKey(map);
  * --------------------------------
@@ -11233,21 +9640,7 @@ int hashCode(const HashMap<K, V>& map) {
  */
 template <typename K, typename V>
 const K& randomKey(const HashMap<K, V>& map) {
-    if (map.isEmpty()) {
-        error("randomKey: empty hash map was passed");
-    }
-    int index = randomInteger(0, map.size() - 1);
-    int i = 0;
-    for (const K& key : map) {
-        if (i == index) {
-            return key;
-        }
-        i++;
-    }
-    
-    // this code will never be reached
-    static Vector<K> v = map.keys();
-    return v[0];
+    return stanfordcpplib::collections::randomElement(map);
 }
 
 #endif // _hashmap_h
@@ -11261,6 +9654,8 @@ const K& randomKey(const HashMap<K, V>& map) {
  * This file exports the <code>HashSet</code> class, which
  * implements an efficient abstraction for storing sets of values.
  * 
+ * @version 2019/02/04
+ * - changed internal implementation to wrap std collections
  * @version 2018/03/10
  * - added methods front, back
  * @version 2016/12/09
@@ -11302,842 +9697,72 @@ const K& randomKey(const HashMap<K, V>& map) {
 
 #define INTERNAL_INCLUDE 1
 
-#define INTERNAL_INCLUDE 1
-
-#define INTERNAL_INCLUDE 1
-
-#define INTERNAL_INCLUDE 1
-
 #undef INTERNAL_INCLUDE
 
-/*
- * Class: HashSet<ValueType>
- * -------------------------
- * This class implements an efficient abstraction for storing sets
- * of distinct elements.  This class is identical to the <code>Set</code>
- * class except for the fact that it uses a hash table as its underlying
- * representation.  The advantage of the <code>HashSet</code> class is that
- * it operates in constant time, as opposed to the <i>O</i>(log <i>N</i>)
- * time for the <code>Set</code> class.  The disadvantage of
- * <code>HashSet</code> is that iterators return the values in a
- * seemingly random order.
- */
-template <typename ValueType>
-class HashSet {
-public:
-    /*
-     * Constructor: HashSet
-     * Usage: HashSet<ValueType> set;
-     * ------------------------------
-     * Initializes an empty set of the specified element type.
-     */
-    HashSet();
+/* Traits type for the HashSet, which wraps an underlying HashMap. */
+namespace stanfordcpplib {
+    namespace collections {
+        template <typename T> struct HashSetTraits {
+            using ValueType = T;
+            using MapType   = HashMap<T, bool>;
+            static std::string name() {
+                return "HashSet";
+            }
+            /* You can default-construct a LinkedHashSet. */
+            static MapType construct() {
+                return {};
+            }
 
-    /*
-     * Constructor: HashSet
-     * Usage: HashSet<ValueType> set {1, 2, 3};
-     * ----------------------------------------
-     * Initializes a new set that stores the given elements.
-     * Note that the elements are stored in unpredictable order internally and not
-     * necessarily the order in which they are written in the initializer list.
-     */
-    HashSet(std::initializer_list<ValueType> list);
+            /* However, you can't pass in any other arguments. */
+            template <typename... Args>
+            static void construct(Args&&...) {
+                static_assert(Fail<Args...>::value, "Oops! Seems like you tried to initialize a LinkedHashSet incorrectly. Click here for details.");
 
-    /*
-     * Destructor: ~HashSet
-     * --------------------
-     * Frees any heap storage associated with this set.
-     */
-    virtual ~HashSet();
-
-    /*
-     * Method: add
-     * Usage: set.add(value);
-     * ----------------------
-     * Adds an element to this set, if it was not already there.  For
-     * compatibility with the STL <code>set</code> class, this method
-     * is also exported as <code>insert</code>.
-     */
-    void add(const ValueType& value);
-    
-    /*
-     * Method: addAll
-     * Usage: set.addAll(set2);
-     * ----------------------
-     * Adds all elements of the given other set to this set.
-     * You can also pass an initializer list such as {1, 2, 3}.
-     * Returns a reference to this set.
-     * Identical in behavior to the += operator.
-     */
-    HashSet<ValueType>& addAll(const HashSet<ValueType>& set);
-    HashSet<ValueType>& addAll(std::initializer_list<ValueType> list);
-
-    /*
-     * Method: back
-     * Usage: ValueType value = set.back();
-     * ------------------------------------
-     * Returns the last value in the set in the order established by the
-     * <code>foreach</code> macro.
-     * Note that since the values are stored in an unpredictable order,
-     * this is not necessarily equal to the "largest" value in any particular
-     * sorting order; it is just the value that would happen to be emitted last
-     * from a for-each loop.
-     * If the set is empty, generates an error.
-     */
-    ValueType back() const;
-
-    /*
-     * Method: clear
-     * Usage: set.clear();
-     * -------------------
-     * Removes all elements from this set.
-     */
-    void clear();
-    
-    /*
-     * Method: contains
-     * Usage: if (set.contains(value)) ...
-     * -----------------------------------
-     * Returns <code>true</code> if the specified value is in this set.
-     */
-    bool contains(const ValueType& value) const;
-
-    /*
-     * Method: containsAll
-     * Usage: if (set.containsAll(set2)) ...
-     * -------------------------------------
-     * Returns <code>true</code> if every value from the given other set
-     * is also found in this set.
-     * You can also pass an initializer list such as {1, 2, 3}.
-     * Equivalent in behavior to isSupersetOf.
-     */
-    bool containsAll(const HashSet<ValueType>& set2) const;
-    bool containsAll(std::initializer_list<ValueType> list) const;
-
-    /*
-     * Method: equals
-     * Usage: if (set.equals(set2)) ...
-     * -----------------------------------
-     * Returns <code>true</code> if this set contains exactly the same values
-     * as the given other set.
-     * Identical in behavior to the == operator.
-     */
-    bool equals(const HashSet<ValueType>& set2) const;
-    
-    /*
-     * Method: first
-     * Usage: ValueType value = set.first();
-     * -------------------------------------
-     * Returns the first value in the set in the order established by the
-     * <code>foreach</code> macro.  If the set is empty, <code>first</code>
-     * generates an error.
-     */
-    ValueType first() const;
-
-    /*
-     * Method: front
-     * Usage: ValueType value = set.front();
-     * ------------------------------------
-     * Returns the last value in the set in the order established by the
-     * <code>foreach</code> macro.
-     * Note that since the values are stored in an unpredictable order,
-     * this is not necessarily equal to the "largest" value in any particular
-     * sorting order; it is just the value that would happen to be emitted last
-     * from a for-each loop.
-     * If the set is empty, generates an error.
-     * Equivalent to first.
-     */
-    ValueType front() const;
-
-    /*
-     * Method: insert
-     * Usage: set.insert(value);
-     * -------------------------
-     * Adds an element to this set, if it was not already there.  This
-     * method is exported for compatibility with the STL <code>set</code> class.
-     */
-    void insert(const ValueType& value);
-
-    /*
-     * Method: isEmpty
-     * Usage: if (set.isEmpty()) ...
-     * -----------------------------
-     * Returns <code>true</code> if this set contains no elements.
-     */
-    bool isEmpty() const;
-    
-    /*
-     * Method: isSubsetOf
-     * Usage: if (set.isSubsetOf(set2)) ...
-     * ------------------------------------
-     * Implements the subset relation on sets.  It returns
-     * <code>true</code> if every element of this set is
-     * contained in <code>set2</code>.
-     * Note that this will be true if the sets are equal.
-     * You can also pass an initializer list such as {1, 2, 3}.
-     */
-    bool isSubsetOf(const HashSet& set2) const;
-    bool isSubsetOf(std::initializer_list<ValueType> list) const;
-
-    /*
-     * Method: isSupersetOf
-     * Usage: if (set.isSupersetOf(set2)) ...
-     * --------------------------------------
-     * Implements the superset relation on sets.  It returns
-     * <code>true</code> if every element of this set is
-     * contained in <code>set2</code>.
-     * Note that this will be true if the sets are equal.
-     * You can also pass an initializer list such as {1, 2, 3}.
-     * Equivalent in behavior to containsAll.
-     */
-    bool isSupersetOf(const HashSet& set2) const;
-    bool isSupersetOf(std::initializer_list<ValueType> list) const;
-
-    /*
-     * Method: mapAll
-     * Usage: set.mapAll(fn);
-     * ----------------------
-     * Iterates through the elements of the set and calls <code>fn(value)</code>
-     * for each one.  The values are processed in ascending order, as defined
-     * by the comparison function.
-     */
-    void mapAll(void (*fn)(ValueType)) const;
-    void mapAll(void (*fn)(const ValueType&)) const;
-
-    template <typename FunctorType>
-    void mapAll(FunctorType fn) const;
-    
-    /*
-     * Method: remove
-     * Usage: set.remove(value);
-     * -------------------------
-     * Removes an element from this set.  If the value was not
-     * contained in the set, no error is generated and the set
-     * remains unchanged.
-     */
-    void remove(const ValueType& value);
-    
-    /*
-     * Method: removeAll
-     * Usage: set.removeAll(set2);
-     * ---------------------------
-     * Removes all elements of the given other set from this set.
-     * You can also pass an initializer list such as {1, 2, 3}.
-     * Returns a reference to this set.
-     * Identical in behavior to the -= operator.
-     */
-    HashSet<ValueType>& removeAll(const HashSet<ValueType>& set);
-    HashSet<ValueType>& removeAll(std::initializer_list<ValueType> list);
-
-    /*
-     * Method: retainAll
-     * Usage: set.retainAll(set2);
-     * ----------------------
-     * Removes all elements from this set that are not contained in the given
-     * other set.
-     * You can also pass an initializer list such as {1, 2, 3}.
-     * Returns a reference to this set.
-     * Identical in behavior to the *= operator.
-     */
-    HashSet<ValueType>& retainAll(const HashSet<ValueType>& set);
-    HashSet<ValueType>& retainAll(std::initializer_list<ValueType> list);
-
-    /*
-     * Method: size
-     * Usage: count = set.size();
-     * --------------------------
-     * Returns the number of elements in this set.
-     */
-    int size() const;
-    
-    /*
-     * Method: toString
-     * Usage: string str = set.toString();
-     * -----------------------------------
-     * Converts the set to a printable string representation.
-     */
-    std::string toString() const;
-
-    /*
-     * Operator: ==
-     * Usage: set1 == set2
-     * -------------------
-     * Returns <code>true</code> if <code>set1</code> and <code>set2</code>
-     * contain the same elements.
-     */
-    bool operator ==(const HashSet& set2) const;
-
-    /*
-     * Operator: !=
-     * Usage: set1 != set2
-     * -------------------
-     * Returns <code>true</code> if <code>set1</code> and <code>set2</code>
-     * are different.
-     */
-    bool operator !=(const HashSet& set2) const;
-
-    /*
-     * Operator: +
-     * Usage: set1 + set2
-     *        set1 + element
-     * ---------------------
-     * Returns the union of sets <code>set1</code> and <code>set2</code>, which
-     * is the set of elements that appear in at least one of the two sets.  The
-     * right hand set can be replaced by an element of the value type, in which
-     * case the operator returns a new set formed by adding that element.
-     * You can also pass an initializer list such as {1, 2, 3}.
-     */
-    HashSet operator +(const HashSet& set2) const;
-    HashSet operator +(std::initializer_list<ValueType> list) const;
-    HashSet operator +(const ValueType& element) const;
-
-    /*
-     * Operator: *
-     * Usage: set1 * set2
-     * ------------------
-     * Returns the intersection of sets <code>set1</code> and <code>set2</code>,
-     * which is the set of all elements that appear in both.
-     * You can also pass an initializer list such as {1, 2, 3}.
-     */
-    HashSet operator *(const HashSet& set2) const;
-    HashSet operator *(std::initializer_list<ValueType> list) const;
-
-    /*
-     * Operator: -
-     * Usage: set1 - set2
-     *        set1 - element
-     * ---------------------
-     * Returns the difference of sets <code>set1</code> and <code>set2</code>,
-     * which is all of the elements that appear in <code>set1</code> but
-     * not <code>set2</code>.  The right hand set can be replaced by an
-     * element of the value type, in which case the operator returns a new
-     * set formed by removing that element.
-     * You can also pass an initializer list such as {1, 2, 3}.
-     */
-    HashSet operator -(const HashSet& set2) const;
-    HashSet operator -(std::initializer_list<ValueType> list) const;
-    HashSet operator -(const ValueType& element) const;
-
-    /*
-     * Operator: +=
-     * Usage: set1 += set2;
-     *        set1 += value;
-     * ---------------------
-     * Adds all of the elements from <code>set2</code> (or the single
-     * specified value) to <code>set1</code>.  As a convenience, the
-     * <code>HashSet</code> package also overloads the comma operator so
-     * that it is possible to initialize a set like this:
-     *
-     *<pre>
-     *    HashSet&lt;int&lt; digits;
-     *    digits += 0, 1, 2, 3, 4, 5, 6, 7, 8, 9;
-     *</pre>
-     * You can also pass an initializer list such as {1, 2, 3}.
-     */
-    HashSet& operator +=(const HashSet& set2);
-    HashSet& operator +=(std::initializer_list<ValueType> list);
-    HashSet& operator +=(const ValueType& value);
-
-    /*
-     * Operator: *=
-     * Usage: set1 *= set2;
-     * --------------------
-     * Removes any elements from <code>set1</code> that are not present in
-     * <code>set2</code>.
-     */
-    HashSet& operator *=(const HashSet& set2);
-    HashSet& operator *=(std::initializer_list<ValueType> list);
-
-    /*
-     * Operator: -=
-     * Usage: set1 -= set2;
-     *        set1 -= value;
-     * ---------------------
-     * Removes the elements from <code>set2</code> (or the single
-     * specified value) from <code>set1</code>.  As a convenience, the
-     * <code>HashSet</code> package also overloads the comma operator so
-     * that it is possible to remove multiple elements from a set
-     * like this:
-     *
-     *<pre>
-     *    digits -= 0, 2, 4, 6, 8;
-     *</pre>
-     *
-     * which removes the values 0, 2, 4, 6, and 8 from the set
-     * <code>digits</code>.
-     * You can also pass an initializer list such as {1, 2, 3}.
-     */
-    HashSet& operator -=(const HashSet& set2);
-    HashSet& operator -=(std::initializer_list<ValueType> list);
-    HashSet& operator -=(const ValueType& value);
-
-    /*
-     * Additional HashSet operations
-     * -----------------------------
-     * In addition to the methods listed in this interface, the HashSet
-     * class supports the following operations:
-     *
-     *   - Stream I/O using the << and >> operators
-     *   - Deep copying for the copy constructor and assignment operator
-     *   - Iteration using the range-based for statement and STL iterators
-     *
-     * The iteration forms process the HashSet in an unspecified order.
-     */
-
-    /* Private section */
-
-    /**********************************************************************/
-    /* Note: Everything below this point in the file is logically part    */
-    /* of the implementation and should not be of interest to clients.    */
-    /**********************************************************************/
-
-private:
-    HashMap<ValueType, bool> map;        /* Map used to store the element     */
-    bool removeFlag;                     /* Flag to differentiate += and -=   */
-
-public:
-    /*
-     * Hidden features
-     * ---------------
-     * The remainder of this file consists of the code required to
-     * support the comma operator, deep copying, and iteration.
-     * Including these methods in the public interface would make
-     * that interface more difficult to understand for the average client.
-     */
-    HashSet& operator ,(const ValueType& value) {
-        if (this->removeFlag) {
-            this->remove(value);
-        } else {
-            this->add(value);
-        }
-        return *this;
+                /*
+                 * Hello student! If you are reading this message, it means that you tried to
+                 * initialize a HashSet improperly. For example, you might have tried to
+                 * write something like this:
+                 *
+                 *     HashSet<int> mySet = 137; // Oops!
+                 *
+                 * Here, for example, you're trying to assign an int to a LinkedHashSet<int>.
+                 *
+                 * or perhaps you had a function like this one:
+                 *
+                 *     void myFunction(LinkedHashSet<int>& mySet);
+                 *
+                 * and you called it by writing
+                 *
+                 *     myFunction(someSet + someOtherSet); // Oops!
+                 *     myFunction({ });                    // Oops!
+                 *
+                 * In these cases, you're trying to pass a value into a function that takes
+                 * its argument by (non-const) reference. C++ doesn't allow you to do this.
+                 *
+                 * To see where the actual error comes from, look in the list of error messages
+                 * in Qt Creator. You should see a line that says "required from here" that
+                 * points somewhere in your code. That's the actual line you wrote that caused
+                 * the problem, so double-click on that error message and see where it takes
+                 * you. Now you know where to look!
+                 *
+                 * Hope this helps!
+                 */
+                error("static_assert succeeded?");
+            }
+        };
     }
-
-    /*
-     * Iterator support
-     * ----------------
-     * The classes in the StanfordCPPLib collection implement input
-     * iterators so that they work symmetrically with respect to the
-     * corresponding STL classes.
-     */
-    class iterator : public std::iterator<std::input_iterator_tag,ValueType> {
-    private:
-        typename HashMap<ValueType,bool>::iterator mapit;
-
-    public:
-        iterator() {
-            /* Empty */
-        }
-
-        iterator(typename HashMap<ValueType, bool>::iterator it) : mapit(it) {
-            /* Empty */
-        }
-
-        iterator(const iterator& it) {
-            mapit = it.mapit;
-        }
-
-        iterator& operator ++() {
-            ++mapit;
-            return *this;
-        }
-
-        iterator operator ++(int) {
-            iterator copy(*this);
-            operator++();
-            return copy;
-        }
-
-        bool operator ==(const iterator& rhs) {
-            return mapit == rhs.mapit;
-        }
-
-        bool operator !=(const iterator& rhs) {
-            return !(*this == rhs);
-        }
-
-        ValueType& operator *() {
-            return *mapit;
-        }
-
-        ValueType* operator ->() {
-            return mapit;
-        }
-    };
-
-    iterator begin() const {
-        return iterator(map.begin());
-    }
-
-    iterator end() const {
-        return iterator(map.end());
-    }
-};
-
-template <typename ValueType>
-HashSet<ValueType>::HashSet() : removeFlag(false) {
-    /* Empty */
-}
-
-template <typename ValueType>
-HashSet<ValueType>::HashSet(std::initializer_list<ValueType> list)
-        : removeFlag(false) {
-    addAll(list);
-}
-
-template <typename ValueType>
-HashSet<ValueType>::~HashSet() {
-    /* Empty */
-}
-
-template <typename ValueType>
-void HashSet<ValueType>::add(const ValueType& value) {
-    map.put(value, true);
-}
-
-template <typename ValueType>
-HashSet<ValueType>& HashSet<ValueType>::addAll(const HashSet& set2) {
-    for (const ValueType& value : set2) {
-        this->add(value);
-    }
-    return *this;
-}
-
-template <typename ValueType>
-HashSet<ValueType>& HashSet<ValueType>::addAll(std::initializer_list<ValueType> list) {
-    for (const ValueType& value : list) {
-        this->add(value);
-    }
-    return *this;
-}
-
-template <typename ValueType>
-ValueType HashSet<ValueType>::back() const {
-    if (isEmpty()) {
-        error("HashSet::back: set is empty");
-    }
-    return map.back();
-}
-
-template <typename ValueType>
-void HashSet<ValueType>::clear() {
-    map.clear();
-}
-
-template <typename ValueType>
-bool HashSet<ValueType>::contains(const ValueType& value) const {
-    return map.containsKey(value);
-}
-
-template <typename ValueType>
-bool HashSet<ValueType>::containsAll(const HashSet<ValueType>& set2) const {
-    for (const ValueType& value : set2) {
-        if (!contains(value)) {
-            return false;
-        }
-    }
-    return true;
-}
-
-template <typename ValueType>
-bool HashSet<ValueType>::containsAll(std::initializer_list<ValueType> list) const {
-    for (const ValueType& value : list) {
-        if (!contains(value)) {
-            return false;
-        }
-    }
-    return true;
-}
-
-template <typename ValueType>
-bool HashSet<ValueType>::equals(const HashSet<ValueType>& set2) const {
-    // optimization: if literally same set, stop
-    if (this == &set2) {
-        return true;
-    }
-    
-    if (size() != set2.size()) {
-        return false;
-    }
-    
-    // BUGFIX: don't need to check set2.isSubsetOf(*this) because they are
-    // the same size - credit to Stanford student G. Boullanger 2016/12/05
-    return isSubsetOf(set2);
-}
-
-template <typename ValueType>
-ValueType HashSet<ValueType>::first() const {
-    if (isEmpty()) {
-        error("HashSet::first: set is empty");
-    }
-    return map.front();
-}
-
-template <typename ValueType>
-ValueType HashSet<ValueType>::front() const {
-    if (isEmpty()) {
-        error("HashSet::front: set is empty");
-    }
-    return map.front();
-}
-
-template <typename ValueType>
-void HashSet<ValueType>::insert(const ValueType& value) {
-    map.put(value, true);
-}
-
-template <typename ValueType>
-bool HashSet<ValueType>::isEmpty() const {
-    return map.isEmpty();
-}
-
-template <typename ValueType>
-bool HashSet<ValueType>::isSubsetOf(const HashSet& set2) const {
-    iterator it = begin();
-    iterator end = this->end();
-    while (it != end) {
-        if (!set2.map.containsKey(*it)) {
-            return false;
-        }
-        ++it;
-    }
-    return true;
-}
-
-template <typename ValueType>
-bool HashSet<ValueType>::isSubsetOf(std::initializer_list<ValueType> list) const {
-    HashSet<ValueType> set2(list);
-    return isSubsetOf(set2);
-}
-
-template <typename ValueType>
-bool HashSet<ValueType>::isSupersetOf(const HashSet& set2) const {
-    return containsAll(set2);
-}
-
-template <typename ValueType>
-bool HashSet<ValueType>::isSupersetOf(std::initializer_list<ValueType> list) const {
-    return containsAll(list);
-}
-
-template <typename ValueType>
-void HashSet<ValueType>::mapAll(void (*fn)(ValueType)) const {
-    map.mapAll(fn);
-}
-
-template <typename ValueType>
-void HashSet<ValueType>::mapAll(void (*fn)(const ValueType&)) const {
-    map.mapAll(fn);
-}
-
-template <typename ValueType>
-template <typename FunctorType>
-void HashSet<ValueType>::mapAll(FunctorType fn) const {
-    map.mapAll(fn);
-}
-
-template <typename ValueType>
-void HashSet<ValueType>::remove(const ValueType& value) {
-    map.remove(value);
-}
-
-template <typename ValueType>
-HashSet<ValueType>& HashSet<ValueType>::removeAll(const HashSet& set2) {
-    Vector<ValueType> toRemove;
-    for (const ValueType& value : *this) {
-        if (set2.map.containsKey(value)) {
-            toRemove.add(value);
-        }
-    }
-    for (const ValueType& value : toRemove) {
-        remove(value);
-    }
-    return *this;
-}
-
-template <typename ValueType>
-HashSet<ValueType>& HashSet<ValueType>::removeAll(std::initializer_list<ValueType> list) {
-    for (const ValueType& value : list) {
-        remove(value);
-    }
-    return *this;
-}
-
-template <typename ValueType>
-HashSet<ValueType>& HashSet<ValueType>::retainAll(const HashSet& set2) {
-    Vector<ValueType> toRemove;
-    for (const ValueType& value : *this) {
-        if (!set2.map.containsKey(value)) {
-            toRemove.add(value);
-        }
-    }
-    for (const ValueType& value : toRemove) {
-        remove(value);
-    }
-    return *this;
-}
-
-template <typename ValueType>
-HashSet<ValueType>& HashSet<ValueType>::retainAll(std::initializer_list<ValueType> list) {
-    HashSet<ValueType> set2(list);
-    return retainAll(set2);
-}
-
-template <typename ValueType>
-int HashSet<ValueType>::size() const {
-    return map.size();
-}
-
-template <typename ValueType>
-std::string HashSet<ValueType>::toString() const {
-    std::ostringstream os;
-    os << *this;
-    return os.str();
 }
 
 /*
- * Implementation notes: set operators
- * -----------------------------------
- * The implementations for the set operators use iteration to walk
- * over the elements in one or both sets.
+ * A set of elements stored in no particular order. Elements can only be stored here
+ * if they support a function
+ *
+ *     int hashCode(ValueType);
+ *
+ * that returns a nonnegative integer, along with equality comparison using ==.
  */
 template <typename ValueType>
-bool HashSet<ValueType>::operator ==(const HashSet& set2) const {
-    return equals(set2);
-}
-
-template <typename ValueType>
-bool HashSet<ValueType>::operator !=(const HashSet& set2) const {
-    return !equals(set2);
-}
-
-template <typename ValueType>
-HashSet<ValueType> HashSet<ValueType>::operator +(const HashSet& set2) const {
-    HashSet<ValueType> set = *this;
-    set.addAll(set2);
-    return set;
-}
-
-template <typename ValueType>
-HashSet<ValueType> HashSet<ValueType>::operator +(std::initializer_list<ValueType> list) const {
-    HashSet<ValueType> set = *this;
-    set.addAll(list);
-    return set;
-}
-
-template <typename ValueType>
-HashSet<ValueType> HashSet<ValueType>::operator +(const ValueType& element) const {
-    HashSet<ValueType> set = *this;
-    set.add(element);
-    return set;
-}
-
-template <typename ValueType>
-HashSet<ValueType> HashSet<ValueType>::operator *(const HashSet& set2) const {
-    HashSet<ValueType> set = *this;
-    return set.retainAll(set2);
-}
-
-template <typename ValueType>
-HashSet<ValueType> HashSet<ValueType>::operator *(std::initializer_list<ValueType> list) const {
-    HashSet<ValueType> set = *this;
-    return set.retainAll(list);
-}
-
-template <typename ValueType>
-HashSet<ValueType> HashSet<ValueType>::operator -(const HashSet& set2) const {
-    HashSet<ValueType> set = *this;
-    return set.removeAll(set2);
-}
-
-template <typename ValueType>
-HashSet<ValueType> HashSet<ValueType>::operator -(std::initializer_list<ValueType> list) const {
-    HashSet<ValueType> set = *this;
-    return set.removeAll(list);
-}
-
-template <typename ValueType>
-HashSet<ValueType> HashSet<ValueType>::operator -(const ValueType& element) const {
-    HashSet<ValueType> set = *this;
-    set.remove(element);
-    return set;
-}
-
-template <typename ValueType>
-HashSet<ValueType>& HashSet<ValueType>::operator +=(const HashSet& set2) {
-    return addAll(set2);
-}
-
-template <typename ValueType>
-HashSet<ValueType>& HashSet<ValueType>::operator +=(std::initializer_list<ValueType> list) {
-    return addAll(list);
-}
-
-template <typename ValueType>
-HashSet<ValueType>& HashSet<ValueType>::operator +=(const ValueType& value) {
-    add(value);
-    removeFlag = false;
-    return *this;
-}
-
-template <typename ValueType>
-HashSet<ValueType>& HashSet<ValueType>::operator *=(const HashSet& set2) {
-    return retainAll(set2);
-}
-
-template <typename ValueType>
-HashSet<ValueType>& HashSet<ValueType>::operator *=(std::initializer_list<ValueType> list) {
-    return retainAll(list);
-}
-
-template <typename ValueType>
-HashSet<ValueType>& HashSet<ValueType>::operator -=(const HashSet& set2) {
-    return removeAll(set2);
-}
-
-template <typename ValueType>
-HashSet<ValueType>& HashSet<ValueType>::operator -=(std::initializer_list<ValueType> list) {
-    return removeAll(list);
-}
-
-template <typename ValueType>
-HashSet<ValueType>& HashSet<ValueType>::operator -=(const ValueType& value) {
-    remove(value);
-    removeFlag = true;
-    return *this;
-}
-
-template <typename ValueType>
-std::ostream& operator <<(std::ostream& os, const HashSet<ValueType>& set) {
-    return stanfordcpplib::collections::writeCollection(os, set);
-}
-
-template <typename ValueType>
-std::istream& operator >>(std::istream& is, HashSet<ValueType>& set) {
-    ValueType element;
-    return stanfordcpplib::collections::readCollection(is, set, element, /* descriptor */ "HashSet::operator >>");
-}
-
-/*
- * Template hash function for hash sets.
- * Requires the element type in the HashSet to have a hashCode function.
- */
-template <typename T>
-int hashCode(const HashSet<T>& set) {
-    return stanfordcpplib::collections::hashCodeCollection(set, /* orderMatters */ false);
-}
-
-/*
- * Function: randomElement
- * Usage: element = randomElement(set);
- * ------------------------------------
- * Returns a randomly chosen element of the given set.
- * Throws an error if the set is empty.
- */
-template <typename T>
-const T& randomElement(const HashSet<T>& set) {
-    return stanfordcpplib::collections::randomElement(set);
-}
+    using HashSet = stanfordcpplib::collections::GenericSet<stanfordcpplib::collections::HashSetTraits<ValueType>>;
 
 #endif // _hashset_h
 
@@ -12213,8 +9838,6 @@ const T& randomElement(const HashSet<T>& set) {
 
 #define INTERNAL_INCLUDE 1
 
-#define INTERNAL_INCLUDE 1
-
 #undef INTERNAL_INCLUDE
 
 /**
@@ -12244,7 +9867,7 @@ public:
      * Creates an empty graph.
      * @bigoh O(1)
      */
-    Graph();
+    Graph() = default;
     
     /**
      * Frees the internal storage allocated to represent the graph.
@@ -12765,73 +10388,14 @@ public:
         // empty
     }
 
-    /**
-     * The classes in the StanfordCPPLib collection implement input
-     * iterators so that they work symmetrically with respect to the
-     * corresponding STL classes.
-     *
-     * @private
-     */
-    class graph_iterator : public std::iterator<std::input_iterator_tag, NodeType*> {
-    public:
-        graph_iterator() : m_graph(nullptr) {
-            // empty
-        }
-
-        graph_iterator(const Graph& graph, bool end) {
-            m_graph = &graph;
-            if (end) {
-                m_itr = m_graph->getNodeSet().end();
-            } else {
-                m_itr = m_graph->getNodeSet().begin();
-            }
-        }
-
-        graph_iterator(const graph_iterator& it)
-                : m_graph(it.m_graph), m_itr(it.m_itr) {
-            // empty
-        }
-
-        graph_iterator& operator ++() {
-            m_itr++;
-            return *this;
-        }
-
-        graph_iterator operator ++(int) {
-            graph_iterator copy(*this);
-            operator++();
-            return copy;
-        }
-
-        bool operator ==(const graph_iterator& rhs) {
-            return m_graph == rhs.m_graph && m_itr == rhs.m_itr;
-        }
-
-        bool operator !=(const graph_iterator& rhs) {
-            return !(*this == rhs);
-        }
-
-        NodeType* operator *() {
-            return *m_itr;
-        }
-
-        NodeType** operator ->() {
-            return &(*m_itr);
-        }
-
-        friend class Graph;
-        
-    private:
-        const Graph* m_graph;
-        typename Set<NodeType*>::iterator m_itr;
-    };
+    using graph_iterator = typename Set<NodeType *>::const_iterator;
     
     /**
      * Returns an STL iterator positioned at the first vertex in the graph.
      * @bigoh O(1)
      */
     graph_iterator begin() const {
-        return graph_iterator(*this, /* end */ false);
+        return _nodes.begin();
     }
 
     /**
@@ -12839,7 +10403,7 @@ public:
      * @bigoh O(1)
      */
     graph_iterator end() const {
-        return graph_iterator(*this, /* end */ true);
+        return _nodes.end();
     }
     
     /**
@@ -12890,7 +10454,7 @@ public:
      */
     bool operator >=(const Graph& graph2) const;
 
-    
+private:
     /* Private section */
 
     /**********************************************************************/
@@ -12923,11 +10487,9 @@ public:
         }
     };
 
-private:
-    Set<NodeType*> nodes;                  /* The set of nodes in the graph */
-    Set<ArcType*> arcs;                    /* The set of arcs in the graph  */
-    Map<std::string, NodeType*> nodeMap;   /* A map from names to nodes     */
-    GraphComparator comparator;            /* The comparator for this graph */
+    Set<NodeType*> _nodes{GraphComparator()}; /* The set of nodes in the graph */
+    Set<ArcType*> _arcs{GraphComparator()};   /* The set of arcs in the graph  */
+    Map<std::string, NodeType*> _nodeMap;     /* A map from names to nodes     */
 
 public:
     /**
@@ -13004,17 +10566,9 @@ private:
  * work is done by the initializers, which ensure that the nodes and
  * arcs set are given the correct comparison functions.
  */
-template <typename NodeType, typename ArcType>
-Graph<NodeType, ArcType>::Graph() {
-    comparator = GraphComparator();
-    nodes = Set<NodeType*>(comparator);
-    arcs = Set<ArcType*>(comparator);
-}
 
 template <typename NodeType, typename ArcType>
 Graph<NodeType, ArcType>::Graph(const Graph& src) {
-    nodes = Set<NodeType*>(comparator);
-    arcs = Set<ArcType*>(comparator);
     deepCopy(src);
 }
 
@@ -13068,7 +10622,7 @@ ArcType* Graph<NodeType, ArcType>::addArc(ArcType* arc) {
         addNode(arc->finish);
     }
     arc->start->arcs.add(arc);
-    arcs.add(arc);
+    _arcs.add(arc);
     return arc;
 }
 
@@ -13088,7 +10642,7 @@ NodeType* Graph<NodeType, ArcType>::addNode(const std::string& name) {
         return node;   // vertex already exists
     }
     node = new NodeType();
-    node->arcs = Set<ArcType*>(comparator);
+    node->arcs = Set<ArcType*>(GraphComparator());
     node->name = name;
     return addNode(node);
 }
@@ -13101,8 +10655,8 @@ NodeType* Graph<NodeType, ArcType>::addNode(NodeType* node) {
         *existingNode = *node;   // copy state from parameter
         return existingNode;
     } else {
-        nodes.add(node);
-        nodeMap[node->name] = node;
+        _nodes.add(node);
+        _nodeMap[node->name] = node;
         return node;
     }
 }
@@ -13117,7 +10671,7 @@ NodeType* Graph<NodeType, ArcType>::back() const {
     if (this->isEmpty()) {
         error("Graph::back: graph is empty");
     }
-    return this->nodes.back();
+    return this->_nodes.back();
 }
 
 /*
@@ -13129,15 +10683,15 @@ NodeType* Graph<NodeType, ArcType>::back() const {
  */
 template <typename NodeType, typename ArcType>
 void Graph<NodeType, ArcType>::clear() {
-    for (NodeType* node : nodes) {
+    for (NodeType* node : _nodes) {
         delete node;
     }
-    for (ArcType* arc : arcs) {
+    for (ArcType* arc : _arcs) {
         delete arc;
     }
-    arcs.clear();
-    nodes.clear();
-    nodeMap.clear();
+    _arcs.clear();
+    _nodes.clear();
+    _nodeMap.clear();
 }
 
 template <typename NodeType, typename ArcType>
@@ -13187,13 +10741,13 @@ bool Graph<NodeType, ArcType>::containsArc(ArcType* arc) const {
 
 template <typename NodeType, typename ArcType>
 bool Graph<NodeType, ArcType>::containsNode(const std::string& name) const {
-    return nodeMap.containsKey(name);
+    return _nodeMap.containsKey(name);
 }
 
 template <typename NodeType, typename ArcType>
 bool Graph<NodeType, ArcType>::containsNode(NodeType* node) const {
     if (node) {
-        return nodes.contains(node);
+        return _nodes.contains(node);
     } else {
         return false;
     }
@@ -13210,7 +10764,7 @@ NodeType* Graph<NodeType, ArcType>::front() const {
     if (this->isEmpty()) {
         error("Graph::front: graph is empty");
     }
-    return this->nodes.front();
+    return this->_nodes.front();
 }
 
 template <typename NodeType, typename ArcType>
@@ -13233,7 +10787,7 @@ ArcType* Graph<NodeType, ArcType>::getArc(const std::string& node1, const std::s
 
 template <typename NodeType, typename ArcType>
 const Set<ArcType*>& Graph<NodeType, ArcType>::getArcSet() const {
-    return arcs;
+    return _arcs;
 }
 
 template <typename NodeType, typename ArcType>
@@ -13253,7 +10807,7 @@ const Set<ArcType*>& Graph<NodeType, ArcType>::getArcSet(const std::string& name
 
 template <typename NodeType, typename ArcType>
 NodeType* Graph<NodeType, ArcType>::getExistingNode(const std::string& name, const std::string& member) const {
-    NodeType* node = nodeMap.get(name);
+    NodeType* node = _nodeMap.get(name);
     if (!node) {
         error("Graph::" + member + ": no node named " + name);
     }
@@ -13262,12 +10816,12 @@ NodeType* Graph<NodeType, ArcType>::getExistingNode(const std::string& name, con
 
 template <typename NodeType, typename ArcType>
 bool Graph<NodeType, ArcType>::isExistingArc(ArcType* arc) const {
-    return arc && arcs.contains(arc);
+    return arc && _arcs.contains(arc);
 }
 
 template <typename NodeType, typename ArcType>
 bool Graph<NodeType, ArcType>::isExistingNode(NodeType* node) const {
-    return node && nodeMap.containsKey(node->name) && nodeMap.get(node->name) == node;
+    return node && _nodeMap.containsKey(node->name) && _nodeMap.get(node->name) == node;
 }
 
 template <typename NodeType, typename ArcType>
@@ -13363,7 +10917,7 @@ Set<std::string> Graph<NodeType, ArcType>::getNeighborNames(const std::string& n
  */
 template <typename NodeType, typename ArcType>
 Set<NodeType*> Graph<NodeType, ArcType>::getNeighbors(NodeType* node) const {
-    Set<NodeType*> nodesResult = Set<NodeType*>(comparator);
+    Set<NodeType*> nodesResult{GraphComparator{}};
     if (isExistingNode(node)) {
         for (ArcType* arc : node->arcs) {
             nodesResult.add(arc->finish);
@@ -13387,13 +10941,13 @@ Set<NodeType*> Graph<NodeType, ArcType>::getNeighbors(const std::string& name) c
  */
 template <typename NodeType, typename ArcType>
 NodeType* Graph<NodeType, ArcType>::getNode(const std::string& name) const {
-    return nodeMap.get(name);
+    return _nodeMap.get(name);
 }
 
 template <typename NodeType, typename ArcType>
 Set<std::string> Graph<NodeType, ArcType>::getNodeNames() const {
     Set<std::string> nodeNames;
-    for (NodeType* node : nodes) {
+    for (NodeType* node : _nodes) {
         nodeNames.add(node->name);
     }
     return nodeNames;
@@ -13408,7 +10962,7 @@ Set<std::string> Graph<NodeType, ArcType>::getNodeNames() const {
  */
 template <typename NodeType, typename ArcType>
 const Set<NodeType*>& Graph<NodeType, ArcType>::getNodeSet() const {
-    return nodes;
+    return _nodes;
 }
 
 /*
@@ -13437,7 +10991,7 @@ template <typename NodeType, typename ArcType>
 bool Graph<NodeType, ArcType>::isConnected(const std::string& s1, const std::string& s2) const {
     // don't call getExistingNode here because it will throw an error
     // if s1 or s2 is not found; should just make the call return false
-    return isConnected(nodeMap.get(s1), nodeMap.get(s2));
+    return isConnected(_nodeMap.get(s1), _nodeMap.get(s2));
 }
 
 template <typename NodeType, typename ArcType>
@@ -13452,7 +11006,7 @@ bool Graph<NodeType, ArcType>::isNeighbor(NodeType* node1, NodeType* node2) cons
 
 template <typename NodeType, typename ArcType>
 bool Graph<NodeType, ArcType>::isEmpty() const {
-    return nodes.isEmpty();
+    return _nodes.isEmpty();
 }
 
 template <typename NodeType, typename ArcType>
@@ -13474,7 +11028,7 @@ template <typename NodeType, typename ArcType>
 void Graph<NodeType, ArcType>::removeArc(const std::string& s1, const std::string& s2) {
     // don't call getExistingNode here because it will throw an error
     // if s1 or s2 is not found; should just make the call have no effect
-    removeArc(nodeMap.get(s1), nodeMap.get(s2));
+    removeArc(_nodeMap.get(s1), _nodeMap.get(s2));
 }
 
 template <typename NodeType, typename ArcType>
@@ -13485,7 +11039,7 @@ void Graph<NodeType, ArcType>::removeArc(NodeType* n1, NodeType* n2) {
         return;
     }
     Vector<ArcType*> toRemove;
-    for (ArcType* arc : arcs) {
+    for (ArcType* arc : _arcs) {
         if (arc->start == n1 && arc->finish == n2) {
             toRemove.add(arc);
         }
@@ -13501,7 +11055,7 @@ void Graph<NodeType, ArcType>::removeArc(ArcType* arc) {
         return;
     }
     arc->start->arcs.remove(arc);
-    arcs.remove(arc);
+    _arcs.remove(arc);
     delete arc;
 }
 
@@ -13517,7 +11071,7 @@ template <typename NodeType, typename ArcType>
 void Graph<NodeType, ArcType>::removeNode(const std::string& name) {
     // don't call getExistingNode here because it will throw an error
     // if name is not found; should just make the call have no effect
-    removeNode(nodeMap.get(name));
+    removeNode(_nodeMap.get(name));
 }
 
 template <typename NodeType, typename ArcType>
@@ -13528,7 +11082,7 @@ void Graph<NodeType, ArcType>::removeNode(NodeType* node) {
         return;
     }
     Vector<ArcType*> toRemove;
-    for (ArcType* arc : arcs) {
+    for (ArcType* arc : _arcs) {
         if (arc->start == node || arc->finish == node) {
             toRemove.add(arc);
         }
@@ -13536,8 +11090,8 @@ void Graph<NodeType, ArcType>::removeNode(NodeType* node) {
     for (ArcType* arc : toRemove) {
         removeArc(arc);
     }
-    nodes.remove(node);
-    nodeMap.remove(node->name);
+    _nodes.remove(node);
+    _nodeMap.remove(node->name);
     delete node;
 }
 
@@ -13613,7 +11167,7 @@ NodeType* Graph<NodeType, ArcType>::scanNode(TokenScanner& scanner) {
  */
 template <typename NodeType, typename ArcType>
 int Graph<NodeType, ArcType>::size() const {
-    return nodes.size();
+    return _nodes.size();
 }
 
 template <typename NodeType, typename ArcType>
@@ -13647,13 +11201,13 @@ Graph<NodeType, ArcType>::operator =(const Graph& src) {
  */
 template <typename NodeType, typename ArcType>
 void Graph<NodeType, ArcType>::deepCopy(const Graph& src) {
-    for (NodeType* oldNode : src.nodes) {
+    for (NodeType* oldNode : src._nodes) {
         NodeType* newNode = new NodeType();
         *newNode = *oldNode;
         newNode->arcs.clear();
         addNode(newNode);
     }
-    for (ArcType* oldArc : src.arcs) {
+    for (ArcType* oldArc : src._arcs) {
         ArcType* newArc = new ArcType();
         *newArc = *oldArc;
         newArc->start = getExistingNode(oldArc->start->name, "deepCopy");
@@ -13749,9 +11303,9 @@ int Graph<NodeType, ArcType>::graphCompare(const Graph<NodeType, ArcType>& graph
 template <typename NodeType, typename ArcType>
 bool Graph<NodeType, ArcType>::operator ==(const Graph& graph2) const {
     // optimization: if sizes not same, graphs not equal
-    if (nodes.size() != graph2.nodes.size()
-            || arcs.size() != graph2.arcs.size()
-            || nodeMap.size() != graph2.nodeMap.size()) {
+    if (_nodes.size() != graph2._nodes.size()
+            || _arcs.size() != graph2._arcs.size()
+            || _nodeMap.size() != graph2._nodeMap.size()) {
         return false;
     }
     return graphCompare(graph2) == 0;
@@ -14204,6 +11758,8 @@ std::ostream& operator <<(std::ostream& out, const GridLocationRange& range);
  * This file exports the <code>Grid</code> class, which offers a
  * convenient abstraction for representing a two-dimensional array.
  *
+ * @version 2019/04/09
+ * - renamed private members with underscore naming scheme for consistency
  * @version 2018/03/12
  * - added overloads that accept GridLocation: get, inBounds, locations, set, operator []
  * @version 2018/03/10
@@ -14254,6 +11810,7 @@ std::ostream& operator <<(std::ostream& out, const GridLocationRange& range);
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <functional>
 
 #define INTERNAL_INCLUDE 1
 
@@ -14310,22 +11867,22 @@ public:
      * The three-argument constructor also accepts an initial value and
      * fills every cell of the grid with that value.
      */
-    Grid();
-    Grid(int nRows, int nCols);
-    Grid(int nRows, int nCols, const ValueType& value);
+    Grid() = default;
+    Grid(int _rowCount, int _columnCount);
+    Grid(int _rowCount, int _columnCount, const ValueType& value);
 
     /*
      * This constructor uses an initializer list to set up the grid.
      * Usage: Grid<int> grid {{1, 2, 3}, {4, 5, 6}};
      */
-    Grid(std::initializer_list<std::initializer_list<ValueType> > list);
+    Grid(std::initializer_list<std::initializer_list<ValueType>> list);
 
     /*
      * Destructor: ~Grid
      * -----------------
      * Frees any heap storage associated with this grid.
      */
-    virtual ~Grid();
+    virtual ~Grid() = default;
     
     /*
      * Method: back
@@ -14436,11 +11993,7 @@ public:
      * all the elements of row 0 are processed, followed by the elements
      * in row 1, and so on.
      */
-    void mapAll(void (*fn)(ValueType value)) const;
-    void mapAll(void (*fn)(const ValueType& value)) const;
-
-    template <typename FunctorType>
-    void mapAll(FunctorType fn) const;
+    void mapAll(std::function<void (const ValueType &)>) const;
 
     /*
      * Method: mapAllColumnMajor
@@ -14451,11 +12004,7 @@ public:
      * all the elements of column 0 are processed, followed by the elements
      * in column 1, and so on.
      */
-    void mapAllColumnMajor(void (*fn)(ValueType value)) const;
-    void mapAllColumnMajor(void (*fn)(const ValueType& value)) const;
-
-    template <typename FunctorType>
-    void mapAllColumnMajor(FunctorType fn) const;
+    void mapAllColumnMajor(std::function<void (const ValueType &)>) const;
 
     /*
      * Method: numCols
@@ -14485,7 +12034,7 @@ public:
      * If 'retain' is not passed or is false, any previous grid contents
      * are discarded.
      */
-    void resize(int nRows, int nCols, bool retain = false);
+    void resize(int _rowCount, int _columnCount, bool retain = false);
 
     /*
      * Method: set
@@ -14620,10 +12169,9 @@ public:
 
 private:
     /* Instance variables */
-    ValueType* elements;  /* A dynamic array of the elements   */
-    int nRows;            /* The number of rows in the grid    */
-    int nCols;            /* The number of columns in the grid */
-    unsigned int m_version = 0;  // structure version for detecting invalid iterators
+    Vector<ValueType> _elements;   // The elements, in row-major order
+    int _rowCount = 0;             // The number of rows in the grid
+    int _columnCount = 0;          // The number of columns in the grid
 
     /* Private method prototypes */
 
@@ -14649,120 +12197,23 @@ private:
      * difficult to understand for the average client.
      */
 
-    /*
-     * Deep copying support
-     * --------------------
-     * This copy constructor and operator= are defined to make a
-     * deep copy, making it possible to pass/return grids by value
-     * and assign from one grid to another.  The entire contents of
-     * the grid, including all elements, are copied.  Each grid
-     * element is copied from the original grid to the copy using
-     * assignment (operator=).  Making copies is generally avoided
-     * because of the expense and thus, grids are typically passed
-     * by reference, however, when a copy is needed, these operations
-     * are supported.
-     */
-    void deepCopy(const Grid& grid) {
-        int n = grid.nRows * grid.nCols;
-        elements = new ValueType[n];
-        for (int i = 0; i < n; i++) {
-            elements[i] = grid.elements[i];
-        }
-        nRows = grid.nRows;
-        nCols = grid.nCols;
-        m_version++;
-    }
-
 public:
-    Grid& operator =(const Grid& src) {
-        if (this != &src) {
-            delete[] elements;
-            deepCopy(src);
-        }
-        return *this;
+    using iterator       = typename Vector<ValueType>::iterator;
+    using const_iterator = typename Vector<ValueType>::const_iterator;
+
+    iterator begin() {
+        return _elements.begin();
+    }
+    iterator end() {
+        return _elements.end();
     }
 
-    Grid(const Grid& src) {
-        deepCopy(src);
+    const_iterator begin() const {
+        return _elements.begin();
     }
-
-    /*
-     * Iterator support
-     * ----------------
-     * The classes in the StanfordCPPLib collection implement input
-     * iterators so that they work symmetrically with respect to the
-     * corresponding STL classes.
-     */
-    class iterator : public std::iterator<std::input_iterator_tag, ValueType> {
-    public:
-        iterator(const Grid* theGp, int theIndex)
-                : gp(theGp),
-                  index(theIndex),
-                  itr_version(theGp->version()) {
-            // empty
-        }
-
-        iterator(const iterator& it)
-                : gp(it.gp),
-                  index(it.index),
-                  itr_version(it.itr_version) {
-            // empty
-        }
-
-        iterator& operator ++() {
-            stanfordcpplib::collections::checkVersion(*gp, *this);
-            index++;
-            return *this;
-        }
-
-        iterator operator ++(int) {
-            stanfordcpplib::collections::checkVersion(*gp, *this);
-            iterator copy(*this);
-            operator++();
-            return copy;
-        }
-
-        bool operator ==(const iterator& rhs) {
-            return gp == rhs.gp && index == rhs.index;
-        }
-
-        bool operator !=(const iterator& rhs) {
-            return !(*this == rhs);
-        }
-
-        ValueType& operator *() {
-            stanfordcpplib::collections::checkVersion(*gp, *this);
-            return gp->elements[index];
-        }
-
-        ValueType* operator ->() {
-            stanfordcpplib::collections::checkVersion(*gp, *this);
-            return &gp->elements[index];
-        }
-
-        unsigned int version() const {
-            return itr_version;
-        }
-
-    private:
-        const Grid* gp;
-        int index;
-        unsigned int itr_version;
-    };
-
-    iterator begin() const {
-        return iterator(this, 0);
+    const_iterator end() const {
+        return _elements.end();
     }
-
-    iterator end() const {
-        return iterator(this, nRows * nCols);
-    }
-
-    /*
-     * Returns the internal version of this collection.
-     * This is used to check for invalid iterators and issue error messages.
-     */
-    unsigned int version() const;
 
     /*
      * Private class: Grid<ValType>::GridRow
@@ -14772,107 +12223,92 @@ public:
      */
     class GridRow {
     public:
-        GridRow() : gp(nullptr), row(0) {
+        GridRow() : _gp(nullptr), _row(0) {
             /* Empty */
         }
 
         ValueType& operator [](int col) {
-            gp->checkIndexes(row, col, gp->nRows-1, gp->nCols-1, "operator [][]");
-            gp->m_version++;
-            return gp->elements[(row * gp->nCols) + col];
+            _gp->checkIndexes(_row, col, _gp->_rowCount-1, _gp->_columnCount-1, "operator [][]");
+            return _gp->_elements[(_row * _gp->_columnCount) + col];
         }
 
         ValueType operator [](int col) const {
-            gp->checkIndexes(row, col, gp->nRows-1, gp->nCols-1, "operator [][]");
-            return gp->elements[(row * gp->nCols) + col];
+            _gp->checkIndexes(_row, col, _gp->_rowCount-1, _gp->_columnCount-1, "operator [][]");
+            return _gp->_elements[(_row * _gp->_columnCount) + col];
         }
 
         int size() const {
-            return gp->width();
+            return _gp->width();
         }
 
     private:
         GridRow(Grid* gridRef, int index) {
-            gp = gridRef;
-            row = index;
+            _gp = gridRef;
+            _row = index;
         }
 
-        Grid* gp;
-        int row;
+        Grid* _gp;
+        int _row;
         friend class Grid;
     };
     friend class GridRow;
 
     class GridRowConst {
     public:
-        GridRowConst() : gp(nullptr), row(0) {
+        GridRowConst() : _gp(nullptr), _row(0) {
             /* Empty */
         }
 
         const ValueType operator [](int col) const {
-            gp->checkIndexes(row, col, gp->nRows-1, gp->nCols-1, "operator [][]");
-            return gp->elements[(row * gp->nCols) + col];
+            _gp->checkIndexes(_row, col, _gp->_rowCount-1, _gp->_columnCount-1, "operator [][]");
+            return _gp->_elements[(_row * _gp->_columnCount) + col];
         }
 
         int size() const {
-            return gp->width();
+            return _gp->width();
         }
 
     private:
-        GridRowConst(Grid* const gridRef, int index) : gp(gridRef), row(index) {}
+        GridRowConst(Grid* const gridRef, int index) : _gp(gridRef), _row(index) {}
 
-        const Grid* const gp;
-        const int row;
+        const Grid* const _gp;
+        const int _row;
         friend class Grid;
     };
     friend class GridRowConst;
+
+    template <typename T>
+    friend int hashCode(const Grid<T>& g);
 };
 
 template <typename ValueType>
-Grid<ValueType>::Grid()
-        : elements(nullptr),
-          nRows(0),
-          nCols(0) {
-    // empty
-}
-
-template <typename ValueType>
-Grid<ValueType>::Grid(int numRows, int numCols)
-        : elements(nullptr),
-          nRows(0),
-          nCols(0) {
+Grid<ValueType>::Grid(int numRows, int numCols) {
     resize(numRows, numCols);
 }
 
 template <typename ValueType>
-Grid<ValueType>::Grid(int numRows, int numCols, const ValueType& value)
-        : elements(nullptr),
-          nRows(0),
-          nCols(0) {
+Grid<ValueType>::Grid(int numRows, int numCols, const ValueType& value) {
     resize(numRows, numCols);
     fill(value);
 }
 
 template <typename ValueType>
-Grid<ValueType>::Grid(std::initializer_list<std::initializer_list<ValueType> > list)
-        : elements(nullptr),
-          nRows(0),
-          nCols(0) {
+Grid<ValueType>::Grid(std::initializer_list<std::initializer_list<ValueType>> list) {
     // create the grid at the proper size
-    nRows = list.size();
+    _rowCount = list.size();
     if (list.begin() != list.end()) {
-        nCols = list.begin()->size();
+        _columnCount = list.begin()->size();
     }
-    resize(nRows, nCols);
+    resize(_rowCount, _columnCount);
 
     // copy the data from the initializer list into the Grid
     auto rowItr = list.begin();
-    for (int row = 0; row < nRows; row++) {
-        if (static_cast<int>(rowItr->size()) != nCols) {
+    for (int row = 0; row < _rowCount; row++) {
+        if (static_cast<int>(rowItr->size()) != _columnCount) {
             error("Grid::constructor: initializer list is not rectangular (must have same # cols in each row)");
         }
         auto colItr = rowItr->begin();
-        for (int col = 0; col < nCols; col++) {
+        for (int col = 0; col < _columnCount; col++) {
             set(row, col, *colItr);
             colItr++;
         }
@@ -14881,26 +12317,18 @@ Grid<ValueType>::Grid(std::initializer_list<std::initializer_list<ValueType> > l
 }
 
 template <typename ValueType>
-Grid<ValueType>::~Grid() {
-    if (elements) {
-        delete[] elements;
-        elements = nullptr;
-    }
-}
-
-template <typename ValueType>
 ValueType Grid<ValueType>::back() const {
     if (isEmpty()) {
         error("Grid::back: grid is empty");
     }
-    return get(nRows - 1, nCols - 1);
+    return get(_rowCount - 1, _columnCount - 1);
 }
 
 template <typename ValueType>
 void Grid<ValueType>::clear() {
     ValueType defaultValue = ValueType();
-    for (int r = 0; r < nRows; r++) {
-        for (int c = 0; c < nCols; c++) {
+    for (int r = 0; r < _rowCount; r++) {
+        for (int c = 0; c < _columnCount; c++) {
             set(r, c, defaultValue);
         }
     }
@@ -14913,11 +12341,11 @@ bool Grid<ValueType>::equals(const Grid<ValueType>& grid2) const {
         return true;
     }
     
-    if (nRows != grid2.nRows || nCols != grid2.nCols) {
+    if (_rowCount != grid2._rowCount || _columnCount != grid2._columnCount) {
         return false;
     }
-    for (int row = 0; row < nRows; row++) {
-        for (int col = 0; col < nCols; col++) {
+    for (int row = 0; row < _rowCount; row++) {
+        for (int col = 0; col < _columnCount; col++) {
             if (get(row, col) != grid2.get(row, col)) {
                 return false;
             }
@@ -14928,11 +12356,14 @@ bool Grid<ValueType>::equals(const Grid<ValueType>& grid2) const {
 
 template <typename ValueType>
 void Grid<ValueType>::fill(const ValueType& value) {
-    for (int row = 0; row < nRows; row++) {
-        for (int col = 0; col < nCols; col++) {
+    for (int row = 0; row < _rowCount; row++) {
+        for (int col = 0; col < _columnCount; col++) {
             set(row, col, value);
         }
     }
+
+    /* This counts as a semantic update, so we must update the version. */
+    _elements.updateVersion();
 }
 
 template <typename ValueType>
@@ -14945,14 +12376,14 @@ ValueType Grid<ValueType>::front() const {
 
 template <typename ValueType>
 ValueType Grid<ValueType>::get(int row, int col) {
-    checkIndexes(row, col, nRows-1, nCols-1, "get");
-    return elements[(row * nCols) + col];
+    checkIndexes(row, col, _rowCount-1, _columnCount-1, "get");
+    return _elements[(row * _columnCount) + col];
 }
 
 template <typename ValueType>
 const ValueType& Grid<ValueType>::get(int row, int col) const {
-    checkIndexes(row, col, nRows-1, nCols-1, "get");
-    return elements[(row * nCols) + col];
+    checkIndexes(row, col, _rowCount-1, _columnCount-1, "get");
+    return _elements[(row * _columnCount) + col];
 }
 
 template <typename ValueType>
@@ -14967,12 +12398,12 @@ const ValueType& Grid<ValueType>::get(const GridLocation& loc) const {
 
 template <typename ValueType>
 int Grid<ValueType>::height() const {
-    return nRows;
+    return _rowCount;
 }
 
 template <typename ValueType>
 bool Grid<ValueType>::inBounds(int row, int col) const {
-    return row >= 0 && col >= 0 && row < nRows && col < nCols;
+    return row >= 0 && col >= 0 && row < _rowCount && col < _columnCount;
 }
 
 template <typename ValueType>
@@ -14982,7 +12413,7 @@ bool Grid<ValueType>::inBounds(const GridLocation& loc) const {
 
 template <typename ValueType>
 bool Grid<ValueType>::isEmpty() const {
-    return nRows == 0 || nCols == 0;
+    return _rowCount == 0 || _columnCount == 0;
 }
 
 template <typename ValueType>
@@ -14991,56 +12422,18 @@ GridLocationRange Grid<ValueType>::locations(bool rowMajor) const {
 }
 
 template <typename ValueType>
-void Grid<ValueType>::mapAll(void (*fn)(ValueType value)) const {
-    for (int i = 0; i < nRows; i++) {
-        for (int j = 0; j < nCols; j++) {
+void Grid<ValueType>::mapAll(std::function<void (const ValueType &)> fn) const {
+    for (int i = 0; i < _rowCount; i++) {
+        for (int j = 0; j < _columnCount; j++) {
             fn(get(i, j));
         }
     }
 }
 
 template <typename ValueType>
-void Grid<ValueType>::mapAll(void (*fn)(const ValueType& value)) const {
-    for (int i = 0; i < nRows; i++) {
-        for (int j = 0; j < nCols; j++) {
-            fn(get(i, j));
-        }
-    }
-}
-
-template <typename ValueType>
-template <typename FunctorType>
-void Grid<ValueType>::mapAll(FunctorType fn) const {
-    for (int i = 0; i < nRows; i++) {
-        for (int j = 0; j < nCols; j++) {
-            fn(get(i, j));
-        }
-    }
-}
-
-template <typename ValueType>
-void Grid<ValueType>::mapAllColumnMajor(void (*fn)(ValueType value)) const {
-    for (int j = 0; j < nCols; j++) {
-        for (int i = 0; i < nRows; i++) {
-            fn(get(i, j));
-        }
-    }
-}
-
-template <typename ValueType>
-void Grid<ValueType>::mapAllColumnMajor(void (*fn)(const ValueType& value)) const {
-    for (int j = 0; j < nCols; j++) {
-        for (int i = 0; i < nRows; i++) {
-            fn(get(i, j));
-        }
-    }
-}
-
-template <typename ValueType>
-template <typename FunctorType>
-void Grid<ValueType>::mapAllColumnMajor(FunctorType fn) const {
-    for (int j = 0; j < nCols; j++) {
-        for (int i = 0; i < nRows; i++) {
+void Grid<ValueType>::mapAllColumnMajor(std::function<void (const ValueType &)> fn) const {
+    for (int j = 0; j < _columnCount; j++) {
+        for (int i = 0; i < _rowCount; i++) {
             fn(get(i, j));
         }
     }
@@ -15048,12 +12441,12 @@ void Grid<ValueType>::mapAllColumnMajor(FunctorType fn) const {
 
 template <typename ValueType>
 int Grid<ValueType>::numCols() const {
-    return nCols;
+    return _columnCount;
 }
 
 template <typename ValueType>
 int Grid<ValueType>::numRows() const {
-    return nRows;
+    return _rowCount;
 }
 
 template <typename ValueType>
@@ -15066,25 +12459,23 @@ void Grid<ValueType>::resize(int numRows, int numCols, bool retain) {
     }
 
     // optimization: don't do the resize if we are already that size
-    if (numRows == this->nRows && numCols == this->nCols && retain) {
+    if (numRows == this->_rowCount && numCols == this->_columnCount && retain) {
+        /* We need to update the version because semantically we've changed the grid,
+         * but we haven't touched our vector.
+         */
+        _elements.updateVersion();
         return;
     }
     
     // save backup of old array/size
-    ValueType* oldElements = this->elements;
-    int oldnRows = this->nRows;
-    int oldnCols = this->nCols;
+    Vector<ValueType> oldElements = std::move(_elements);
+    int oldnRows = this->_rowCount;
+    int oldnCols = this->_columnCount;
     
     // create new empty array and set new size
-    this->nRows = numRows;
-    this->nCols = numCols;
-    this->elements = new ValueType[numRows * numCols];
-    
-    // initialize to empty/default state
-    ValueType value = ValueType();
-    for (int i = 0; i < numRows * numCols; i++) {
-        this->elements[i] = value;
-    }
+    this->_rowCount = numRows;
+    this->_columnCount = numCols;
+    this->_elements = Vector<ValueType>(numRows * numCols, ValueType());
     
     // possibly retain old contents
     if (retain) {
@@ -15092,23 +12483,16 @@ void Grid<ValueType>::resize(int numRows, int numCols, bool retain) {
         int minCols = oldnCols < numCols ? oldnCols : numCols;
         for (int row = 0; row < minRows; row++) {
             for (int col = 0; col < minCols; col++) {
-                this->elements[(row * numCols) + col] = oldElements[(row * oldnCols) + col];
+                this->_elements[(row * numCols) + col] = oldElements[(row * oldnCols) + col];
             }
         }
     }
-    
-    // free old array memory
-    if (oldElements) {
-        delete[] oldElements;
-    }
-    m_version++;
 }
 
 template <typename ValueType>
 void Grid<ValueType>::set(int row, int col, const ValueType& value) {
-    checkIndexes(row, col, nRows - 1, nCols - 1, "set");
-    elements[(row * nCols) + col] = value;
-    m_version++;
+    checkIndexes(row, col, _rowCount - 1, _columnCount - 1, "set");
+    _elements[(row * _columnCount) + col] = value;
 }
 
 template <typename ValueType>
@@ -15118,7 +12502,7 @@ void Grid<ValueType>::set(const GridLocation& loc, const ValueType& value) {
 
 template <typename ValueType>
 int Grid<ValueType>::size() const {
-    return nRows * nCols;
+    return _rowCount * _columnCount;
 }
 
 template <typename ValueType>
@@ -15126,11 +12510,6 @@ std::string Grid<ValueType>::toString() const {
     std::ostringstream os;
     os << *this;
     return os.str();
-}
-
-template <typename ValueType>
-unsigned int Grid<ValueType>::version() const {
-    return m_version;
 }
 
 template <typename ValueType>
@@ -15160,7 +12539,7 @@ std::string Grid<ValueType>::toString2D(
 
 template <typename ValueType>
 int Grid<ValueType>::width() const {
-    return nCols;
+    return _columnCount;
 }
 
 template <typename ValueType>
@@ -15170,8 +12549,8 @@ typename Grid<ValueType>::GridRow Grid<ValueType>::operator [](int row) {
 
 template <typename ValueType>
 ValueType& Grid<ValueType>::operator [](const GridLocation& loc) {
-    checkIndexes(loc.row, loc.col, nRows-1, nCols-1, "operator []");
-    return elements[(loc.row * nCols) + loc.col];
+    checkIndexes(loc.row, loc.col, _rowCount-1, _columnCount-1, "operator []");
+    return _elements[(loc.row * _columnCount) + loc.col];
 }
 
 template <typename ValueType>
@@ -15182,8 +12561,8 @@ Grid<ValueType>::operator [](int row) const {
 
 template <typename ValueType>
 const ValueType& Grid<ValueType>::operator [](const GridLocation& loc) const {
-    checkIndexes(loc.row, loc.col, nRows-1, nCols-1, "operator []");
-    return elements[(loc.row * nCols) + loc.col];
+    checkIndexes(loc.row, loc.col, _rowCount-1, _columnCount-1, "operator []");
+    return _elements[(loc.row * _columnCount) + loc.col];
 }
 
 template <typename ValueType>
@@ -15239,34 +12618,14 @@ void Grid<ValueType>::checkIndexes(int row, int col,
 
 template <typename ValueType>
 int Grid<ValueType>::gridCompare(const Grid& grid2) const {
-    int h1 = height();
-    int w1 = width();
-    int h2 = grid2.height();
-    int w2 = grid2.width();
-    int rows = h1 > h2 ? h1 : h2;
-    int cols = w1 > w2 ? w1 : w2;
-    for (int r = 0; r < rows; r++) {
-        for (int c = 0; c < cols; c++) {
-            if (r >= h1) {
-                return -1;
-            } else if (r >= h2) {
-                return 1;
-            }
-            
-            if (c >= w1) {
-                return -1;
-            } else if (c >= w2) {
-                return 1;
-            }
-            
-            if (get(r, c) < grid2.get(r, c)) {
-                return -1;
-            } else if (grid2.get(r, c) < get(r, c)) {
-                return 1;
-            }
-        }
-    }
-    return 0;
+    if (_rowCount != grid2._rowCount) return _rowCount - grid2._rowCount;
+    if (_columnCount != grid2._columnCount) return _columnCount - grid2._columnCount;
+    return stanfordcpplib::collections::compare(_elements, grid2._elements);
+}
+
+template <typename ValueType>
+int hashCode(const Grid<ValueType>& g) {
+    return hashCode(g._rowCount, g._columnCount, g._elements);
 }
 
 /*
@@ -15299,7 +12658,7 @@ std::ostream& operator <<(std::ostream& os, const Grid<ValueType>& grid) {
 
 template <typename ValueType>
 std::istream& operator >>(std::istream& is, Grid<ValueType>& grid) {
-    Vector<Vector<ValueType> > vec2d;
+    Vector<Vector<ValueType>> vec2d;
     if (!(is >> vec2d)) {
         is.setstate(std::ios_base::failbit);
         return is;
@@ -15315,15 +12674,6 @@ std::istream& operator >>(std::istream& is, Grid<ValueType>& grid) {
     }
 
     return is;
-}
-
-/*
- * Template hash function for grids.
- * Requires the element type in the Grid to have a hashCode function.
- */
-template <typename T>
-int hashCode(const Grid<T>& g) {
-    return stanfordcpplib::collections::hashCodeCollection(g);
 }
 
 /*
@@ -15378,6 +12728,8 @@ void shuffle(Grid<T>& grid) {
  * This file exports the <code>Lexicon</code> class, which is a
  * compact structure for storing a list of words.
  *
+ * @version 2019/04/09
+ * - renamed private members with underscore naming scheme for consistency
  * @author Marty Stepp
  * @version 2018/03/10
  * - added methods front, back
@@ -15843,21 +13195,21 @@ private:
     struct TrieNode {
     public:
         TrieNode() {
-            m_isWord = false;
+            _isWord = false;
             for (int i = 0; i < 26; i++) {
-                m_children[i] = nullptr;
+                _children[i] = nullptr;
             }
         }
 
         // pre: letter is between 'a' and 'z' in lowercase
         inline TrieNode*& child(char letter) {
-            return m_children[letter - 'a'];
+            return _children[letter - 'a'];
         }
 
         inline int childCount() const {
             int count = 0;
             for (int i = 0; i < 26; i++) {
-                if (m_children[i] != nullptr) {
+                if (_children[i] != nullptr) {
                     count++;
                 }
             }
@@ -15869,17 +13221,17 @@ private:
         }
 
         inline bool isWord() const {
-            return m_isWord;
+            return _isWord;
         }
 
         inline void setWord(bool value) {
-            m_isWord = value;
+            _isWord = value;
         }
 
     private:
         /* instance variables */
-        bool m_isWord;
-        TrieNode* m_children[26];   // 0=a, 1=b, 2=c, ..., 25=z
+        bool _isWord;
+        TrieNode* _children[26];   // 0=a, 1=b, 2=c, ..., 25=z
     };
 
     /*
@@ -15901,11 +13253,11 @@ private:
     friend std::istream& operator >>(std::istream& is, Lexicon& lex);
 
     /* instance variables */
-    TrieNode* m_root;
-    int m_size;
-    bool m_removeFlag;             // flag to differentiate += and -= when used with ,
-    Set<std::string> m_allWords;   // secondary structure of all words for foreach;
-                                   // basically a cop-out so I can loop over words
+    TrieNode* _root;
+    int _size;
+    bool _removeFlag;             // flag to differentiate += and -= when used with ,
+    Set<std::string> _allWords;   // secondary structure of all words for foreach;
+                                  // basically a cop-out so I can loop over words
 
 public:
     /*
@@ -15940,14 +13292,14 @@ public:
      * Returns an iterator positioned at the first word in the lexicon.
      */
     iterator begin() const {
-        return iterator(m_allWords.begin());
+        return iterator(_allWords.begin());
     }
 
     /**
      * Returns an iterator positioned at the last word in the lexicon.
      */
     iterator end() const {
-        return iterator(m_allWords.end());
+        return iterator(_allWords.end());
     }
 };
 
@@ -15985,6 +13337,10 @@ std::istream& operator >>(std::istream& is, Lexicon& lex);
  * implementation of a doubly-linked list of objects and provides a
  * public interface similar to that of the <code>Vector</code> class.
  *
+ * @version 2019/04/09
+ * - renamed private members with underscore naming scheme for consistency
+ * @version 2019/02/04
+ * - changed internal implementation to wrap std collections
  * @version 2018/01/07
  * - added removeFront, removeBack
  * @version 2017/11/15
@@ -16030,6 +13386,7 @@ std::istream& operator >>(std::istream& is, Lexicon& lex);
 #include <list>
 #include <sstream>
 #include <string>
+#include <functional>
 
 #define INTERNAL_INCLUDE 1
 
@@ -16063,7 +13420,7 @@ public:
      * Initializes a new LinkedList.  The default constructor creates an
      * empty LinkedList.
      */
-    LinkedList();
+    LinkedList() = default;
     /* implicit */ LinkedList(const std::list<ValueType>& v);
 
     /*
@@ -16077,7 +13434,7 @@ public:
      * -------------------
      * Frees any heap storage allocated by this LinkedList.
      */
-    virtual ~LinkedList();
+    virtual ~LinkedList() = default;
     
     /*
      * Method: add
@@ -16206,11 +13563,7 @@ public:
      * Calls the specified function on each element of the LinkedList in
      * ascending index order.
      */
-    void mapAll(void (*fn)(ValueType)) const;
-    void mapAll(void (*fn)(const ValueType &)) const;
-
-    template <typename FunctorType>
-    void mapAll(FunctorType fn) const;
+    void mapAll(std::function<void (const ValueType &)> fn) const;
     
     /*
      * Method: pop_back
@@ -16451,8 +13804,8 @@ private:
      */
 
     /* Instance variables */
-    std::list<ValueType> m_elements;   // STL linked list as backing storage
-    unsigned int m_version = 0;   // structure version for detecting invalid iterators
+    std::list<ValueType> _elements;   // STL linked list as backing storage
+    stanfordcpplib::collections::VersionTracker _version;
 
     /* Private methods */
 
@@ -16463,10 +13816,11 @@ private:
      * accept index parameters.
      * The prefix parameter represents a text string to place at the start of
      * the error message, generally to help indicate which member threw the error.
+     *
+     * We make prefix a const char* rather than a std::string to avoid having to
+     * construct and then destroy the prefix with each call.
      */
-    void checkIndex(int index, int min, int max, std::string prefix) const;
-
-    void deepCopy(const LinkedList& src);
+    void checkIndex(int index, int min, int max, const char* prefix) const;
 
     /*
      * Hidden features
@@ -16478,15 +13832,6 @@ private:
      */
 
 public:
-    /*
-     * Deep copying support
-     * --------------------
-     * This copy constructor and operator= are defined to make a deep copy,
-     * making it possible to pass or return LinkedLists by value and assign
-     * from one LinkedList to another.
-     */
-    LinkedList(const LinkedList& src);
-    LinkedList& operator =(const LinkedList& src);
 
     /*
      * Operator: ,
@@ -16497,158 +13842,42 @@ public:
     LinkedList& operator ,(const ValueType& value);
 
     /*
-     * Iterator support
-     * ----------------
-     * The classes in the StanfordCPPLib collection implement input
-     * iterators so that they work symmetrically with respect to the
-     * corresponding STL classes.
+     * Iterator support.
      */
-    class linkedlist_iterator : public std::list<ValueType>::iterator {
-    public:
-        linkedlist_iterator()
-                : std::list<ValueType>::iterator(),
-                  llp(nullptr),
-                  itr_version(0) {
-            // empty
-        }
+    using iterator = stanfordcpplib::collections::CheckedIterator<typename std::list<ValueType>::iterator>;
+    using const_iterator = stanfordcpplib::collections::CheckedIterator<typename std::list<ValueType>::const_iterator>;
 
-        linkedlist_iterator(const linkedlist_iterator& it)
-                : std::list<ValueType>::iterator(it),
-                  llp(it.llp),
-                  itr_version(it.itr_version) {
-            // empty
-        }
-
-        linkedlist_iterator(LinkedList* llp, const typename std::list<ValueType>::iterator& it)
-                : std::list<ValueType>::iterator(it),
-                  llp(llp),
-                  itr_version(llp->version()) {
-            // empty
-        }
-
-        ValueType& operator *() {
-            if (llp) {
-                stanfordcpplib::collections::checkVersion(*llp, *this);
-            }
-            return std::list<ValueType>::iterator::operator *();   // call super
-        }
-
-        ValueType* operator ->() {
-            if (llp) {
-                stanfordcpplib::collections::checkVersion(*llp, *this);
-            }
-            return std::list<ValueType>::iterator::operator ->();   // call super
-        }
-
-        unsigned int version() const {
-            return itr_version;
-        }
-
-    private:
-        LinkedList* llp;
-        unsigned int itr_version;
-    };
-
-    class const_linkedlist_iterator : public std::list<ValueType>::const_iterator {
-    public:
-        const_linkedlist_iterator()
-                : std::list<ValueType>::const_iterator(),
-                  llp(nullptr),
-                  itr_version(0) {
-            // empty
-        }
-
-        const_linkedlist_iterator(const const_linkedlist_iterator& it)
-                : std::list<ValueType>::const_iterator(it),
-                  llp(it.llp),
-                  itr_version(it.itr_version) {
-            // empty
-        }
-
-        const_linkedlist_iterator(const LinkedList* llp, const typename std::list<ValueType>::const_iterator& it)
-                : std::list<ValueType>::const_iterator(it),
-                  llp(llp),
-                  itr_version(llp->version()) {
-            // empty
-        }
-
-    private:
-        const LinkedList* llp;
-        unsigned int itr_version;
-    };
-
-    /*
-     * Returns an iterator positioned at the first element of the list.
-     */
-    linkedlist_iterator begin() {
-        return linkedlist_iterator(this, m_elements.begin());
+    iterator begin() {
+        return { &_version, _elements.begin(), _elements };
     }
-
-    /*
-     * Returns an iterator positioned at the first element of the list.
-     */
-    const_linkedlist_iterator begin() const {
-        auto itr = m_elements.begin();
-        return const_linkedlist_iterator(this, itr);
+    iterator end() {
+        return { &_version, _elements.end(), _elements };
     }
-    
-    /*
-     * Returns an iterator positioned at the last element of the list.
-     */
-    linkedlist_iterator end() {
-        auto itr = m_elements.end();
-        return linkedlist_iterator(this, itr);
+    const_iterator begin() const {
+        return { &_version, _elements.begin(), _elements };
     }
-    
-    /*
-     * Returns an iterator positioned at the last element of the list.
-     */
-    const_linkedlist_iterator end() const {
-        auto itr = m_elements.end();
-        return const_linkedlist_iterator(this, itr);
+    const_iterator end() const {
+        return { &_version, _elements.end(), _elements };
     }
-
-    /*
-     * Returns the internal version of this collection.
-     * This is used to check for invalid iterators and issue error messages.
-     */
-    unsigned int version() const;
 };
 
 /* Implementation section */
 
-/*
- * Implementation notes: LinkedList constructor and destructor
- * -------------------------------------------------------
- * The constructor allocates storage for the dynamic array
- * and initializes the other fields of the object.  The
- * destructor frees the memory used for the array.
- */
-template <typename ValueType>
-LinkedList<ValueType>::LinkedList() {
-    // empty
-}
-
 template <typename ValueType>
 LinkedList<ValueType>::LinkedList(const std::list<ValueType>& v)
-        : m_elements(v) {
+        : _elements(v) {
     // empty
 }
 
 template <typename ValueType>
-LinkedList<ValueType>::LinkedList(std::initializer_list<ValueType> list) {
-    addAll(list);
-}
-
-template <typename ValueType>
-LinkedList<ValueType>::~LinkedList() {
+LinkedList<ValueType>::LinkedList(std::initializer_list<ValueType> list) : _elements(list) {
     // empty
 }
 
 template <typename ValueType>
 void LinkedList<ValueType>::add(ValueType value) {
-    m_elements.push_back(value);
-    m_version++;
+    _elements.push_back(value);
+    _version.update();
 }
 
 template <typename ValueType>
@@ -16657,7 +13886,8 @@ LinkedList<ValueType>::addAll(const LinkedList<ValueType>& list) {
     for (const ValueType& value : list) {
         add(value);
     }
-    m_version++;
+    _version.update();
+    return *this;
 }
 
 template <typename ValueType>
@@ -16665,16 +13895,13 @@ LinkedList<ValueType>& LinkedList<ValueType>::addAll(std::initializer_list<Value
     for (const ValueType& value : list) {
         add(value);
     }
-    m_version++;
+    _version.update();
     return *this;
 }
 
 template <typename ValueType>
 ValueType& LinkedList<ValueType>::back() {
-    if (isEmpty()) {
-        error("LinkedList::back: list is empty");
-    }
-    return m_elements.back();
+    return const_cast<ValueType&>(static_cast<const LinkedList &>(*this).back());
 }
 
 template <typename ValueType>
@@ -16682,13 +13909,13 @@ const ValueType& LinkedList<ValueType>::back() const {
     if (isEmpty()) {
         error("LinkedList::back: list is empty");
     }
-    return m_elements.back();
+    return _elements.back();
 }
 
 template <typename ValueType>
 void LinkedList<ValueType>::clear() {
-    m_elements.clear();
-    m_version++;
+    _elements.clear();
+    _version.update();
 }
 
 template <typename ValueType>
@@ -16698,15 +13925,12 @@ bool LinkedList<ValueType>::contains(const ValueType& value) const {
 
 template <typename ValueType>
 bool LinkedList<ValueType>::equals(const LinkedList<ValueType>& list2) const {
-    return m_elements == list2.m_elements;
+    return _elements == list2._elements;
 }
 
 template <typename ValueType>
 ValueType& LinkedList<ValueType>::front() {
-    if (isEmpty()) {
-        error("LinkedList::front: list is empty");
-    }
-    return m_elements.front();
+    return const_cast<ValueType&>(static_cast<const LinkedList &>(*this).front());
 }
 
 template <typename ValueType>
@@ -16714,17 +13938,13 @@ const ValueType& LinkedList<ValueType>::front() const {
     if (isEmpty()) {
         error("LinkedList::front: list is empty");
     }
-    return m_elements.front();
+    return _elements.front();
 }
 
 template <typename ValueType>
 const ValueType & LinkedList<ValueType>::get(int index) const {
     checkIndex(index, 0, size()-1, "get");
-    auto itr = m_elements.begin();
-    for (int i = 0; i < index; i++) {
-        ++itr;
-    }
-    return *itr;
+    return *std::next(_elements.begin(), index);
 }
 
 template <typename ValueType>
@@ -16743,15 +13963,15 @@ int LinkedList<ValueType>::indexOf(const ValueType& value) const {
 template <typename ValueType>
 void LinkedList<ValueType>::insert(int index, ValueType value) {
     checkIndex(index, 0, size(), "insert");
-    auto itr = m_elements.begin();
+    auto itr = _elements.begin();
     std::advance(itr, index);
-    m_elements.insert(itr, value);
-    m_version++;
+    _elements.insert(itr, value);
+    _version.update();
 }
 
 template <typename ValueType>
 bool LinkedList<ValueType>::isEmpty() const {
-    return m_elements.empty();
+    return _elements.empty();
 }
 
 template <typename ValueType>
@@ -16777,22 +13997,7 @@ int LinkedList<ValueType>::lastIndexOf(const ValueType& value) const {
  * function object to each element in ascending index order.
  */
 template <typename ValueType>
-void LinkedList<ValueType>::mapAll(void (*fn)(ValueType)) const {
-    for (ValueType element : *this) {
-        fn(element);
-    }
-}
-
-template <typename ValueType>
-void LinkedList<ValueType>::mapAll(void (*fn)(const ValueType &)) const {
-    for (ValueType element : *this) {
-        fn(element);
-    }
-}
-
-template <typename ValueType>
-template <typename FunctorType>
-void LinkedList<ValueType>::mapAll(FunctorType fn) const {
+void LinkedList<ValueType>::mapAll(std::function<void (const ValueType &)> fn) const {
     for (ValueType element : *this) {
         fn(element);
     }
@@ -16803,9 +14008,9 @@ ValueType LinkedList<ValueType>::pop_back() {
     if (isEmpty()) {
         error("LinkedList::pop_back: list is empty");
     }
-    ValueType back = m_elements.back();
-    m_elements.pop_back();
-    m_version++;
+    ValueType back = _elements.back();
+    _elements.pop_back();
+    _version.update();
     return back;
 }
 
@@ -16814,31 +14019,31 @@ ValueType LinkedList<ValueType>::pop_front() {
     if (isEmpty()) {
         error("LinkedList::pop_front: list is empty");
     }
-    ValueType front = m_elements.front();
-    m_elements.pop_front();
-    m_version++;
+    ValueType front = _elements.front();
+    _elements.pop_front();
+    _version.update();
     return front;
 }
 
 template <typename ValueType>
 void LinkedList<ValueType>::push_back(const ValueType& value) {
-    m_elements.push_back(value);
-    m_version++;
+    _elements.push_back(value);
+    _version.update();
 }
 
 template <typename ValueType>
 void LinkedList<ValueType>::push_front(const ValueType& value) {
-    m_elements.push_front(value);
-    m_version++;
+    _elements.push_front(value);
+    _version.update();
 }
 
 template <typename ValueType>
 void LinkedList<ValueType>::remove(int index) {
     checkIndex(index, 0, size()-1, "remove");
-    auto itr = m_elements.begin();
+    auto itr = _elements.begin();
     advance(itr, index);
-    m_elements.erase(itr);
-    m_version++;
+    _elements.erase(itr);
+    _version.update();
 }
 
 template <typename ValueType>
@@ -16853,30 +14058,23 @@ ValueType LinkedList<ValueType>::removeFront() {
 
 template <typename ValueType>
 void LinkedList<ValueType>::removeValue(const ValueType& value) {
-    // loop using iterator to avoid O(N^2) runtime
-    auto itr = this->begin();
-    auto end = this->end();
-    while (itr != end) {
-        if (*itr == value) {
-            m_elements.erase(itr);
-            break;
-        }
-        itr++;
+    auto itr = std::find(_elements.begin(), _elements.end(), value);
+    if (itr != _elements.end()) {
+        _elements.erase(itr);
+        _version.update();
     }
-    m_version++;
 }
 
 template <typename ValueType>
 void LinkedList<ValueType>::reverse() {
-    m_elements.reverse();
-    m_version++;
+    _elements.reverse();
+    _version.update();
 }
 
 template <typename ValueType>
 void LinkedList<ValueType>::set(int index, const ValueType & value) {
     checkIndex(index, 0, size()-1, "set");
-    m_elements[index] = value;
-    m_version++;
+    (*this)[index] = value;
 }
 
 template <typename ValueType>
@@ -16902,7 +14100,7 @@ void LinkedList<ValueType>::shuffle() {
 
 template <typename ValueType>
 int LinkedList<ValueType>::size() const {
-    return m_elements.size();
+    return _elements.size();
 }
 
 
@@ -16946,11 +14144,6 @@ std::string LinkedList<ValueType>::toString() const {
     std::ostringstream os;
     os << *this;
     return os.str();
-}
-
-template <typename ValueType>
-unsigned int LinkedList<ValueType>::version() const {
-    return m_version;
 }
 
 /*
@@ -17011,56 +14204,36 @@ LinkedList<ValueType>::operator +=(const ValueType& value) {
  */
 template <typename ValueType>
 bool LinkedList<ValueType>::operator ==(const LinkedList& list2) const {
-    return m_elements == list2.m_elements;
+    return _elements == list2._elements;
 }
 
 template <typename ValueType>
 bool LinkedList<ValueType>::operator !=(const LinkedList& list2) const {
-    return m_elements != list2.m_elements;
+    return _elements != list2._elements;
 }
 
 template <typename ValueType>
 bool LinkedList<ValueType>::operator <(const LinkedList& list2) const {
-    return m_elements < list2.m_elements;
+    return _elements < list2._elements;
 }
 
 template <typename ValueType>
 bool LinkedList<ValueType>::operator <=(const LinkedList& list2) const {
-    return m_elements <= list2.m_elements;
+    return _elements <= list2._elements;
 }
 
 template <typename ValueType>
 bool LinkedList<ValueType>::operator >(const LinkedList& list2) const {
-    return m_elements > list2.m_elements;
+    return _elements > list2._elements;
 }
 
 template <typename ValueType>
 bool LinkedList<ValueType>::operator >=(const LinkedList& list2) const {
-    return this->m_elements >= list2.m_elements;
-}
-
-/*
- * Implementation notes: copy constructor and assignment operator
- * --------------------------------------------------------------
- * The constructor and assignment operators follow a standard paradigm,
- * as described in the associated textbook.
- */
-template <typename ValueType>
-LinkedList<ValueType>::LinkedList(const LinkedList& src) {
-    deepCopy(src);
+    return this->_elements >= list2._elements;
 }
 
 template <typename ValueType>
-LinkedList<ValueType>&
-LinkedList<ValueType>::operator =(const LinkedList& src) {
-    if (this != &src) {
-        deepCopy(src);
-    }
-    return *this;
-}
-
-template <typename ValueType>
-void LinkedList<ValueType>::checkIndex(int index, int min, int max, std::string prefix) const {
+void LinkedList<ValueType>::checkIndex(int index, int min, int max, const char* prefix) const {
     if (index < min || index > max) {
         std::ostringstream out;
         out << "LinkedList::" << prefix << ": index of " << index
@@ -17073,12 +14246,6 @@ void LinkedList<ValueType>::checkIndex(int index, int min, int max, std::string 
         out << "]";
         error(out.str());
     }
-}
-
-template <typename ValueType>
-void LinkedList<ValueType>::deepCopy(const LinkedList& src) {
-    m_elements = src.m_elements;
-    m_version++;
 }
 
 /*
@@ -17156,6 +14323,8 @@ void shuffle(LinkedList<T>& list) {
  * This file exports the <code>PriorityQueue</code> class, a
  * collection in which values are processed in priority order.
  * 
+ * @version 2019/04/09
+ * - renamed private members with underscore naming scheme for consistency
  * @version 2016/11/07
  * - small const-correctness bug fix in front() / back() (courtesy Truman Cranor)
  * @version 2016/10/14
@@ -17206,6 +14375,8 @@ void shuffle(LinkedList<T>& list) {
 #include <cmath>
 #include <initializer_list>
 #include <utility>
+#include <queue>
+#include <algorithm>
 
 #define INTERNAL_INCLUDE 1
 
@@ -17238,7 +14409,7 @@ public:
      * -----------------------------------
      * Initializes a new priority queue, which is initially empty.
      */
-    PriorityQueue();
+    PriorityQueue() = default;
 
     /*
      * Constructor: PriorityQueue
@@ -17248,14 +14419,14 @@ public:
      * Note that the pairs are stored in priority order and not
      * necessarily the order in which they are written in the initializer list.
      */
-    PriorityQueue(std::initializer_list<std::pair<double, ValueType> > list);
+    PriorityQueue(std::initializer_list<std::pair<double, ValueType>> list);
 
     /*
      * Destructor: ~PriorityQueue
      * --------------------------
      * Frees any heap storage associated with this priority queue.
      */
-    virtual ~PriorityQueue();
+    virtual ~PriorityQueue() = default;
     
     /*
      * Method: add
@@ -17435,128 +14606,20 @@ private:
         ValueType value;
         double priority;
         long sequence;
+
+        bool operator < (const HeapEntry& rhs) const;
     };
 
     /* Instance variables */
-    Vector<HeapEntry> heap;
-    long enqueueCount;
-    int backIndex;
-    int count;
-    int capacity;
+    Vector<HeapEntry> _heap;
+    long _enqueueCount = 0;
 
-    /* Private function prototypes */
-    const HeapEntry& heapGet(int index) const;
 #ifdef PQUEUE_COMPARISON_OPERATORS_ENABLED
     int pqCompare(const PriorityQueue& other) const;
 #endif // PQUEUE_COMPARISON_OPERATORS_ENABLED
-    bool takesPriority(int i1, int i2);
-    void swapHeapEntries(int i1, int i2);
 
-    /*
-     * Iterator support
-     * ----------------
-     * The classes in the StanfordCPPLib collection implement input
-     * iterators so that they work symmetrically with respect to the
-     * corresponding STL classes.
-     */
-    class pq_iterator : public std::iterator<std::input_iterator_tag, ValueType> {
-    public:
-        pq_iterator() {
-            // empty
-        }
-
-        pq_iterator(const PriorityQueue& pq, bool end) {
-            m_pq = &pq;
-            m_index = end ? m_pq->count : 0;
-        }
-
-        pq_iterator(const pq_iterator& it)
-                : m_pq(it.m_pq), m_index(it.m_index) {
-            // empty
-        }
-
-        pq_iterator& operator ++() {
-            // find 'next' element: one that is minimally higher pri/seq from last one
-            // (this is O(N) and inefficient, but we want to avoid making a deep copy)
-            if (m_index == m_pq->count) {
-                error("PriorityQueue::iterator::operator ++: Cannot call on an end() iterator");
-            }
-            double pri = m_pq->heapGet(m_index).priority;
-            int seq = m_pq->heapGet(m_index).sequence;
-            
-            // best new element/index we have seen so far (initially none)
-            int newIndex = m_pq->count;
-            double newPri;
-            int newSeq;
-            
-            for (int i = 0; i < m_pq->count; i++) {
-                if (i == m_index) {
-                    continue;
-                }
-                double ipri = m_pq->heapGet(i).priority;
-                int iseq = m_pq->heapGet(i).sequence;
-                if (ipri < pri || (floatingPointEqual(ipri, pri) && iseq < seq)) {
-                    continue;
-                } else if (newIndex == m_pq->count
-                           || ipri < newPri
-                           || (floatingPointEqual(ipri, newPri) && iseq < newSeq)) {
-                    newPri = ipri;
-                    newSeq = iseq;
-                    newIndex = i;
-                }
-            }
-            
-            // if no next element is found, newIndex will be count (end)
-            m_index = newIndex;
-            return *this;
-        }
-
-        pq_iterator operator ++(int) {
-            pq_iterator copy(*this);
-            operator++();
-            return copy;
-        }
-
-        bool operator ==(const pq_iterator& rhs) {
-            return m_pq == rhs.m_pq && m_index == rhs.m_index;
-        }
-
-        bool operator !=(const pq_iterator& rhs) {
-            return !(*this == rhs);
-        }
-
-        ValueType operator *() {
-            if (m_index == m_pq->count) {
-                error("PriorityQueue::iterator::operator *: Cannot call on an end() iterator");
-            }
-            return m_pq->heapGet(m_index).value;
-        }
-
-        ValueType* operator ->() {
-            if (m_index == m_pq->count) {
-                error("PriorityQueue::iterator::operator ->: Cannot call on an end() iterator");
-            }
-            return &m_pq->heapGet(m_index).value;
-        }
-
-        friend class PriorityQueue;
-        // friend struct HeapEntry;
-        
-    private:
-        const PriorityQueue* m_pq;
-        int m_index;
-    };
-    
 public:
     /* private implentation section */
-
-    pq_iterator begin() const {
-        return pq_iterator(*this, /* end */ false);
-    }
-
-    pq_iterator end() const {
-        return pq_iterator(*this, /* end */ true);
-    }
 
     template <typename Collection>
     friend int stanfordcpplib::collections::compare(const Collection& pq1, const Collection& pq2);
@@ -17568,28 +14631,11 @@ public:
 };
 
 template <typename ValueType>
-PriorityQueue<ValueType>::PriorityQueue() {
-    clear();
-}
-
-template <typename ValueType>
 PriorityQueue<ValueType>::PriorityQueue(
-        std::initializer_list<std::pair<double, ValueType> > list) {
-    clear();
+        std::initializer_list<std::pair<double, ValueType>> list) {
     for (std::pair<double, ValueType> pair : list) {
         enqueue(pair.second, pair.first);
     }
-}
-
-/*
- * Implementation notes: ~PriorityQueue destructor
- * -----------------------------------------------
- * All of the dynamic memory is allocated in the Vector class,
- * so no work is required at this level.
- */
-template <typename ValueType>
-PriorityQueue<ValueType>::~PriorityQueue() {
-    /* Empty */
 }
 
 template <typename ValueType>
@@ -17599,10 +14645,10 @@ void PriorityQueue<ValueType>::add(const ValueType& value, double priority) {
 
 template <typename ValueType>
 ValueType & PriorityQueue<ValueType>::back() {
-    if (count == 0) {
+    if (isEmpty()) {
         error("PriorityQueue::back: Attempting to read back of an empty queue");
     }
-    return heap[backIndex].value;
+    return _heap.back().value;
 }
 
 /*
@@ -17619,38 +14665,25 @@ void PriorityQueue<ValueType>::changePriority(ValueType value, double newPriorit
         newPriority = 0.0;
     }
 
-    // find the element in the pqueue; must use a simple iteration over elements
-    for (int i = 0; i < count; i++) {
-        if (heap[i].value == value) {
-            if (heap[i].priority < newPriority) {
-                error("PriorityQueue::changePriority: new priority cannot be less urgent than current priority.");
-            }
-            heap[i].priority = newPriority;
-
-            // after changing the priority, must percolate up to proper level
-            // to maintain heap ordering
-            while (i > 0) {
-                int parent = (i - 1) / 2;
-                if (takesPriority(parent, i)) {
-                    break;
-                }
-                swapHeapEntries(parent, i);
-                i = parent;
-            }
-
-            return;
-        }
+    /* Find the element to change. */
+    auto itr = std::find_if(_heap.begin(), _heap.end(), [&](const HeapEntry& entry) {
+        return entry.value == value;
+    });
+    if (itr == _heap.end()) {
+        error("PriorityQueue::changePriority: Element not found in priority queue.");
     }
 
-    // if we get here, the element was not ever found
-    error("PriorityQueue::changePriority: Element value not found.");
+    if (itr->priority < newPriority) {
+        error("PriorityQueue::changePriority: new priority cannot be less urgent than current priority.");
+    }
+    itr->priority = newPriority;
+    std::push_heap(_heap.begin(), itr + 1);
 }
 
 template <typename ValueType>
 void PriorityQueue<ValueType>::clear() {
-    heap.clear();
-    count = 0;
-    enqueueCount = 0;   // BUGFIX 2014/10/10: was previously using garbage unassigned value
+    _heap.clear();
+    _enqueueCount = 0;   // BUGFIX 2014/10/10: was previously using garbage unassigned value
 }
 
 /*
@@ -17661,34 +14694,14 @@ void PriorityQueue<ValueType>::clear() {
  */
 template <typename ValueType>
 ValueType PriorityQueue<ValueType>::dequeue() {
-    if (count == 0) {
+    if (isEmpty()) {
         error("PriorityQueue::dequeue: Attempting to dequeue an empty queue");
     }
-    count--;
-    bool wasBack = (backIndex == count);
-    ValueType value = heap[0].value;
-    swapHeapEntries(0, count);
-    int index = 0;
-    while (true) {
-        int left = 2 * index + 1;
-        int right = 2 * index + 2;
-        if (left >= count) {
-            break;
-        }
-        int child = left;
-        if (right < count && takesPriority(right, left)) {
-            child = right;
-        }
-        if (takesPriority(index, child)) {
-            break;
-        }
-        swapHeapEntries(index, child);
-        index = child;
-    }
-    if (wasBack) {
-        backIndex = index;
-    }
-    return value;
+
+    ValueType result = _heap[0].value;
+    std::pop_heap(_heap.begin(), _heap.end());
+    _heap.pop_back();
+    return result;
 }
 
 template <typename ValueType>
@@ -17700,24 +14713,8 @@ void PriorityQueue<ValueType>::enqueue(const ValueType& value, double priority) 
         priority = 0.0;
     }
 
-    if (count == heap.size()) {
-        heap.add(HeapEntry());
-    }
-    int index = count++;
-    heap[index].value = value;
-    heap[index].priority = priority;
-    heap[index].sequence = enqueueCount++;
-    if (index == 0 || takesPriority(backIndex, index)) {
-        backIndex = index;
-    }
-    while (index > 0) {
-        int parent = (index - 1) / 2;
-        if (takesPriority(parent, index)) {
-            break;
-        }
-        swapHeapEntries(parent, index);
-        index = parent;
-    }
+    _heap.add({ value, priority, _enqueueCount++ });
+    std::push_heap(_heap.begin(), _heap.end());
 }
 
 template <typename ValueType>
@@ -17743,32 +14740,32 @@ bool PriorityQueue<ValueType>::equals(const PriorityQueue<ValueType>& pq2) const
 }
 
 template <typename ValueType>
-ValueType & PriorityQueue<ValueType>::front() {
-    if (count == 0) {
+ValueType& PriorityQueue<ValueType>::front() {
+    if (isEmpty()) {
         error("PriorityQueue::front: Attempting to read front of an empty queue");
     }
-    return heap[0].value;
+    return _heap[0].value;
 }
 
 template <typename ValueType>
 bool PriorityQueue<ValueType>::isEmpty() const {
-    return count == 0;
+    return _heap.size() == 0;
 }
 
 template <typename ValueType>
 ValueType PriorityQueue<ValueType>::peek() const {
-    if (count == 0) {
+    if (isEmpty()) {
         error("PriorityQueue::peek: Attempting to peek at an empty queue");
     }
-    return heap.get(0).value;
+    return _heap.front().value;
 }
 
 template <typename ValueType>
 double PriorityQueue<ValueType>::peekPriority() const {
-    if (count == 0) {
+    if (isEmpty()) {
         error("PriorityQueue::peekPriority: Attempting to peek at an empty queue");
     }
-    return heap.get(0).priority;
+    return _heap.get(0).priority;
 }
 
 template <typename ValueType>
@@ -17778,7 +14775,7 @@ ValueType PriorityQueue<ValueType>::remove() {
 
 template <typename ValueType>
 int PriorityQueue<ValueType>::size() const {
-    return count;
+    return _heap.size();
 }
 
 template <typename ValueType>
@@ -17786,12 +14783,6 @@ std::string PriorityQueue<ValueType>::toString() const {
     std::ostringstream os;
     os << *this;
     return os.str();
-}
-
-template <typename ValueType>
-const typename PriorityQueue<ValueType>::HeapEntry&
-PriorityQueue<ValueType>::heapGet(int index) const {
-    return heap[index];
 }
 
 #ifdef PQUEUE_COMPARISON_OPERATORS_ENABLED
@@ -17804,7 +14795,7 @@ PriorityQueue<ValueType>::heapGet(int index) const {
 template <typename ValueType>
 int PriorityQueue<ValueType>::pqCompare(const PriorityQueue& pq2) const {
     if (this == &pq2) {
-        return true;
+        return 0;
     }
     PriorityQueue<ValueType> backup1 = *this;
     PriorityQueue<ValueType> backup2 = pq2;
@@ -17836,22 +14827,19 @@ int PriorityQueue<ValueType>::pqCompare(const PriorityQueue& pq2) const {
 }
 #endif // PQUEUE_COMPARISON_OPERATORS_ENABLED
 
+/*
+ * Comparison function for heap entries. The comparison is lexicographic, first by
+ * priority, then by sequence number.
+ *
+ * Because std::push_heap and std::pop_heap try creating a max-heap whereas we want
+ * a min-heap, the priority comparisons are reversed.
+ */
 template <typename ValueType>
-void PriorityQueue<ValueType>::swapHeapEntries(int i1, int i2) {
-    HeapEntry entry = heap[i1];
-    heap[i1] = heap[i2];
-    heap[i2] = entry;
-}
+bool PriorityQueue<ValueType>::HeapEntry::operator < (const HeapEntry& rhs) const {
+    if (priority > rhs.priority) return true;
+    if (rhs.priority > priority) return false;
 
-template <typename ValueType>
-bool PriorityQueue<ValueType>::takesPriority(int i1, int i2) {
-    if (heap[i1].priority < heap[i2].priority) {
-        return true;
-    }
-    if (heap[i1].priority > heap[i2].priority) {
-        return false;
-    }
-    return (heap[i1].sequence < heap[i2].sequence);
+    return sequence < rhs.sequence;
 }
 
 template <typename ValueType>
@@ -17906,12 +14894,12 @@ int hashCode(const PriorityQueue<T>& pq) {
 #ifdef PQUEUE_ALLOW_HEAP_ACCESS
 template <typename ValueType>
 const ValueType& PriorityQueue<ValueType>::__getValueFromHeap(int index) const {
-    return heap[index].value;
+    return _heap[index].value;
 }
 
 template <typename ValueType>
 double PriorityQueue<ValueType>::__getPriorityFromHeap(int index) const {
-    return heap[index].priority;
+    return _heap[index].priority;
 }
 #endif // PQUEUE_ALLOW_HEAP_ACCESS
 
@@ -17928,8 +14916,8 @@ std::ostream& operator <<(std::ostream& os,
         if (i > 0) {
             os << ", ";
         }
-        os << pq.heap[i].priority << ":";
-        writeGenericValue(os, pq.heap[i].value, /* forceQuotes */ true);
+        os << pq._heap[i].priority << ":";
+        writeGenericValue(os, pq._heap[i].value, /* forceQuotes */ true);
     }
 #else
     // (default) slow, memory-inefficient implementation: copy pq and print
@@ -18115,14 +15103,14 @@ public:
      * fills every cell of the grid with that value.
      */
     SparseGrid();
-    SparseGrid(int nRows, int nCols);
-    SparseGrid(int nRows, int nCols, const ValueType& value);
+    SparseGrid(int _rowCount, int _columnCount);
+    SparseGrid(int _rowCount, int _columnCount, const ValueType& value);
 
     /*
      * This constructor uses an initializer list to set up the grid.
      * Usage: SparseGrid<int> grid {{1, 2, 3}, {4, 5, 6}};
      */
-    SparseGrid(std::initializer_list<std::initializer_list<ValueType> > list);
+    SparseGrid(std::initializer_list<std::initializer_list<ValueType>> list);
 
     /*
      * Destructor: ~SparseGrid
@@ -18288,7 +15276,7 @@ public:
      * If 'retain' is not passed or is false, any previous grid contents
      * are discarded.
      */
-    void resize(int nRows, int nCols, bool retain = false);
+    void resize(int _rowCount, int _columnCount, bool retain = false);
 
     /*
      * Method: set
@@ -18441,10 +15429,10 @@ public:
 
 private:
     /* Instance variables */
-    Map<int, Map<int, ValueType> > elements;  // 2D map of the elements
-    int nRows;            // The number of rows in the grid
-    int nCols;            // The number of columns in the grid
-    unsigned int m_version = 0;  // structure version for detecting invalid iterators
+    Map<int, Map<int, ValueType>> _elements;   // 2D map of the elements
+    int _rowCount;                             // the number of rows in the grid
+    int _columnCount;                          // the number of columns in the grid
+    unsigned int _version = 0;                 // structure version for detecting invalid iterators
 
     /* Private method prototypes */
 
@@ -18484,9 +15472,9 @@ private:
      * are supported.
      */
     void deepCopy(const SparseGrid& grid) {
-        elements = grid.elements;
-        nRows = grid.nRows;
-        nCols = grid.nCols;
+        _elements = grid._elements;
+        _rowCount = grid._rowCount;
+        _columnCount = grid._columnCount;
     }
 
     template <typename T>
@@ -18556,16 +15544,16 @@ public:
 
         ValueType operator *() {
             stanfordcpplib::collections::checkVersion(*gp, *this);
-            int row = index / gp->nCols;
-            int col = index % gp->nCols;
-            return gp->elements[row][col];
+            int row = index / gp->_columnCount;
+            int col = index % gp->_columnCount;
+            return gp->_elements[row][col];
         }
 
         ValueType* operator ->() {
             stanfordcpplib::collections::checkVersion(*gp, *this);
-            int row = index / gp->nCols;
-            int col = index % gp->nCols;
-            return &gp->elements[row][col];
+            int row = index / gp->_columnCount;
+            int col = index % gp->_columnCount;
+            return &gp->_elements[row][col];
         }
 
         unsigned int version() const {
@@ -18583,7 +15571,7 @@ public:
     }
 
     iterator end() const {
-        return iterator(this, nRows * nCols);
+        return iterator(this, _rowCount * _columnCount);
     }
 
     /*
@@ -18605,45 +15593,41 @@ public:
         }
 
         ValueType& operator [](int col) {
-            gp->checkIndexes(row, col, gp->nRows-1, gp->nCols-1, "operator [][]");
-            return gp->elements[row][col];
+            _gp->checkIndexes(_row, col, _gp->_rowCount-1, _gp->_columnCount-1, "operator [][]");
+            return _gp->_elements[_row][col];
         }
 
         const ValueType& operator [](int col) const {
-            gp->checkIndexes(row, col, gp->nRows-1, gp->nCols-1, "operator [][]");
-            return gp->elements[row][col];
+            _gp->checkIndexes(_row, col, _gp->_rowCount-1, _gp->_columnCount-1, "operator [][]");
+            return _gp->_elements[_row][col];
         }
 
     private:
         SparseGridRow(SparseGrid* gridRef, int index) {
-            gp = gridRef;
-            row = index;
+            _gp = gridRef;
+            _row = index;
         }
 
-        SparseGrid* gp;
-        int row;
+        SparseGrid* _gp;
+        int _row;
         friend class SparseGrid;
     };
     friend class SparseGridRow;
 
     class SparseGridRowConst {
     public:
-        SparseGridRowConst() {
-            /* Empty */
-        }
-
         const ValueType operator [](int col) const {
-            gp->checkIndexes(row, col, gp->nRows-1, gp->nCols-1, "operator [][]");
-            return gp->elements[row][col];
+            _gp->checkIndexes(_row, col, _gp->_rowCount-1, _gp->_columnCount-1, "operator [][]");
+            return _gp->_elements[_row][col];
         }
 
     private:
-        SparseGridRowConst(SparseGrid* const gridRef, int index) : gp(gridRef), row(index) {
+        SparseGridRowConst(SparseGrid* const gridRef, int index) : _gp(gridRef), _row(index) {
             // empty
         }
 
-        const SparseGrid* const gp;
-        const int row;
+        const SparseGrid* const _gp;
+        const int _row;
         friend class SparseGrid;
     };
     friend class SparseGridRowConst;
@@ -18651,8 +15635,8 @@ public:
 
 template <typename ValueType>
 SparseGrid<ValueType>::SparseGrid()
-        : nRows(0),
-          nCols(0) {
+        : _rowCount(0),
+          _columnCount(0) {
     // empty
 }
 
@@ -18668,24 +15652,24 @@ SparseGrid<ValueType>::SparseGrid(int nRows, int nCols, const ValueType& value) 
 }
 
 template <typename ValueType>
-SparseGrid<ValueType>::SparseGrid(std::initializer_list<std::initializer_list<ValueType> > list)
-        : nRows(0),
-          nCols(0) {
+SparseGrid<ValueType>::SparseGrid(std::initializer_list<std::initializer_list<ValueType>> list)
+        : _rowCount(0),
+          _columnCount(0) {
     // create the grid at the proper size
-    nRows = list.size();
+    _rowCount = list.size();
     if (list.begin() != list.end()) {
-        nCols = list.begin()->size();
+        _columnCount = list.begin()->size();
     }
-    resize(nRows, nCols);
+    resize(_rowCount, _columnCount);
 
     // copy the data from the initializer list into the Grid
     auto rowItr = list.begin();
-    for (int row = 0; row < nRows; row++) {
-        if ((int) rowItr->size() != nCols) {
+    for (int row = 0; row < _rowCount; row++) {
+        if ((int) rowItr->size() != _columnCount) {
             error("SparseGrid::constructor: initializer list is not rectangular (must have same # cols in each row)");
         }
         auto colItr = rowItr->begin();
-        for (int col = 0; col < nCols; col++) {
+        for (int col = 0; col < _columnCount; col++) {
             set(row, col, *colItr);
             colItr++;
         }
@@ -18704,14 +15688,14 @@ ValueType SparseGrid<ValueType>::back() const {
     if (isEmpty()) {
         error("SparseGrid::back: grid is empty");
     }
-    int lastRow = elements.back();
-    int lastCol = elements[lastRow].back();
-    return elements[lastRow][lastCol];
+    int lastRow = _elements.back();
+    int lastCol = _elements[lastRow].back();
+    return _elements[lastRow][lastCol];
 }
 
 template <typename ValueType>
 void SparseGrid<ValueType>::clear() {
-    elements.clear();
+    _elements.clear();
 }
 
 template <typename ValueType>
@@ -18720,11 +15704,11 @@ bool SparseGrid<ValueType>::equals(const SparseGrid<ValueType>& grid2) const {
     if (this == &grid2) {
         return true;
     }
-    if (nRows != grid2.nRows || nCols != grid2.nCols) {
+    if (_rowCount != grid2._rowCount || _columnCount != grid2._columnCount) {
         return false;
     }
-    for (int row = 0; row < nRows; row++) {
-        for (int col = 0; col < nCols; col++) {
+    for (int row = 0; row < _rowCount; row++) {
+        for (int col = 0; col < _columnCount; col++) {
             if (isSet(row, col)) {
                 // I have data there; he must, too, and it must be the same data
                 if (!grid2.isSet(row, col) || get(row, col) != grid2.get(row, col)) {
@@ -18743,8 +15727,8 @@ bool SparseGrid<ValueType>::equals(const SparseGrid<ValueType>& grid2) const {
 
 template <typename ValueType>
 void SparseGrid<ValueType>::fill(const ValueType& value) {
-    for (int row = 0; row < nRows; row++) {
-        for (int col = 0; col < nCols; col++) {
+    for (int row = 0; row < _rowCount; row++) {
+        for (int col = 0; col < _columnCount; col++) {
             set(row, col, value);
         }
     }
@@ -18760,14 +15744,14 @@ ValueType SparseGrid<ValueType>::front() const {
 
 template <typename ValueType>
 ValueType SparseGrid<ValueType>::get(int row, int col) {
-    checkIndexes(row, col, nRows-1, nCols-1, "get");
-    return elements[row][col];
+    checkIndexes(row, col, _rowCount-1, _columnCount-1, "get");
+    return _elements[row][col];
 }
 
 template <typename ValueType>
 const ValueType& SparseGrid<ValueType>::get(int row, int col) const {
-    checkIndexes(row, col, nRows-1, nCols-1, "get");
-    return elements[row][col];
+    checkIndexes(row, col, _rowCount-1, _columnCount-1, "get");
+    return _elements[row][col];
 }
 
 template <typename ValueType>
@@ -18782,12 +15766,12 @@ const ValueType& SparseGrid<ValueType>::get(const GridLocation& loc) const {
 
 template <typename ValueType>
 int SparseGrid<ValueType>::height() const {
-    return nRows;
+    return _rowCount;
 }
 
 template <typename ValueType>
 bool SparseGrid<ValueType>::inBounds(int row, int col) const {
-    return row >= 0 && col >= 0 && row < nRows && col < nCols;
+    return row >= 0 && col >= 0 && row < _rowCount && col < _columnCount;
 }
 
 template <typename ValueType>
@@ -18797,13 +15781,13 @@ bool SparseGrid<ValueType>::inBounds(const GridLocation& loc) const {
 
 template <typename ValueType>
 bool SparseGrid<ValueType>::isEmpty() const {
-    return elements.isEmpty();
+    return _elements.isEmpty();
 }
 
 template <typename ValueType>
 bool SparseGrid<ValueType>::isSet(int row, int col) const {
-    return inBounds(row, col) && elements.containsKey(row) &&
-            elements[row].containsKey(col);
+    return inBounds(row, col) && _elements.containsKey(row) &&
+            _elements[row].containsKey(col);
 }
 
 template <typename ValueType>
@@ -18818,8 +15802,8 @@ GridLocationRange SparseGrid<ValueType>::locations(bool rowMajor) const {
 
 template <typename ValueType>
 void SparseGrid<ValueType>::mapAll(void (*fn)(ValueType value)) const {
-    for (int row = 0; row < nRows; row++) {
-        for (int col = 0; col < nCols; col++) {
+    for (int row = 0; row < _rowCount; row++) {
+        for (int col = 0; col < _columnCount; col++) {
             if (isSet(row, col)) {
                 fn(get(row, col));
             }
@@ -18829,8 +15813,8 @@ void SparseGrid<ValueType>::mapAll(void (*fn)(ValueType value)) const {
 
 template <typename ValueType>
 void SparseGrid<ValueType>::mapAll(void (*fn)(const ValueType& value)) const {
-    for (int row = 0; row < nRows; row++) {
-        for (int col = 0; col < nCols; col++) {
+    for (int row = 0; row < _rowCount; row++) {
+        for (int col = 0; col < _columnCount; col++) {
             if (isSet(row, col)) {
                 fn(get(row, col));
             }
@@ -18841,8 +15825,8 @@ void SparseGrid<ValueType>::mapAll(void (*fn)(const ValueType& value)) const {
 template <typename ValueType>
 template <typename FunctorType>
 void SparseGrid<ValueType>::mapAll(FunctorType fn) const {
-    for (int row = 0; row < nRows; row++) {
-        for (int col = 0; col < nCols; col++) {
+    for (int row = 0; row < _rowCount; row++) {
+        for (int col = 0; col < _columnCount; col++) {
             if (isSet(row, col)) {
                 fn(get(row, col));
             }
@@ -18852,12 +15836,12 @@ void SparseGrid<ValueType>::mapAll(FunctorType fn) const {
 
 template <typename ValueType>
 int SparseGrid<ValueType>::numCols() const {
-    return nCols;
+    return _columnCount;
 }
 
 template <typename ValueType>
 int SparseGrid<ValueType>::numRows() const {
-    return nRows;
+    return _rowCount;
 }
 
 template <typename ValueType>
@@ -18868,40 +15852,40 @@ void SparseGrid<ValueType>::resize(int nRows, int nCols, bool retain) {
                << nRows << ", " << nCols << ")";
         error(out.str());
     }
-    int oldnRows = this->nRows;
-    int oldnCols = this->nCols;
-    this->nRows = nRows;
-    this->nCols = nCols;
+    int oldnRows = this->_rowCount;
+    int oldnCols = this->_columnCount;
+    this->_rowCount = nRows;
+    this->_columnCount = nCols;
     
     if (retain) {
         // if resizing to a smaller size, must evict any row/col entries
         // that exceed the new grid's bounds
         if (nRows < oldnRows || nCols < oldnCols) {
-            Map<int, Map<int, ValueType> > newElements;
-            for (int row : elements) {
+            Map<int, Map<int, ValueType>> newElements;
+            for (int row : _elements) {
                 if (row >= nRows) {
                     break;   // don't add any entries beyond this row
                 }
-                for (int col : elements[row]) {
+                for (int col : _elements[row]) {
                     if (col >= nCols) {
                         break;   // don't add any entries beyond this row
                     }
-                    newElements[row][col] = elements[row][col];
+                    newElements[row][col] = _elements[row][col];
                 }
             }
-            elements = newElements;
+            _elements = newElements;
         }
     } else {
-        elements.clear();
+        _elements.clear();
     }
-    m_version++;
+    _version++;
 }
 
 template <typename ValueType>
 void SparseGrid<ValueType>::set(int row, int col, const ValueType& value) {
-    checkIndexes(row, col, nRows-1, nCols-1, "set");
-    elements[row][col] = value;
-    m_version++;
+    checkIndexes(row, col, _rowCount-1, _columnCount-1, "set");
+    _elements[row][col] = value;
+    _version++;
 }
 
 template <typename ValueType>
@@ -18912,8 +15896,8 @@ void SparseGrid<ValueType>::set(const GridLocation& loc, const ValueType& value)
 template <typename ValueType>
 int SparseGrid<ValueType>::size() const {
     int count = 0;
-    for (int row : elements) {
-        count += elements[row].size();
+    for (int row : _elements) {
+        count += _elements[row].size();
     }
     return count;
 }
@@ -18934,7 +15918,7 @@ std::string SparseGrid<ValueType>::toString2D(
     int nRows = numRows();
     int nCols = numCols();
     for (int i = 0; i < nRows; i++) {
-        if (!elements.containsKey(i) || elements[i].isEmpty()) {
+        if (!_elements.containsKey(i) || _elements[i].isEmpty()) {
             continue;
         }
         if (i > 0) {
@@ -18957,14 +15941,14 @@ std::string SparseGrid<ValueType>::toString2D(
 
 template <typename ValueType>
 void SparseGrid<ValueType>::unset(int row, int col) {
-    checkIndexes(row, col, nRows-1, nCols-1, "unset");
-    if (elements.containsKey(row)) {
-        elements[row].remove(col);
-        if (elements[row].isEmpty()) {
-            elements.remove(row);
+    checkIndexes(row, col, _rowCount-1, _columnCount-1, "unset");
+    if (_elements.containsKey(row)) {
+        _elements[row].remove(col);
+        if (_elements[row].isEmpty()) {
+            _elements.remove(row);
         }
     }
-    m_version++;
+    _version++;
 }
 
 template <typename ValueType>
@@ -18974,12 +15958,12 @@ void SparseGrid<ValueType>::unset(const GridLocation& loc) {
 
 template <typename ValueType>
 unsigned int SparseGrid<ValueType>::version() const {
-    return m_version;
+    return _version;
 }
 
 template <typename ValueType>
 int SparseGrid<ValueType>::width() const {
-    return nCols;
+    return _columnCount;
 }
 
 template <typename ValueType>
@@ -19054,14 +16038,14 @@ SparseGrid<ValueType>::operator [](int row) const {
 
 template <typename ValueType>
 ValueType& SparseGrid<ValueType>::operator [](const GridLocation& loc) {
-    checkIndexes(loc.row, loc.col, nRows-1, nCols-1, "operator []");
-    return elements[loc.row][loc.col];
+    checkIndexes(loc.row, loc.col, _rowCount-1, _columnCount-1, "operator []");
+    return _elements[loc.row][loc.col];
 }
 
 template <typename ValueType>
 const ValueType& SparseGrid<ValueType>::operator [](const GridLocation& loc) const {
-    checkIndexes(loc.row, loc.col, nRows-1, nCols-1, "operator []");
-    return elements[loc.row][loc.col];
+    checkIndexes(loc.row, loc.col, _rowCount-1, _columnCount-1, "operator []");
+    return _elements[loc.row][loc.col];
 }
 
 template <typename ValueType>
@@ -19103,7 +16087,7 @@ bool SparseGrid<ValueType>::operator >=(const SparseGrid& grid2) const {
  */
 template <typename ValueType>
 std::ostream& operator <<(std::ostream& os, const SparseGrid<ValueType>& grid) {
-    os << grid.elements << ", " << grid.nRows << " x " << grid.nCols;
+    os << grid._elements << ", " << grid._rowCount << " x " << grid._columnCount;
     return os;
 }
 
@@ -19112,7 +16096,7 @@ std::istream& operator >>(std::istream& is, SparseGrid<ValueType>& grid) {
     // "{...}, 4 x 3"
 
     // read "{...}" (map of elements)
-    if (!(is >> grid.elements)) {
+    if (!(is >> grid._elements)) {
 #ifdef SPL_ERROR_ON_COLLECTION_PARSE
         error("SparseGrid::operator >>: Invalid elements");
 #endif
@@ -19130,7 +16114,7 @@ std::istream& operator >>(std::istream& is, SparseGrid<ValueType>& grid) {
         return is;
     }
 
-    if (!(is >> grid.nRows)) {
+    if (!(is >> grid._rowCount)) {
 #ifdef SPL_ERROR_ON_COLLECTION_PARSE
         error("SparseGrid::operator >>: Invalid number of rows");
 #endif
@@ -19141,7 +16125,7 @@ std::istream& operator >>(std::istream& is, SparseGrid<ValueType>& grid) {
     std::string x;
     is >> x;       // throw away 'x' token
 
-    if (!(is >> grid.nCols)) {
+    if (!(is >> grid._columnCount)) {
 #ifdef SPL_ERROR_ON_COLLECTION_PARSE
         error("SparseGrid::operator >>: Invalid number of rows");
 #endif
@@ -19175,8 +16159,8 @@ const T& randomElement(const SparseGrid<T>& grid) {
     
     // pick a non-empty row, then pick a random element from it
     // TODO: fix, this is NOT evenly distributed when rows/cols are unequal in size
-    int row = randomKey(grid.elements);
-    int col = randomKey(grid.elements[row]);
+    int row = randomKey(grid._elements);
+    int col = randomKey(grid._elements[row]);
     return grid.get(row, col);
 }
 
@@ -19191,6 +16175,8 @@ const T& randomElement(const SparseGrid<T>& grid) {
  * This file exports the <code>DawgLexicon</code> class, which is a
  * compact structure for storing a list of words.
  * 
+ * @version 2019/04/09
+ * - renamed private members with underscore naming scheme for consistency
  * @version 2018/03/10
  * - added method front
  * @version 2017/11/14
@@ -19558,11 +16544,11 @@ private:
 #endif
     };
 #pragma pack()
-    Edge* edges;
-    Edge* start;
-    int numEdges;
-    int numDawgWords;
-    Set<std::string> otherWords;
+    Edge* _edges;
+    Edge* _start;
+    int _edgeCount;
+    int _dawgWordsCount;
+    Set<std::string> _otherWords;
 
 public:
     /*
@@ -19614,8 +16600,8 @@ public:
             } else {
                 index = 0;
                 edgePtr = nullptr;
-                setIterator = lp->otherWords.begin();
-                setEnd = lp->otherWords.end();
+                setIterator = lp->_otherWords.begin();
+                setEnd = lp->_otherWords.end();
                 currentDawgPrefix = "";
                 currentSetWord = "";
                 advanceToNextWordInDawg();
@@ -19705,7 +16691,7 @@ private:
     void readBinaryFile(std::istream& input);
     void readBinaryFile(const std::string& filename);
     void deepCopy(const DawgLexicon& src);
-    int countDawgWords(Edge* start) const;
+    int countDawgWords(Edge* _start) const;
 
     unsigned int charToOrd(char ch) const {
         return ((unsigned int)(tolower(ch) - 'a' + 1));
@@ -19754,6 +16740,8 @@ std::istream& operator >>(std::istream& is, DawgLexicon& lex);
  * cost due to needing to store an extra copy of the keys.
  * 
  * @author Marty Stepp
+ * @version 2019/04/09
+ * - renamed private members with underscore naming scheme for consistency
  * @version 2018/03/10
  * - added methods front, back
  * @version 2016/09/24
@@ -19785,6 +16773,7 @@ std::istream& operator >>(std::istream& is, DawgLexicon& lex);
 #include <initializer_list>
 #include <iterator>
 #include <string>
+#include <functional>
 
 #define INTERNAL_INCLUDE 1
 
@@ -19823,7 +16812,7 @@ public:
      * exports <code>hashCode</code> functions for <code>string</code> and
      * the C++ primitive types.
      */
-    LinkedHashMap();
+    LinkedHashMap() = default;
 
     /*
      * Constructor: LinkedHashMap
@@ -19833,14 +16822,14 @@ public:
      * Note that the pairs are stored in unpredictable order internally and not
      * necessarily the order in which they are written in the initializer list.
      */
-    LinkedHashMap(std::initializer_list<std::pair<KeyType, ValueType> > list);
+    LinkedHashMap(std::initializer_list<std::pair<const KeyType, ValueType>> list);
 
     /*
      * Destructor: ~LinkedHashMap
      * --------------------
      * Frees any heap storage associated with this map.
      */
-    virtual ~LinkedHashMap();
+    virtual ~LinkedHashMap() = default;
 
     /*
      * Method: add
@@ -19863,7 +16852,6 @@ public:
      * Identical in behavior to putAll.
      */
     LinkedHashMap& addAll(const LinkedHashMap& map2);
-    LinkedHashMap& addAll(std::initializer_list<std::pair<KeyType, ValueType> > list);
 
     /*
      * Method: back
@@ -19944,11 +16932,7 @@ public:
      * Iterates through the map entries and calls <code>fn(key, value)</code>
      * for each one.  The keys are processed in an undetermined order.
      */
-    void mapAll(void (*fn)(KeyType, ValueType)) const;
-    void mapAll(void (*fn)(const KeyType&, const ValueType&)) const;
-    
-    template <typename FunctorType>
-    void mapAll(FunctorType fn) const;
+    void mapAll(std::function<void (const KeyType&, const ValueType &)> fn) const;
 
     /*
      * Method: put
@@ -19970,7 +16954,6 @@ public:
      * Returns a reference to this map.
      */
     LinkedHashMap& putAll(const LinkedHashMap& map2);
-    LinkedHashMap& putAll(std::initializer_list<std::pair<KeyType, ValueType> > list);
 
     /*
      * Method: remove
@@ -19991,7 +16974,6 @@ public:
      * Returns a reference to this map.
      */
     LinkedHashMap& removeAll(const LinkedHashMap& map2);
-    LinkedHashMap& removeAll(std::initializer_list<std::pair<KeyType, ValueType> > list);
 
     /*
      * Method: retainAll
@@ -20003,7 +16985,6 @@ public:
      * Returns a reference to this map.
      */
     LinkedHashMap& retainAll(const LinkedHashMap& map2);
-    LinkedHashMap& retainAll(std::initializer_list<std::pair<KeyType, ValueType> > list);
 
     /*
      * Method: size
@@ -20084,7 +17065,6 @@ public:
      * from the second map is favored.
      */
     LinkedHashMap operator +(const LinkedHashMap& map2) const;
-    LinkedHashMap operator +(std::initializer_list<std::pair<KeyType, ValueType> > list) const;
 
     /*
      * Operator: +=
@@ -20094,7 +17074,7 @@ public:
      * Equivalent to calling addAll(map2).
      */
     LinkedHashMap& operator +=(const LinkedHashMap& map2);
-    LinkedHashMap& operator +=(std::initializer_list<std::pair<KeyType, ValueType> > list);
+
 
     /*
      * Operator: -
@@ -20104,7 +17084,7 @@ public:
      * with removeAll called on it passing the second map as a parameter.
      */
     LinkedHashMap operator -(const LinkedHashMap& map2) const;
-    LinkedHashMap operator -(std::initializer_list<std::pair<KeyType, ValueType> > list) const;
+
 
     /*
      * Operator: -=
@@ -20114,7 +17094,7 @@ public:
      * Equivalent to calling removeAll(map2).
      */
     LinkedHashMap& operator -=(const LinkedHashMap& map2);
-    LinkedHashMap& operator -=(std::initializer_list<std::pair<KeyType, ValueType> > list);
+
 
     /*
      * Operator: *
@@ -20124,7 +17104,7 @@ public:
      * with retainAll called on it passing the second map as a parameter.
      */
     LinkedHashMap operator *(const LinkedHashMap& map2) const;
-    LinkedHashMap operator *(std::initializer_list<std::pair<KeyType, ValueType> > list) const;
+
 
     /*
      * Operator: *=
@@ -20134,7 +17114,6 @@ public:
      * Equivalent to calling retainAll(map2).
      */
     LinkedHashMap& operator *=(const LinkedHashMap& map2);
-    LinkedHashMap& operator *=(std::initializer_list<std::pair<KeyType, ValueType> > list);
 
     template <typename K, typename V>
     friend std::ostream& operator <<(std::ostream& os, const LinkedHashMap<K, V>& map);
@@ -20167,8 +17146,8 @@ public:
      * Vector to remember the order of insertion.
     */
 private:
-    HashMap<KeyType, ValueType> innerMap;
-    Vector<KeyType> keyVector;
+    HashMap<KeyType, ValueType> _map;
+    Vector<KeyType> _keys;
 
 public:
     /*
@@ -20187,25 +17166,21 @@ public:
      * iterators so that they work symmetrically with respect to the
      * corresponding STL classes.
      */
-    class iterator : public Vector<KeyType>::iterator {
-    public:
-        iterator() : Vector<KeyType>::iterator() {}
-        iterator(const iterator& it) : Vector<KeyType>::iterator(it) {}
-        iterator(const typename Vector<KeyType>::iterator& it) : Vector<KeyType>::iterator(it) {}
-    };
+    using const_iterator = typename Vector<KeyType>::const_iterator;
+    using iterator = const_iterator;
 
     /*
      * Returns an iterator positioned at the first key of the map.
      */
-    iterator begin() const {
-        return iterator(keyVector.begin());
+    const_iterator begin() const {
+        return _keys.begin();
     }
 
     /*
      * Returns an iterator positioned at the last key of the map.
      */
-    iterator end() const {
-        return iterator(keyVector.end());
+    const_iterator end() const {
+        return _keys.end();
     }
 };
 
@@ -20215,18 +17190,10 @@ public:
  * ...
  */
 template <typename KeyType, typename ValueType>
-LinkedHashMap<KeyType, ValueType>::LinkedHashMap() {
-    // empty
-}
-
-template <typename KeyType, typename ValueType>
-LinkedHashMap<KeyType, ValueType>::LinkedHashMap(std::initializer_list<std::pair<KeyType, ValueType> > list) {
-    putAll(list);
-}
-
-template <typename KeyType, typename ValueType>
-LinkedHashMap<KeyType, ValueType>::~LinkedHashMap() {
-    // empty
+LinkedHashMap<KeyType, ValueType>::LinkedHashMap(std::initializer_list<std::pair<const KeyType, ValueType>> list) {
+    for (const auto& entry: list) {
+        put(entry.first, entry.second);
+    }
 }
 
 template <typename KeyType, typename ValueType>
@@ -20240,28 +17207,22 @@ LinkedHashMap<KeyType, ValueType>& LinkedHashMap<KeyType, ValueType>::addAll(con
 }
 
 template <typename KeyType, typename ValueType>
-LinkedHashMap<KeyType, ValueType>& LinkedHashMap<KeyType, ValueType>::addAll(
-        std::initializer_list<std::pair<KeyType, ValueType> > list) {
-    return putAll(list);
-}
-
-template <typename KeyType, typename ValueType>
 KeyType LinkedHashMap<KeyType, ValueType>::back() const {
     if (isEmpty()) {
         error("LinkedHashMap::back: map is empty");
     }
-    return keyVector.back();
+    return _keys.back();
 }
 
 template <typename KeyType, typename ValueType>
 void LinkedHashMap<KeyType, ValueType>::clear() {
-    innerMap.clear();
-    keyVector.clear();
+    _map.clear();
+    _keys.clear();
 }
 
 template <typename KeyType, typename ValueType>
 bool LinkedHashMap<KeyType, ValueType>::containsKey(const KeyType& key) const {
-    return innerMap.containsKey(key);
+    return _map.containsKey(key);
 }
 
 template <typename KeyType, typename ValueType>
@@ -20274,45 +17235,33 @@ KeyType LinkedHashMap<KeyType, ValueType>::front() const {
     if (isEmpty()) {
         error("LinkedHashMap::front: map is empty");
     }
-    return keyVector.front();
+    return _keys.front();
 }
 
 template <typename KeyType, typename ValueType>
 ValueType LinkedHashMap<KeyType, ValueType>::get(const KeyType& key) const {
-    return innerMap.get(key);
+    return _map.get(key);
 }
 
 template <typename KeyType, typename ValueType>
 bool LinkedHashMap<KeyType, ValueType>::isEmpty() const {
-    return innerMap.isEmpty();
+    return _map.isEmpty();
 }
 
 template <typename KeyType, typename ValueType>
 const Vector<KeyType>& LinkedHashMap<KeyType, ValueType>::keys() const {
-    return keyVector;
+    return _keys;
 }
 
 template <typename KeyType, typename ValueType>
-void LinkedHashMap<KeyType, ValueType>::mapAll(void (*fn)(KeyType, ValueType)) const {
-    innerMap.mapAll(fn);
-}
-
-template <typename KeyType, typename ValueType>
-void LinkedHashMap<KeyType, ValueType>::mapAll(void (*fn)(const KeyType&,
-                                                   const ValueType&)) const {
-    innerMap.mapAll(fn);
-}
-
-template <typename KeyType, typename ValueType>
-template <typename FunctorType>
-void LinkedHashMap<KeyType, ValueType>::mapAll(FunctorType fn) const {
-    innerMap.mapAll(fn);
+void LinkedHashMap<KeyType, ValueType>::mapAll(std::function<void (const KeyType&, const ValueType &)> fn) const {
+    _map.mapAll(fn);
 }
 
 template <typename KeyType, typename ValueType>
 void LinkedHashMap<KeyType, ValueType>::put(const KeyType& key, const ValueType& value) {
-    innerMap.put(key, value);
-    keyVector.add(key);
+    _map.put(key, value);
+    _keys.add(key);
 }
 
 template <typename KeyType, typename ValueType>
@@ -20324,20 +17273,11 @@ LinkedHashMap<KeyType, ValueType>& LinkedHashMap<KeyType, ValueType>::putAll(con
 }
 
 template <typename KeyType, typename ValueType>
-LinkedHashMap<KeyType, ValueType>& LinkedHashMap<KeyType, ValueType>::putAll(
-        std::initializer_list<std::pair<KeyType, ValueType> > list) {
-    for (const std::pair<KeyType, ValueType>& pair : list) {
-        put(pair.first, pair.second);
-    }
-    return *this;
-}
-
-template <typename KeyType, typename ValueType>
 void LinkedHashMap<KeyType, ValueType>::remove(const KeyType& key) {
-    innerMap.remove(key);
-    for (int i = 0, sz = keyVector.size(); i < sz; i++) {
-        if (keyVector[i] == key) {
-            keyVector.remove(i);
+    _map.remove(key);
+    for (int i = 0, sz = _keys.size(); i < sz; i++) {
+        if (_keys[i] == key) {
+            _keys.remove(i);
             break;
         }
     }
@@ -20348,17 +17288,6 @@ LinkedHashMap<KeyType, ValueType>& LinkedHashMap<KeyType, ValueType>::removeAll(
     for (const KeyType& key : map2) {
         if (containsKey(key) && get(key) == map2.get(key)) {
             remove(key);
-        }
-    }
-    return *this;
-}
-
-template <typename KeyType, typename ValueType>
-LinkedHashMap<KeyType, ValueType>& LinkedHashMap<KeyType, ValueType>::removeAll(
-        std::initializer_list<std::pair<KeyType, ValueType> > list) {
-    for (const std::pair<KeyType, ValueType>& pair : list) {
-        if (containsKey(pair.first) && get(pair.first) == pair.second) {
-            remove(pair.first);
         }
     }
     return *this;
@@ -20379,16 +17308,8 @@ LinkedHashMap<KeyType, ValueType>& LinkedHashMap<KeyType, ValueType>::retainAll(
 }
 
 template <typename KeyType, typename ValueType>
-LinkedHashMap<KeyType, ValueType>& LinkedHashMap<KeyType, ValueType>::retainAll(
-        std::initializer_list<std::pair<KeyType, ValueType> > list) {
-    LinkedHashMap<KeyType, ValueType> map2(list);
-    retainAll(map2);
-    return *this;
-}
-
-template <typename KeyType, typename ValueType>
 int LinkedHashMap<KeyType, ValueType>::size() const {
-    return innerMap.size();
+    return _map.size();
 }
 
 template <typename KeyType, typename ValueType>
@@ -20409,7 +17330,7 @@ Vector<ValueType> LinkedHashMap<KeyType, ValueType>::values() const {
 
 template <typename KeyType, typename ValueType>
 ValueType LinkedHashMap<KeyType, ValueType>::operator [](const KeyType& key) const {
-    return innerMap[key];
+    return _map[key];
 }
 
 template <typename KeyType, typename ValueType>
@@ -20419,21 +17340,8 @@ LinkedHashMap<KeyType, ValueType> LinkedHashMap<KeyType, ValueType>::operator +(
 }
 
 template <typename KeyType, typename ValueType>
-LinkedHashMap<KeyType, ValueType> LinkedHashMap<KeyType, ValueType>::operator +(
-        std::initializer_list<std::pair<KeyType, ValueType> > list) const {
-    LinkedHashMap<KeyType, ValueType> result = *this;
-    return result.putAll(list);
-}
-
-template <typename KeyType, typename ValueType>
 LinkedHashMap<KeyType, ValueType>& LinkedHashMap<KeyType, ValueType>::operator +=(const LinkedHashMap& map2) {
     return putAll(map2);
-}
-
-template <typename KeyType, typename ValueType>
-LinkedHashMap<KeyType, ValueType>& LinkedHashMap<KeyType, ValueType>::operator +=(
-        std::initializer_list<std::pair<KeyType, ValueType> > list) {
-    return putAll(list);
 }
 
 template <typename KeyType, typename ValueType>
@@ -20443,21 +17351,8 @@ LinkedHashMap<KeyType, ValueType> LinkedHashMap<KeyType, ValueType>::operator -(
 }
 
 template <typename KeyType, typename ValueType>
-LinkedHashMap<KeyType, ValueType> LinkedHashMap<KeyType, ValueType>::operator -(
-        std::initializer_list<std::pair<KeyType, ValueType> > list) const {
-    LinkedHashMap<KeyType, ValueType> result = *this;
-    return result.removeAll(list);
-}
-
-template <typename KeyType, typename ValueType>
 LinkedHashMap<KeyType, ValueType>& LinkedHashMap<KeyType, ValueType>::operator -=(const LinkedHashMap& map2) {
     return removeAll(map2);
-}
-
-template <typename KeyType, typename ValueType>
-LinkedHashMap<KeyType, ValueType>& LinkedHashMap<KeyType, ValueType>::operator -=(
-        std::initializer_list<std::pair<KeyType, ValueType> > list) {
-    return removeAll(list);
 }
 
 template <typename KeyType, typename ValueType>
@@ -20467,21 +17362,8 @@ LinkedHashMap<KeyType, ValueType> LinkedHashMap<KeyType, ValueType>::operator *(
 }
 
 template <typename KeyType, typename ValueType>
-LinkedHashMap<KeyType, ValueType> LinkedHashMap<KeyType, ValueType>::operator *(
-        std::initializer_list<std::pair<KeyType, ValueType> > list) const {
-    LinkedHashMap<KeyType, ValueType> result = *this;
-    return result.retainAll(list);
-}
-
-template <typename KeyType, typename ValueType>
 LinkedHashMap<KeyType, ValueType>& LinkedHashMap<KeyType, ValueType>::operator *=(const LinkedHashMap& map2) {
     return retainAll(map2);
-}
-
-template <typename KeyType, typename ValueType>
-LinkedHashMap<KeyType, ValueType>& LinkedHashMap<KeyType, ValueType>::operator *=(
-        std::initializer_list<std::pair<KeyType, ValueType> > list) {
-    return retainAll(list);
 }
 
 template <typename KeyType, typename ValueType>
@@ -20569,21 +17451,7 @@ int hashCode(const LinkedHashMap<K, V>& map) {
  */
 template <typename K, typename V>
 const K& randomKey(const LinkedHashMap<K, V>& map) {
-    if (map.isEmpty()) {
-        error("randomKey: empty map was passed");
-    }
-    int index = randomInteger(0, map.size() - 1);
-    int i = 0;
-    for (const K& key : map) {
-        if (i == index) {
-            return key;
-        }
-        i++;
-    }
-    
-    // this code will never be reached
-    static Vector<K> v = map.keys();
-    return v[0];
+    return stanfordcpplib::collections::randomElement(map);
 }
 
 #endif // _linkedhashmap_h
@@ -20598,6 +17466,8 @@ const K& randomKey(const LinkedHashMap<K, V>& map) {
  * implements an efficient abstraction for storing sets of values.
  * 
  * @author Marty Stepp
+ * @version 2019/02/04
+ * - changed internal implementation to wrap std collections
  * @version 2018/03/10
  * - added methods front, back
  * @version 2016/09/24
@@ -20627,10 +17497,7 @@ const K& randomKey(const LinkedHashMap<K, V>& map) {
 
 #include <initializer_list>
 #include <iostream>
-
-#define INTERNAL_INCLUDE 1
-
-#define INTERNAL_INCLUDE 1
+#include <functional>
 
 #define INTERNAL_INCLUDE 1
 
@@ -20638,870 +17505,71 @@ const K& randomKey(const LinkedHashMap<K, V>& map) {
 
 #undef INTERNAL_INCLUDE
 
-/*
- * Class: LinkedHashSet<ValueType>
- * -------------------------------
- * Identical to a HashSet except that upon iteration using a for-each loop
- * or << / toString call, it will emit its elements in the order they were
- * originally inserted.  This is provided at a runtime and memory
- * cost due to needing to store an extra copy of the elements.
- */
-template <typename ValueType>
-class LinkedHashSet {
-public:
-    /*
-     * Constructor: LinkedHashSet
-     * Usage: LinkedHashSet<ValueType> set;
-     * ------------------------------------
-     * Initializes an empty set of the specified element type.
-     */
-    LinkedHashSet();
+/* Traits type for the LinkedHashSet, which wraps an underlying LinkedHashMap. */
+namespace stanfordcpplib {
+    namespace collections {
+        template <typename T> struct LinkedHashSetTraits {
+            using ValueType = T;
+            using MapType   = LinkedHashMap<T, bool>;
+            static std::string name() {
+                return "LinkedHashSet";
+            }
 
-    /*
-     * Constructor: LinkedHashSet
-     * Usage: LinkedHashSet<ValueType> set {1, 2, 3};
-     * ----------------------------------------------
-     * Initializes a new set that stores the given elements.
-     * Note that the elements are stored in unpredictable order internally and not
-     * necessarily the order in which they are written in the initializer list.
-     */
-    LinkedHashSet(std::initializer_list<ValueType> list);
+            /* You can default-construct a LinkedHashSet. */
+            static MapType construct() {
+                return {};
+            }
 
-    /*
-     * Destructor: ~LinkedHashSet
-     * --------------------------
-     * Frees any heap storage associated with this set.
-     */
-    virtual ~LinkedHashSet();
+            /* However, you can't pass in any other arguments. */
+            template <typename... Args>
+            static void construct(Args&&...) {
+                static_assert(Fail<Args...>::value, "Oops! Seems like you tried to initialize a LinkedHashSet incorrectly. Click here for details.");
 
-    /*
-     * Method: add
-     * Usage: set.add(value);
-     * ----------------------
-     * Adds an element to this set, if it was not already there.  For
-     * compatibility with the STL <code>set</code> class, this method
-     * is also exported as <code>insert</code>.
-     */
-    void add(const ValueType& value);
-    
-    /*
-     * Method: addAll
-     * Usage: set.addAll(set2);
-     * ------------------------
-     * Adds all elements of the given other set to this set.
-     * Returns a reference to this set.
-     * Identical in behavior to the += operator.
-     */
-    LinkedHashSet<ValueType>& addAll(const LinkedHashSet<ValueType>& set);
-    LinkedHashSet<ValueType>& addAll(std::initializer_list<ValueType> list);
-
-    /*
-     * Method: back
-     * Usage: ValueType value = set.back();
-     * ------------------------------------
-     * Returns the last value in the set in the order established by the
-     * <code>foreach</code> macro.  If the set is empty, generates an error.
-     */
-    ValueType back() const;
-
-    /*
-     * Method: clear
-     * Usage: set.clear();
-     * -------------------
-     * Removes all elements from this set.
-     */
-    void clear();
-    
-    /*
-     * Method: contains
-     * Usage: if (set.contains(value)) ...
-     * -----------------------------------
-     * Returns <code>true</code> if the specified value is in this set.
-     */
-    bool contains(const ValueType& value) const;
-
-    /*
-     * Method: containsAll
-     * Usage: if (set.containsAll(set2)) ...
-     * -------------------------------------
-     * Returns <code>true</code> if every value from the given other set
-     * is also found in this set.
-     * You can also pass an initializer list such as {1, 2, 3}.
-     * Equivalent in behavior to isSupersetOf.
-     */
-    bool containsAll(const LinkedHashSet<ValueType>& set2) const;
-    bool containsAll(std::initializer_list<ValueType> list) const;
-
-    /*
-     * Method: equals
-     * Usage: if (set.equals(set2)) ...
-     * --------------------------------
-     * Returns <code>true</code> if this set contains exactly the same values
-     * as the given other set.
-     * Identical in behavior to the == operator.
-     */
-    bool equals(const LinkedHashSet<ValueType>& set2) const;
-    
-    /*
-     * Method: first
-     * Usage: ValueType value = set.first();
-     * -------------------------------------
-     * Returns the first value in the set in the order established by the
-     * <code>foreach</code> macro.  If the set is empty, <code>first</code>
-     * generates an error.
-     */
-    ValueType first() const;
-
-    /*
-     * Method: front
-     * Usage: ValueType value = set.front();
-     * -------------------------------------
-     * Returns the first value in the set in the order established by the
-     * <code>foreach</code> macro.  If the set is empty, generates an error.
-     * Equivalent to first.
-     */
-    ValueType front() const;
-
-    /*
-     * Method: insert
-     * Usage: set.insert(value);
-     * -------------------------
-     * Adds an element to this set, if it was not already there.  This
-     * method is exported for compatibility with the STL <code>set</code> class.
-     */
-    void insert(const ValueType& value);
-
-    /*
-     * Method: isEmpty
-     * Usage: if (set.isEmpty()) ...
-     * -----------------------------
-     * Returns <code>true</code> if this set contains no elements.
-     */
-    bool isEmpty() const;
-    
-    /*
-     * Method: isSubsetOf
-     * Usage: if (set.isSubsetOf(set2)) ...
-     * ------------------------------------
-     * Implements the subset relation on sets.  It returns
-     * <code>true</code> if every element of this set is
-     * contained in <code>set2</code>.
-     */
-    bool isSubsetOf(const LinkedHashSet& set2) const;
-    bool isSubsetOf(std::initializer_list<ValueType> list) const;
-
-    /*
-     * Method: isSupersetOf
-     * Usage: if (set.isSupersetOf(set2)) ...
-     * --------------------------------------
-     * Implements the superset relation on sets.  It returns
-     * <code>true</code> if every element of this set is
-     * contained in <code>set2</code>.
-     * Note that this will be true if the sets are equal.
-     * You can also pass an initializer list such as {1, 2, 3}.
-     * Equivalent in behavior to containsAll.
-     */
-    bool isSupersetOf(const LinkedHashSet& set2) const;
-    bool isSupersetOf(std::initializer_list<ValueType> list) const;
-
-    /*
-     * Method: mapAll
-     * Usage: set.mapAll(fn);
-     * ----------------------
-     * Iterates through the elements of the set and calls <code>fn(value)</code>
-     * for each one.  The values are processed in ascending order, as defined
-     * by the comparison function.
-     */
-    void mapAll(void (*fn)(ValueType)) const;
-    void mapAll(void (*fn)(const ValueType&)) const;
-
-    template <typename FunctorType>
-    void mapAll(FunctorType fn) const;
-    
-    /*
-     * Method: remove
-     * Usage: set.remove(value);
-     * -------------------------
-     * Removes an element from this set.  If the value was not
-     * contained in the set, no error is generated and the set
-     * remains unchanged.
-     */
-    void remove(const ValueType& value);
-    
-    /*
-     * Method: removeAll
-     * Usage: set.removeAll(set2);
-     * ---------------------------
-     * Removes all elements of the given other set from this set.
-     * Returns a reference to this set.
-     * Identical in behavior to the -= operator.
-     */
-    LinkedHashSet<ValueType>& removeAll(const LinkedHashSet<ValueType>& set);
-    LinkedHashSet<ValueType>& removeAll(std::initializer_list<ValueType> list);
-
-    /*
-     * Method: retainAll
-     * Usage: set.retainAll(set2);
-     * ----------------------
-     * Removes all elements from this set that are not contained in the given
-     * other set. Returns a reference to this set.
-     * Identical in behavior to the *= operator.
-     */
-    LinkedHashSet<ValueType>& retainAll(const LinkedHashSet<ValueType>& set);
-    LinkedHashSet<ValueType>& retainAll(std::initializer_list<ValueType> list);
-
-    /*
-     * Method: size
-     * Usage: count = set.size();
-     * --------------------------
-     * Returns the number of elements in this set.
-     */
-    int size() const;
-    
-    /*
-     * Method: toString
-     * Usage: string str = set.toString();
-     * -----------------------------------
-     * Converts the set to a printable string representation.
-     */
-    std::string toString() const;
-
-    /*
-     * Operator: ==
-     * Usage: set1 == set2
-     * -------------------
-     * Returns <code>true</code> if <code>set1</code> and <code>set2</code>
-     * contain the same elements.
-     */
-    bool operator ==(const LinkedHashSet& set2) const;
-
-    /*
-     * Operator: !=
-     * Usage: set1 != set2
-     * -------------------
-     * Returns <code>true</code> if <code>set1</code> and <code>set2</code>
-     * are different.
-     */
-    bool operator !=(const LinkedHashSet& set2) const;
-
-    /*
-     * Operators: <, >, <=, >=
-     * Usage: if (set1 <= set2) ...
-     * ...
-     * ----------------------------
-     * Relational operators to compare two sets.
-     * The <, >, <=, >= operators require that the ValueType has a < operator
-     * so that the elements can be compared pairwise.
-     */
-    bool operator <(const LinkedHashSet& set2) const;
-    bool operator <=(const LinkedHashSet& set2) const;
-    bool operator >(const LinkedHashSet& set2) const;
-    bool operator >=(const LinkedHashSet& set2) const;
-
-    /*
-     * Operator: +
-     * Usage: set1 + set2
-     *        set1 + element
-     * ---------------------
-     * Returns the union of sets <code>set1</code> and <code>set2</code>, which
-     * is the set of elements that appear in at least one of the two sets.  The
-     * right hand set can be replaced by an element of the value type, in which
-     * case the operator returns a new set formed by adding that element.
-     */
-    LinkedHashSet operator +(const LinkedHashSet& set2) const;
-    LinkedHashSet operator +(std::initializer_list<ValueType> list) const;
-    LinkedHashSet operator +(const ValueType& element) const;
-
-    /*
-     * Operator: *
-     * Usage: set1 * set2
-     * ------------------
-     * Returns the intersection of sets <code>set1</code> and <code>set2</code>,
-     * which is the set of all elements that appear in both.
-     */
-    LinkedHashSet operator *(const LinkedHashSet& set2) const;
-    LinkedHashSet operator *(std::initializer_list<ValueType> list) const;
-
-    /*
-     * Operator: -
-     * Usage: set1 - set2
-     *        set1 - element
-     * ---------------------
-     * Returns the difference of sets <code>set1</code> and <code>set2</code>,
-     * which is all of the elements that appear in <code>set1</code> but
-     * not <code>set2</code>.  The right hand set can be replaced by an
-     * element of the value type, in which case the operator returns a new
-     * set formed by removing that element.
-     */
-    LinkedHashSet operator -(const LinkedHashSet& set2) const;
-    LinkedHashSet operator -(std::initializer_list<ValueType> list) const;
-    LinkedHashSet operator -(const ValueType& element) const;
-
-    /*
-     * Operator: +=
-     * Usage: set1 += set2;
-     *        set1 += value;
-     * ---------------------
-     * Adds all of the elements from <code>set2</code> (or the single
-     * specified value) to <code>set1</code>.  As a convenience, the
-     * <code>LinkedHashSet</code> package also overloads the comma operator so
-     * that it is possible to initialize a set like this:
-     *
-     *<pre>
-     *    LinkedHashSet&lt;int&lt; digits;
-     *    digits += 0, 1, 2, 3, 4, 5, 6, 7, 8, 9;
-     *</pre>
-     */
-    LinkedHashSet& operator +=(const LinkedHashSet& set2);
-    LinkedHashSet& operator +=(std::initializer_list<ValueType> list);
-    LinkedHashSet& operator +=(const ValueType& value);
-
-    /*
-     * Operator: *=
-     * Usage: set1 *= set2;
-     * --------------------
-     * Removes any elements from <code>set1</code> that are not present in
-     * <code>set2</code>.
-     */
-    LinkedHashSet& operator *=(const LinkedHashSet& set2);
-    LinkedHashSet& operator *=(std::initializer_list<ValueType> list);
-
-    /*
-     * Operator: -=
-     * Usage: set1 -= set2;
-     *        set1 -= value;
-     * ---------------------
-     * Removes the elements from <code>set2</code> (or the single
-     * specified value) from <code>set1</code>.  As a convenience, the
-     * <code>LinkedHashSet</code> package also overloads the comma operator so
-     * that it is possible to remove multiple elements from a set
-     * like this:
-     *
-     *<pre>
-     *    digits -= 0, 2, 4, 6, 8;
-     *</pre>
-     *
-     * which removes the values 0, 2, 4, 6, and 8 from the set
-     * <code>digits</code>.
-     */
-    LinkedHashSet& operator -=(const LinkedHashSet& set2);
-    LinkedHashSet& operator -=(std::initializer_list<ValueType> list);
-    LinkedHashSet& operator -=(const ValueType& value);
-
-    /*
-     * Additional LinkedHashSet operations
-     * -----------------------------------
-     * In addition to the methods listed in this interface, the LinkedHashSet
-     * class supports the following operations:
-     *
-     *   - Stream I/O using the << and >> operators
-     *   - Deep copying for the copy constructor and assignment operator
-     *   - Iteration using the range-based for statement and STL iterators
-     *
-     * The iteration forms process the LinkedHashSet in the order of insertion.
-     */
-
-    /* Private section */
-
-    /**********************************************************************/
-    /* Note: Everything below this point in the file is logically part    */
-    /* of the implementation and should not be of interest to clients.    */
-    /**********************************************************************/
-
-private:
-    LinkedHashMap<ValueType, bool> map;  /* Map used to store the element     */
-    bool removeFlag;                     /* Flag to differentiate += and -=   */
-
-public:
-    /*
-     * Hidden features
-     * ---------------
-     * The remainder of this file consists of the code required to
-     * support the comma operator, deep copying, and iteration.
-     * Including these methods in the public interface would make
-     * that interface more difficult to understand for the average client.
-     */
-    LinkedHashSet& operator ,(const ValueType& value) {
-        if (this->removeFlag) {
-            this->remove(value);
-        } else {
-            this->add(value);
-        }
-        return *this;
+                /*
+                 * Hello student! If you are reading this message, it means that you tried to
+                 * initialize a LinkedHashSet improperly. For example, you might have tried to
+                 * write something like this:
+                 *
+                 *     LinkedHashSet<int> mySet = 137; // Oops!
+                 *
+                 * Here, for example, you're trying to assign an int to a LinkedHashSet<int>.
+                 *
+                 * or perhaps you had a function like this one:
+                 *
+                 *     void myFunction(LinkedHashSet<int>& mySet);
+                 *
+                 * and you called it by writing
+                 *
+                 *     myFunction(someSet + someOtherSet); // Oops!
+                 *     myFunction({ });                    // Oops!
+                 *
+                 * In these cases, you're trying to pass a value into a function that takes
+                 * its argument by (non-const) reference. C++ doesn't allow you to do this.
+                 *
+                 * To see where the actual error comes from, look in the list of error messages
+                 * in Qt Creator. You should see a line that says "required from here" that
+                 * points somewhere in your code. That's the actual line you wrote that caused
+                 * the problem, so double-click on that error message and see where it takes
+                 * you. Now you know where to look!
+                 *
+                 * Hope this helps!
+                 */
+                error("static_assert succeeded?");
+            }
+        };
     }
-
-    /*
-     * Iterator support
-     * ----------------
-     * The classes in the StanfordCPPLib collection implement input
-     * iterators so that they work symmetrically with respect to the
-     * corresponding STL classes.
-     */
-    class iterator : public std::iterator<std::input_iterator_tag,ValueType> {
-    private:
-        typename LinkedHashMap<ValueType,bool>::iterator mapit;
-
-    public:
-        iterator() {
-            /* Empty */
-        }
-
-        iterator(typename LinkedHashMap<ValueType, bool>::iterator it) : mapit(it) {
-            /* Empty */
-        }
-
-        iterator(const iterator& it) {
-            mapit = it.mapit;
-        }
-
-        iterator& operator ++() {
-            ++mapit;
-            return *this;
-        }
-
-        iterator operator ++(int) {
-            iterator copy(*this);
-            operator++();
-            return copy;
-        }
-
-        bool operator ==(const iterator& rhs) {
-            return mapit == rhs.mapit;
-        }
-
-        bool operator !=(const iterator& rhs) {
-            return !(*this == rhs);
-        }
-
-        ValueType& operator *() {
-            return *mapit;
-        }
-
-        ValueType* operator ->() {
-            return mapit;
-        }
-    };
-
-    iterator begin() const {
-        return iterator(map.begin());
-    }
-
-    iterator end() const {
-        return iterator(map.end());
-    }
-};
-
-template <typename ValueType>
-LinkedHashSet<ValueType>::LinkedHashSet() : removeFlag(false) {
-    /* Empty */
-}
-
-template <typename ValueType>
-LinkedHashSet<ValueType>::LinkedHashSet(std::initializer_list<ValueType> list)
-        : removeFlag(false) {
-    addAll(list);
-}
-
-template <typename ValueType>
-LinkedHashSet<ValueType>::~LinkedHashSet() {
-    /* Empty */
-}
-
-template <typename ValueType>
-void LinkedHashSet<ValueType>::add(const ValueType& value) {
-    map.put(value, true);
-}
-
-template <typename ValueType>
-LinkedHashSet<ValueType>& LinkedHashSet<ValueType>::addAll(const LinkedHashSet& set2) {
-    for (ValueType value : set2) {
-        this->add(value);
-    }
-    return *this;
-}
-
-template <typename ValueType>
-LinkedHashSet<ValueType>& LinkedHashSet<ValueType>::addAll(std::initializer_list<ValueType> list) {
-    for (const ValueType& value : list) {
-        this->add(value);
-    }
-    return *this;
-}
-
-template <typename ValueType>
-ValueType LinkedHashSet<ValueType>::back() const {
-    if (isEmpty()) {
-        error("LinkedHashSet::back: set is empty");
-    }
-    return map.back();
-}
-
-template <typename ValueType>
-void LinkedHashSet<ValueType>::clear() {
-    map.clear();
-}
-
-template <typename ValueType>
-bool LinkedHashSet<ValueType>::contains(const ValueType& value) const {
-    return map.containsKey(value);
-}
-
-template <typename ValueType>
-bool LinkedHashSet<ValueType>::containsAll(const LinkedHashSet<ValueType>& set2) const {
-    for (const ValueType& value : set2) {
-        if (!contains(value)) {
-            return false;
-        }
-    }
-    return true;
-}
-
-template <typename ValueType>
-bool LinkedHashSet<ValueType>::containsAll(std::initializer_list<ValueType> list) const {
-    for (const ValueType& value : list) {
-        if (!contains(value)) {
-            return false;
-        }
-    }
-    return true;
-}
-
-template <typename ValueType>
-bool LinkedHashSet<ValueType>::equals(const LinkedHashSet<ValueType>& set2) const {
-    // optimization: if literally same set, stop
-    if (this == &set2) {
-        return true;
-    }
-
-    if (size() != set2.size()) {
-        return false;
-    }
-
-    return isSubsetOf(set2) && set2.isSubsetOf(*this);
-}
-
-template <typename ValueType>
-ValueType LinkedHashSet<ValueType>::first() const {
-    if (isEmpty()) {
-        error("LinkedHashSet::first: set is empty");
-    }
-    return *begin();
-}
-
-template <typename ValueType>
-ValueType LinkedHashSet<ValueType>::front() const {
-    if (isEmpty()) {
-        error("LinkedHashSet::front: set is empty");
-    }
-    return map.front();
-}
-
-template <typename ValueType>
-void LinkedHashSet<ValueType>::insert(const ValueType& value) {
-    map.put(value, true);
-}
-
-template <typename ValueType>
-bool LinkedHashSet<ValueType>::isEmpty() const {
-    return map.isEmpty();
-}
-
-template <typename ValueType>
-bool LinkedHashSet<ValueType>::isSubsetOf(const LinkedHashSet& set2) const {
-    iterator it = begin();
-    iterator end = this->end();
-    while (it != end) {
-        if (!set2.map.containsKey(*it)) {
-            return false;
-        }
-        ++it;
-    }
-    return true;
-}
-
-template <typename ValueType>
-bool LinkedHashSet<ValueType>::isSubsetOf(std::initializer_list<ValueType> list) const {
-    LinkedHashSet<ValueType> set2(list);
-    return isSubsetOf(set2);
-}
-
-template <typename ValueType>
-bool LinkedHashSet<ValueType>::isSupersetOf(const LinkedHashSet& set2) const {
-    return containsAll(set2);
-}
-
-template <typename ValueType>
-bool LinkedHashSet<ValueType>::isSupersetOf(std::initializer_list<ValueType> list) const {
-    return containsAll(list);
-}
-
-template <typename ValueType>
-void LinkedHashSet<ValueType>::mapAll(void (*fn)(ValueType)) const {
-    map.mapAll(fn);
-}
-
-template <typename ValueType>
-void LinkedHashSet<ValueType>::mapAll(void (*fn)(const ValueType&)) const {
-    map.mapAll(fn);
-}
-
-template <typename ValueType>
-template <typename FunctorType>
-void LinkedHashSet<ValueType>::mapAll(FunctorType fn) const {
-    map.mapAll(fn);
-}
-
-template <typename ValueType>
-void LinkedHashSet<ValueType>::remove(const ValueType& value) {
-    map.remove(value);
-}
-
-template <typename ValueType>
-LinkedHashSet<ValueType>& LinkedHashSet<ValueType>::removeAll(const LinkedHashSet& set2) {
-    Vector<ValueType> toRemove;
-    for (const ValueType& value : *this) {
-        if (set2.map.containsKey(value)) {
-            toRemove.add(value);
-        }
-    }
-    for (const ValueType& value : toRemove) {
-        remove(value);
-    }
-    return *this;
-}
-
-template <typename ValueType>
-LinkedHashSet<ValueType>& LinkedHashSet<ValueType>::removeAll(std::initializer_list<ValueType> list) {
-    for (const ValueType& value : list) {
-        remove(value);
-    }
-    return *this;
-}
-
-template <typename ValueType>
-LinkedHashSet<ValueType>& LinkedHashSet<ValueType>::retainAll(const LinkedHashSet& set2) {
-    Vector<ValueType> toRemove;
-    for (const ValueType& value : *this) {
-        if (!set2.map.containsKey(value)) {
-            toRemove.add(value);
-        }
-    }
-    for (const ValueType& value : toRemove) {
-        remove(value);
-    }
-    return *this;
-}
-
-template <typename ValueType>
-LinkedHashSet<ValueType>& LinkedHashSet<ValueType>::retainAll(std::initializer_list<ValueType> list) {
-    LinkedHashSet<ValueType> set2(list);
-    return retainAll(set2);
-}
-
-template <typename ValueType>
-int LinkedHashSet<ValueType>::size() const {
-    return map.size();
-}
-
-template <typename ValueType>
-std::string LinkedHashSet<ValueType>::toString() const {
-    std::ostringstream os;
-    os << *this;
-    return os.str();
 }
 
 /*
- * Implementation notes: set operators
- * -----------------------------------
- * The implementations for the set operators use iteration to walk
- * over the elements in one or both sets.
+ * A set of elements that remembers their insertion order during iteration. To use
+ * this type, the underlying elements must support a function
+ *
+ *     int hashCode(ValueType);
+ *
+ * that returns a nonnegative integer, along with equality comparison using ==.
  */
 template <typename ValueType>
-bool LinkedHashSet<ValueType>::operator ==(const LinkedHashSet& set2) const {
-    return equals(set2);
-}
-
-template <typename ValueType>
-bool LinkedHashSet<ValueType>::operator !=(const LinkedHashSet& set2) const {
-    return !equals(set2);
-}
-
-// Implementation note:
-// The definitions of <, <=, >, and >= are a bit unintuitive here.
-// Because Sets are considered to be "equal" if they have the same elements,
-// regardless of order, the equals() method and == / != operators ignore order.
-//
-// Example: {1, 2, 3, 4} == {4, 3, 2, 1}  true
-//
-// Similarly, if you ask whether a set is <= or >= to another, this includes
-// the notion of equality, so it should return true if the sets contain the same
-// elements, regardless of order.
-//
-// Example: {1, 2, 3, 4} == {4, 3, 2, 1}  true
-// Example: {1, 2, 3, 4} <= {4, 3, 2, 1}  true
-// Example: {1, 2, 3, 4} >= {4, 3, 2, 1}  true
-//
-// If you ask whether a set is < or > to another, it is assumed that you don't
-// want this to return true if they are "equal", so we must check for non-equality
-// before checking the elements pairwise.
-//
-// Example: {1, 2, 3, 4} <  {4, 3, 2, 1}       false   (because equal)
-// Example: {4, 2, 3, 1} >  {1, 3, 2, 4}       false   (because equal)
-// Example: {1, 2, 3, 4} <  {4, 3, 2}          true
-// Example: {1, 2, 3, 4} <= {4, 3, 2}          true
-// Example: {1, 2, 3, 4} <  {4, 3, 2, 1, 0}    true
-// Example: {1, 2, 3, 4} <= {4, 3, 2, 1, 0}    true
-//
-// This issue is unique to LinkedHashSet because Set sorts into a predictable sorted order
-// and HashSet opts not to implement <, <=, >, or >= due to its unpredictable hash order.
-
-template <typename ValueType>
-bool LinkedHashSet<ValueType>::operator <(const LinkedHashSet& set2) const {
-    return !equals(set2) && stanfordcpplib::collections::compare(*this, set2) < 0;
-}
-
-template <typename ValueType>
-bool LinkedHashSet<ValueType>::operator <=(const LinkedHashSet& set2) const {
-    return equals(set2) || stanfordcpplib::collections::compare(*this, set2) <= 0;
-}
-
-template <typename ValueType>
-bool LinkedHashSet<ValueType>::operator >(const LinkedHashSet& set2) const {
-    return !equals(set2) && stanfordcpplib::collections::compare(*this, set2) > 0;
-}
-
-template <typename ValueType>
-bool LinkedHashSet<ValueType>::operator >=(const LinkedHashSet& set2) const {
-    return equals(set2) || stanfordcpplib::collections::compare(*this, set2) >= 0;
-}
-
-template <typename ValueType>
-LinkedHashSet<ValueType> LinkedHashSet<ValueType>::operator +(const LinkedHashSet& set2) const {
-    LinkedHashSet<ValueType> set = *this;
-    set.addAll(set2);
-    return set;
-}
-
-template <typename ValueType>
-LinkedHashSet<ValueType> LinkedHashSet<ValueType>::operator +(std::initializer_list<ValueType> list) const {
-    LinkedHashSet<ValueType> set = *this;
-    set.addAll(list);
-    return set;
-}
-
-template <typename ValueType>
-LinkedHashSet<ValueType> LinkedHashSet<ValueType>::operator +(const ValueType& element) const {
-    LinkedHashSet<ValueType> set = *this;
-    set.add(element);
-    return set;
-}
-
-template <typename ValueType>
-LinkedHashSet<ValueType> LinkedHashSet<ValueType>::operator *(const LinkedHashSet& set2) const {
-    LinkedHashSet<ValueType> set = *this;
-    return set.retainAll(set2);
-}
-
-template <typename ValueType>
-LinkedHashSet<ValueType> LinkedHashSet<ValueType>::operator *(std::initializer_list<ValueType> list) const {
-    LinkedHashSet<ValueType> set = *this;
-    return set.retainAll(list);
-}
-
-template <typename ValueType>
-LinkedHashSet<ValueType> LinkedHashSet<ValueType>::operator -(const LinkedHashSet& set2) const {
-    LinkedHashSet<ValueType> set = *this;
-    return set.removeAll(set2);
-}
-
-template <typename ValueType>
-LinkedHashSet<ValueType> LinkedHashSet<ValueType>::operator -(std::initializer_list<ValueType> list) const {
-    LinkedHashSet<ValueType> set = *this;
-    return set.removeAll(list);
-}
-
-template <typename ValueType>
-LinkedHashSet<ValueType> LinkedHashSet<ValueType>::operator -(const ValueType& element) const {
-    LinkedHashSet<ValueType> set = *this;
-    set.remove(element);
-    return set;
-}
-
-template <typename ValueType>
-LinkedHashSet<ValueType>& LinkedHashSet<ValueType>::operator +=(const LinkedHashSet& set2) {
-    return addAll(set2);
-}
-
-template <typename ValueType>
-LinkedHashSet<ValueType>& LinkedHashSet<ValueType>::operator +=(std::initializer_list<ValueType> list) {
-    return addAll(list);
-}
-
-template <typename ValueType>
-LinkedHashSet<ValueType>& LinkedHashSet<ValueType>::operator +=(const ValueType& value) {
-    add(value);
-    removeFlag = false;
-    return *this;
-}
-
-template <typename ValueType>
-LinkedHashSet<ValueType>& LinkedHashSet<ValueType>::operator *=(const LinkedHashSet& set2) {
-    return retainAll(set2);
-}
-
-template <typename ValueType>
-LinkedHashSet<ValueType>& LinkedHashSet<ValueType>::operator *=(std::initializer_list<ValueType> list) {
-    return retainAll(list);
-}
-
-template <typename ValueType>
-LinkedHashSet<ValueType>& LinkedHashSet<ValueType>::operator -=(const LinkedHashSet& set2) {
-    return removeAll(set2);
-}
-
-template <typename ValueType>
-LinkedHashSet<ValueType>& LinkedHashSet<ValueType>::operator -=(std::initializer_list<ValueType> list) {
-    return removeAll(list);
-}
-
-template <typename ValueType>
-LinkedHashSet<ValueType>& LinkedHashSet<ValueType>::operator -=(const ValueType& value) {
-    remove(value);
-    removeFlag = true;
-    return *this;
-}
-
-template <typename ValueType>
-std::ostream& operator <<(std::ostream& os, const LinkedHashSet<ValueType>& set) {
-    return stanfordcpplib::collections::writeCollection(os, set);
-}
-
-template <typename ValueType>
-std::istream& operator >>(std::istream& is, LinkedHashSet<ValueType>& set) {
-    ValueType element;
-    return stanfordcpplib::collections::readCollection(is, set, element, /* descriptor */ "LinkedHashSet::operator >>");
-}
-
-/*
- * Template hash function for hash sets.
- * Requires the element type in the LinkedHashSet to have a hashCode function.
- */
-template <typename T>
-int hashCode(const LinkedHashSet<T>& set) {
-    return stanfordcpplib::collections::hashCodeCollection(set, /* orderMatters */ false);
-}
-
-/*
- * Function: randomElement
- * Usage: element = randomElement(set);
- * ------------------------------------
- * Returns a randomly chosen element of the given set.
- * Throws an error if the set is empty.
- */
-template <typename T>
-const T& randomElement(const LinkedHashSet<T>& set) {
-    return stanfordcpplib::collections::randomElement(set);
-}
+    using LinkedHashSet = stanfordcpplib::collections::GenericSet<stanfordcpplib::collections::LinkedHashSetTraits<ValueType>>;
 
 #endif // _linkedhashset_h
 
@@ -21520,8 +17588,6 @@ const T& randomElement(const LinkedHashSet<T>& set) {
  * See BasicGraph.cpp for implementation of some non-template members.
  *
  * @author Marty Stepp
- * @version 2018/11/18
- * - bug fix for getInverseEdge/Arc with null parameter
  * @version 2018/09/07
  * - reformatted doc-style comments
  * @version 2018/03/10
@@ -21725,7 +17791,7 @@ public:
     VertexGen& operator =(VertexGen&& other);
 
 private:
-    /* Color */ int m_color;   // vertex's color as passed to setColor
+    /* Color */ int _color;   // vertex's color as passed to setColor
 };
 
 /**
@@ -21845,7 +17911,7 @@ std::ostream& operator <<(std::ostream& out, const EdgeGen<V, E>& edge);
  * and getInverseEdge(edge) to get the edge v2 -> v1 for a given edge v1 -> v2.
  */
 template <typename V = void*, typename E = void*>
-class BasicGraphGen : public Graph<VertexGen<V, E>, EdgeGen<V, E> > {
+class BasicGraphGen : public Graph<VertexGen<V, E>, EdgeGen<V, E>> {
 public:
     /**
      * Constructs a new empty graph.
@@ -22325,7 +18391,7 @@ VertexGen<V, E>::VertexGen(const VertexGen& other)
 #endif // SPL_BASICGRAPH_VERTEX_EDGE_RICH_MEMBERS
       data(other.data),
       extraData(data),
-      m_color(other.m_color) {
+      _color(other._color) {
     // empty
 }
 
@@ -22336,7 +18402,7 @@ VertexGen<V, E>::~VertexGen() {
 
 template <typename V, typename E>
 int VertexGen<V, E>::getColor() const {
-    return m_color;
+    return _color;
 }
 
 template <typename V, typename E>
@@ -22346,12 +18412,12 @@ void VertexGen<V, E>::resetData() {
     previous = nullptr;
     visited = false;
 #endif // SPL_BASICGRAPH_VERTEX_EDGE_RICH_MEMBERS
-    m_color = /* UNCOLORED */ 0;
+    _color = /* UNCOLORED */ 0;
 }
 
 template <typename V, typename E>
 void VertexGen<V, E>::setColor(int c) {
-    m_color = c;
+    _color = c;
     notifyObservers();
 }
 
@@ -22373,7 +18439,7 @@ VertexGen<V, E>& VertexGen<V, E>::operator =(const VertexGen& other) {
         previous = other.previous;
 #endif // SPL_BASICGRAPH_VERTEX_EDGE_RICH_MEMBERS
         data = other.data;
-        m_color = other.m_color;
+        _color = other._color;
     }
     return *this;
 }
@@ -22389,7 +18455,7 @@ VertexGen<V, E>& VertexGen<V, E>::operator =(VertexGen&& other) {
         previous = other.previous;
 #endif // SPL_BASICGRAPH_VERTEX_EDGE_RICH_MEMBERS
         data = other.data;
-        m_color = other.m_color;
+        _color = other._color;
     }
     return *this;
 }
@@ -22527,13 +18593,13 @@ std::ostream& operator <<(std::ostream& out, const EdgeGen<V, E>& edge) {
  * BasicGraph member implementations
  */
 template <typename V, typename E>
-BasicGraphGen<V, E>::BasicGraphGen() : Graph<VertexGen<V, E>, EdgeGen<V, E> >() {
+BasicGraphGen<V, E>::BasicGraphGen() : Graph<VertexGen<V, E>, EdgeGen<V, E>>() {
     m_resetEnabled = true;
 }
 
 template <typename V, typename E>
 BasicGraphGen<V, E>::BasicGraphGen(std::initializer_list<std::string> vertexList)
-        : Graph<VertexGen<V, E>, EdgeGen<V, E> >() {
+        : Graph<VertexGen<V, E>, EdgeGen<V, E>>() {
     m_resetEnabled = true;
     for (const std::string& vertexName : vertexList) {
         this->addVertex(vertexName);
@@ -22597,7 +18663,7 @@ EdgeGen<V, E>* BasicGraphGen<V, E>::getEdge(const std::string& v1, const std::st
 
 template <typename V, typename E>
 EdgeGen<V, E>* BasicGraphGen<V, E>::getInverseArc(EdgeGen<V, E>* edge) const {
-    return (edge) ? this->getArc(edge->finish, edge->start) : nullptr;
+    return this->getArc(edge->finish, edge->start);
 }
 
 template <typename V, typename E>
@@ -25095,7 +21161,7 @@ typedef BigInteger bigint;
  * Stanford C++ library.
  *
  * @author Marty Stepp
- * @version 2018/12/28
+ * @version 2019/04/12
  */
 
 #ifndef _version_h
@@ -25109,7 +21175,7 @@ typedef BigInteger bigint;
  *       *MUST* be zero-padded to YYYY/MM/DD format;
  *       if month or day is < 10, insert a preceding 0
  */
-#define STANFORD_CPP_LIB_VERSION "2018/12/28"
+#define STANFORD_CPP_LIB_VERSION "2019/04/12"
 
 /*
  * Minimum version of your IDE's project that is supported.
