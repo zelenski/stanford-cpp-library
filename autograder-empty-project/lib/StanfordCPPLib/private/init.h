@@ -55,25 +55,25 @@ void initializeLibraryStudentThread();
 
 /**
  * Runs the student's main function in its own thread, creating that thread
- * as an object of type GStudentThread.
+ * as an object of type GThread.
  */
 void runMainInThread(int (* mainFunc)(void));
 
 /**
  * Runs the student's main function in its own thread, creating that thread
- * as an object of type GStudentThread.
+ * as an object of type GThread.
  */
 void runMainInThread(std::function<int()> mainFunc);
 
 /**
  * Runs the student's main function in its own thread, creating that thread
- * as an object of type GStudentThread.
+ * as an object of type GThread.
  */
 void runMainInThreadVoid(void (* mainFuncVoid)(void));
 
 /**
  * Runs the student's main function in its own thread, creating that thread
- * as an object of type GStudentThread.
+ * as an object of type GThread.
  */
 void runMainInThreadVoid(std::function<void()> mainFuncVoid);
 

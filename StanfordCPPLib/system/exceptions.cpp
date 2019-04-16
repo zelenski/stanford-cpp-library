@@ -5,6 +5,8 @@
  * by student code on the console.
  * 
  * @author Marty Stepp
+ * @version 2019/04/16
+ * - filter Qt/std thread methods from stack trace
  * @version 2019/04/02
  * - small fix for warning about -Wreturn-std-move on string exception
  * @version 2018/10/18
@@ -286,6 +288,10 @@ bool shouldFilterOutFromStackTrace(const std::string& function) {
         "_endthreadex",
         "_Function_handler",
         "_Internal_",
+        "__invoke_impl",
+        "__invoke_result::type",
+        "thread::_Invoker",
+        "thread::_State_impl",
         "_M_invoke",
         "_sigtramp",
         "autograderMain",
@@ -299,6 +305,10 @@ bool shouldFilterOutFromStackTrace(const std::string& function) {
         "GetModuleFileName",
         "GetProfileString",
         // "GStudentThread::run",
+        "GThreadQt::run",
+        "GThreadQt::start",
+        "GThreadStd::run",
+        "GThreadStd::start",
         "InitializeExceptionChain",
         "KnownExceptionFilter",
         "M_invoke",
@@ -313,6 +323,7 @@ bool shouldFilterOutFromStackTrace(const std::string& function) {
         "QMetaMethod::",
         "QMetaObject::",
         "QObjectPrivate::",
+        "QtGui::startBackgroundEventLoop",
         // "QWidget::",
         "QWidgetBackingStore::",
         "QWindowSystemInterface::",
@@ -386,11 +397,11 @@ void printStackTrace(std::ostream& out) {
     if (lineStrLength > 0) {
         out << "*** Stack trace (line numbers are approximate):" << std::endl;
         if (STATIC_VARIABLE(STACK_TRACE_SHOW_TOP_BOTTOM_BARS)) {
-            out << "*** "
-                      << std::setw(lineStrLength) << std::left
-                      << "file:line" << "  " << "function" << std::endl;
-            out << "*** "
-                      << std::string(lineStrLength + 2 + funcNameLength, '=') << std::endl;
+            std::ostringstream lineout;
+            lineout << "*** " << std::setw(lineStrLength) << std::left
+                    << "file:line" << "  " << "function" << std::endl
+                    << "*** " << std::string(lineStrLength + 2 + funcNameLength, '=') << std::endl;
+            out << lineout.str() << std::endl;
         }
     } else {
         out << "*** Stack trace:" << std::endl;
@@ -446,8 +457,12 @@ void printStackTrace(std::ostream& out) {
             lineStr = "line " + std::to_string(entry.line);
         }
         
-        out << "*** " << std::left << std::setw(lineStrLength) << lineStr
-                  << "  " << entry.function << std::endl;
+        // we use a temporary 'lineout' because cerr aggressively flushes on <<,
+        // leading to awkward line breaks in the output pane
+        std::ostringstream lineout;
+        lineout << "*** " << std::left << std::setw(lineStrLength) << lineStr
+                  << "  " << entry.function;
+        out << lineout.str() << std::endl;
         
         // don't show entries beneath the student's main() function, for simplicity
         if (entry.function == "main"
@@ -463,8 +478,9 @@ void printStackTrace(std::ostream& out) {
     }
 
     if (STATIC_VARIABLE(STACK_TRACE_SHOW_TOP_BOTTOM_BARS) && lineStrLength > 0) {
-        out << "*** "
-                  << std::string(lineStrLength + 2 + funcNameLength, '=') << std::endl;
+        std::ostringstream lineout;
+        lineout << "*** " << std::string(lineStrLength + 2 + funcNameLength, '=');
+        out << lineout.str() << std::endl;
     }
     
 //    out << "***" << std::endl;
@@ -603,8 +619,8 @@ static void stanfordCppLibSignalHandler(int sig) {
     std::cerr << std::endl;
     std::cerr << "***" << std::endl;
     std::cerr << "*** STANFORD C++ LIBRARY" << std::endl;
-    std::cerr << "*** " << SIGNAL_KIND << " occurred during program execution." << std::endl;
-    std::cerr << "*** " << SIGNAL_DETAILS << std::endl;;
+    std::cerr << (std::string("*** ") + SIGNAL_KIND + " occurred during program execution.") << std::endl;
+    std::cerr << (std::string("*** ") + SIGNAL_DETAILS) << std::endl;
     std::cerr << "***" << std::endl;
     
 //    if (sig != SIGSTACK) {

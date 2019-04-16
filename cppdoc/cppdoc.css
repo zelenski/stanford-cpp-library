@@ -110,7 +110,7 @@ pre, code, .code {
 
 .indexKey var {
 	font-style: italic;
-	font-weight: bold;
+	/*font-weight: bold;*/
 }
 
 .indexSynopsis {

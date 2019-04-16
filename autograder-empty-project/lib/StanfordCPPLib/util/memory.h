@@ -5,12 +5,16 @@
  * allocation.
  *
  * @author Marty Stepp
+ * @version 2019/04/16
+ * - bug fixes for WIN64
  * @version 2018/12/04
  * - initial version
  */
 
 #ifndef _memory_h
 #define _memory_h
+
+#include <cstdint>
 
 namespace stanfordcpplib {
 namespace memory {
@@ -23,9 +27,9 @@ namespace memory {
  */
 void computeMemoryDistances(
         void* const p,
-        unsigned long int& stackDist,
-        unsigned long int& heapDist,
-        unsigned long int& staticDist);
+        uintptr_t& stackDist,
+        uintptr_t& heapDist,
+        uintptr_t& staticDist);
 
 /**
  * Returns true if the given pointer points to memory on the heap.

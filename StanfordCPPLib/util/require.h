@@ -31,6 +31,7 @@ void inRange2D(int x, int y, int minX, int minY, int maxX, int maxY, const std::
 void nonEmpty(const std::string& str, const std::string& caller = "", const std::string& valueName = "", const std::string& details = "");
 void nonNegative(double value, const std::string& caller = "", const std::string& valueName = "", const std::string& details = "");
 void nonNegative(int value, const std::string& caller = "", const std::string& valueName = "", const std::string& details = "");
+void nonNegative(long value, const std::string& caller = "", const std::string& valueName = "", const std::string& details = "");
 void nonNegative2D(double x, double y, const std::string& caller = "", const std::string& xValueName = "", const std::string& yValueName = "", const std::string& details = "");
 void nonNegative2D(int x, int y, const std::string& caller = "", const std::string& xValueName = "", const std::string& yValueName = "", const std::string& details = "");
 void nonNull(const void* ptr, const std::string& caller = "", const std::string& valueName = "", const std::string& details = "");

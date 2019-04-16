@@ -21,6 +21,8 @@
 #define INTERNAL_INCLUDE 1
 #include "exceptions.h"
 #define INTERNAL_INCLUDE 1
+#include "gconsolewindow.h"
+#define INTERNAL_INCLUDE 1
 #include "gthread.h"
 #define INTERNAL_INCLUDE 1
 #include "strlib.h"
@@ -138,7 +140,14 @@ void QtGui::startBackgroundEventLoop(GThunkInt mainFunc, bool exitAfter) {
 
     // start student's main function in its own second thread
     if (!GThread::studentThreadExists()) {
-        GStudentThread::startStudentThread(mainFunc);
+        GThread::startStudentThread([&]() -> int {
+            stanfordcpplib::initializeLibraryStudentThread();
+            int result = mainFunc();
+            stanfordcpplib::endOfLibraryStudentThread();
+            stanfordcpplib::endOfLibraryStudentThread();
+            return result;
+        });
+
         startEventLoop(exitAfter);   // begin Qt event loop on main thread
     }
 }
@@ -149,7 +158,11 @@ void QtGui::startBackgroundEventLoopVoid(GThunk mainFunc, bool exitAfter) {
 
     // start student's main function in its own second thread
     if (!GThread::studentThreadExists()) {
-        GStudentThread::startStudentThreadVoid(mainFunc);
+        GThread::startStudentThreadVoid([&]() {
+            stanfordcpplib::initializeLibraryStudentThread();
+            mainFunc();
+            stanfordcpplib::endOfLibraryStudentThread();
+        });
         startEventLoop(exitAfter);   // begin Qt event loop on main thread
     }
 }
@@ -171,6 +184,33 @@ void QtGui::startEventLoop(bool exitAfter) {
         exitGraphics(exitCode);
     }
 }
+
+namespace stanfordcpplib {
+void endOfLibraryStudentThread() {
+    // briefly wait for the console to finish printing any/all output
+    GThread::getCurrentThread()->yield();
+    GThread::getCurrentThread()->sleep(1);
+
+    int result = 0;
+    if (GThread::getStudentThread() != nullptr) {
+        result = GThread::getStudentThread()->getResult();
+    }
+
+    // if I get here, student's main() has finished running;
+    // indicate this by showing a completed title on the graphical console
+    if (getConsoleEnabled()) {
+#ifndef SPL_HEADLESS_MODE
+        GConsoleWindow* console = getConsoleWindow();
+        if (console) {
+            console->shutdown();
+        }
+#endif // SPL_HEADLESS_MODE
+    } else {
+        // need to exit here else program will not terminate
+        QtGui::instance()->exitGraphics(result);
+    }
+}
+} // namespace stanfordcpplib
 
 #ifdef SPL_PRECOMPILE_QT_MOC_FILES
 #define INTERNAL_INCLUDE 1

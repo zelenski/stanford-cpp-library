@@ -41,8 +41,9 @@ void ErrorException::dump(std::ostream& out) const {
     out << "*** STANFORD C++ LIBRARY" << std::endl;
     out << "*** An ErrorException occurred during program execution:" << std::endl;
     if (!_msg.empty()) {
-        out << "*** " << _msg << std::endl;
+        out << ("*** " + _msg) << std::endl;
     }
+    out << "***" << std::endl;
     out << insertStarsBeforeEachLine(getStackTrace()) << std::endl;
     out.flush();
 }

@@ -1,6 +1,6 @@
 // Stanford C++ library (extracted)
 // @author Marty Stepp
-// @version Fri Apr 12 09:03:18 PDT 2019
+// @version Tue Apr 16 13:59:27 PDT 2019
 //
 // This library has been merged into a single .h and .cpp file by an automatic script
 // to make it easier to include and use with the CodeStepByStep tool.
@@ -1059,7 +1059,7 @@ static uint32_t my_ntohl(uint32_t arg) {
  * ------------------
  * This file implements the interface declared in hashcode.h.
  *
- * @version 2019/04/02
+ * @version 2019/04/16
  * - bugfix for win64 involving hashCode for void* pointers
  * @version 2018/08/10
  * - bugfixes involving negative hash codes, unified string hashing
@@ -1073,6 +1073,7 @@ static uint32_t my_ntohl(uint32_t arg) {
 
 #undef INTERNAL_INCLUDE
 #include <cstddef>       // For size_t
+#include <cstdint>       // For uintptr_t
 #include <cstring>       // For strlen
 
 static const int HASH_SEED = 5381;               // Starting point for first cycle
@@ -1138,6 +1139,12 @@ int hashCode(unsigned short key) {
     return hashCode(static_cast<int>(key));
 }
 
+#ifdef _WIN64
+int hashCode(uintptr_t key) {
+    return hashCode(static_cast<unsigned long>(key));
+}
+#endif // _WIN64
+
 /* 
  * Implementation notes: hashCode(void*)
  * -----------------------------------------------------
@@ -1145,12 +1152,7 @@ int hashCode(unsigned short key) {
  * overloads just treats the pointer value numerically.
  */
 int hashCode(void* key) {
-#if _WIN64
-    long temp = (long) static_cast<uint32_t>(reinterpret_cast<uintptr_t>(key));
-    return hashCode(temp);
-#else
-    return hashCode(reinterpret_cast<long>(key));
-#endif // _WIN64
+    return hashCode(reinterpret_cast<uintptr_t>(key));
 }
 
 /*
@@ -4263,6 +4265,8 @@ std::string getProjectVersion() {
  * Linux/gcc implementation of the call_stack class.
  *
  * @author Marty Stepp, based on code from Fredrik Orderud
+ * @version 2019/04/16
+ * - bug fix for stack trace line numbers on some Mac systems (thanks to Julie Zelenski)
  * @version 2018/10/22
  * - bug fix for STL vector vs Stanford Vector
  * @version 2018/10/18
@@ -4308,6 +4312,8 @@ std::string getProjectVersion() {
 #include <iostream>
 #include <sstream>
 #include <stdlib.h>
+#define INTERNAL_INCLUDE 1
+
 #define INTERNAL_INCLUDE 1
 
 #define INTERNAL_INCLUDE 1
@@ -4523,10 +4529,26 @@ int addr2line_all(void** addrs, int length, std::string& output) {
 #if defined(__APPLE__)
     // Mac OS X
     // JL : change "atos" to "xcrun atos"?
-    out << "atos -o " << exceptions::getProgramNameForStackTrace() << addrsStr;
+    void *base = (void *) _dyld_get_image_header(0);
+    if (base) {
+        out << "atos -l " << base << " -o " << exceptions::getProgramNameForStackTrace() << addrsStr;
+    } else {
+        out << "atos -o " << exceptions::getProgramNameForStackTrace() << addrsStr;
+    }
+#elif defined(_WIN64)
+    // Windows
+    if (fileExists("addr2line64.exe")) {
+        out << "addr2line64.exe -f -i -C -s -p -e \"" << exceptions::getProgramNameForStackTrace() << "\"" << addrsStr;
+    } else {
+        out << "(addr2line64.exe unavailable; no stack trace produced)";
+    }
 #elif defined(_WIN32)
     // Windows
-    out << "addr2line.exe -f -i -C -s -p -e \"" << exceptions::getProgramNameForStackTrace() << "\"" << addrsStr;
+    if (fileExists("addr2line.exe")) {
+        out << "addr2line.exe -f -i -C -s -p -e \"" << exceptions::getProgramNameForStackTrace() << "\"" << addrsStr;
+    } else {
+        out << "(addr2line.exe unavailable; no stack trace produced)";
+    }
 #else
     // Linux
     out << "addr2line -f -i -C -s -p -e " << exceptions::getProgramNameForStackTrace() << addrsStr;
@@ -4738,8 +4760,9 @@ void ErrorException::dump(std::ostream& out) const {
     out << "*** STANFORD C++ LIBRARY" << std::endl;
     out << "*** An ErrorException occurred during program execution:" << std::endl;
     if (!_msg.empty()) {
-        out << "*** " << _msg << std::endl;
+        out << ("*** " + _msg) << std::endl;
     }
+    out << "***" << std::endl;
     out << insertStarsBeforeEachLine(getStackTrace()) << std::endl;
     out.flush();
 }
@@ -5020,6 +5043,8 @@ void setEcho(bool value) {
  * by student code on the console.
  * 
  * @author Marty Stepp
+ * @version 2019/04/16
+ * - filter Qt/std thread methods from stack trace
  * @version 2019/04/02
  * - small fix for warning about -Wreturn-std-move on string exception
  * @version 2018/10/18
@@ -5301,6 +5326,10 @@ bool shouldFilterOutFromStackTrace(const std::string& function) {
         "_endthreadex",
         "_Function_handler",
         "_Internal_",
+        "__invoke_impl",
+        "__invoke_result::type",
+        "thread::_Invoker",
+        "thread::_State_impl",
         "_M_invoke",
         "_sigtramp",
         "autograderMain",
@@ -5314,6 +5343,10 @@ bool shouldFilterOutFromStackTrace(const std::string& function) {
         "GetModuleFileName",
         "GetProfileString",
         // "GStudentThread::run",
+        "GThreadQt::run",
+        "GThreadQt::start",
+        "GThreadStd::run",
+        "GThreadStd::start",
         "InitializeExceptionChain",
         "KnownExceptionFilter",
         "M_invoke",
@@ -5328,6 +5361,7 @@ bool shouldFilterOutFromStackTrace(const std::string& function) {
         "QMetaMethod::",
         "QMetaObject::",
         "QObjectPrivate::",
+        "QtGui::startBackgroundEventLoop",
         // "QWidget::",
         "QWidgetBackingStore::",
         "QWindowSystemInterface::",
@@ -5401,11 +5435,11 @@ void printStackTrace(std::ostream& out) {
     if (lineStrLength > 0) {
         out << "*** Stack trace (line numbers are approximate):" << std::endl;
         if (STATIC_VARIABLE(STACK_TRACE_SHOW_TOP_BOTTOM_BARS)) {
-            out << "*** "
-                      << std::setw(lineStrLength) << std::left
-                      << "file:line" << "  " << "function" << std::endl;
-            out << "*** "
-                      << std::string(lineStrLength + 2 + funcNameLength, '=') << std::endl;
+            std::ostringstream lineout;
+            lineout << "*** " << std::setw(lineStrLength) << std::left
+                    << "file:line" << "  " << "function" << std::endl
+                    << "*** " << std::string(lineStrLength + 2 + funcNameLength, '=') << std::endl;
+            out << lineout.str() << std::endl;
         }
     } else {
         out << "*** Stack trace:" << std::endl;
@@ -5461,8 +5495,12 @@ void printStackTrace(std::ostream& out) {
             lineStr = "line " + std::to_string(entry.line);
         }
         
-        out << "*** " << std::left << std::setw(lineStrLength) << lineStr
-                  << "  " << entry.function << std::endl;
+        // we use a temporary 'lineout' because cerr aggressively flushes on <<,
+        // leading to awkward line breaks in the output pane
+        std::ostringstream lineout;
+        lineout << "*** " << std::left << std::setw(lineStrLength) << lineStr
+                  << "  " << entry.function;
+        out << lineout.str() << std::endl;
         
         // don't show entries beneath the student's main() function, for simplicity
         if (entry.function == "main"
@@ -5478,8 +5516,9 @@ void printStackTrace(std::ostream& out) {
     }
 
     if (STATIC_VARIABLE(STACK_TRACE_SHOW_TOP_BOTTOM_BARS) && lineStrLength > 0) {
-        out << "*** "
-                  << std::string(lineStrLength + 2 + funcNameLength, '=') << std::endl;
+        std::ostringstream lineout;
+        lineout << "*** " << std::string(lineStrLength + 2 + funcNameLength, '=');
+        out << lineout.str() << std::endl;
     }
     
 //    out << "***" << std::endl;
@@ -5618,8 +5657,8 @@ static void stanfordCppLibSignalHandler(int sig) {
     std::cerr << std::endl;
     std::cerr << "***" << std::endl;
     std::cerr << "*** STANFORD C++ LIBRARY" << std::endl;
-    std::cerr << "*** " << SIGNAL_KIND << " occurred during program execution." << std::endl;
-    std::cerr << "*** " << SIGNAL_DETAILS << std::endl;;
+    std::cerr << (std::string("*** ") + SIGNAL_KIND + " occurred during program execution.") << std::endl;
+    std::cerr << (std::string("*** ") + SIGNAL_DETAILS) << std::endl;
     std::cerr << "***" << std::endl;
     
 //    if (sig != SIGSTACK) {
@@ -7447,7 +7486,7 @@ void shutdownConsole() {
  */
 void setConsolePropertiesQt() {
 #if defined(SPL_CONSOLE_FONTSIZE)
-    std::string fontStr = std::string("Monospaced-Bold-") + to_string(SPL_CONSOLE_FONTSIZE);
+    std::string fontStr = std::string("Monospaced-Bold-") + std::to_string(SPL_CONSOLE_FONTSIZE);
     setConsoleFont(fontStr);
 #endif
 

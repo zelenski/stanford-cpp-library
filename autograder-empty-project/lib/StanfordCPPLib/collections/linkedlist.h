@@ -5,6 +5,10 @@
  * implementation of a doubly-linked list of objects and provides a
  * public interface similar to that of the <code>Vector</code> class.
  *
+ * @version 2019/04/09
+ * - renamed private members with underscore naming scheme for consistency
+ * @version 2019/02/04
+ * - changed internal implementation to wrap std collections
  * @version 2018/01/07
  * - added removeFront, removeBack
  * @version 2017/11/15
@@ -50,6 +54,7 @@
 #include <list>
 #include <sstream>
 #include <string>
+#include <functional>
 
 #define INTERNAL_INCLUDE 1
 #include "collections.h"
@@ -83,7 +88,7 @@ public:
      * Initializes a new LinkedList.  The default constructor creates an
      * empty LinkedList.
      */
-    LinkedList();
+    LinkedList() = default;
     /* implicit */ LinkedList(const std::list<ValueType>& v);
 
     /*
@@ -97,7 +102,7 @@ public:
      * -------------------
      * Frees any heap storage allocated by this LinkedList.
      */
-    virtual ~LinkedList();
+    virtual ~LinkedList() = default;
     
     /*
      * Method: add
@@ -226,11 +231,7 @@ public:
      * Calls the specified function on each element of the LinkedList in
      * ascending index order.
      */
-    void mapAll(void (*fn)(ValueType)) const;
-    void mapAll(void (*fn)(const ValueType &)) const;
-
-    template <typename FunctorType>
-    void mapAll(FunctorType fn) const;
+    void mapAll(std::function<void (const ValueType &)> fn) const;
     
     /*
      * Method: pop_back
@@ -471,8 +472,8 @@ private:
      */
 
     /* Instance variables */
-    std::list<ValueType> m_elements;   // STL linked list as backing storage
-    unsigned int m_version = 0;   // structure version for detecting invalid iterators
+    std::list<ValueType> _elements;   // STL linked list as backing storage
+    stanfordcpplib::collections::VersionTracker _version;
 
     /* Private methods */
 
@@ -483,10 +484,11 @@ private:
      * accept index parameters.
      * The prefix parameter represents a text string to place at the start of
      * the error message, generally to help indicate which member threw the error.
+     *
+     * We make prefix a const char* rather than a std::string to avoid having to
+     * construct and then destroy the prefix with each call.
      */
-    void checkIndex(int index, int min, int max, std::string prefix) const;
-
-    void deepCopy(const LinkedList& src);
+    void checkIndex(int index, int min, int max, const char* prefix) const;
 
     /*
      * Hidden features
@@ -498,15 +500,6 @@ private:
      */
 
 public:
-    /*
-     * Deep copying support
-     * --------------------
-     * This copy constructor and operator= are defined to make a deep copy,
-     * making it possible to pass or return LinkedLists by value and assign
-     * from one LinkedList to another.
-     */
-    LinkedList(const LinkedList& src);
-    LinkedList& operator =(const LinkedList& src);
 
     /*
      * Operator: ,
@@ -517,158 +510,42 @@ public:
     LinkedList& operator ,(const ValueType& value);
 
     /*
-     * Iterator support
-     * ----------------
-     * The classes in the StanfordCPPLib collection implement input
-     * iterators so that they work symmetrically with respect to the
-     * corresponding STL classes.
+     * Iterator support.
      */
-    class linkedlist_iterator : public std::list<ValueType>::iterator {
-    public:
-        linkedlist_iterator()
-                : std::list<ValueType>::iterator(),
-                  llp(nullptr),
-                  itr_version(0) {
-            // empty
-        }
+    using iterator = stanfordcpplib::collections::CheckedIterator<typename std::list<ValueType>::iterator>;
+    using const_iterator = stanfordcpplib::collections::CheckedIterator<typename std::list<ValueType>::const_iterator>;
 
-        linkedlist_iterator(const linkedlist_iterator& it)
-                : std::list<ValueType>::iterator(it),
-                  llp(it.llp),
-                  itr_version(it.itr_version) {
-            // empty
-        }
-
-        linkedlist_iterator(LinkedList* llp, const typename std::list<ValueType>::iterator& it)
-                : std::list<ValueType>::iterator(it),
-                  llp(llp),
-                  itr_version(llp->version()) {
-            // empty
-        }
-
-        ValueType& operator *() {
-            if (llp) {
-                stanfordcpplib::collections::checkVersion(*llp, *this);
-            }
-            return std::list<ValueType>::iterator::operator *();   // call super
-        }
-
-        ValueType* operator ->() {
-            if (llp) {
-                stanfordcpplib::collections::checkVersion(*llp, *this);
-            }
-            return std::list<ValueType>::iterator::operator ->();   // call super
-        }
-
-        unsigned int version() const {
-            return itr_version;
-        }
-
-    private:
-        LinkedList* llp;
-        unsigned int itr_version;
-    };
-
-    class const_linkedlist_iterator : public std::list<ValueType>::const_iterator {
-    public:
-        const_linkedlist_iterator()
-                : std::list<ValueType>::const_iterator(),
-                  llp(nullptr),
-                  itr_version(0) {
-            // empty
-        }
-
-        const_linkedlist_iterator(const const_linkedlist_iterator& it)
-                : std::list<ValueType>::const_iterator(it),
-                  llp(it.llp),
-                  itr_version(it.itr_version) {
-            // empty
-        }
-
-        const_linkedlist_iterator(const LinkedList* llp, const typename std::list<ValueType>::const_iterator& it)
-                : std::list<ValueType>::const_iterator(it),
-                  llp(llp),
-                  itr_version(llp->version()) {
-            // empty
-        }
-
-    private:
-        const LinkedList* llp;
-        unsigned int itr_version;
-    };
-
-    /*
-     * Returns an iterator positioned at the first element of the list.
-     */
-    linkedlist_iterator begin() {
-        return linkedlist_iterator(this, m_elements.begin());
+    iterator begin() {
+        return { &_version, _elements.begin(), _elements };
     }
-
-    /*
-     * Returns an iterator positioned at the first element of the list.
-     */
-    const_linkedlist_iterator begin() const {
-        auto itr = m_elements.begin();
-        return const_linkedlist_iterator(this, itr);
+    iterator end() {
+        return { &_version, _elements.end(), _elements };
     }
-    
-    /*
-     * Returns an iterator positioned at the last element of the list.
-     */
-    linkedlist_iterator end() {
-        auto itr = m_elements.end();
-        return linkedlist_iterator(this, itr);
+    const_iterator begin() const {
+        return { &_version, _elements.begin(), _elements };
     }
-    
-    /*
-     * Returns an iterator positioned at the last element of the list.
-     */
-    const_linkedlist_iterator end() const {
-        auto itr = m_elements.end();
-        return const_linkedlist_iterator(this, itr);
+    const_iterator end() const {
+        return { &_version, _elements.end(), _elements };
     }
-
-    /*
-     * Returns the internal version of this collection.
-     * This is used to check for invalid iterators and issue error messages.
-     */
-    unsigned int version() const;
 };
 
 /* Implementation section */
 
-/*
- * Implementation notes: LinkedList constructor and destructor
- * -------------------------------------------------------
- * The constructor allocates storage for the dynamic array
- * and initializes the other fields of the object.  The
- * destructor frees the memory used for the array.
- */
-template <typename ValueType>
-LinkedList<ValueType>::LinkedList() {
-    // empty
-}
-
 template <typename ValueType>
 LinkedList<ValueType>::LinkedList(const std::list<ValueType>& v)
-        : m_elements(v) {
+        : _elements(v) {
     // empty
 }
 
 template <typename ValueType>
-LinkedList<ValueType>::LinkedList(std::initializer_list<ValueType> list) {
-    addAll(list);
-}
-
-template <typename ValueType>
-LinkedList<ValueType>::~LinkedList() {
+LinkedList<ValueType>::LinkedList(std::initializer_list<ValueType> list) : _elements(list) {
     // empty
 }
 
 template <typename ValueType>
 void LinkedList<ValueType>::add(ValueType value) {
-    m_elements.push_back(value);
-    m_version++;
+    _elements.push_back(value);
+    _version.update();
 }
 
 template <typename ValueType>
@@ -677,7 +554,8 @@ LinkedList<ValueType>::addAll(const LinkedList<ValueType>& list) {
     for (const ValueType& value : list) {
         add(value);
     }
-    m_version++;
+    _version.update();
+    return *this;
 }
 
 template <typename ValueType>
@@ -685,16 +563,13 @@ LinkedList<ValueType>& LinkedList<ValueType>::addAll(std::initializer_list<Value
     for (const ValueType& value : list) {
         add(value);
     }
-    m_version++;
+    _version.update();
     return *this;
 }
 
 template <typename ValueType>
 ValueType& LinkedList<ValueType>::back() {
-    if (isEmpty()) {
-        error("LinkedList::back: list is empty");
-    }
-    return m_elements.back();
+    return const_cast<ValueType&>(static_cast<const LinkedList &>(*this).back());
 }
 
 template <typename ValueType>
@@ -702,13 +577,13 @@ const ValueType& LinkedList<ValueType>::back() const {
     if (isEmpty()) {
         error("LinkedList::back: list is empty");
     }
-    return m_elements.back();
+    return _elements.back();
 }
 
 template <typename ValueType>
 void LinkedList<ValueType>::clear() {
-    m_elements.clear();
-    m_version++;
+    _elements.clear();
+    _version.update();
 }
 
 template <typename ValueType>
@@ -718,15 +593,12 @@ bool LinkedList<ValueType>::contains(const ValueType& value) const {
 
 template <typename ValueType>
 bool LinkedList<ValueType>::equals(const LinkedList<ValueType>& list2) const {
-    return m_elements == list2.m_elements;
+    return _elements == list2._elements;
 }
 
 template <typename ValueType>
 ValueType& LinkedList<ValueType>::front() {
-    if (isEmpty()) {
-        error("LinkedList::front: list is empty");
-    }
-    return m_elements.front();
+    return const_cast<ValueType&>(static_cast<const LinkedList &>(*this).front());
 }
 
 template <typename ValueType>
@@ -734,17 +606,13 @@ const ValueType& LinkedList<ValueType>::front() const {
     if (isEmpty()) {
         error("LinkedList::front: list is empty");
     }
-    return m_elements.front();
+    return _elements.front();
 }
 
 template <typename ValueType>
 const ValueType & LinkedList<ValueType>::get(int index) const {
     checkIndex(index, 0, size()-1, "get");
-    auto itr = m_elements.begin();
-    for (int i = 0; i < index; i++) {
-        ++itr;
-    }
-    return *itr;
+    return *std::next(_elements.begin(), index);
 }
 
 template <typename ValueType>
@@ -763,15 +631,15 @@ int LinkedList<ValueType>::indexOf(const ValueType& value) const {
 template <typename ValueType>
 void LinkedList<ValueType>::insert(int index, ValueType value) {
     checkIndex(index, 0, size(), "insert");
-    auto itr = m_elements.begin();
+    auto itr = _elements.begin();
     std::advance(itr, index);
-    m_elements.insert(itr, value);
-    m_version++;
+    _elements.insert(itr, value);
+    _version.update();
 }
 
 template <typename ValueType>
 bool LinkedList<ValueType>::isEmpty() const {
-    return m_elements.empty();
+    return _elements.empty();
 }
 
 template <typename ValueType>
@@ -797,22 +665,7 @@ int LinkedList<ValueType>::lastIndexOf(const ValueType& value) const {
  * function object to each element in ascending index order.
  */
 template <typename ValueType>
-void LinkedList<ValueType>::mapAll(void (*fn)(ValueType)) const {
-    for (ValueType element : *this) {
-        fn(element);
-    }
-}
-
-template <typename ValueType>
-void LinkedList<ValueType>::mapAll(void (*fn)(const ValueType &)) const {
-    for (ValueType element : *this) {
-        fn(element);
-    }
-}
-
-template <typename ValueType>
-template <typename FunctorType>
-void LinkedList<ValueType>::mapAll(FunctorType fn) const {
+void LinkedList<ValueType>::mapAll(std::function<void (const ValueType &)> fn) const {
     for (ValueType element : *this) {
         fn(element);
     }
@@ -823,9 +676,9 @@ ValueType LinkedList<ValueType>::pop_back() {
     if (isEmpty()) {
         error("LinkedList::pop_back: list is empty");
     }
-    ValueType back = m_elements.back();
-    m_elements.pop_back();
-    m_version++;
+    ValueType back = _elements.back();
+    _elements.pop_back();
+    _version.update();
     return back;
 }
 
@@ -834,31 +687,31 @@ ValueType LinkedList<ValueType>::pop_front() {
     if (isEmpty()) {
         error("LinkedList::pop_front: list is empty");
     }
-    ValueType front = m_elements.front();
-    m_elements.pop_front();
-    m_version++;
+    ValueType front = _elements.front();
+    _elements.pop_front();
+    _version.update();
     return front;
 }
 
 template <typename ValueType>
 void LinkedList<ValueType>::push_back(const ValueType& value) {
-    m_elements.push_back(value);
-    m_version++;
+    _elements.push_back(value);
+    _version.update();
 }
 
 template <typename ValueType>
 void LinkedList<ValueType>::push_front(const ValueType& value) {
-    m_elements.push_front(value);
-    m_version++;
+    _elements.push_front(value);
+    _version.update();
 }
 
 template <typename ValueType>
 void LinkedList<ValueType>::remove(int index) {
     checkIndex(index, 0, size()-1, "remove");
-    auto itr = m_elements.begin();
+    auto itr = _elements.begin();
     advance(itr, index);
-    m_elements.erase(itr);
-    m_version++;
+    _elements.erase(itr);
+    _version.update();
 }
 
 template <typename ValueType>
@@ -873,30 +726,23 @@ ValueType LinkedList<ValueType>::removeFront() {
 
 template <typename ValueType>
 void LinkedList<ValueType>::removeValue(const ValueType& value) {
-    // loop using iterator to avoid O(N^2) runtime
-    auto itr = this->begin();
-    auto end = this->end();
-    while (itr != end) {
-        if (*itr == value) {
-            m_elements.erase(itr);
-            break;
-        }
-        itr++;
+    auto itr = std::find(_elements.begin(), _elements.end(), value);
+    if (itr != _elements.end()) {
+        _elements.erase(itr);
+        _version.update();
     }
-    m_version++;
 }
 
 template <typename ValueType>
 void LinkedList<ValueType>::reverse() {
-    m_elements.reverse();
-    m_version++;
+    _elements.reverse();
+    _version.update();
 }
 
 template <typename ValueType>
 void LinkedList<ValueType>::set(int index, const ValueType & value) {
     checkIndex(index, 0, size()-1, "set");
-    m_elements[index] = value;
-    m_version++;
+    (*this)[index] = value;
 }
 
 template <typename ValueType>
@@ -922,7 +768,7 @@ void LinkedList<ValueType>::shuffle() {
 
 template <typename ValueType>
 int LinkedList<ValueType>::size() const {
-    return m_elements.size();
+    return _elements.size();
 }
 
 
@@ -966,11 +812,6 @@ std::string LinkedList<ValueType>::toString() const {
     std::ostringstream os;
     os << *this;
     return os.str();
-}
-
-template <typename ValueType>
-unsigned int LinkedList<ValueType>::version() const {
-    return m_version;
 }
 
 /*
@@ -1031,56 +872,36 @@ LinkedList<ValueType>::operator +=(const ValueType& value) {
  */
 template <typename ValueType>
 bool LinkedList<ValueType>::operator ==(const LinkedList& list2) const {
-    return m_elements == list2.m_elements;
+    return _elements == list2._elements;
 }
 
 template <typename ValueType>
 bool LinkedList<ValueType>::operator !=(const LinkedList& list2) const {
-    return m_elements != list2.m_elements;
+    return _elements != list2._elements;
 }
 
 template <typename ValueType>
 bool LinkedList<ValueType>::operator <(const LinkedList& list2) const {
-    return m_elements < list2.m_elements;
+    return _elements < list2._elements;
 }
 
 template <typename ValueType>
 bool LinkedList<ValueType>::operator <=(const LinkedList& list2) const {
-    return m_elements <= list2.m_elements;
+    return _elements <= list2._elements;
 }
 
 template <typename ValueType>
 bool LinkedList<ValueType>::operator >(const LinkedList& list2) const {
-    return m_elements > list2.m_elements;
+    return _elements > list2._elements;
 }
 
 template <typename ValueType>
 bool LinkedList<ValueType>::operator >=(const LinkedList& list2) const {
-    return this->m_elements >= list2.m_elements;
-}
-
-/*
- * Implementation notes: copy constructor and assignment operator
- * --------------------------------------------------------------
- * The constructor and assignment operators follow a standard paradigm,
- * as described in the associated textbook.
- */
-template <typename ValueType>
-LinkedList<ValueType>::LinkedList(const LinkedList& src) {
-    deepCopy(src);
+    return this->_elements >= list2._elements;
 }
 
 template <typename ValueType>
-LinkedList<ValueType>&
-LinkedList<ValueType>::operator =(const LinkedList& src) {
-    if (this != &src) {
-        deepCopy(src);
-    }
-    return *this;
-}
-
-template <typename ValueType>
-void LinkedList<ValueType>::checkIndex(int index, int min, int max, std::string prefix) const {
+void LinkedList<ValueType>::checkIndex(int index, int min, int max, const char* prefix) const {
     if (index < min || index > max) {
         std::ostringstream out;
         out << "LinkedList::" << prefix << ": index of " << index
@@ -1093,12 +914,6 @@ void LinkedList<ValueType>::checkIndex(int index, int min, int max, std::string 
         out << "]";
         error(out.str());
     }
-}
-
-template <typename ValueType>
-void LinkedList<ValueType>::deepCopy(const LinkedList& src) {
-    m_elements = src.m_elements;
-    m_version++;
 }
 
 /*

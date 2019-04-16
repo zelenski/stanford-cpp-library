@@ -4,6 +4,8 @@
  * This file exports the <code>DawgLexicon</code> class, which is a
  * compact structure for storing a list of words.
  * 
+ * @version 2019/04/09
+ * - renamed private members with underscore naming scheme for consistency
  * @version 2018/03/10
  * - added method front
  * @version 2017/11/14
@@ -371,11 +373,11 @@ private:
 #endif
     };
 #pragma pack()
-    Edge* edges;
-    Edge* start;
-    int numEdges;
-    int numDawgWords;
-    Set<std::string> otherWords;
+    Edge* _edges;
+    Edge* _start;
+    int _edgeCount;
+    int _dawgWordsCount;
+    Set<std::string> _otherWords;
 
 public:
     /*
@@ -427,8 +429,8 @@ public:
             } else {
                 index = 0;
                 edgePtr = nullptr;
-                setIterator = lp->otherWords.begin();
-                setEnd = lp->otherWords.end();
+                setIterator = lp->_otherWords.begin();
+                setEnd = lp->_otherWords.end();
                 currentDawgPrefix = "";
                 currentSetWord = "";
                 advanceToNextWordInDawg();
@@ -518,7 +520,7 @@ private:
     void readBinaryFile(std::istream& input);
     void readBinaryFile(const std::string& filename);
     void deepCopy(const DawgLexicon& src);
-    int countDawgWords(Edge* start) const;
+    int countDawgWords(Edge* _start) const;
 
     unsigned int charToOrd(char ch) const {
         return ((unsigned int)(tolower(ch) - 'a' + 1));

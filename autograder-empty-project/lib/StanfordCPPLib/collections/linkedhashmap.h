@@ -9,6 +9,8 @@
  * cost due to needing to store an extra copy of the keys.
  * 
  * @author Marty Stepp
+ * @version 2019/04/09
+ * - renamed private members with underscore naming scheme for consistency
  * @version 2018/03/10
  * - added methods front, back
  * @version 2016/09/24
@@ -40,6 +42,7 @@
 #include <initializer_list>
 #include <iterator>
 #include <string>
+#include <functional>
 
 #define INTERNAL_INCLUDE 1
 #include "collections.h"
@@ -78,7 +81,7 @@ public:
      * exports <code>hashCode</code> functions for <code>string</code> and
      * the C++ primitive types.
      */
-    LinkedHashMap();
+    LinkedHashMap() = default;
 
     /*
      * Constructor: LinkedHashMap
@@ -88,14 +91,14 @@ public:
      * Note that the pairs are stored in unpredictable order internally and not
      * necessarily the order in which they are written in the initializer list.
      */
-    LinkedHashMap(std::initializer_list<std::pair<KeyType, ValueType> > list);
+    LinkedHashMap(std::initializer_list<std::pair<const KeyType, ValueType>> list);
 
     /*
      * Destructor: ~LinkedHashMap
      * --------------------
      * Frees any heap storage associated with this map.
      */
-    virtual ~LinkedHashMap();
+    virtual ~LinkedHashMap() = default;
 
     /*
      * Method: add
@@ -118,7 +121,6 @@ public:
      * Identical in behavior to putAll.
      */
     LinkedHashMap& addAll(const LinkedHashMap& map2);
-    LinkedHashMap& addAll(std::initializer_list<std::pair<KeyType, ValueType> > list);
 
     /*
      * Method: back
@@ -199,11 +201,7 @@ public:
      * Iterates through the map entries and calls <code>fn(key, value)</code>
      * for each one.  The keys are processed in an undetermined order.
      */
-    void mapAll(void (*fn)(KeyType, ValueType)) const;
-    void mapAll(void (*fn)(const KeyType&, const ValueType&)) const;
-    
-    template <typename FunctorType>
-    void mapAll(FunctorType fn) const;
+    void mapAll(std::function<void (const KeyType&, const ValueType &)> fn) const;
 
     /*
      * Method: put
@@ -225,7 +223,6 @@ public:
      * Returns a reference to this map.
      */
     LinkedHashMap& putAll(const LinkedHashMap& map2);
-    LinkedHashMap& putAll(std::initializer_list<std::pair<KeyType, ValueType> > list);
 
     /*
      * Method: remove
@@ -246,7 +243,6 @@ public:
      * Returns a reference to this map.
      */
     LinkedHashMap& removeAll(const LinkedHashMap& map2);
-    LinkedHashMap& removeAll(std::initializer_list<std::pair<KeyType, ValueType> > list);
 
     /*
      * Method: retainAll
@@ -258,7 +254,6 @@ public:
      * Returns a reference to this map.
      */
     LinkedHashMap& retainAll(const LinkedHashMap& map2);
-    LinkedHashMap& retainAll(std::initializer_list<std::pair<KeyType, ValueType> > list);
 
     /*
      * Method: size
@@ -339,7 +334,6 @@ public:
      * from the second map is favored.
      */
     LinkedHashMap operator +(const LinkedHashMap& map2) const;
-    LinkedHashMap operator +(std::initializer_list<std::pair<KeyType, ValueType> > list) const;
 
     /*
      * Operator: +=
@@ -349,7 +343,7 @@ public:
      * Equivalent to calling addAll(map2).
      */
     LinkedHashMap& operator +=(const LinkedHashMap& map2);
-    LinkedHashMap& operator +=(std::initializer_list<std::pair<KeyType, ValueType> > list);
+
 
     /*
      * Operator: -
@@ -359,7 +353,7 @@ public:
      * with removeAll called on it passing the second map as a parameter.
      */
     LinkedHashMap operator -(const LinkedHashMap& map2) const;
-    LinkedHashMap operator -(std::initializer_list<std::pair<KeyType, ValueType> > list) const;
+
 
     /*
      * Operator: -=
@@ -369,7 +363,7 @@ public:
      * Equivalent to calling removeAll(map2).
      */
     LinkedHashMap& operator -=(const LinkedHashMap& map2);
-    LinkedHashMap& operator -=(std::initializer_list<std::pair<KeyType, ValueType> > list);
+
 
     /*
      * Operator: *
@@ -379,7 +373,7 @@ public:
      * with retainAll called on it passing the second map as a parameter.
      */
     LinkedHashMap operator *(const LinkedHashMap& map2) const;
-    LinkedHashMap operator *(std::initializer_list<std::pair<KeyType, ValueType> > list) const;
+
 
     /*
      * Operator: *=
@@ -389,7 +383,6 @@ public:
      * Equivalent to calling retainAll(map2).
      */
     LinkedHashMap& operator *=(const LinkedHashMap& map2);
-    LinkedHashMap& operator *=(std::initializer_list<std::pair<KeyType, ValueType> > list);
 
     template <typename K, typename V>
     friend std::ostream& operator <<(std::ostream& os, const LinkedHashMap<K, V>& map);
@@ -422,8 +415,8 @@ public:
      * Vector to remember the order of insertion.
     */
 private:
-    HashMap<KeyType, ValueType> innerMap;
-    Vector<KeyType> keyVector;
+    HashMap<KeyType, ValueType> _map;
+    Vector<KeyType> _keys;
 
 public:
     /*
@@ -442,25 +435,21 @@ public:
      * iterators so that they work symmetrically with respect to the
      * corresponding STL classes.
      */
-    class iterator : public Vector<KeyType>::iterator {
-    public:
-        iterator() : Vector<KeyType>::iterator() {}
-        iterator(const iterator& it) : Vector<KeyType>::iterator(it) {}
-        iterator(const typename Vector<KeyType>::iterator& it) : Vector<KeyType>::iterator(it) {}
-    };
+    using const_iterator = typename Vector<KeyType>::const_iterator;
+    using iterator = const_iterator;
 
     /*
      * Returns an iterator positioned at the first key of the map.
      */
-    iterator begin() const {
-        return iterator(keyVector.begin());
+    const_iterator begin() const {
+        return _keys.begin();
     }
 
     /*
      * Returns an iterator positioned at the last key of the map.
      */
-    iterator end() const {
-        return iterator(keyVector.end());
+    const_iterator end() const {
+        return _keys.end();
     }
 };
 
@@ -470,18 +459,10 @@ public:
  * ...
  */
 template <typename KeyType, typename ValueType>
-LinkedHashMap<KeyType, ValueType>::LinkedHashMap() {
-    // empty
-}
-
-template <typename KeyType, typename ValueType>
-LinkedHashMap<KeyType, ValueType>::LinkedHashMap(std::initializer_list<std::pair<KeyType, ValueType> > list) {
-    putAll(list);
-}
-
-template <typename KeyType, typename ValueType>
-LinkedHashMap<KeyType, ValueType>::~LinkedHashMap() {
-    // empty
+LinkedHashMap<KeyType, ValueType>::LinkedHashMap(std::initializer_list<std::pair<const KeyType, ValueType>> list) {
+    for (const auto& entry: list) {
+        put(entry.first, entry.second);
+    }
 }
 
 template <typename KeyType, typename ValueType>
@@ -495,28 +476,22 @@ LinkedHashMap<KeyType, ValueType>& LinkedHashMap<KeyType, ValueType>::addAll(con
 }
 
 template <typename KeyType, typename ValueType>
-LinkedHashMap<KeyType, ValueType>& LinkedHashMap<KeyType, ValueType>::addAll(
-        std::initializer_list<std::pair<KeyType, ValueType> > list) {
-    return putAll(list);
-}
-
-template <typename KeyType, typename ValueType>
 KeyType LinkedHashMap<KeyType, ValueType>::back() const {
     if (isEmpty()) {
         error("LinkedHashMap::back: map is empty");
     }
-    return keyVector.back();
+    return _keys.back();
 }
 
 template <typename KeyType, typename ValueType>
 void LinkedHashMap<KeyType, ValueType>::clear() {
-    innerMap.clear();
-    keyVector.clear();
+    _map.clear();
+    _keys.clear();
 }
 
 template <typename KeyType, typename ValueType>
 bool LinkedHashMap<KeyType, ValueType>::containsKey(const KeyType& key) const {
-    return innerMap.containsKey(key);
+    return _map.containsKey(key);
 }
 
 template <typename KeyType, typename ValueType>
@@ -529,45 +504,33 @@ KeyType LinkedHashMap<KeyType, ValueType>::front() const {
     if (isEmpty()) {
         error("LinkedHashMap::front: map is empty");
     }
-    return keyVector.front();
+    return _keys.front();
 }
 
 template <typename KeyType, typename ValueType>
 ValueType LinkedHashMap<KeyType, ValueType>::get(const KeyType& key) const {
-    return innerMap.get(key);
+    return _map.get(key);
 }
 
 template <typename KeyType, typename ValueType>
 bool LinkedHashMap<KeyType, ValueType>::isEmpty() const {
-    return innerMap.isEmpty();
+    return _map.isEmpty();
 }
 
 template <typename KeyType, typename ValueType>
 const Vector<KeyType>& LinkedHashMap<KeyType, ValueType>::keys() const {
-    return keyVector;
+    return _keys;
 }
 
 template <typename KeyType, typename ValueType>
-void LinkedHashMap<KeyType, ValueType>::mapAll(void (*fn)(KeyType, ValueType)) const {
-    innerMap.mapAll(fn);
-}
-
-template <typename KeyType, typename ValueType>
-void LinkedHashMap<KeyType, ValueType>::mapAll(void (*fn)(const KeyType&,
-                                                   const ValueType&)) const {
-    innerMap.mapAll(fn);
-}
-
-template <typename KeyType, typename ValueType>
-template <typename FunctorType>
-void LinkedHashMap<KeyType, ValueType>::mapAll(FunctorType fn) const {
-    innerMap.mapAll(fn);
+void LinkedHashMap<KeyType, ValueType>::mapAll(std::function<void (const KeyType&, const ValueType &)> fn) const {
+    _map.mapAll(fn);
 }
 
 template <typename KeyType, typename ValueType>
 void LinkedHashMap<KeyType, ValueType>::put(const KeyType& key, const ValueType& value) {
-    innerMap.put(key, value);
-    keyVector.add(key);
+    _map.put(key, value);
+    _keys.add(key);
 }
 
 template <typename KeyType, typename ValueType>
@@ -579,20 +542,11 @@ LinkedHashMap<KeyType, ValueType>& LinkedHashMap<KeyType, ValueType>::putAll(con
 }
 
 template <typename KeyType, typename ValueType>
-LinkedHashMap<KeyType, ValueType>& LinkedHashMap<KeyType, ValueType>::putAll(
-        std::initializer_list<std::pair<KeyType, ValueType> > list) {
-    for (const std::pair<KeyType, ValueType>& pair : list) {
-        put(pair.first, pair.second);
-    }
-    return *this;
-}
-
-template <typename KeyType, typename ValueType>
 void LinkedHashMap<KeyType, ValueType>::remove(const KeyType& key) {
-    innerMap.remove(key);
-    for (int i = 0, sz = keyVector.size(); i < sz; i++) {
-        if (keyVector[i] == key) {
-            keyVector.remove(i);
+    _map.remove(key);
+    for (int i = 0, sz = _keys.size(); i < sz; i++) {
+        if (_keys[i] == key) {
+            _keys.remove(i);
             break;
         }
     }
@@ -603,17 +557,6 @@ LinkedHashMap<KeyType, ValueType>& LinkedHashMap<KeyType, ValueType>::removeAll(
     for (const KeyType& key : map2) {
         if (containsKey(key) && get(key) == map2.get(key)) {
             remove(key);
-        }
-    }
-    return *this;
-}
-
-template <typename KeyType, typename ValueType>
-LinkedHashMap<KeyType, ValueType>& LinkedHashMap<KeyType, ValueType>::removeAll(
-        std::initializer_list<std::pair<KeyType, ValueType> > list) {
-    for (const std::pair<KeyType, ValueType>& pair : list) {
-        if (containsKey(pair.first) && get(pair.first) == pair.second) {
-            remove(pair.first);
         }
     }
     return *this;
@@ -634,16 +577,8 @@ LinkedHashMap<KeyType, ValueType>& LinkedHashMap<KeyType, ValueType>::retainAll(
 }
 
 template <typename KeyType, typename ValueType>
-LinkedHashMap<KeyType, ValueType>& LinkedHashMap<KeyType, ValueType>::retainAll(
-        std::initializer_list<std::pair<KeyType, ValueType> > list) {
-    LinkedHashMap<KeyType, ValueType> map2(list);
-    retainAll(map2);
-    return *this;
-}
-
-template <typename KeyType, typename ValueType>
 int LinkedHashMap<KeyType, ValueType>::size() const {
-    return innerMap.size();
+    return _map.size();
 }
 
 template <typename KeyType, typename ValueType>
@@ -664,7 +599,7 @@ Vector<ValueType> LinkedHashMap<KeyType, ValueType>::values() const {
 
 template <typename KeyType, typename ValueType>
 ValueType LinkedHashMap<KeyType, ValueType>::operator [](const KeyType& key) const {
-    return innerMap[key];
+    return _map[key];
 }
 
 template <typename KeyType, typename ValueType>
@@ -674,21 +609,8 @@ LinkedHashMap<KeyType, ValueType> LinkedHashMap<KeyType, ValueType>::operator +(
 }
 
 template <typename KeyType, typename ValueType>
-LinkedHashMap<KeyType, ValueType> LinkedHashMap<KeyType, ValueType>::operator +(
-        std::initializer_list<std::pair<KeyType, ValueType> > list) const {
-    LinkedHashMap<KeyType, ValueType> result = *this;
-    return result.putAll(list);
-}
-
-template <typename KeyType, typename ValueType>
 LinkedHashMap<KeyType, ValueType>& LinkedHashMap<KeyType, ValueType>::operator +=(const LinkedHashMap& map2) {
     return putAll(map2);
-}
-
-template <typename KeyType, typename ValueType>
-LinkedHashMap<KeyType, ValueType>& LinkedHashMap<KeyType, ValueType>::operator +=(
-        std::initializer_list<std::pair<KeyType, ValueType> > list) {
-    return putAll(list);
 }
 
 template <typename KeyType, typename ValueType>
@@ -698,21 +620,8 @@ LinkedHashMap<KeyType, ValueType> LinkedHashMap<KeyType, ValueType>::operator -(
 }
 
 template <typename KeyType, typename ValueType>
-LinkedHashMap<KeyType, ValueType> LinkedHashMap<KeyType, ValueType>::operator -(
-        std::initializer_list<std::pair<KeyType, ValueType> > list) const {
-    LinkedHashMap<KeyType, ValueType> result = *this;
-    return result.removeAll(list);
-}
-
-template <typename KeyType, typename ValueType>
 LinkedHashMap<KeyType, ValueType>& LinkedHashMap<KeyType, ValueType>::operator -=(const LinkedHashMap& map2) {
     return removeAll(map2);
-}
-
-template <typename KeyType, typename ValueType>
-LinkedHashMap<KeyType, ValueType>& LinkedHashMap<KeyType, ValueType>::operator -=(
-        std::initializer_list<std::pair<KeyType, ValueType> > list) {
-    return removeAll(list);
 }
 
 template <typename KeyType, typename ValueType>
@@ -722,21 +631,8 @@ LinkedHashMap<KeyType, ValueType> LinkedHashMap<KeyType, ValueType>::operator *(
 }
 
 template <typename KeyType, typename ValueType>
-LinkedHashMap<KeyType, ValueType> LinkedHashMap<KeyType, ValueType>::operator *(
-        std::initializer_list<std::pair<KeyType, ValueType> > list) const {
-    LinkedHashMap<KeyType, ValueType> result = *this;
-    return result.retainAll(list);
-}
-
-template <typename KeyType, typename ValueType>
 LinkedHashMap<KeyType, ValueType>& LinkedHashMap<KeyType, ValueType>::operator *=(const LinkedHashMap& map2) {
     return retainAll(map2);
-}
-
-template <typename KeyType, typename ValueType>
-LinkedHashMap<KeyType, ValueType>& LinkedHashMap<KeyType, ValueType>::operator *=(
-        std::initializer_list<std::pair<KeyType, ValueType> > list) {
-    return retainAll(list);
 }
 
 template <typename KeyType, typename ValueType>
@@ -824,21 +720,7 @@ int hashCode(const LinkedHashMap<K, V>& map) {
  */
 template <typename K, typename V>
 const K& randomKey(const LinkedHashMap<K, V>& map) {
-    if (map.isEmpty()) {
-        error("randomKey: empty map was passed");
-    }
-    int index = randomInteger(0, map.size() - 1);
-    int i = 0;
-    for (const K& key : map) {
-        if (i == index) {
-            return key;
-        }
-        i++;
-    }
-    
-    // this code will never be reached
-    static Vector<K> v = map.keys();
-    return v[0];
+    return stanfordcpplib::collections::randomElement(map);
 }
 
 #endif // _linkedhashmap_h

@@ -797,7 +797,7 @@ void GWindow::pack() {
 
 void GWindow::pause(double ms) {
     require::nonNegative(ms, "GWindow::pause", "milliseconds");
-    GThread::sleep(ms);
+    GThread::getCurrentThread()->sleep(ms);
 }
 
 void GWindow::processKeyPressEventInternal(QKeyEvent* /* event */) {
@@ -1195,7 +1195,7 @@ void GWindow::show() {
 
 void GWindow::sleep(double ms) {
     require::nonNegative(ms, "GWindow::sleep", "delay (ms)");
-    GThread::sleep(ms);
+    GThread::getCurrentThread()->sleep(ms);
 }
 
 GWindow::Region GWindow::stringToRegion(const std::string& regionStr) {
@@ -1255,7 +1255,7 @@ double getScreenWidth() {
 
 #ifndef SPL_HEADLESS_MODE
 void pause(double milliseconds) {
-    GThread::sleep(milliseconds);
+    GThread::getCurrentThread()->sleep(milliseconds);
 }
 #endif // SPL_HEADLESS_MODE
 

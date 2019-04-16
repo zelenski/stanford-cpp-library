@@ -3,6 +3,7 @@
  */
 
 #include "console.h"
+#include "filelib.h"
 #include "map.h"
 #include "queue.h"
 #include "stack.h"
@@ -10,7 +11,7 @@
 #include "strlib.h"
 using namespace std;
 
-int multimain(collectionTest) {
+int multimain(collections) {
     // empty?
     Stack<int> s;
     s.push(46);
@@ -25,10 +26,16 @@ int multimain(collectionTest) {
 
     cout << "v is " << to_string(v2) << endl;
 
+    Vector<string> files = listDirectory(".");
+    for (string file : files) {
+        cout << "a file: " << file << endl;
+    }
+
 
     return 0;
 }
 
+// this is only here so the project will compile
 int main() {
     return 0;
 }

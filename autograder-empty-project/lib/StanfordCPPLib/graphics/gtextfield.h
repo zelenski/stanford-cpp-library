@@ -408,6 +408,8 @@ public slots:
 
 private:
     GTextField* _gtextfield;
+
+    friend class GTextField;
 };
 
 /**
@@ -427,6 +429,8 @@ public slots:
 
 private:
     GTextField* _gtextfield;
+
+    friend class GTextField;
 };
 
 /**
@@ -446,6 +450,8 @@ public slots:
 
 private:
     GTextField* _gtextfield;
+
+    friend class GTextField;
 };
 
 #endif // _gtextfield_h

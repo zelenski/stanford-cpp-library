@@ -331,7 +331,7 @@ void shutdownConsole() {
  */
 void setConsolePropertiesQt() {
 #if defined(SPL_CONSOLE_FONTSIZE)
-    std::string fontStr = std::string("Monospaced-Bold-") + to_string(SPL_CONSOLE_FONTSIZE);
+    std::string fontStr = std::string("Monospaced-Bold-") + std::to_string(SPL_CONSOLE_FONTSIZE);
     setConsoleFont(fontStr);
 #endif
 

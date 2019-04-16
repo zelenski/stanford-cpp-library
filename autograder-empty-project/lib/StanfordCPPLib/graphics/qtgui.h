@@ -132,12 +132,20 @@ private:
 
     static QSPLApplication* _app;
     static QThread* _qtMainThread;
-    static GStudentThread* _studentThread;
+    static GThread* _studentThread;
     static QtGui* _instance;
 
     friend class GEventQueue;
-    friend class GStudentThread;
+    friend class GThread;
     friend class GWindow;
 };
+
+namespace stanfordcpplib {
+/*
+ * Code that runs when student thread shuts down.
+ * @private
+ */
+void endOfLibraryStudentThread();
+} // namespace stanfordcpplib
 
 #endif // _qtgui_h

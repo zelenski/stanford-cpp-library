@@ -4,6 +4,8 @@
  * This file exports the <code>Lexicon</code> class, which is a
  * compact structure for storing a list of words.
  *
+ * @version 2019/04/09
+ * - renamed private members with underscore naming scheme for consistency
  * @author Marty Stepp
  * @version 2018/03/10
  * - added methods front, back
@@ -469,21 +471,21 @@ private:
     struct TrieNode {
     public:
         TrieNode() {
-            m_isWord = false;
+            _isWord = false;
             for (int i = 0; i < 26; i++) {
-                m_children[i] = nullptr;
+                _children[i] = nullptr;
             }
         }
 
         // pre: letter is between 'a' and 'z' in lowercase
         inline TrieNode*& child(char letter) {
-            return m_children[letter - 'a'];
+            return _children[letter - 'a'];
         }
 
         inline int childCount() const {
             int count = 0;
             for (int i = 0; i < 26; i++) {
-                if (m_children[i] != nullptr) {
+                if (_children[i] != nullptr) {
                     count++;
                 }
             }
@@ -495,17 +497,17 @@ private:
         }
 
         inline bool isWord() const {
-            return m_isWord;
+            return _isWord;
         }
 
         inline void setWord(bool value) {
-            m_isWord = value;
+            _isWord = value;
         }
 
     private:
         /* instance variables */
-        bool m_isWord;
-        TrieNode* m_children[26];   // 0=a, 1=b, 2=c, ..., 25=z
+        bool _isWord;
+        TrieNode* _children[26];   // 0=a, 1=b, 2=c, ..., 25=z
     };
 
     /*
@@ -527,11 +529,11 @@ private:
     friend std::istream& operator >>(std::istream& is, Lexicon& lex);
 
     /* instance variables */
-    TrieNode* m_root;
-    int m_size;
-    bool m_removeFlag;             // flag to differentiate += and -= when used with ,
-    Set<std::string> m_allWords;   // secondary structure of all words for foreach;
-                                   // basically a cop-out so I can loop over words
+    TrieNode* _root;
+    int _size;
+    bool _removeFlag;             // flag to differentiate += and -= when used with ,
+    Set<std::string> _allWords;   // secondary structure of all words for foreach;
+                                  // basically a cop-out so I can loop over words
 
 public:
     /*
@@ -566,14 +568,14 @@ public:
      * Returns an iterator positioned at the first word in the lexicon.
      */
     iterator begin() const {
-        return iterator(m_allWords.begin());
+        return iterator(_allWords.begin());
     }
 
     /**
      * Returns an iterator positioned at the last word in the lexicon.
      */
     iterator end() const {
-        return iterator(m_allWords.end());
+        return iterator(_allWords.end());
     }
 };
 

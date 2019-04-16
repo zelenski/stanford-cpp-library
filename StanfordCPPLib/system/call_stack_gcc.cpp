@@ -4,6 +4,8 @@
  * Linux/gcc implementation of the call_stack class.
  *
  * @author Marty Stepp, based on code from Fredrik Orderud
+ * @version 2019/04/16
+ * - bug fix for stack trace line numbers on some Mac systems (thanks to Julie Zelenski)
  * @version 2018/10/22
  * - bug fix for STL vector vs Stanford Vector
  * @version 2018/10/18
@@ -53,6 +55,8 @@
 #include "call_stack.h"
 #define INTERNAL_INCLUDE 1
 #include "exceptions.h"
+#define INTERNAL_INCLUDE 1
+#include "filelib.h"
 #define INTERNAL_INCLUDE 1
 #include "gthread.h"
 #define INTERNAL_INCLUDE 1
@@ -264,10 +268,26 @@ int addr2line_all(void** addrs, int length, std::string& output) {
 #if defined(__APPLE__)
     // Mac OS X
     // JL : change "atos" to "xcrun atos"?
-    out << "atos -o " << exceptions::getProgramNameForStackTrace() << addrsStr;
+    void *base = (void *) _dyld_get_image_header(0);
+    if (base) {
+        out << "atos -l " << base << " -o " << exceptions::getProgramNameForStackTrace() << addrsStr;
+    } else {
+        out << "atos -o " << exceptions::getProgramNameForStackTrace() << addrsStr;
+    }
+#elif defined(_WIN64)
+    // Windows
+    if (fileExists("addr2line64.exe")) {
+        out << "addr2line64.exe -f -i -C -s -p -e \"" << exceptions::getProgramNameForStackTrace() << "\"" << addrsStr;
+    } else {
+        out << "(addr2line64.exe unavailable; no stack trace produced)";
+    }
 #elif defined(_WIN32)
     // Windows
-    out << "addr2line.exe -f -i -C -s -p -e \"" << exceptions::getProgramNameForStackTrace() << "\"" << addrsStr;
+    if (fileExists("addr2line.exe")) {
+        out << "addr2line.exe -f -i -C -s -p -e \"" << exceptions::getProgramNameForStackTrace() << "\"" << addrsStr;
+    } else {
+        out << "(addr2line.exe unavailable; no stack trace produced)";
+    }
 #else
     // Linux
     out << "addr2line -f -i -C -s -p -e " << exceptions::getProgramNameForStackTrace() << addrsStr;

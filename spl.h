@@ -1,6 +1,6 @@
 // Stanford C++ library (extracted)
 // @author Marty Stepp
-// @version Fri Apr 12 09:03:18 PDT 2019
+// @version Tue Apr 16 13:59:27 PDT 2019
 //
 // This library has been merged into a single .h and .cpp file by an automatic script
 // to make it easier to include and use with the CodeStepByStep tool.
@@ -71,25 +71,25 @@ void initializeLibraryStudentThread();
 
 /**
  * Runs the student's main function in its own thread, creating that thread
- * as an object of type GStudentThread.
+ * as an object of type GThread.
  */
 void runMainInThread(int (* mainFunc)(void));
 
 /**
  * Runs the student's main function in its own thread, creating that thread
- * as an object of type GStudentThread.
+ * as an object of type GThread.
  */
 void runMainInThread(std::function<int()> mainFunc);
 
 /**
  * Runs the student's main function in its own thread, creating that thread
- * as an object of type GStudentThread.
+ * as an object of type GThread.
  */
 void runMainInThreadVoid(void (* mainFuncVoid)(void));
 
 /**
  * Runs the student's main function in its own thread, creating that thread
- * as an object of type GStudentThread.
+ * as an object of type GThread.
  */
 void runMainInThreadVoid(std::function<void()> mainFuncVoid);
 
@@ -426,6 +426,7 @@ void inRange2D(int x, int y, int minX, int minY, int maxX, int maxY, const std::
 void nonEmpty(const std::string& str, const std::string& caller = "", const std::string& valueName = "", const std::string& details = "");
 void nonNegative(double value, const std::string& caller = "", const std::string& valueName = "", const std::string& details = "");
 void nonNegative(int value, const std::string& caller = "", const std::string& valueName = "", const std::string& details = "");
+void nonNegative(long value, const std::string& caller = "", const std::string& valueName = "", const std::string& details = "");
 void nonNegative2D(double x, double y, const std::string& caller = "", const std::string& xValueName = "", const std::string& yValueName = "", const std::string& details = "");
 void nonNegative2D(int x, int y, const std::string& caller = "", const std::string& xValueName = "", const std::string& yValueName = "", const std::string& details = "");
 void nonNull(const void* ptr, const std::string& caller = "", const std::string& valueName = "", const std::string& details = "");
@@ -1151,6 +1152,78 @@ bool getYesOrNo(const std::string& prompt = "",
 
 namespace functional {
 
+/*
+ * Performs a filter operation on the given collection,
+ * returning a new collection that retains only the elements
+ * for which the given predicate function returns true.
+ */
+template <typename CollectionType, typename ElementType>
+CollectionType filter(CollectionType collection,
+                      bool (*predicate)(ElementType)) {
+    CollectionType result;
+    for (const ElementType& element : collection) {
+        if (predicate(element)) {
+            result.add(element);
+        }
+    }
+    return result;
+}
+
+/*
+ * Performs a filter operation on the given collection,
+ * returning a new collection that retains only the elements
+ * for which the given predicate function returns true.
+ */
+template <typename CollectionType, typename ElementType>
+CollectionType filter(CollectionType collection,
+                      bool (*predicate)(const ElementType&)) {
+    CollectionType result;
+    for (const ElementType& element : collection) {
+        if (predicate(element)) {
+            result.add(element);
+        }
+    }
+    return result;
+}
+
+/*
+ * Performs a filter operation on the given collection,
+ * building a new collection that retains only the elements
+ * for which the given predicate function returns true.
+ * The new collection is stored in the given 'result' variable.
+ * A reference to that same result is returned for convenience.
+ */
+template <typename CollectionType, typename ElementType>
+CollectionType& filter(CollectionType collection,
+                       bool (*predicate)(ElementType),
+                       CollectionType& result) {
+    for (const ElementType& element : collection) {
+        if (predicate(element)) {
+            result.add(element);
+        }
+    }
+    return result;
+}
+
+/*
+ * Performs a filter operation on the given collection,
+ * building a new collection that retains only the elements
+ * for which the given predicate function returns true.
+ * The new collection is stored in the given 'result' variable.
+ * A reference to that same result is returned for convenience.
+ */
+template <typename CollectionType, typename ElementType>
+CollectionType& filter(CollectionType collection,
+                       bool (*predicate)(const ElementType&),
+                       CollectionType& result) {
+    for (const ElementType& element : collection) {
+        if (predicate(element)) {
+            result.add(element);
+        }
+    }
+    return result;
+}
+
 /**
  * Performs a filter operation on the given collection,
  * returning a new collection that retains only the elements
@@ -1187,6 +1260,68 @@ CollectionType& filter(CollectionType collection,
     return result;
 }
 
+/*
+ * Applies the given function to each element of the given collection,
+ * producing and returning a new collection containing the results.
+ */
+template <typename CollectionType, typename ElementType>
+CollectionType map(CollectionType collection,
+                   ElementType (*fn)(ElementType)) {
+    CollectionType result;
+    for (const ElementType& element : collection) {
+        result.add(fn(element));
+    }
+    return result;
+}
+
+/*
+ * Applies the given function to each element of the given collection,
+ * producing and returning a new collection containing the results.
+ */
+template <typename CollectionType, typename ElementType>
+CollectionType map(CollectionType collection,
+                   ElementType (*fn)(const ElementType&)) {
+    CollectionType result;
+    for (const ElementType& element : collection) {
+        result.add(fn(element));
+    }
+    return result;
+}
+
+/*
+ * Applies the given function to each element of the given collection,
+ * producing a new collection containing the results.
+ * The new collection is stored in the 'result' variable.
+ * A reference to that same result is returned for convenience.
+ */
+template <typename CollectionType, typename ElementType,
+          typename CollectionType2, typename ElementType2>
+CollectionType2& map(CollectionType collection,
+                     ElementType2 (*fn)(ElementType),
+                     CollectionType2& result) {
+    for (const ElementType& element : collection) {
+        result.add(fn(element));
+    }
+    return result;
+}
+
+/*
+ * Applies the given function to each element of the given collection,
+ * producing a new collection containing the results.
+ * The new collection is stored in the 'result' variable.
+ * A reference to that same result is returned for convenience.
+ */
+template <typename CollectionType, typename ElementType,
+          typename CollectionType2, typename ElementType2>
+CollectionType2& map(CollectionType collection,
+                     ElementType2 (*fn)(const ElementType&),
+                     CollectionType2& result) {
+    for (const ElementType& element : collection) {
+        result.add(fn(element));
+    }
+    return result;
+}
+
 /**
  * Applies the given function to each element of the given collection,
  * producing and returning a new collection containing the results.
@@ -1216,6 +1351,84 @@ CollectionType2& map(CollectionType collection,
         result.add(fn(element));
     }
     return result;
+}
+
+/*
+ * Performs a reduction operation, applying a function to each neighboring pair
+ * of elements of the collection until they are all combined (reduced) into a
+ * single value, which is then returned.
+ */
+template <typename CollectionType, typename ElementType>
+ElementType reduce(CollectionType collection,
+                   ElementType (*fn)(ElementType e1, ElementType e2),
+                   ElementType startValue) {
+    ElementType prev = startValue;
+    for (const ElementType& element : collection) {
+        prev = fn(prev, element);
+    }
+    return prev;
+}
+
+/*
+ * Performs a reduction operation, applying a function to each neighboring pair
+ * of elements of the collection until they are all combined (reduced) into a
+ * single value, which is then returned.
+ */
+template <typename CollectionType, typename ElementType>
+ElementType reduce(CollectionType collection,
+                   ElementType (*fn)(ElementType e1, ElementType e2)) {
+    bool first = true;
+    ElementType prev;
+    for (const ElementType& element : collection) {
+        if (first) {
+            prev = element;
+            first = false;
+        } else {
+            prev = fn(prev, element);
+        }
+    }
+    return prev;
+}
+
+/*
+ * Performs a reduction operation, applying a function to each neighboring pair
+ * of elements of the collection until they are all combined (reduced) into a
+ * single value, which is then returned.
+ * Begins the reduction with the given starting value, which is then merged
+ * with each value from the collection one at a time.
+ */
+template <typename CollectionType, typename ElementType>
+ElementType reduce(CollectionType collection,
+                   ElementType (*fn)(const ElementType& e1, const ElementType& e2),
+                   ElementType startValue) {
+    ElementType prev = startValue;
+    for (const ElementType& element : collection) {
+        prev = fn(prev, element);
+    }
+    return prev;
+}
+
+/*
+ * Performs a reduction operation, applying a function to each neighboring pair
+ * of elements of the collection until they are all combined (reduced) into a
+ * single value, which is then returned.
+ * Begins the reduction with the given starting value, which is then merged
+ * with each value from the collection one at a time.
+ */
+template <typename CollectionType, typename ElementType>
+ElementType reduce(CollectionType collection,
+                   ElementType (*fn)(const ElementType& e1, const ElementType& e2)) {
+    bool first = true;
+    ElementType prev;
+    for (const ElementType& element : collection) {
+        if (first) {
+            prev = element;
+            first = false;
+        } else {
+            prev = fn(prev, element);
+        }
+    }
+    return prev;
 }
 
 /**
@@ -21161,7 +21374,7 @@ typedef BigInteger bigint;
  * Stanford C++ library.
  *
  * @author Marty Stepp
- * @version 2019/04/12
+ * @version 2019/04/16
  */
 
 #ifndef _version_h
@@ -21175,7 +21388,7 @@ typedef BigInteger bigint;
  *       *MUST* be zero-padded to YYYY/MM/DD format;
  *       if month or day is < 10, insert a preceding 0
  */
-#define STANFORD_CPP_LIB_VERSION "2019/04/12"
+#define STANFORD_CPP_LIB_VERSION "2019/04/16"
 
 /*
  * Minimum version of your IDE's project that is supported.

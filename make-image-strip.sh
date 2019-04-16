@@ -22,6 +22,7 @@ convert \
 cd ..
 cp icons/iconstrip.png cppdoc/dist/
 cp icons/iconstrip.png Autograder_QtCreatorProject/res/
+cp icons/iconstrip.png autograder-empty-project/res/
 cp icons/iconstrip.png StanfordCPPLib_CodeStepByStep_Project/res/
 cp icons/iconstrip.png StanfordCPPLib_QtCreatorProject/res/
 cp icons/iconstrip.png autograder-empty-project/res/

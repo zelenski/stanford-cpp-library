@@ -4,6 +4,8 @@
  * This file implements the gconsolewindow.h interface.
  *
  * @author Marty Stepp
+ * @version 2019/04/16
+ * - bug fix for wrong text color on Mac dark mode
  * @version 2019/04/10
  * - toolbar support with icons from icon strip image
  * @version 2019/04/09
@@ -238,10 +240,10 @@ void GConsoleWindow::_initMenuBar() {
     addMenuItem("Edit", "Cu&t", imageMap["cut.gif"],
                 [this]() { this->clipboardCut(); })
                 ->setShortcut(QKeySequence::Cut);
-    if (!imageMap.isEmpty()) {
-        addToolbarItem("Cut", imageMap["cut.gif"],
-                       [this]() { this->clipboardCut(); });
-    }
+//    if (!imageMap.isEmpty()) {
+//        addToolbarItem("Cut", imageMap["cut.gif"],
+//                       [this]() { this->clipboardCut(); });
+//    }
 
     addMenuItem("Edit", "&Copy", imageMap["copy.gif"],
                 [this]() { this->clipboardCopy(); })
@@ -330,12 +332,14 @@ void GConsoleWindow::_initStreams() {
 
 void GConsoleWindow::_initWidgets() {
     _textArea = new GTextArea();
-    _textArea->setColor("black");
+    _outputColor = _textArea->getColor();
+
+    // BUGFIX: don't set bg/fg colors; let them be the OS defaults (helps w/ Mac dark mode)
+//    _textArea->setBackground(DEFAULT_BACKGROUND_COLOR);
+//    _textArea->setColor(DEFAULT_OUTPUT_COLOR);
     _textArea->setContextMenuEnabled(false);
-    // _textArea->setEditable(false);
     _textArea->setLineWrap(true);
     _textArea->setFont(getDefaultFont());
-    // _textArea->setRowsColumns(25, 70);
     QTextEdit* rawTextEdit = static_cast<QTextEdit*>(_textArea->getWidget());
     rawTextEdit->setTabChangesFocus(false);
     _textArea->setKeyListener([this](GEvent event) {
@@ -707,11 +711,15 @@ void GConsoleWindow::loadInputScript(int number) {
     }
     if (!expectedOutputFile.empty()) {
         GThread::runInNewThreadAsync([this, expectedOutputFile]() {
-            QThread* studentThread = GThread::getStudentThread();
+            GThread* currentThread = GThread::getCurrentThread();
+            GThread* studentThread = GThread::getStudentThread();
+            if (!studentThread) {
+                return;
+            }
             const long MAX_TIME_TO_WAIT = 20000;
             long timeWaited = 0;
             while (timeWaited < MAX_TIME_TO_WAIT && studentThread->isRunning()) {
-                pause(50);
+                currentThread->sleep(50);
                 timeWaited += 50;
             }
             if (!studentThread->isRunning()) {

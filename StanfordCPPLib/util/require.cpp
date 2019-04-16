@@ -84,6 +84,10 @@ void nonNegative(int value, const std::string& caller, const std::string& valueN
     _spl_assert(value >= 0, caller, _default(valueName, "value"), _default(details, "must be non-negative but was " + std::to_string(value)));
 }
 
+void nonNegative(long value, const std::string& caller, const std::string& valueName, const std::string& details) {
+    _spl_assert(value >= 0, caller, _default(valueName, "value"), _default(details, "must be non-negative but was " + std::to_string(value)));
+}
+
 void nonNegative2D(double x, double y, const std::string& caller, const std::string& xValueName, const std::string& yValueName, const std::string& details) {
     nonNegative(x, caller, xValueName, details);
     nonNegative(y, caller, yValueName, details);

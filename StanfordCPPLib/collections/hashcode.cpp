@@ -3,7 +3,7 @@
  * ------------------
  * This file implements the interface declared in hashcode.h.
  *
- * @version 2019/04/02
+ * @version 2019/04/16
  * - bugfix for win64 involving hashCode for void* pointers
  * @version 2018/08/10
  * - bugfixes involving negative hash codes, unified string hashing
@@ -17,6 +17,7 @@
 #include "hashcode.h"
 #undef INTERNAL_INCLUDE
 #include <cstddef>       // For size_t
+#include <cstdint>       // For uintptr_t
 #include <cstring>       // For strlen
 
 static const int HASH_SEED = 5381;               // Starting point for first cycle
@@ -82,6 +83,12 @@ int hashCode(unsigned short key) {
     return hashCode(static_cast<int>(key));
 }
 
+#ifdef _WIN64
+int hashCode(uintptr_t key) {
+    return hashCode(static_cast<unsigned long>(key));
+}
+#endif // _WIN64
+
 /* 
  * Implementation notes: hashCode(void*)
  * -----------------------------------------------------
@@ -89,12 +96,7 @@ int hashCode(unsigned short key) {
  * overloads just treats the pointer value numerically.
  */
 int hashCode(void* key) {
-#if _WIN64
-    long temp = (long) static_cast<uint32_t>(reinterpret_cast<uintptr_t>(key));
-    return hashCode(temp);
-#else
-    return hashCode(reinterpret_cast<long>(key));
-#endif // _WIN64
+    return hashCode(reinterpret_cast<uintptr_t>(key));
 }
 
 /*

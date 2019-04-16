@@ -673,6 +673,8 @@ private:
     int _lastKeyPressed;
 
     void fireTableEvent(EventType eventType, const std::string& eventName, int row = -1, int col = -1);
+
+    friend class GTable;
 };
 
 #endif // _gtable_h

@@ -18,6 +18,10 @@
 #
 # @author Marty Stepp
 #     (past authors/support by Reid Watson, Rasmus Rygaard, Jess Fisher, etc.)
+# @version 2019/04/16
+# - flags/linker fixes to get line numbers on some Macs (thanks to Julie Zelenski)
+# - compilation fixes for autograder projects
+# - addr2line 64-bit version added for win64 systems
 # @version 2019/02/14
 # - faster Windows compilation
 # - support for nested directories in src/
@@ -188,6 +192,19 @@ BAD_CHARS ~= s|[a-zA-Z0-9_ ().\/:;-]+|
     error(Exiting.)
 }
 
+win64 {
+    !exists($$PWD/lib/addr2line64.exe) {
+        message("")
+        message(*******************************************************************)
+        message(*** ERROR: Stanford C++ library support file 'addr2line64.exe' not found!)
+        message(*** Our library needs this file present to produce stack traces.)
+        message(*** Place that file into your lib/ folder and try again.)
+        message(*******************************************************************)
+        message("")
+        warning(Exiting.)
+    }
+}
+
 win32 {
     !exists($$PWD/lib/addr2line.exe) {
         message("")
@@ -222,12 +239,6 @@ SOURCES = ""
 # (student's source code can be put into project root, or src/ subfolder)
 SOURCES *= $$files($$PWD/lib/StanfordCPPLib/*.cpp, true)
 SOURCES *= $$files($$PWD/src/*.cpp, true)
-exists($$PWD/src/$$PROJECT_FILTER*.cpp) {
-    SOURCES *= $$files($$PWD/src/$$PROJECT_FILTER*.cpp)
-}
-exists($$PWD/src/test/*.cpp) {
-    SOURCES *= $$files($$PWD/src/test/*.cpp)
-}
 exists($$PWD/$$PROJECT_FILTER*.cpp) {
     SOURCES *= $$files($$PWD/$$PROJECT_FILTER*.cpp)
 }
@@ -237,12 +248,6 @@ exists($$PWD/lib/StanfordCPPLib/*.h) {
 }
 HEADERS *= $$files($$PWD/lib/StanfordCPPLib/*.h, true)
 HEADERS *= $$files($$PWD/src/*.h, true)
-exists($$PWD/src/test/*.h) {
-    HEADERS *= $$files($$PWD/src/test/*.h)
-}
-exists($$PWD/src/$$PROJECT_FILTER*.h) {
-    HEADERS *= $$files($$PWD/src/$$PROJECT_FILTER*.h)
-}
 exists($$PWD/$$PROJECT_FILTER*.h) {
     HEADERS *= $$files($$PWD/$$PROJECT_FILTER*.h)
 }
@@ -335,10 +340,10 @@ QMAKE_CXXFLAGS += -Wunreachable-code
 exists($$PWD/lib/autograder/*.h) | exists($$PWD/lib/StanfordCPPLib/autograder/$$PROJECT_FILTER/*.h) | exists($$PWD/lib/autograder/$$PROJECT_FILTER/*.cpp) {
     # omit some warnings/errors in autograder projects
     # (largely because the Google Test framework violates them a ton of times)
-    QMAKE_CXXFLAGS += -Wno-deprecation
     QMAKE_CXXFLAGS += -Wno-reorder
     QMAKE_CXXFLAGS += -Wno-unused-function
     QMAKE_CXXFLAGS += -Wno-useless-cast
+    QMAKE_CXXFLAGS += -Wno-deprecated
 } else {
     #QMAKE_CXXFLAGS += -Wuseless-cast
     #QMAKE_CXXFLAGS += -Wzero-as-null-pointer-constant   # TODO: re-enable for student code?
@@ -476,6 +481,7 @@ CONFIG(debug, debug|release) {
     unix:macx {
         equals(COMPILERNAME, clang++) {
             QMAKE_LFLAGS += -rdynamic
+            QMAKE_LFLAGS += -Wl,-no_pie
         }
     }
 
@@ -532,23 +538,14 @@ CONFIG(release, debug|release) {
 exists($$PWD/lib/autograder/*.h) | exists($$PWD/lib/StanfordCPPLib/autograder/*.h) | exists($$PWD/src/autograder/$$PROJECT_FILTER/*.cpp) {
     # include the various autograder source code and libraries in the build process
     exists($$PWD/lib/autograder/*.cpp) {
-        SOURCES *= $$files($$PWD/lib/autograder/*.cpp)
+        SOURCES *= $$files($$PWD/lib/autograder/*.cpp, true)
     }
     exists($$PWD/lib/StanfordCPPLib/autograder/*.cpp) {
-        SOURCES *= $$files($$PWD/lib/autograder/*.cpp)
-    }
-    exists($$PWD/src/autograder/$$PROJECT_FILTER/*.cpp) {
-        SOURCES *= $$files($$PWD/src/autograder/$$PROJECT_FILTER/*.cpp)
+        SOURCES *= $$files($$PWD/lib/autograder/*.cpp, true)
     }
 
     exists($$PWD/lib/autograder/*.h) {
-        HEADERS *= $$PWD/lib/autograder/*.h
-    }
-    exists($$PWD/lib/StanfordCPPLib/autograder/*.h) {
-        HEADERS *= $$PWD/lib/StanfordCPPLib/autograder/*.h
-    }
-    exists($$PWD/src/autograder/$$PROJECT_FILTER/*.h) {
-        HEADERS *= $$files($$PWD/src/autograder/$$PROJECT_FILTER/*.h)
+        HEADERS *= $$files($$PWD/lib/autograder/*.h, true)
     }
 
     exists($$PWD/lib/autograder/*) {
@@ -639,7 +636,13 @@ COPY_RESOURCE_FILES_INPUT = ""
 # handles directories and the other regular files. On Linux/Mac, we just need the single statement.
 
 # List of all files to copy. The format here is baseDirectory/pattern.
-COPY_RESOURCE_FILES_INPUT += $$files($$PWD/lib/addr2line.exe)
+win64 {
+    COPY_RESOURCE_FILES_INPUT += $$files($$PWD/lib/addr2line64.exe)
+}
+win32 {
+    COPY_RESOURCE_FILES_INPUT += $$files($$PWD/lib/addr2line.exe)
+    COPY_RESOURCE_FILES_INPUT += $$files($$PWD/lib/addr2line64.exe)
+}
 COPY_RESOURCE_FILES_INPUT += $$files($$PWD/*.txt)
 COPY_RESOURCE_FILES_INPUT += $$files($$PWD/res/*)
 COPY_RESOURCE_FILES_INPUT += $$files($$PWD/input/*)
@@ -709,4 +712,4 @@ win32 {
 # END SECTION FOR DEFINING HELPER FUNCTIONS FOR RESOURCE COPYING              #
 ###############################################################################
 
-# END OF FILE (this should be line #712; if not, your .pro has been changed!)
+# END OF FILE (this should be line #715; if not, your .pro has been changed!)

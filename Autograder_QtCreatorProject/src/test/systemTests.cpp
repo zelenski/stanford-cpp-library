@@ -15,7 +15,7 @@ TEST_CATEGORY(SystemTests, "system tests");
 
 TIMED_TEST(SystemTests, callExitTest, TEST_TIMEOUT_DEFAULT) {
     // lolol, I exit
-    std::exit(0);
+    // std::exit(0);
 }
 
 

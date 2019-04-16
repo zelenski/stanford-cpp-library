@@ -237,7 +237,7 @@ void GDownloader::sslErrors(QList<QSslError>) {
 void GDownloader::waitForDownload() {
     // wait for download to finish
     while (!_downloadComplete) {
-        GThread::sleep(10);
+        GThread::getCurrentThread()->sleep(10);
         if (_reply && _reply->isFinished()) {
             _downloadComplete = true;
             break;

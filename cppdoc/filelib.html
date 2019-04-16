@@ -39,7 +39,7 @@ makes it possible to use the same code on different platforms.
 <tr><td class=indexKey><nobr><a href="#Function:isDirectory">isDirectory(<var>filename</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if the specified file is a directory.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Function:isFile">isFile(<var>filename</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if the specified file is a regular file.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Function:isSymbolicLink">isSymbolicLink(<var>filename</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> if the specified file is a symbolic link.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Function:listDirectory">listDirectory(<var>path</var>,&nbsp;<var>list</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Adds an alphabetized list of the files in the specified directory to the string vector <code>list</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:listDirectory">listDirectory(<var>path</var>)</a><br/><a href="#Function:listDirectory">listDirectory(<var>path</var>,&nbsp;<var>v</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns an alphabetized vector of the files in the specified directory, or adds them to the given existing vector <code>v</code>.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Function:matchFilenamePattern">matchFilenamePattern(<var>filename</var>,&nbsp;<var>pattern</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Determines whether the filename matches the specified pattern.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Function:openFile">openFile(<var>stream</var>,&nbsp;<var>filename</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Opens the filestream <code>stream</code> using the specified filename.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Function:openFileDialog">openFileDialog(<var>stream</var>)</a><br>
@@ -47,7 +47,7 @@ makes it possible to use the same code on different platforms.
 <a href="#Function:openFileDialog">openFileDialog(<var>stream</var>,&nbsp;<var>title</var>,&nbsp;<var>path</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Opens a dialog that allows the user to choose the file.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Function:openOnPath">openOnPath(<var>stream</var>,&nbsp;<var>path</var>,&nbsp;<var>filename</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Opens a file using a search path.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Function:promptUserForFile">promptUserForFile(<var>stream</var>,&nbsp;<var>prompt</var>)</a>&nbsp;<br><a href="#Function:promptUserForFile">promptUserForFile(<var>prompt</var>)</a></nobr></td><td class=indexSynopsis width=100%>Asks the user for the name of a file.</td></tr>
-<tr><td class=indexKey><nobr><a href="#Function:readEntireFile">readEntireFile(<var>is</var>,&nbsp;<var>lines</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Reads the entire contents of the specified input stream into the string vector <code>lines</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:readEntireFile">readEntireFile(<var>is</var>,&nbsp;<var>v</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Reads the entire contents of the specified input stream into the string vector <code>lines</code>.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Function:readEntireFile">readEntireFile(<var>filename</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Reads the entire contents of the specified file and returns them as a <code>string</code>.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Function:renameFile">renameFile(<var>oldname</var>,&nbsp;<var>newname</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Renames a file.</td></tr>
 <tr><td class=indexKey><nobr><a href="#Function:rewindStream">rewindStream(<var>stream</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Moves an input stream back to its beginning so it can be read again.</td></tr>
@@ -444,17 +444,22 @@ string pathname = expandPathname(filename);
 <hr>
 <a name="Function:listDirectory"></a>
 <pre class=detailCode>
-void listDirectory(string path, Vector&lt;string&gt;&amp; list);
-void listDirectory(string path, vector&lt;string&gt;&amp; list);
+Vector&lt;string&gt; listDirectory(string path);
+void listDirectory(string path, Vector&lt;string&gt;&amp; v);
+void listDirectory(string path, vector&lt;string&gt;&amp; v);
 </pre>
 <div class=detailHTML>
-Adds an alphabetized list of the files in the specified directory
-to the string vector <code>list</code>.  This list excludes the
-names <code>.</code> and <code>..</code> entries.
+Adds an alphabetized list of the names of the files in the specified directory to the string vector <code>v</code>.
+This list excludes the entries <code>.</code> and <code>..</code>.
 <p>Usage:<br>
 </div>
 <pre class=usageCode>
-listDirectory(path, list);
+// first form
+Vector&lt;string&gt; files = listDirectory(path);
+
+// second form
+Vector&lt;string&gt; files;
+listDirectory(path, files);
 </pre>
 <hr>
 <a name="Function:matchFilenamePattern"></a>

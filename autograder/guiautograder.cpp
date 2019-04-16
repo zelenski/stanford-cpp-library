@@ -689,7 +689,7 @@ void GuiAutograder::runTest(stanfordcpplib::autograder::AutograderTest* test) {
     int timeoutMS = test->getTestTimeout();
     std::string testName = test->getName();
     std::string testFullName = test->getFullName();
-    QThread* thread = GThread::runInNewThreadAsync([this, test, testFullName]() {
+    GThread* thread = GThread::runInNewThreadAsync([this, test, testFullName]() {
         setCurrentTestCaseName(testFullName);
         if (catchExceptions()) {
             try {
@@ -738,7 +738,7 @@ void GuiAutograder::runTest(stanfordcpplib::autograder::AutograderTest* test) {
     if (GThread::wait(thread, timeoutMS)) {
         // thread is still running; timed out
         printf("  timed out after %d ms.\n", timeoutMS); fflush(stdout);
-        thread->terminate();
+        thread->stop();
         setFailDetails(*test, autograder::UnitTestDetails(
             autograder::UnitTestType::TEST_FAIL,
             TIMEOUT_ERROR_MESSAGE));
