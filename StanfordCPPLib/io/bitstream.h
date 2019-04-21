@@ -19,6 +19,8 @@
  * subclasses.
  *
  * @author Keith Schwarz, Eric Roberts, Marty Stepp
+ * @version 2019/04/20
+ * - added toPrintable(string)
  * @version 2018/09/25
  * - added doc comments for new documentation generation
  * @version 2016/11/12
@@ -333,5 +335,15 @@ private:
  * @example toPrintable('\n') returns "\\n"
  */
 std::string toPrintable(int ch);
+
+/**
+ * Returns a string with each non-printable character in the given string
+ * replaced by one that is printable.
+ * Certain common escape characters are replaced by a backslash representation,
+ * and non-printable ASCII characters are replaced by a backslash and their
+ * ASCII numeric representation, such as \255.
+ * @example toPrintable("hi \0 there\n') returns "hi \\0 there\\n"
+ */
+std::string toPrintable(const std::string& s);
 
 #endif // _bitstream_h

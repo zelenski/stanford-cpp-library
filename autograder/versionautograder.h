@@ -5,7 +5,7 @@
  * support code.
  * 
  * @author Marty Stepp
- * @version 2019/04/16
+ * @version 2019/04/20
  * - latest version
  * @version 2018/11/09
  * - renamed from version.h to avoid name conflicts
@@ -17,6 +17,6 @@
 
 // NOTE: *MUST* be zero-padded to YYYY/MM/DD format;
 //       if month or day is < 10, insert a preceding 0
-#define AUTOGRADER_LIB_VERSION "2019/04/16"
+#define AUTOGRADER_LIB_VERSION "2019/04/20"
 
 #endif // _versionautograder_h

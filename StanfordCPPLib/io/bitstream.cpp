@@ -7,6 +7,8 @@
  * how a client properly uses these classes.
  *
  * @author Keith Schwarz, Eric Roberts, Marty Stepp
+ * @version 2019/04/20
+ * - added toPrintable(string)
  * @version 2016/11/12
  * - made toPrintable non-static and visible
  * @version 2014/10/08
@@ -60,6 +62,33 @@ std::string toPrintable(int ch) {
     } else {
         return std::string("'") + (char) ch + std::string("'");
     }
+}
+
+std::string toPrintable(const std::string& s) {
+    std::ostringstream out;
+    for (char ch : s) {
+        if (ch == '\n') {
+            out << "\\n";
+        } else if (ch == '\t') {
+            out << "\\t";
+        } else if (ch == '\r') {
+            out << "\\r";
+        } else if (ch == '\f') {
+            out << "\\f";
+        } else if (ch == '\b') {
+            out << "\\b";
+        } else if (ch == '\0') {
+            out << "\\0";
+        } else if (ch == ' ') {
+            out << ' ';
+        } else if (isgraph(ch)) {
+            out << ch;
+        } else {
+            out << '\\';
+            out << (static_cast<int>(ch & 0xff));
+        }
+    }
+    return out.str();
 }
 
 /* Constructor ibitstream::ibitstream

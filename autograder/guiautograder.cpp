@@ -5,6 +5,8 @@
  * See autograderunittestgui.h for declarations and documentation.
  *
  * @author Marty Stepp
+ * @version 2019/04/20
+ * - display expected/actual values using toPrintable to show non-printable characters better
  * @version 2018/12/01
  * - added printf messages to indicate each test as it runs/finishes
  * @version 2018/10/07
@@ -22,28 +24,50 @@
 
 #define INTERNAL_INCLUDE 1
 #include "guiautograder.h"
+#define INTERNAL_INCLUDE 1
 #include "autogradertest.h"
+#define INTERNAL_INCLUDE 1
+#include "bitstream.h"
+#define INTERNAL_INCLUDE 1
 #include "consoletext.h"
+#define INTERNAL_INCLUDE 1
 #include "filelib.h"
+#define INTERNAL_INCLUDE 1
 #include "gconsolewindow.h"
+#define INTERNAL_INCLUDE 1
 #include "gdiffgui.h"
+#define INTERNAL_INCLUDE 1
 #include "gdiffimage.h"
+#define INTERNAL_INCLUDE 1
 #include "gfont.h"
+#define INTERNAL_INCLUDE 1
 #include "ginputpanel.h"
+#define INTERNAL_INCLUDE 1
 #include "glayout.h"
+#define INTERNAL_INCLUDE 1
 #include "goptionpane.h"
+#define INTERNAL_INCLUDE 1
 #include "gscrollpane.h"
+#define INTERNAL_INCLUDE 1
 #include "gspacer.h"
+#define INTERNAL_INCLUDE 1
 #include "gthread.h"
+#define INTERNAL_INCLUDE 1
 #include "ioutils.h"
+#define INTERNAL_INCLUDE 1
 #include "qtgui.h"
+#define INTERNAL_INCLUDE 1
 #include "regexpr.h"
+#define INTERNAL_INCLUDE 1
 #include "stringutils.h"
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
+#define INTERNAL_INCLUDE 1
 #include "stylecheck.h"
+#define INTERNAL_INCLUDE 1
 #include "testresultprinter.h"
-#include <sstream>
 #undef INTERNAL_INCLUDE
+#include <sstream>
 
 // student's main function
 extern int main();
@@ -966,12 +990,8 @@ void GuiAutograder::showTestDetails(const std::string& testFullName, bool force)
             expected = "'" + expected + "'";
             student  = "'" + student + "'";
         }
-        expected = stringReplace(expected, "\n", "\\n");
-        expected = stringReplace(expected, "\r", "\\r");
-        expected = stringReplace(expected, "\t", "\\t");
-        student  = stringReplace(student, "\n", "\\n");
-        student  = stringReplace(student, "\r", "\\r");
-        student  = stringReplace(student, "\t", "\\t");
+        expected = toPrintable(expected);
+        student  = toPrintable(student);
 
         // insert "expected"/"student" messages for some assert types for clarity
         switch (deets.testType) {
@@ -1012,9 +1032,11 @@ void GuiAutograder::showTestDetails(const std::string& testFullName, bool force)
                 htmlMessage += "<p>" + message + "</p>";
 
                 if (!expected.empty() || !student.empty()) {
+                    std::string expectedHtml = stringReplace(expectedTruncated, " ", "&nbsp;");
+                    std::string studentHtml  = stringReplace(studentTruncated, " ", "&nbsp;");
                     htmlMessage += "<ul>";
-                    htmlMessage += "<li><code><font color='" + GDiffGui::COLOR_EXPECTED + "'>expected:</font></code><code> " + expectedTruncated + "</code></li>";
-                    htmlMessage += "<li><code><font color='" + GDiffGui::COLOR_STUDENT  + "'>student :</font></code><code> " + studentTruncated  + "</code></li>";
+                    htmlMessage += "<li><code><font color='" + GDiffGui::COLOR_EXPECTED + "'>expected:</font></code><code>&nbsp;" + expectedHtml + "</code></li>";
+                    htmlMessage += "<li><code><font color='" + GDiffGui::COLOR_STUDENT  + "'>student&nbsp;:</font></code><code>&nbsp;" + studentHtml + "</code></li>";
                     htmlMessage += "</ul>";
                 }
 

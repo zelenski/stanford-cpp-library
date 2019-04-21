@@ -3,6 +3,8 @@
  * ------------------
  * 
  * @author Marty Stepp
+ * @version 2019/04/20
+ * - display expected/actual values using toPrintable to show non-printable characters better
  * @version 2018/10/06
  * - allow passing diff flags
  * @version 2018/09/27
@@ -18,6 +20,8 @@
 #include <iostream>
 #include <QScrollBar>
 #include <string>
+#define INTERNAL_INCLUDE 1
+#include "bitstream.h"
 #define INTERNAL_INCLUDE 1
 #include "consoletext.h"
 #define INTERNAL_INCLUDE 1
@@ -135,6 +139,9 @@ void GDiffGui::setupDiffText(const std::string& diffs) {
         } else {
             color = COLOR_NORMAL;
         }
+
+        // BUGFIX: display special characters with extra printable character info
+        line = toPrintable(line);
 
         _textAreaBottom->appendFormattedText(line + "\n", color);
     }
