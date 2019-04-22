@@ -1,6 +1,6 @@
 // Stanford C++ library (extracted)
 // @author Marty Stepp
-// @version Tue Apr 16 13:59:27 PDT 2019
+// @version Mon Apr 22 13:29:21 PDT 2019
 //
 // This library has been merged into a single .h and .cpp file by an automatic script
 // to make it easier to include and use with the CodeStepByStep tool.
@@ -14554,9 +14554,9 @@ void shuffle(LinkedList<T>& list) {
  * @version 2015/07/05
  * - using global hashing functions rather than global variables
  * @version 2015/06/22
- * - added optional compiler flag PQUEUE_PRINT_IN_HEAP_ORDER to indicate
+ * - added optional compiler flag SPL_PQUEUE_PRINT_IN_HEAP_ORDER to indicate
  *   that PQ should be printed in heap-internal order rather than sorted order
- * - added optional compiler flag PQUEUE_ALLOW_HEAP_ACCESS and corresponding
+ * - added optional compiler flag SPL_PQUEUE_ALLOW_HEAP_ACCESS and corresponding
  *   semi-private methods to access value/priority at a given index
  *   (wanted internally for some testing and for practice exam problems;
  *    not meant to be called explicitly by students or most clients)
@@ -14785,7 +14785,7 @@ public:
     bool operator ==(const PriorityQueue& pq2) const;
     bool operator !=(const PriorityQueue& pq2) const;
 
-#ifdef PQUEUE_COMPARISON_OPERATORS_ENABLED
+#ifdef SPL_PQUEUE_COMPARISON_OPERATORS_ENABLED
     /*
      * Operators: <, <=, >, >=
      * Usage: if (pq1 < pq2) ...
@@ -14798,7 +14798,7 @@ public:
     bool operator <=(const PriorityQueue& pq2) const;
     bool operator >(const PriorityQueue& pq2) const;
     bool operator >=(const PriorityQueue& pq2) const;
-#endif // PQUEUE_COMPARISON_OPERATORS_ENABLED
+#endif // SPL_PQUEUE_COMPARISON_OPERATORS_ENABLED
 
     /* Private section */
 
@@ -14827,9 +14827,9 @@ private:
     Vector<HeapEntry> _heap;
     long _enqueueCount = 0;
 
-#ifdef PQUEUE_COMPARISON_OPERATORS_ENABLED
+#ifdef SPL_PQUEUE_COMPARISON_OPERATORS_ENABLED
     int pqCompare(const PriorityQueue& other) const;
-#endif // PQUEUE_COMPARISON_OPERATORS_ENABLED
+#endif // SPL_PQUEUE_COMPARISON_OPERATORS_ENABLED
 
 public:
     /* private implentation section */
@@ -14837,10 +14837,10 @@ public:
     template <typename Collection>
     friend int stanfordcpplib::collections::compare(const Collection& pq1, const Collection& pq2);
 
-#ifdef PQUEUE_ALLOW_HEAP_ACCESS
+#ifdef SPL_PQUEUE_ALLOW_HEAP_ACCESS
     const ValueType& __getValueFromHeap(int index) const;
     double __getPriorityFromHeap(int index) const;
-#endif // PQUEUE_ALLOW_HEAP_ACCESS
+#endif // SPL_PQUEUE_ALLOW_HEAP_ACCESS
 };
 
 template <typename ValueType>
@@ -14998,7 +14998,7 @@ std::string PriorityQueue<ValueType>::toString() const {
     return os.str();
 }
 
-#ifdef PQUEUE_COMPARISON_OPERATORS_ENABLED
+#ifdef SPL_PQUEUE_COMPARISON_OPERATORS_ENABLED
 /*
  * Implementation note: Due to the complexity and unpredictable heap ordering of the elements,
  * this function sadly makes a deep copy of both PQs for comparing.
@@ -15038,7 +15038,7 @@ int PriorityQueue<ValueType>::pqCompare(const PriorityQueue& pq2) const {
         return 0;
     }
 }
-#endif // PQUEUE_COMPARISON_OPERATORS_ENABLED
+#endif // SPL_PQUEUE_COMPARISON_OPERATORS_ENABLED
 
 /*
  * Comparison function for heap entries. The comparison is lexicographic, first by
@@ -15065,7 +15065,7 @@ bool PriorityQueue<ValueType>::operator !=(const PriorityQueue& pq2) const {
     return !equals(pq2);
 }
 
-#ifdef PQUEUE_COMPARISON_OPERATORS_ENABLED
+#ifdef SPL_PQUEUE_COMPARISON_OPERATORS_ENABLED
 template <typename ValueType>
 bool PriorityQueue<ValueType>::operator <(const PriorityQueue& pq2) const {
     return pqCompare(pq2) < 0;
@@ -15085,7 +15085,7 @@ template <typename ValueType>
 bool PriorityQueue<ValueType>::operator >=(const PriorityQueue& pq2) const {
     return pqCompare(pq2) >= 0;
 }
-#endif // PQUEUE_COMPARISON_OPERATORS_ENABLED
+#endif // SPL_PQUEUE_COMPARISON_OPERATORS_ENABLED
 
 /*
  * Template hash function for priority queues.
@@ -15104,7 +15104,7 @@ int hashCode(const PriorityQueue<T>& pq) {
     return int(code & hashMask());
 }
 
-#ifdef PQUEUE_ALLOW_HEAP_ACCESS
+#ifdef SPL_PQUEUE_ALLOW_HEAP_ACCESS
 template <typename ValueType>
 const ValueType& PriorityQueue<ValueType>::__getValueFromHeap(int index) const {
     return _heap[index].value;
@@ -15114,14 +15114,14 @@ template <typename ValueType>
 double PriorityQueue<ValueType>::__getPriorityFromHeap(int index) const {
     return _heap[index].priority;
 }
-#endif // PQUEUE_ALLOW_HEAP_ACCESS
+#endif // SPL_PQUEUE_ALLOW_HEAP_ACCESS
 
 template <typename ValueType>
 std::ostream& operator <<(std::ostream& os,
                           const PriorityQueue<ValueType>& pq) {
     os << "{";
 
-#ifdef PQUEUE_PRINT_IN_HEAP_ORDER
+#ifdef SPL_PQUEUE_PRINT_IN_HEAP_ORDER
     // faster implementation: print in heap order
     // (only downside: doesn't print in 'sorted' priority order,
     //  which might confuse student client)
@@ -15132,7 +15132,7 @@ std::ostream& operator <<(std::ostream& os,
         os << pq._heap[i].priority << ":";
         writeGenericValue(os, pq._heap[i].value, /* forceQuotes */ true);
     }
-#else
+#else // SPL_PQUEUE_PRINT_IN_HEAP_ORDER
     // (default) slow, memory-inefficient implementation: copy pq and print
     PriorityQueue<ValueType> copy = pq;
     for (int i = 0, len = pq.size(); i < len; i++) {
@@ -15142,7 +15142,7 @@ std::ostream& operator <<(std::ostream& os,
         os << copy.peekPriority() << ":";
         writeGenericValue(os, copy.dequeue(), /* forceQuotes */ true);
     }
-#endif
+#endif // SPL_PQUEUE_PRINT_IN_HEAP_ORDER
     return os << "}";
 }
 
@@ -19940,6 +19940,8 @@ static QtConsoleInitializer_private __qt_console_init;
  * subclasses.
  *
  * @author Keith Schwarz, Eric Roberts, Marty Stepp
+ * @version 2019/04/20
+ * - added toPrintable(string)
  * @version 2018/09/25
  * - added doc comments for new documentation generation
  * @version 2016/11/12
@@ -20254,6 +20256,16 @@ private:
  * @example toPrintable('\n') returns "\\n"
  */
 std::string toPrintable(int ch);
+
+/**
+ * Returns a string with each non-printable character in the given string
+ * replaced by one that is printable.
+ * Certain common escape characters are replaced by a backslash representation,
+ * and non-printable ASCII characters are replaced by a backslash and their
+ * ASCII numeric representation, such as \255.
+ * @example toPrintable("hi \0 there\n') returns "hi \\0 there\\n"
+ */
+std::string toPrintable(const std::string& s);
 
 #endif // _bitstream_h
 
@@ -21374,7 +21386,7 @@ typedef BigInteger bigint;
  * Stanford C++ library.
  *
  * @author Marty Stepp
- * @version 2019/04/16
+ * @version 2019/04/22
  */
 
 #ifndef _version_h
@@ -21388,7 +21400,7 @@ typedef BigInteger bigint;
  *       *MUST* be zero-padded to YYYY/MM/DD format;
  *       if month or day is < 10, insert a preceding 0
  */
-#define STANFORD_CPP_LIB_VERSION "2019/04/16"
+#define STANFORD_CPP_LIB_VERSION "2019/04/22"
 
 /*
  * Minimum version of your IDE's project that is supported.
@@ -21399,7 +21411,7 @@ typedef BigInteger bigint;
  *       *MUST* be zero-padded to YYYY/MM/DD format;
  *       if month or day is < 10, insert a preceding 0
  */
-#define STANFORD_CPP_PROJECT_MINIMUM_VERSION "2018/10/23"
+#define STANFORD_CPP_PROJECT_MINIMUM_VERSION "2019/04/22"
 
 /*
  * URL at which documentation about the libraries can be found.

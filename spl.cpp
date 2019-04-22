@@ -1,6 +1,6 @@
 // Stanford C++ library (extracted)
 // @author Marty Stepp
-// @version Tue Apr 16 13:59:27 PDT 2019
+// @version Mon Apr 22 13:29:21 PDT 2019
 //
 // This library has been merged into a single .h and .cpp file by an automatic script
 // to make it easier to include and use with the CodeStepByStep tool.
@@ -2267,6 +2267,8 @@ std::string decode(const std::string& s) {
  * how a client properly uses these classes.
  *
  * @author Keith Schwarz, Eric Roberts, Marty Stepp
+ * @version 2019/04/20
+ * - added toPrintable(string)
  * @version 2016/11/12
  * - made toPrintable non-static and visible
  * @version 2014/10/08
@@ -2320,6 +2322,33 @@ std::string toPrintable(int ch) {
     } else {
         return std::string("'") + (char) ch + std::string("'");
     }
+}
+
+std::string toPrintable(const std::string& s) {
+    std::ostringstream out;
+    for (char ch : s) {
+        if (ch == '\n') {
+            out << "\\n";
+        } else if (ch == '\t') {
+            out << "\\t";
+        } else if (ch == '\r') {
+            out << "\\r";
+        } else if (ch == '\f') {
+            out << "\\f";
+        } else if (ch == '\b') {
+            out << "\\b";
+        } else if (ch == '\0') {
+            out << "\\0";
+        } else if (ch == ' ') {
+            out << ' ';
+        } else if (isgraph(ch)) {
+            out << ch;
+        } else {
+            out << '\\';
+            out << (static_cast<int>(ch & 0xff));
+        }
+    }
+    return out.str();
 }
 
 /* Constructor ibitstream::ibitstream
@@ -4308,6 +4337,9 @@ std::string getProjectVersion() {
 #include <cstring>
 #endif // _WIN32
 #endif // __GNUC__
+#if defined(__APPLE__)
+#include <mach-o/dyld.h>   // for _dyld_get_image_header
+#endif // __APPLE__
 #include <iomanip>
 #include <iostream>
 #include <sstream>
@@ -5324,6 +5356,7 @@ bool shouldFilterOutFromStackTrace(const std::string& function) {
         "__cxa_call_terminate",
         "__cxa_call_unexpected",
         "_endthreadex",
+        "_Function_base::_Base_manager::",
         "_Function_handler",
         "_Internal_",
         "__invoke_impl",
@@ -5365,6 +5398,7 @@ bool shouldFilterOutFromStackTrace(const std::string& function) {
         // "QWidget::",
         "QWidgetBackingStore::",
         "QWindowSystemInterface::",
+        "require::_errorMessage",
         "shouldFilterOutFromStackTrace",
         "stacktrace::",
         "stanfordCppLibPosixSignalHandler",

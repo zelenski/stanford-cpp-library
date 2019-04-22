@@ -3,6 +3,8 @@
  * ------------------
  *
  * @author Marty Stepp
+ * @version 2019/04/22
+ * - added setIcon with QIcon and QPixmap
  * @version 2019/02/02
  * - destructor now stops event processing
  * @version 2018/09/04
@@ -34,6 +36,24 @@ GButton::GButton(const std::string& text, const std::string& iconFileName, QWidg
     if (!iconFileName.empty()) {
         setIcon(iconFileName);
     }
+    setVisible(false);   // all widgets are not shown until added to a window
+}
+
+GButton::GButton(const std::string& text, const QIcon& icon, QWidget* parent) {
+    GThread::runOnQtGuiThread([this, parent]() {
+        _iqpushbutton = new _Internal_QPushButton(this, getInternalParent(parent));
+    });
+    setText(text);
+    setIcon(icon);
+    setVisible(false);   // all widgets are not shown until added to a window
+}
+
+GButton::GButton(const std::string& text, const QPixmap& icon, QWidget* parent) {
+    GThread::runOnQtGuiThread([this, parent]() {
+        _iqpushbutton = new _Internal_QPushButton(this, getInternalParent(parent));
+    });
+    setText(text);
+    setIcon(icon);
     setVisible(false);   // all widgets are not shown until added to a window
 }
 
@@ -112,6 +132,30 @@ void GButton::setDoubleClickListener(GEventListener func) {
 
 void GButton::setDoubleClickListener(GEventListenerVoid func) {
     setEventListener("doubleclick", func);
+}
+
+void GButton::setIcon(const QIcon& icon) {
+    GInteractor::setIcon(icon);
+    GThread::runOnQtGuiThread([this, &icon]() {
+        _iqpushbutton->setIcon(icon);
+        _iqpushbutton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+        if (!icon.availableSizes().empty()) {
+            _iqpushbutton->setIconSize(icon.availableSizes()[0]);
+        }
+        _iqpushbutton->updateGeometry();
+        _iqpushbutton->update();
+    });
+}
+
+void GButton::setIcon(const QPixmap& icon) {
+    GInteractor::setIcon(icon);
+    GThread::runOnQtGuiThread([this, &icon]() {
+        _iqpushbutton->setIcon(icon);
+        _iqpushbutton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+        _iqpushbutton->setIconSize(icon.size());
+        _iqpushbutton->updateGeometry();
+        _iqpushbutton->update();
+    });
 }
 
 void GButton::setIcon(const std::string& filename, bool retainIconSize) {

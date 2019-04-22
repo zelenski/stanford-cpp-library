@@ -47,6 +47,9 @@
 #include <cstring>
 #endif // _WIN32
 #endif // __GNUC__
+#if defined(__APPLE__)
+#include <mach-o/dyld.h>   // for _dyld_get_image_header
+#endif // __APPLE__
 #include <iomanip>
 #include <iostream>
 #include <sstream>

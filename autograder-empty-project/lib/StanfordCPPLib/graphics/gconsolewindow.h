@@ -29,6 +29,7 @@
 #include <QMutex>
 #include <QWindow>
 #include <QKeyEvent>
+#include <QPixmap>
 #include <QReadWriteLock>
 #include <QTextEdit>
 #include <QTextFrame>
@@ -72,6 +73,12 @@ public:
     static GConsoleWindow* instance();
     static bool isInitialized();
     static void setConsoleEnabled(bool enabled);
+    static Map<std::string, QPixmap> unpackImageStrip(const std::string& imageStripFileName,
+                                                      const Vector<std::string>& imageFiles,
+                                                      int imageSize);
+    static Map<std::string, QPixmap> unpackImageStrip(const std::string& imageStripFileName,
+                                                      const Vector<std::string>& imageFiles,
+                                                      const Vector<GDimension>& imageSizes);
 
     virtual void clearConsole();
     virtual void clipboardCopy();

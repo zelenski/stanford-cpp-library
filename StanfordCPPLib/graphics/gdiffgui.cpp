@@ -164,7 +164,7 @@ void GDiffGui::setupLeftRightText(GTextArea* textArea, const std::string& text) 
         std::string lineNumberString =
                 padLeft(i == 0 ? std::string("") : std::to_string(i), digits) + "  ";
         textArea->appendFormattedText(lineNumberString, COLOR_LINE_NUMBERS);
-        textArea->appendFormattedText(line + "\n", COLOR_NORMAL);
+        textArea->appendFormattedText(toPrintable(line) + "\n", COLOR_NORMAL);
     }
 }
 

@@ -3,6 +3,8 @@
  * ---------------------
  *
  * @author Marty Stepp
+ * @version 2019/04/22
+ * - added setIcon with QIcon and QPixmap
  * @version 2019/04/10
  * - bug fix for setBackground on GTextArea and GBrowserPane
  * @version 2018/09/20
@@ -385,6 +387,14 @@ void GInteractor::setHeight(double height) {
     GThread::runOnQtGuiThread([this, height]() {
         getWidget()->setFixedHeight((int) height);
     });
+}
+
+void GInteractor::setIcon(const QIcon& /*icon*/) {
+    // override in subclasses as appropriate
+}
+
+void GInteractor::setIcon(const QPixmap& /*icon*/) {
+    // override in subclasses as appropriate
 }
 
 void GInteractor::setIcon(const std::string& filename, bool /* retainIconSize */) {

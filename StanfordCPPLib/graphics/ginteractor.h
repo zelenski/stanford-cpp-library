@@ -3,6 +3,8 @@
  * -------------------
  *
  * @author Marty Stepp
+ * @version 2019/04/22
+ * - added setIcon with QIcon and QPixmap
  * @version 2018/09/20
  * - added read/write lock to avoid race conditions
  * @version 2018/09/05
@@ -26,7 +28,9 @@
 
 #include <functional>
 #include <string>
+#include <QIcon>
 #include <QObject>
+#include <QPixmap>
 #include <QReadWriteLock>
 #include <QWidget>
 
@@ -427,6 +431,20 @@ public:
      * @throw ErrorException if height is negative
      */
     virtual void setHeight(double height);
+
+    /**
+     * Sets the icon associated with this interactor.
+     * Not all types of interactors support icons.
+     * @param icon the icon to use
+     */
+    virtual void setIcon(const QIcon& icon);
+
+    /**
+     * Sets the icon associated with this interactor.
+     * Not all types of interactors support icons.
+     * @param icon the icon to use
+     */
+    virtual void setIcon(const QPixmap& icon);
 
     /**
      * Sets the file name of the icon associated with this interactor,

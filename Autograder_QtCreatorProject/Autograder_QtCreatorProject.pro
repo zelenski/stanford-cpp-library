@@ -1,144 +1,27 @@
 #####################################################################
 ## Stanford CS 106 B/X Qt Creator project file                     ##
-## (now compatible with Qt-based GUI system!)                      ##
 #####################################################################
 #
 # This file specifies the information about your project to Qt Creator.
 # You should not need to modify this file to complete your assignment.
 #
-#####################################################################
-## If you need to add files or folders to your project, we suggest ##
-## that you "re-initialize" your project by doing the following:   ##
-##                                                                 ##
-## 1- close Qt Creator.                                            ##
-## 2- delete your ".pro.user" file and "build_xxxxxxx" directory.  ##
-## 3- place the new files/folders into your project directory.     ##
-## 4- re-open and "Configure" your project again.                  ##
-#####################################################################
-#
-# @author Marty Stepp
-#     (past authors/support by Reid Watson, Rasmus Rygaard, Jess Fisher, etc.)
-# @version 2019/04/16
-# - flags/linker fixes to get line numbers on some Macs (thanks to Julie Zelenski)
-# - compilation fixes for autograder projects
-# - addr2line 64-bit version added for win64 systems
-# @version 2019/02/14
-# - faster Windows compilation
-# - support for nested directories in src/
-# - fix Windows resource copying; directories are now preserved
-# @version 2019/02/01
-# - fixed compiler warning flags for greater granularity
-# @version 2018/10/23
-# - added Qt multimedia flag for sound and video playback
-# @version 2018/10/20
-# - flag for console scaling on high-DPI systems
-# @version 2018/10/18
-# - C++14 support added on some systems
-# @version 2018/10/06
-# - revised autograder folder structure
-# @version 2018/10/04
-# - variables for GUI vs console-based autograders
-# @version 2018/09/29
-# - simplify/improve resource-file-copying logic (with Windows fixes)
-# @version 2018/09/25
-# - flags to rename main function and other linker fixes
-# @version 2018/09/23
-# - fixed some compiler flags to fix build on Win/Mac
-# @version 2018/09/20
-# - fixed static linking for release builds
-# @version 2018/09/18
-# - added flags for precompilation of Qt MOC resources
-# @version 2018/09/16
-# - removed stack-size increase code on Windows that broke thread creation
-# @version 2018/09/06
-# - removed references to old Java back-end spl.jar
-# @version 2018/07/01
-# - enable Qt in configuration to support Qt-based GUI functionality
-# - remove some compiler warnings (long-long, useless-cast) because they trigger in Qt
-# @version 2018/02/28
-# - flag to disable some BasicGraph Vertex/Edge members
-# @version 2018/01/23
-# - modify a couple of clang compiler flags for OSX
-# @version 2017/11/15
-# - turn on collection iterator version checking
-# @version 2017/11/02
-# - exclude Qt lib inclusion on Mac
-# - fixed unknown compiler warning option on Mac
-# @version 2017/10/24
-# - added pthread library on Linux/Mac
-# @version 2017/10/20
-# - fixed autograder source/header inclusion wrt project filter
-# - fixed autograder compiler warning flags
-# @version 2017/10/18
-# - re-enabled compiler warning flags that were mistakenly disabled (oops!)
-# - fixed bug with omitting directories under res/ for other-files copying
-# @version 2017/10/06
-# - added some compiler warning flags
-# - added $$files wrappings around source/header file inclusion
-# - added cache() call to all OSes to get rid of Qmake warning
-# @version 2017/10/05
-# - bug fixes for PROJECT_FILTER option (used for multiple .pro in same folder)
-# @version 2017/10/01
-# - added check for being inside .zip archive (common mistake on Windows)
-# - added check for intl chars in path (common issue for intl students)
-# - added kludge to trick Qt Creator into allowing you to add files to your project (yay)
-# - tweaked behavior for xcopy of files on Windows
-# - improved quoting/escaping of paths and filenames for compatibility
-# @version 2016/12/09
-# - added SPL_THROW_ON_INVALID_ITERATOR flag (default disabled)
-# @version 2016/12/01
-# - slight tweaks to compiler flags to improve stack trace line generation
-# @version 2016/11/07
-# - better C++11 compiler flag compatibility (courtesy Kevin Miller)
-# @version 2016/10/30
-# - added FONTSIZE back in, but commented out by default
-# @version 2016/10/19
-# - added PROJECT_FILTER option to make it easier to have multiple .pro in same dir (e.g. ADTs HW)
-# @version 2016/10/18
-# - re-disabled Mac stack increase flag
-# @version 2016/10/15
-# - new stricter compiler warning flags (float equality comparison; null pointers; undefined macros; etc.)
-# @version 2016/10/13
-# - split StanfordCPPLib into subfolders: collections, graphics, io, private, system, util
-# @version 2016/09/24
-# - added private/*.cpp to sources
-# - added verification of .pro version by default
-# @version 2016/08/12
-# - fixed Windows release build problems
-# @version 2016/08/04
-# - added flag for throwing errors on op >> parsing (default off)
-# @version 2016/07/22
-# - added support for src/autograder/ directory
-# @version 2016/06/28
-# - fixed bugs with 'copydata' on Windows systems
-# @version 2016/06/24
-# - removed FONTSIZE setting; left to default and app configuration
-# - made output/ folder copy itself to subdir of build directory, if present
-# - improved code flow, structure, and comments
-# @version 2015/04/09
-# - decreased Mac stack size to avoid sporatic crashes on Mac systems
-# @version 2014/11/29
-# - added pthread library on Mac/Linux for running each test in its own thread
-# @version 2014/11/13
-# - fixes related to generating stack traces
-# - support for putting testing files in a src/test/ folder (used in development)
-# @version 2014/11/05
-# - improved/fixed flags for exception-handling
-# @version 2014/10/31
-# - standard autograder-compatible version; should work with all assignments and graders.
+# @author Marty Stepp (past authors/support by Keith Schwarz, Reid Watson, etc.)
+# @version 2019/04/22
+# - revert copydata code for copying resource files
+DEFINES += SPL_PROJECT_VERSION=20190422   # kludgy YYYYMMDD constant used by lib to know its version
 
+# global Qt/project settings
 TEMPLATE = app
 PROJECT_FILTER =
 QT       += core gui multimedia network
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-# The Windows version of make does not handle spaces well. As a result, we need to ensure that the target name
-# does not have any spaces.
-TARGET = $$replace(TARGET, " ", _)
-
 ###############################################################################
 # BEGIN SECTION FOR SPECIFYING SOURCE/LIBRARY/RESOURCE FILES OF PROJECT       #
 ###############################################################################
+
+# remove spaces from target executable for better Windows compatibility
+TARGET = $$replace(TARGET, " ", _)
 
 # checks to make sure we haven't accidentally opened the project
 # from within a ZIP archive (common mistake on Windows)
@@ -218,6 +101,18 @@ win32 {
     }
 }
 
+!exists($$PWD/lib/iconstrip.png) {
+    message("")
+    message(*******************************************************************)
+    message(*** ERROR: Stanford library cannot find image strip file:)
+    message(*** lib/iconstrip.png)
+    message(*** This project cannot run without this file present.)
+    message(*** Place the file into your lib/ folder and try again.)
+    message(*******************************************************************)
+    message("")
+    warning(Exiting.)
+}
+
 # precompiled header speeds up build times
 !win32 {
 PRECOMPILED_HEADER = $$files($$PWD/lib/StanfordCPPLib/private/precompiled.h)
@@ -273,16 +168,16 @@ exists($$PWD/src/test/*.h) {
 
 # directories listed as "Other files" in left Project pane of Qt Creator
 exists($$PWD/res/*) {
-    OTHER_FILES *= $$files($$PWD/res/*)
+    OTHER_FILES *= $$files($$PWD/res/*, true)
 }
 exists($$PWD/*.txt) {
     OTHER_FILES *= $$files($$PWD/*.txt)
 }
 exists($$PWD/input/*) {
-    OTHER_FILES *= $$files($$PWD/input/*)
+    OTHER_FILES *= $$files($$PWD/input/*, true)
 }
 exists($$PWD/output/*) {
-    OTHER_FILES *= $$files($$PWD/output/*)
+    OTHER_FILES *= $$files($$PWD/output/*, true)
 }
 
 ###############################################################################
@@ -323,7 +218,6 @@ win32 {
 
 QMAKE_CXXFLAGS += -Wall
 #QMAKE_CXXFLAGS += -Wextra
-QMAKE_CXXFLAGS += -Wunused-parameter
 QMAKE_CXXFLAGS += -Wcast-align
 #QMAKE_CXXFLAGS += -Wfloat-equal
 QMAKE_CXXFLAGS += -Wformat=2
@@ -337,29 +231,24 @@ QMAKE_CXXFLAGS += -Wreturn-type
 QMAKE_CXXFLAGS += -Werror=return-type
 QMAKE_CXXFLAGS += -Werror=uninitialized
 QMAKE_CXXFLAGS += -Wunreachable-code
+QMAKE_CXXFLAGS += -Wunused-parameter
 exists($$PWD/lib/autograder/*.h) | exists($$PWD/lib/StanfordCPPLib/autograder/$$PROJECT_FILTER/*.h) | exists($$PWD/lib/autograder/$$PROJECT_FILTER/*.cpp) {
     # omit some warnings/errors in autograder projects
     # (largely because the Google Test framework violates them a ton of times)
+    QMAKE_CXXFLAGS += -Wno-deprecated
     QMAKE_CXXFLAGS += -Wno-reorder
     QMAKE_CXXFLAGS += -Wno-unused-function
     QMAKE_CXXFLAGS += -Wno-useless-cast
-    QMAKE_CXXFLAGS += -Wno-deprecated
-} else {
-    #QMAKE_CXXFLAGS += -Wuseless-cast
-    #QMAKE_CXXFLAGS += -Wzero-as-null-pointer-constant   # TODO: re-enable for student code?
-    #QMAKE_CXXFLAGS += -Werror=zero-as-null-pointer-constant
 }
 
+# additional flags for Windows
 win32 {
-    # additional flags for Windows
     LIBS += -lDbghelp
     LIBS += -lbfd
     LIBS += -limagehlp
     cache()
 } else {
     # flags that don't work on Windows MinGW compiler
-    # QMAKE_CXXFLAGS += -Wno-keyword-macro
-    # QMAKE_CXXFLAGS += -Wno-reserved-id-macro
     QMAKE_CXXFLAGS += -Wno-unused-const-variable
     LIBS += -ldl
 }
@@ -401,19 +290,16 @@ equals(COMPILERNAME, clang++) {
 # (setting x/y to 999999 centers the window)
 # (see platform.cpp/h for descriptions of some of these flags)
 
-# what version of the Stanford .pro is this? (kludgy integer YYYYMMDD format)
-DEFINES += SPL_PROJECT_VERSION=20190201
-
 # wrapper name for 'main' function (needed so student can write 'int main'
 # but our library can grab the actual main function to initialize itself)
-DEFINES += REPLACE_MAIN_FUNCTION=1
+DEFINES += SPL_REPLACE_MAIN_FUNCTION=1
 DEFINES += main=qMain
 
 # x/y location and w/h of the graphical console window; set to -1 to center
 DEFINES += SPL_CONSOLE_X=-1
 DEFINES += SPL_CONSOLE_Y=-1
-DEFINES += SPL_CONSOLE_WIDTH=800
-DEFINES += SPL_CONSOLE_HEIGHT=500
+DEFINES += SPL_CONSOLE_WIDTH=900
+DEFINES += SPL_CONSOLE_HEIGHT=550
 
 # font size of the font in the graphical console window; can also be set via window menu
 #DEFINES += SPL_CONSOLE_FONTSIZE=18
@@ -429,12 +315,12 @@ DEFINES += SPL_VERIFY_PROJECT_VERSION
 
 # allow clients to access the internal data inside the heap of PriorityQueue?
 # (used for some practice exam exercises/demos)
-DEFINES += PQUEUE_ALLOW_HEAP_ACCESS
+DEFINES += SPL_PQUEUE_ALLOW_HEAP_ACCESS
 
 # should toString / << of a PriorityQueue display the elements in sorted order,
 # or in heap internal order? the former is more expected by client; the latter
 # is faster and avoids a deep-copy
-DEFINES += PQUEUE_PRINT_IN_HEAP_ORDER
+DEFINES += SPL_PQUEUE_PRINT_IN_HEAP_ORDER
 
 # flag to throw exceptions when a collection iterator is used after it has
 # been invalidated (e.g. if you remove from a Map while iterating over it)
@@ -461,7 +347,8 @@ DEFINES += SPL_PRECOMPILE_QT_MOC_FILES
 
 # build-specific options (debug vs release)
 
-# make 'debug' target (default) use no optimization, generate debugger symbols,
+# options for the 'debug' target (default):
+# use no optimization, generate debugger symbols,
 # and catch/print to console any uncaught exceptions thrown by the program
 CONFIG(debug, debug|release) {
     QMAKE_CXXFLAGS += -g3
@@ -489,16 +376,18 @@ CONFIG(debug, debug|release) {
     DEFINES += SPL_CONSOLE_PRINT_EXCEPTIONS
 }
 
-# make 'release' target be statically linked so it is a stand-alone executable
+# options for the 'release' target:
+# enable some compiler optimizations, and
+# make it statically linked so it is a stand-alone executable
 CONFIG(release, debug|release) {
     QMAKE_CXXFLAGS += -O2
+    # commenting out -static because it doesn't link to Qt libraries properly
+    #QMAKE_LFLAGS += -static
+
     macx {
         QMAKE_POST_LINK += 'macdeployqt $${OUT_PWD}/$${TARGET}.app'
-        #QMAKE_POST_LINK += 'macdeployqt $${OUT_PWD}/$${TARGET}.app && rm $${OUT_PWD}/*.o && rm $${OUT_PWD}/Makefile'
     }
     unix:!macx {
-        # commenting out -static because it doesn't link to Qt libraries properly
-        #QMAKE_LFLAGS += -static
         QMAKE_LFLAGS += -static-libgcc
         QMAKE_LFLAGS += -static-libstdc++
     }
@@ -509,16 +398,6 @@ CONFIG(release, debug|release) {
         OUT_PATH = $${OUT_PWD}/
         OUT_PATH ~= s,/,\\,g
 
-        REMOVE_DIRS += '"'$${OUT_PWD}/release'"'
-        REMOVE_DIRS += '"'$${OUT_PWD}/debug'"'
-        REMOVE_FILES += '"'$${OUT_PWD}/Makefile'"'
-        REMOVE_FILES += '"'$${OUT_PWD}/Makefile.Debug'"'
-        REMOVE_FILES += '"'$${OUT_PWD}/Makefile.Release'"'
-        REMOVE_FILES += '"'$${OUT_PWD}/object_script.$${TARGET}.Debug'"'
-        REMOVE_DIRS ~= s,/,\\,g
-        REMOVE_FILES ~= s,/,\\,g
-
-        #QMAKE_LFLAGS += -static
         QMAKE_LFLAGS += -static-libgcc
         QMAKE_LFLAGS += -static-libstdc++
         QMAKE_POST_LINK += copy '"'$${TARGET_PATH}'"' '"'$${OUT_PATH}'"'
@@ -527,6 +406,90 @@ CONFIG(release, debug|release) {
 
 ###############################################################################
 # END SECTION FOR SPECIFYING COMPILER/LINKER FLAGS AND LIBRARIES              #
+###############################################################################
+
+
+###############################################################################
+# BEGIN SECTION FOR DEFINING HELPER FUNCTIONS FOR RESOURCE COPYING            #
+###############################################################################
+
+# copy res/* to root of build directory (input files, etc.)
+# COPY_RESOURCE_FILES_INPUT = ""    # defined above so that autograder files can be included
+COPY_RESOURCE_FILES_INPUT = ""
+
+win32 {
+    # copy addr2line exe program(s) to capture stack traces on Windows
+    exists($$PWD/lib/*.exe) {
+        COPY_RESOURCE_FILES_INPUT += $$files($$PWD/lib/*.exe)
+    }
+    # optional .dll files for network features on Windows
+    exists($$PWD/lib/*.dll) {
+        COPY_RESOURCE_FILES_INPUT += $$files($$PWD/lib/*.dll)
+    }
+}
+# copy icons and image strips for library GUI/console windows
+exists($$PWD/lib/*.gif) {
+    COPY_RESOURCE_FILES_INPUT += $$files($$PWD/lib/*.gif)
+}
+exists($$PWD/lib/*.png) {
+    COPY_RESOURCE_FILES_INPUT += $$files($$PWD/lib/*.png)
+}
+exists($$PWD/*.txt) {
+    COPY_RESOURCE_FILES_INPUT += $$files($$PWD/*.txt)
+}
+exists($$PWD/lib/autograder/*.h) | exists($$PWD/lib/StanfordCPPLib/autograder/*.h) | exists($$PWD/src/autograder/$$PROJECT_FILTER/*.cpp) {
+    # copy autograder source files for optional style checking
+    exists($$PWD/*.cpp) {
+        COPY_RESOURCE_FILES_INPUT += $$files($$PWD/*.cpp)
+    }
+    exists($$PWD/*.h) {
+        COPY_RESOURCE_FILES_INPUT += $$files($$PWD/*.h)
+    }
+}
+
+exists($$PWD/res/*) {
+    win32 {
+        exists($$PWD/res/*/*) {
+            # this will preserve the nested res/ directory structure on Windows,
+            # at the unfortunate cost of copying res/ to build dir on every run;
+            # recommended: avoid res subfolders to avoid this penalty on Windows
+            COPY_RESOURCE_FILES_INPUT += $$files($$PWD/res)
+        } else {
+            # res/ with no subdirectories will properly be copied only on modification
+            COPY_RESOURCE_FILES_INPUT += $$files($$PWD/res/*.*)
+        }
+    } else {
+        # Mac/Linux have proper recursive file-copying semantics in all cases
+        COPY_RESOURCE_FILES_INPUT += $$files($$PWD/res/*, true)
+    }
+}
+exists($$PWD/input/*) {
+    COPY_RESOURCE_FILES_INPUT += $$files($$PWD/input, true)
+}
+exists($$PWD/output/*) {
+    COPY_RESOURCE_FILES_INPUT += $$files($$PWD/output, true)
+}
+
+# platform-specific commands to copy files and folders to build directory
+copy_resource_files.name = Copy resource files to the build directory
+win32 {
+    # https://support.microsoft.com/en-us/help/289483/switches-that-you-can-use-with-xcopy-and-xcopy32-commands
+    # /s - copy subfolders
+    # /q - quiet (no verbose output)
+    # /y - overwrite without prompting
+    # /i - if destination does not exist and copying more than one file, assumes destination is a folder
+    copy_resource_files.commands = xcopy /s /q /y ${QMAKE_FILE_IN}
+} else {
+    copy_resource_files.commands = cp -rf ${QMAKE_FILE_IN} .
+}
+# copy_resource_files.commands = ${COPY_FILE} ${QMAKE_FILE_IN} ${QMAKE_FILE_OUT}
+copy_resource_files.input = COPY_RESOURCE_FILES_INPUT
+copy_resource_files.output = $${OUT_PWD}/${QMAKE_FILE_BASE}${QMAKE_FILE_EXT}
+copy_resource_files.CONFIG = no_link no_clean target_predeps
+QMAKE_EXTRA_COMPILERS += copy_resource_files
+
+###############################################################################
+# END SECTION FOR DEFINING HELPER FUNCTIONS FOR RESOURCE COPYING              #
 ###############################################################################
 
 
@@ -540,14 +503,9 @@ exists($$PWD/lib/autograder/*.h) | exists($$PWD/lib/StanfordCPPLib/autograder/*.
     exists($$PWD/lib/autograder/*.cpp) {
         SOURCES *= $$files($$PWD/lib/autograder/*.cpp, true)
     }
-    exists($$PWD/lib/StanfordCPPLib/autograder/*.cpp) {
-        SOURCES *= $$files($$PWD/lib/autograder/*.cpp, true)
-    }
-
     exists($$PWD/lib/autograder/*.h) {
         HEADERS *= $$files($$PWD/lib/autograder/*.h, true)
     }
-
     exists($$PWD/lib/autograder/*) {
         INCLUDEPATH *= $$PWD/lib/autograder/
     }
@@ -568,148 +526,20 @@ exists($$PWD/lib/autograder/*.h) | exists($$PWD/lib/StanfordCPPLib/autograder/*.
     # DEFINES += SPL_CONSOLE_AUTOGRADER
 
     # a check to ensure that required autograder resources are present in this project
-    !exists($$PWD/res/autograder/pass.gif) {
+    !exists($$PWD/lib/iconstrip-autograder.png) {
         message("")
         message(*******************************************************************)
-        message(*** ERROR: Stanford library cannot find image files pass.gif, fail.gif, etc.!)
-        message(*** This project cannot run without those images present.)
-        message(*** Place those files into your res/autograder/ folder and try again.)
+        message(*** ERROR: Stanford library cannot find autograder image strip file:)
+        message(*** lib/iconstrip-autograder.png)
+        message(*** This project cannot run without this file present.)
+        message(*** Place the file into your lib/ folder and try again.)
         message(*******************************************************************)
         message("")
         error(Exiting.)
     }
-
-    # copy autograder resource files into build folder
-    #exists($$PWD/res/autograder/*) {
-    #    COPY_RESOURCE_FILES_INPUT += $$PWD/res/autograder
-    #    OTHER_FILES *= $$files(res/autograder)
-    #}
-
-    # copy source code into build folder so it can be analyzed by style checker
-    #exists($$PWD/src/$$PROJECT_FILTER*.cpp) {
-    #    copyResources.input *= $$files($$PWD/src/$$PROJECT_FILTER*.cpp)
-    #    copyToDestdir($$files($$PWD/src/$$PROJECT_FILTER*.cpp))
-    #}
-    #exists($$PWD/$$PROJECT_FILTER*.cpp) {
-    #    copyResources.input *= $$files($$PWD/$$PROJECT_FILTER*.cpp)
-    #    copyToDestdir($$files($$PWD/$$PROJECT_FILTER*.cpp))
-    #}
-    #exists($$PWD/src/$$PROJECT_FILTER*.h) {
-    #    copyResources.input *= $$files($$PWD/src/$$PROJECT_FILTER*.h)
-    #    copyToDestdir($$files($$PWD/src/$$PROJECT_FILTER*.h))
-    #}
-    #exists($$PWD/$$PROJECT_FILTER*.h) {
-    #    copyResources.input *= $$files($$PWD/$$PROJECT_FILTER*.h)
-    #    copyToDestdir($$files($$PWD/$$PROJECT_FILTER*.h))
-    #}
 }
 ###############################################################################
 # END SECTION FOR CS 106B/X AUTOGRADER PROGRAMS                               #
 ###############################################################################
 
-
-###############################################################################
-# BEGIN SECTION FOR DEFINING HELPER FUNCTIONS FOR RESOURCE COPYING            #
-###############################################################################
-
-# copy res/* to root of build directory (input files, etc.)
-# COPY_RESOURCE_FILES_INPUT = ""    # defined above so that autograder files can be included
-COPY_RESOURCE_FILES_INPUT = ""
-
-# Windows and Mac/Linux differ in how the semantics of their shell copy function works. On Linux/Mac,
-# the syntax is
-#
-#    cp -rf src dstDir
-#
-# and the command replicates src at dst. If src is a file, it's copied into the destination folder.
-# If src is a directory, the directory src is copied into the destination folder.
-#
-# On Windows, the syntax is
-#
-#    xcopy /s /q /y /i src dstDir
-#
-# and the sematics are "if src is a file, copy it into dstDir; if src is a directory, copy its contents,
-# but not the folder itself, into dstDir." This means that we fundamentally need to have two different
-# copy operations set up, one to handle the case where we're on Linux/Mac and one for when we're on
-# Windows. On Mac/Linux, we'll assemble a list of all the files in the relevant directories and ask to
-# copy them over. On Windows, we need to assemble two conditional statements to execute, one of which
-# handles directories and the other regular files. On Linux/Mac, we just need the single statement.
-
-# List of all files to copy. The format here is baseDirectory/pattern.
-win64 {
-    COPY_RESOURCE_FILES_INPUT += $$files($$PWD/lib/addr2line64.exe)
-}
-win32 {
-    COPY_RESOURCE_FILES_INPUT += $$files($$PWD/lib/addr2line.exe)
-    COPY_RESOURCE_FILES_INPUT += $$files($$PWD/lib/addr2line64.exe)
-}
-COPY_RESOURCE_FILES_INPUT += $$files($$PWD/*.txt)
-COPY_RESOURCE_FILES_INPUT += $$files($$PWD/res/*)
-COPY_RESOURCE_FILES_INPUT += $$files($$PWD/input/*)
-COPY_RESOURCE_FILES_INPUT += $$files($$PWD/output/*)
-
-# On Windows, we need to explicitly set up directory endpoints for each file that needs to be copied.
-win32 {
-    for (file, COPY_RESOURCE_FILES_INPUT) {
-        base = $$basename(file)
-
-        # Test if it's a directory by seeing whether file/* exists. Yes, that's the best test I could find.
-        COPYDATA_COMMAND += (IF EXIST \"$$shell_path($$file)\"/* (
-        COPYDATA_COMMAND +=     (IF NOT EXIST \"$$shell_path($$base)\"/* MKDIR $$shell_path($$basename(file))) &&
-        COPYDATA_COMMAND +=     ($$QMAKE_COPY_DIR \"$$shell_path($$file)\" \"$$shell_path($$OUT_PWD/$$basename(file))\" > NUL)
-        COPYDATA_COMMAND += ) ELSE
-        COPYDATA_COMMAND +=     ($$QMAKE_COPY_DIR \"$$shell_path($$file)\" \"$$shell_path($$OUT_PWD)\") > NUL) &&
-    }
-
-    # Handle the trailing && operator
-    COPYDATA_COMMAND += rem
-} else {
-    for (file, COPY_RESOURCE_FILES_INPUT) {
-        COPYDATA_COMMAND += $$QMAKE_COPY_DIR \"$$shell_path($$file)\" \"$$shell_path($$OUT_PWD)\" &&
-    }
-
-    # Handle the trailing && operator
-    COPYDATA_COMMAND += true
-}
-
-# Install the copy command at the top-level, but NOT as a dependency of the executable.
-# This ensures we always copy things over, but that we don't rebuild the executable on each
-# run of the program.
-copydata.commands = $$COPYDATA_COMMAND
-all.depends += copydata
-QMAKE_EXTRA_TARGETS += all copydata
-
-
-# Windows networking doesn't work correctly unless we explicitly copy over some networking
-# .dll files into the debug/ or release/ directory (based on whatever it is that we're trying
-# to build).
-win32 {
-    WINDOWS_LIB_FILES = $$PWD/lib/libeay32.dll $$PWD/lib/ssleay32.dll
-
-    # See which files to copy.
-    for (file, WINDOWS_LIB_FILES) {
-        exists($$file) {
-            COPY_LIB_FILES_INPUT += $$file
-        }
-    }
-
-    # Assemble the command string.
-    CONFIG(debug, debug|release) {
-        for (file, COPY_LIB_FILES_INPUT) COPYLIB_COMMAND += $(COPY_DIR) \"$$shell_path($$file)\" \"$$shell_path($$OUT_PWD)\debug\" > NUL &&
-    }
-    CONFIG(release, debug|release) {
-        for (file, COPY_LIB_FILES_INPUT) COPYLIB_COMMAND += $(COPY_DIR) \"$$shell_path($$file)\" \"$$shell_path($$OUT_PWD)\release\" > NUL &&
-    }
-    COPYLIB_COMMAND += rem
-
-    # Install this as a top-level build dependency
-    copylib.commands = $$COPYLIB_COMMAND
-    all.depends += copylib
-    QMAKE_EXTRA_TARGETS += all copylib
-}
-
-###############################################################################
-# END SECTION FOR DEFINING HELPER FUNCTIONS FOR RESOURCE COPYING              #
-###############################################################################
-
-# END OF FILE (this should be line #715; if not, your .pro has been changed!)
+# END OF FILE (this should be line #545; if not, your .pro has been changed!)

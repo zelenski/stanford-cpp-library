@@ -3,6 +3,8 @@
  * --------------
  *
  * @author Marty Stepp
+ * @version 2019/04/22
+ * - added setIcon with QIcon and QPixmap
  * @version 2018/10/04
  * - added get/setWordWrap
  * @version 2018/09/07
@@ -60,6 +62,16 @@ public:
      * Creates a label with the specified text label and optional icon.
      */
     GLabel(const std::string& text = "", const std::string& iconFileName = "", QWidget* parent = nullptr);
+
+    /**
+     * Creates a label with the specified text label and icon.
+     */
+    GLabel(const std::string& text, const QIcon& icon, QWidget* parent = nullptr);
+
+    /**
+     * Creates a label with the specified text label and icon.
+     */
+    GLabel(const std::string& text, const QPixmap& icon, QWidget* parent = nullptr);
 
     /**
      * Frees memory allocated internally by the label.
@@ -166,6 +178,12 @@ public:
 
     /* @inherit */
     virtual void setHeight(double height) Q_DECL_OVERRIDE;
+
+    /* @inherit */
+    virtual void setIcon(const QIcon& icon) Q_DECL_OVERRIDE;
+
+    /* @inherit */
+    virtual void setIcon(const QPixmap& icon) Q_DECL_OVERRIDE;
 
     /* @inherit */
     virtual void setIcon(const std::string& filename, bool retainIconSize = true) Q_DECL_OVERRIDE;

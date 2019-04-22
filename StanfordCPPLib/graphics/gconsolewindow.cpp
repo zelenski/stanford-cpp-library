@@ -158,11 +158,43 @@ GConsoleWindow::GConsoleWindow()
     loadConfiguration();
 }
 
-static Map<std::string, QIcon> unpackImageStrip() {
+/*static*/ Map<std::string, QPixmap> GConsoleWindow::unpackImageStrip(
+        const std::string& imageStripFileName,
+        const Vector<std::string>& imageFiles,
+        int imageSize) {
+    // all images are the same size
+    Vector<GDimension> imageSizes;
+    for (int i = 0; i < imageFiles.size(); i++) {
+        imageSizes.add(GDimension(imageSize, imageSize));
+    }
+    return unpackImageStrip(imageStripFileName, imageFiles, imageSizes);
+}
+
+/*static*/ Map<std::string, QPixmap> GConsoleWindow::unpackImageStrip(
+        const std::string& imageStripFileName,
+        const Vector<std::string>& imageFiles,
+        const Vector<GDimension>& imageSizes) {
+    int iconOffsetX = 0;
+    Map<std::string, QPixmap> imageMap;
+    if (fileExists(imageStripFileName)) {
+        QPixmap pixmap(QString::fromStdString(imageStripFileName));
+        for (int i = 0; i < imageFiles.size(); i++) {
+            std::string imageFile = imageFiles[i];
+            GDimension imageSize = imageSizes[i];
+            QPixmap pixcopy = pixmap.copy(iconOffsetX, 0, static_cast<int>(imageSize.getWidth()), static_cast<int>(imageSize.getHeight()));
+            imageMap[imageFile] = pixcopy;
+            iconOffsetX += static_cast<int>(imageSize.getWidth());
+        }
+    }
+    return imageMap;
+}
+
+void GConsoleWindow::_initMenuBar() {
+    addToolbar();
+
     const std::string ICON_STRIP_FILE = "iconstrip.png";
     const int ICON_SIZE = 16;
-    int iconOffset = 0;
-    Vector<std::string> IMAGES = {
+    Vector<std::string> IMAGES {
         "save.gif",
         "save_as.gif",
         "print.gif",
@@ -180,22 +212,7 @@ static Map<std::string, QIcon> unpackImageStrip() {
         "about.gif",
         "check_for_updates.gif"
     };
-
-    Map<std::string, QIcon> imageMap;
-    if (fileExists(ICON_STRIP_FILE)) {
-        QPixmap pixmap(QString::fromStdString(ICON_STRIP_FILE));
-        for (std::string image : IMAGES) {
-            QPixmap pixcopy = pixmap.copy(iconOffset, 0, ICON_SIZE, ICON_SIZE);
-            imageMap[image] = pixcopy;
-            iconOffset += ICON_SIZE;
-        }
-    }
-    return imageMap;
-}
-
-void GConsoleWindow::_initMenuBar() {
-    addToolbar();
-    Map<std::string, QIcon> imageMap = unpackImageStrip();
+    Map<std::string, QPixmap> imageMap = unpackImageStrip(ICON_STRIP_FILE, IMAGES, ICON_SIZE);
 
     // File menu
     addMenu("&File");

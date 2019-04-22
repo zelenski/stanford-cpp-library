@@ -3,6 +3,8 @@
  * ---------------
  *
  * @author Marty Stepp
+ * @version 2019/04/22
+ * - added setIcon with QIcon and QPixmap
  * @version 2018/09/07
  * - added doc comments for new documentation generation
  * @version 2018/09/04
@@ -50,6 +52,16 @@ public:
      * Creates a button with the specified text label and optional icon.
      */
     GButton(const std::string& text = "", const std::string& iconFileName = "", QWidget* parent = nullptr);
+
+    /**
+     * Creates a button with the specified text label and icon.
+     */
+    GButton(const std::string& text, const QIcon& icon, QWidget* parent = nullptr);
+
+    /**
+     * Creates a button with the specified text label and icon.
+     */
+    GButton(const std::string& text, const QPixmap& icon, QWidget* parent = nullptr);
 
     /**
      * Frees memory allocated internally by the button.
@@ -126,6 +138,12 @@ public:
      * Any existing double-click listener will be replaced.
      */
     virtual void setDoubleClickListener(GEventListenerVoid func);
+
+    /* @inherit */
+    virtual void setIcon(const QIcon& icon) Q_DECL_OVERRIDE;
+
+    /* @inherit */
+    virtual void setIcon(const QPixmap& icon) Q_DECL_OVERRIDE;
 
     /* @inherit */
     virtual void setIcon(const std::string& filename, bool retainIconSize = true) Q_DECL_OVERRIDE;

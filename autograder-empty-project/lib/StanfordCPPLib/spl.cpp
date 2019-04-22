@@ -266,6 +266,9 @@ std::ostream& operator <<(std::ostream& out, const ErrorException& ex) {
 #include <cstring>
 #endif // _WIN32
 #endif // __GNUC__
+#if defined(__APPLE__)
+#include <mach-o/dyld.h>   // for _dyld_get_image_header
+#endif // __APPLE__
 #include <iomanip>
 #include <iostream>
 #include <sstream>
@@ -960,6 +963,7 @@ bool shouldFilterOutFromStackTrace(const std::string& function) {
         "__cxa_call_terminate",
         "__cxa_call_unexpected",
         "_endthreadex",
+        "_Function_base::_Base_manager::",
         "_Function_handler",
         "_Internal_",
         "__invoke_impl",
@@ -1001,6 +1005,7 @@ bool shouldFilterOutFromStackTrace(const std::string& function) {
         // "QWidget::",
         "QWidgetBackingStore::",
         "QWindowSystemInterface::",
+        "require::_errorMessage",
         "shouldFilterOutFromStackTrace",
         "stacktrace::",
         "stanfordCppLibPosixSignalHandler",
@@ -6563,11 +6568,11 @@ static void _errorMessage(const std::string& caller, const std::string& valueNam
 #define _default(value, defaultValue) ((value) == std::string("") ? (defaultValue) : (value))
 
 void inRange(double value, double min, double max, const std::string& caller, const std::string& valueName, const std::string& details) {
-    _spl_assert(min <= value && value <= max, caller, _default(valueName, "value"), _default(details, "must be between " + std::to_string(min) + " and " + std::to_string(max) + " inclusive but was " + std::to_string(value)));
+    _spl_assert(min <= value && value <= max, caller, _default(valueName, "value"), _default(details, " must be between " + std::to_string(min) + " and " + std::to_string(max) + " inclusive but was " + std::to_string(value)));
 }
 
 void inRange(int value, int min, int max, const std::string& caller, const std::string& valueName, const std::string& details) {
-    _spl_assert(min <= value && value <= max, caller, _default(valueName, "value"), _default(details, "must be between " + std::to_string(min) + " and " + std::to_string(max) + " inclusive but was " + std::to_string(value)));
+    _spl_assert(min <= value && value <= max, caller, _default(valueName, "value"), _default(details, " must be between " + std::to_string(min) + " and " + std::to_string(max) + " inclusive but was " + std::to_string(value)));
 }
 
 void inRange2D(double x, double y, double maxX, double maxY, const std::string& caller, const std::string& xValueName, const std::string& yValueName, const std::string& details) {
@@ -6575,8 +6580,8 @@ void inRange2D(double x, double y, double maxX, double maxY, const std::string& 
 }
 
 void inRange2D(double x, double y, double minX, double minY, double maxX, double maxY, const std::string& caller, const std::string& xValueName, const std::string& yValueName, const std::string& details) {
-    inRange(x, minX, maxX, caller, xValueName, _default(details, "must be between (" + std::to_string(minX) + "," + std::to_string(minY) + ")-" + std::to_string(maxX) + "," + std::to_string(maxY) + ") inclusive but was (" + std::to_string(x) + "," + std::to_string(y) + ")"));
-    inRange(y, minY, maxY, caller, yValueName, _default(details, "must be between (" + std::to_string(minX) + "," + std::to_string(minY) + ")-" + std::to_string(maxX) + "," + std::to_string(maxY) + ") inclusive but was (" + std::to_string(x) + "," + std::to_string(y) + ")"));
+    inRange(x, minX, maxX, caller, xValueName, _default(details, " must be between (" + std::to_string(minX) + "," + std::to_string(minY) + ")-" + std::to_string(maxX) + "," + std::to_string(maxY) + ") inclusive but was (" + std::to_string(x) + "," + std::to_string(y) + ")"));
+    inRange(y, minY, maxY, caller, yValueName, _default(details, " must be between (" + std::to_string(minX) + "," + std::to_string(minY) + ")-" + std::to_string(maxX) + "," + std::to_string(maxY) + ") inclusive but was (" + std::to_string(x) + "," + std::to_string(y) + ")"));
 }
 
 void inRange2D(int x, int y, int maxX, int maxY, const std::string& caller, const std::string& xValueName, const std::string& yValueName, const std::string& details) {
@@ -6584,24 +6589,24 @@ void inRange2D(int x, int y, int maxX, int maxY, const std::string& caller, cons
 }
 
 void inRange2D(int x, int y, int minX, int minY, int maxX, int maxY, const std::string& caller, const std::string& xValueName, const std::string& yValueName, const std::string& details) {
-    inRange(x, minX, maxX, caller, xValueName, _default(details, "must be between (" + std::to_string(minX) + "," + std::to_string(minY) + ")-" + std::to_string(maxX) + "," + std::to_string(maxY) + ") inclusive but was (" + std::to_string(x) + "," + std::to_string(y) + ")"));
-    inRange(y, minY, maxY, caller, yValueName, _default(details, "must be between (" + std::to_string(minX) + "," + std::to_string(minY) + ")-" + std::to_string(maxX) + "," + std::to_string(maxY) + ") inclusive but was (" + std::to_string(x) + "," + std::to_string(y) + ")"));
+    inRange(x, minX, maxX, caller, xValueName, _default(details, " must be between (" + std::to_string(minX) + "," + std::to_string(minY) + ")-" + std::to_string(maxX) + "," + std::to_string(maxY) + ") inclusive but was (" + std::to_string(x) + "," + std::to_string(y) + ")"));
+    inRange(y, minY, maxY, caller, yValueName, _default(details, " must be between (" + std::to_string(minX) + "," + std::to_string(minY) + ")-" + std::to_string(maxX) + "," + std::to_string(maxY) + ") inclusive but was (" + std::to_string(x) + "," + std::to_string(y) + ")"));
 }
 
 void nonEmpty(const std::string& str, const std::string& caller, const std::string& valueName, const std::string& details) {
-    _spl_assert(!str.empty(), caller, _default(valueName, "string"), _default(details, "must not be empty"));
+    _spl_assert(!str.empty(), caller, _default(valueName, "string"), _default(details, " must not be empty"));
 }
 
 void nonNegative(double value, const std::string& caller, const std::string& valueName, const std::string& details) {
-    _spl_assert(value >= 0.0, caller, _default(valueName, "value"), _default(details, "must be non-negative but was " + std::to_string(value)));
+    _spl_assert(value >= 0.0, caller, _default(valueName, "value"), _default(details, " must be non-negative but was " + std::to_string(value)));
 }
 
 void nonNegative(int value, const std::string& caller, const std::string& valueName, const std::string& details) {
-    _spl_assert(value >= 0, caller, _default(valueName, "value"), _default(details, "must be non-negative but was " + std::to_string(value)));
+    _spl_assert(value >= 0, caller, _default(valueName, "value"), _default(details, " must be non-negative but was " + std::to_string(value)));
 }
 
 void nonNegative(long value, const std::string& caller, const std::string& valueName, const std::string& details) {
-    _spl_assert(value >= 0, caller, _default(valueName, "value"), _default(details, "must be non-negative but was " + std::to_string(value)));
+    _spl_assert(value >= 0, caller, _default(valueName, "value"), _default(details, " must be non-negative but was " + std::to_string(value)));
 }
 
 void nonNegative2D(double x, double y, const std::string& caller, const std::string& xValueName, const std::string& yValueName, const std::string& details) {
@@ -6615,15 +6620,15 @@ void nonNegative2D(int x, int y, const std::string& caller, const std::string& x
 }
 
 void nonNull(const void* ptr, const std::string& caller, const std::string& valueName, const std::string& details) {
-    _spl_assert(ptr != nullptr, caller, _default(valueName, "value"), _default(details, "must be non-null"));
+    _spl_assert(ptr != nullptr, caller, _default(valueName, "value"), _default(details, " must be non-null"));
 }
 
 void positive(double value, const std::string& caller, const std::string& valueName, const std::string& details) {
-    _spl_assert(value > 0.0, caller, _default(valueName, "value"), _default(details, "must be positive but was " + std::to_string(value)));
+    _spl_assert(value > 0.0, caller, _default(valueName, "value"), _default(details, " must be positive but was " + std::to_string(value)));
 }
 
 void positive(int value, const std::string& caller, const std::string& valueName, const std::string& details) {
-    _spl_assert(value > 0, caller, _default(valueName, "value"), _default(details, "must be positive but was " + std::to_string(value)));
+    _spl_assert(value > 0, caller, _default(valueName, "value"), _default(details, " must be positive but was " + std::to_string(value)));
 }
 
 void require(bool test, const std::string& caller, const std::string& details) {
@@ -10176,11 +10181,43 @@ GConsoleWindow::GConsoleWindow()
     loadConfiguration();
 }
 
-static Map<std::string, QIcon> unpackImageStrip() {
+/*static*/ Map<std::string, QPixmap> GConsoleWindow::unpackImageStrip(
+        const std::string& imageStripFileName,
+        const Vector<std::string>& imageFiles,
+        int imageSize) {
+    // all images are the same size
+    Vector<GDimension> imageSizes;
+    for (int i = 0; i < imageFiles.size(); i++) {
+        imageSizes.add(GDimension(imageSize, imageSize));
+    }
+    return unpackImageStrip(imageStripFileName, imageFiles, imageSizes);
+}
+
+/*static*/ Map<std::string, QPixmap> GConsoleWindow::unpackImageStrip(
+        const std::string& imageStripFileName,
+        const Vector<std::string>& imageFiles,
+        const Vector<GDimension>& imageSizes) {
+    int iconOffsetX = 0;
+    Map<std::string, QPixmap> imageMap;
+    if (fileExists(imageStripFileName)) {
+        QPixmap pixmap(QString::fromStdString(imageStripFileName));
+        for (int i = 0; i < imageFiles.size(); i++) {
+            std::string imageFile = imageFiles[i];
+            GDimension imageSize = imageSizes[i];
+            QPixmap pixcopy = pixmap.copy(iconOffsetX, 0, static_cast<int>(imageSize.getWidth()), static_cast<int>(imageSize.getHeight()));
+            imageMap[imageFile] = pixcopy;
+            iconOffsetX += static_cast<int>(imageSize.getWidth());
+        }
+    }
+    return imageMap;
+}
+
+void GConsoleWindow::_initMenuBar() {
+    addToolbar();
+
     const std::string ICON_STRIP_FILE = "iconstrip.png";
     const int ICON_SIZE = 16;
-    int iconOffset = 0;
-    Vector<std::string> IMAGES = {
+    Vector<std::string> IMAGES {
         "save.gif",
         "save_as.gif",
         "print.gif",
@@ -10198,22 +10235,7 @@ static Map<std::string, QIcon> unpackImageStrip() {
         "about.gif",
         "check_for_updates.gif"
     };
-
-    Map<std::string, QIcon> imageMap;
-    if (fileExists(ICON_STRIP_FILE)) {
-        QPixmap pixmap(QString::fromStdString(ICON_STRIP_FILE));
-        for (std::string image : IMAGES) {
-            QPixmap pixcopy = pixmap.copy(iconOffset, 0, ICON_SIZE, ICON_SIZE);
-            imageMap[image] = pixcopy;
-            iconOffset += ICON_SIZE;
-        }
-    }
-    return imageMap;
-}
-
-void GConsoleWindow::_initMenuBar() {
-    addToolbar();
-    Map<std::string, QIcon> imageMap = unpackImageStrip();
+    Map<std::string, QPixmap> imageMap = unpackImageStrip(ICON_STRIP_FILE, IMAGES, ICON_SIZE);
 
     // File menu
     addMenu("&File");
@@ -13563,6 +13585,8 @@ void _Internal_QCanvas::wheelEvent(QWheelEvent* event) {
  * ---------------------
  *
  * @author Marty Stepp
+ * @version 2019/04/22
+ * - added setIcon with QIcon and QPixmap
  * @version 2019/04/10
  * - bug fix for setBackground on GTextArea and GBrowserPane
  * @version 2018/09/20
@@ -13945,6 +13969,14 @@ void GInteractor::setHeight(double height) {
     GThread::runOnQtGuiThread([this, height]() {
         getWidget()->setFixedHeight((int) height);
     });
+}
+
+void GInteractor::setIcon(const QIcon& /*icon*/) {
+    // override in subclasses as appropriate
+}
+
+void GInteractor::setIcon(const QPixmap& /*icon*/) {
+    // override in subclasses as appropriate
 }
 
 void GInteractor::setIcon(const std::string& filename, bool /* retainIconSize */) {
@@ -14351,7 +14383,36 @@ QAction* GWindow::addMenuItem(const std::string& menu, const std::string& item, 
     }
 
     QAction* action = nullptr;
-    GThread::runOnQtGuiThread([this, menu, item, icon, func, menuKey, menuItemKey, &action]() {
+    GThread::runOnQtGuiThread([this, menu, item, &icon, func, menuKey, menuItemKey, &action]() {
+        QMenu* qmenu = _menuMap[menuKey];
+        action = qmenu->addAction(QString::fromStdString(item));
+        action->setIcon(icon);
+
+        // when menu item is clicked, call the function the user gave us
+        _iqmainwindow->connect(action, &QAction::triggered, _iqmainwindow, [func]() {
+            func();
+        });
+        _menuActionMap[menuItemKey] = action;
+    });
+    return action;
+}
+
+QAction* GWindow::addMenuItem(const std::string& menu, const std::string& item, const QPixmap& icon, GEventListenerVoid func) {
+    std::string menuKey = toLowerCase(stringReplace(menu, "&", ""));
+    if (!_menuMap.containsKey(menuKey)) {
+        error("GWindow::addMenuItem: menu \"" + menu + "\" does not exist");
+        return nullptr;
+    }
+
+    std::string itemKey = toLowerCase(stringReplace(item, "&", ""));
+    std::string menuItemKey = menuKey + "/" + itemKey;
+    if (_menuActionMap.containsKey(menuItemKey)) {
+        // duplicate; do not create again
+        return _menuActionMap[menuItemKey];
+    }
+
+    QAction* action = nullptr;
+    GThread::runOnQtGuiThread([this, menu, item, &icon, func, menuKey, menuItemKey, &action]() {
         QMenu* qmenu = _menuMap[menuKey];
         action = qmenu->addAction(QString::fromStdString(item));
         action->setIcon(icon);
@@ -14539,7 +14600,37 @@ QAction* GWindow::addToolbarItem(const std::string& item,
     }
 
     QAction* action = nullptr;
-    GThread::runOnQtGuiThread([this, item, icon, func, menuItemKey, &action]() {
+    GThread::runOnQtGuiThread([this, item, &icon, func, menuItemKey, &action]() {
+        // toolbar item with icon doesn't show text
+        action = _toolbar->addAction(icon, QString::fromStdString(""));
+        action->setToolTip(QString::fromStdString(item));
+
+        // when menu item is clicked, call the function the user gave us
+        _iqmainwindow->connect(action, &QAction::triggered, _iqmainwindow, [func]() {
+            func();
+        });
+        _menuActionMap[menuItemKey] = action;
+
+    });
+    return action;
+}
+
+QAction* GWindow::addToolbarItem(const std::string& item,
+                                 const QPixmap& icon,
+                                 GEventListenerVoid func) {
+    if (!_toolbar) {
+        addToolbar();
+    }
+
+    std::string itemKey = toLowerCase(stringReplace(item, "&", ""));
+    std::string menuItemKey = "toolbar/" + itemKey;
+    if (_menuActionMap.containsKey(menuItemKey)) {
+        // duplicate; do not create again
+        return _menuActionMap[menuItemKey];
+    }
+
+    QAction* action = nullptr;
+    GThread::runOnQtGuiThread([this, item, &icon, func, menuItemKey, &action]() {
         // toolbar item with icon doesn't show text
         action = _toolbar->addAction(icon, QString::fromStdString(""));
         action->setToolTip(QString::fromStdString(item));
@@ -17457,6 +17548,8 @@ QSize _Internal_QScrollBar::sizeHint() const {
  * ----------------
  *
  * @author Marty Stepp
+ * @version 2019/04/22
+ * - added setIcon with QIcon and QPixmap
  * @version 2019/02/02
  * - destructor now stops event processing
  * @version 2018/10/04
@@ -17495,6 +17588,26 @@ GLabel::GLabel(const std::string& text, const std::string& iconFileName, QWidget
     if (!iconFileName.empty()) {
         setIcon(iconFileName);
     }
+    setVisible(false);   // all widgets are not shown until added to a window
+}
+
+GLabel::GLabel(const std::string& text, const QIcon& icon, QWidget* parent)
+        : _gtext(nullptr) {
+    GThread::runOnQtGuiThread([this, parent]() {
+        _iqlabel = new _Internal_QLabel(this, getInternalParent(parent));
+    });
+    setText(text);
+    setIcon(icon);
+    setVisible(false);   // all widgets are not shown until added to a window
+}
+
+GLabel::GLabel(const std::string& text, const QPixmap& icon, QWidget* parent)
+        : _gtext(nullptr) {
+    GThread::runOnQtGuiThread([this, parent]() {
+        _iqlabel = new _Internal_QLabel(this, getInternalParent(parent));
+    });
+    setText(text);
+    setIcon(icon);
     setVisible(false);   // all widgets are not shown until added to a window
 }
 
@@ -17642,6 +17755,39 @@ void GLabel::setHeight(double height) {
     ensureGText();   // setting size triggers GText mode
     _gtext->setHeight(height);
     GInteractor::setHeight(height);
+}
+
+void GLabel::setIcon(const QIcon& icon) {
+    GInteractor::setIcon(icon);
+    GThread::runOnQtGuiThread([this, &icon]() {
+        QSize size(16, 16);   // default size
+        if (!icon.availableSizes().empty()) {
+            size = icon.availableSizes()[0];
+        }
+        QPixmap pixmap = icon.pixmap(size);
+        _iqlabel->setPixmap(pixmap);
+        _iqlabel->updateGeometry();
+        _iqlabel->update();
+
+        // TODO: loses text; how to have both icon and text in same label?
+        if (!getText().empty()) {
+            std::cerr << "Warning: a GLabel cannot currently have both text and icon." << std::endl;
+        }
+    });
+}
+
+void GLabel::setIcon(const QPixmap& icon) {
+    GInteractor::setIcon(icon);
+    GThread::runOnQtGuiThread([this, &icon]() {
+        _iqlabel->setPixmap(icon);
+        _iqlabel->updateGeometry();
+        _iqlabel->update();
+
+        // TODO: loses text; how to have both icon and text in same label?
+        if (!getText().empty()) {
+            std::cerr << "Warning: a GLabel cannot currently have both text and icon." << std::endl;
+        }
+    });
 }
 
 void GLabel::setIcon(const std::string& filename, bool retainIconSize) {
@@ -19440,6 +19586,8 @@ static double dsq(double x0, double y0, double x1, double y1) {
  * ------------------
  *
  * @author Marty Stepp
+ * @version 2019/04/22
+ * - added setIcon with QIcon and QPixmap
  * @version 2019/02/02
  * - destructor now stops event processing
  * @version 2018/09/04
@@ -19471,6 +19619,24 @@ GButton::GButton(const std::string& text, const std::string& iconFileName, QWidg
     if (!iconFileName.empty()) {
         setIcon(iconFileName);
     }
+    setVisible(false);   // all widgets are not shown until added to a window
+}
+
+GButton::GButton(const std::string& text, const QIcon& icon, QWidget* parent) {
+    GThread::runOnQtGuiThread([this, parent]() {
+        _iqpushbutton = new _Internal_QPushButton(this, getInternalParent(parent));
+    });
+    setText(text);
+    setIcon(icon);
+    setVisible(false);   // all widgets are not shown until added to a window
+}
+
+GButton::GButton(const std::string& text, const QPixmap& icon, QWidget* parent) {
+    GThread::runOnQtGuiThread([this, parent]() {
+        _iqpushbutton = new _Internal_QPushButton(this, getInternalParent(parent));
+    });
+    setText(text);
+    setIcon(icon);
     setVisible(false);   // all widgets are not shown until added to a window
 }
 
@@ -19549,6 +19715,30 @@ void GButton::setDoubleClickListener(GEventListener func) {
 
 void GButton::setDoubleClickListener(GEventListenerVoid func) {
     setEventListener("doubleclick", func);
+}
+
+void GButton::setIcon(const QIcon& icon) {
+    GInteractor::setIcon(icon);
+    GThread::runOnQtGuiThread([this, &icon]() {
+        _iqpushbutton->setIcon(icon);
+        _iqpushbutton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+        if (!icon.availableSizes().empty()) {
+            _iqpushbutton->setIconSize(icon.availableSizes()[0]);
+        }
+        _iqpushbutton->updateGeometry();
+        _iqpushbutton->update();
+    });
+}
+
+void GButton::setIcon(const QPixmap& icon) {
+    GInteractor::setIcon(icon);
+    GThread::runOnQtGuiThread([this, &icon]() {
+        _iqpushbutton->setIcon(icon);
+        _iqpushbutton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+        _iqpushbutton->setIconSize(icon.size());
+        _iqpushbutton->updateGeometry();
+        _iqpushbutton->update();
+    });
 }
 
 void GButton::setIcon(const std::string& filename, bool retainIconSize) {
@@ -19789,6 +19979,8 @@ std::string GFileChooser::normalizeFileFilter(const std::string& fileFilter) {
  * ------------------
  * 
  * @author Marty Stepp
+ * @version 2019/04/20
+ * - display expected/actual values using toPrintable to show non-printable characters better
  * @version 2018/10/06
  * - allow passing diff flags
  * @version 2018/09/27
@@ -19804,6 +19996,8 @@ std::string GFileChooser::normalizeFileFilter(const std::string& fileFilter) {
 #include <iostream>
 #include <QScrollBar>
 #include <string>
+#define INTERNAL_INCLUDE 1
+#include "bitstream.h"
 #define INTERNAL_INCLUDE 1
 #include "consoletext.h"
 #define INTERNAL_INCLUDE 1
@@ -19922,6 +20116,9 @@ void GDiffGui::setupDiffText(const std::string& diffs) {
             color = COLOR_NORMAL;
         }
 
+        // BUGFIX: display special characters with extra printable character info
+        line = toPrintable(line);
+
         _textAreaBottom->appendFormattedText(line + "\n", color);
     }
 }
@@ -19943,7 +20140,7 @@ void GDiffGui::setupLeftRightText(GTextArea* textArea, const std::string& text) 
         std::string lineNumberString =
                 padLeft(i == 0 ? std::string("") : std::to_string(i), digits) + "  ";
         textArea->appendFormattedText(lineNumberString, COLOR_LINE_NUMBERS);
-        textArea->appendFormattedText(line + "\n", COLOR_NORMAL);
+        textArea->appendFormattedText(toPrintable(line) + "\n", COLOR_NORMAL);
     }
 }
 
@@ -28014,6 +28211,8 @@ static bool recursiveMatch(const std::string& str, int sx, const std::string& pa
  * how a client properly uses these classes.
  *
  * @author Keith Schwarz, Eric Roberts, Marty Stepp
+ * @version 2019/04/20
+ * - added toPrintable(string)
  * @version 2016/11/12
  * - made toPrintable non-static and visible
  * @version 2014/10/08
@@ -28067,6 +28266,33 @@ std::string toPrintable(int ch) {
     } else {
         return std::string("'") + (char) ch + std::string("'");
     }
+}
+
+std::string toPrintable(const std::string& s) {
+    std::ostringstream out;
+    for (char ch : s) {
+        if (ch == '\n') {
+            out << "\\n";
+        } else if (ch == '\t') {
+            out << "\\t";
+        } else if (ch == '\r') {
+            out << "\\r";
+        } else if (ch == '\f') {
+            out << "\\f";
+        } else if (ch == '\b') {
+            out << "\\b";
+        } else if (ch == '\0') {
+            out << "\\0";
+        } else if (ch == ' ') {
+            out << ' ';
+        } else if (isgraph(ch)) {
+            out << ch;
+        } else {
+            out << '\\';
+            out << (static_cast<int>(ch & 0xff));
+        }
+    }
+    return out.str();
 }
 
 /* Constructor ibitstream::ibitstream
@@ -30289,9 +30515,9 @@ int main(int argc, char** argv) {
     return qMain(argc, argv);
 }
 // keep in sync with definition in .pro file
-#ifdef REPLACE_MAIN_FUNCTION
+#ifdef SPL_REPLACE_MAIN_FUNCTION
 #define main qMain
-#endif // REPLACE_MAIN_FUNCTION
+#endif // SPL_REPLACE_MAIN_FUNCTION
 #endif // QT_NEEDS_QMAIN
 
 // initializes the Qt GUI library subsystems and Qt graphical console as needed

@@ -261,8 +261,6 @@ void testQwindowDrawing() {
 
     if (TEST_LAYOUT_WIDGETS && TEST_BACKGROUND) {
         window->setMouseListener([](GEvent event) {
-            // cout << "mouse! event=" << event << endl;
-            // cout << "mouse handler: What thread am I? " << QGui::instance()->getCurrentThread() << endl;
             if (event.getType() == MOUSE_DRAGGED) {
                 window->setColor("blue");
                 window->setFillColor("blue");
@@ -270,8 +268,11 @@ void testQwindowDrawing() {
                 window->setLineWidth(1);
                 window->fillOval(event.getX() - 5, event.getY() - 5, 10, 10);
             } else if (event.getType() == MOUSE_MOVED) {
-                label->setText(event.getLocation().toString()
-                               + " " + window->getPixelString(event.getX(), event.getY()));
+                std::string px = "";
+                if (window->inCanvasBounds(event.getX(), event.getY())) {
+                    px = window->getPixelString(event.getX(), event.getY());
+                }
+                label->setText(event.getLocation().toString() + " " + px);
                 cout << "mouse moved: " << event.getLocation().toString() << endl;
             }
         });

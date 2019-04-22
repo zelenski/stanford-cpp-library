@@ -38,13 +38,13 @@ public:
 // only define initstudent if needed by SPL QT GUI or graphical console
 //#if defined(SPL_QT_GUI_IN_USE) || defined(SPL_GRAPHICAL_CONSOLE_IN_USE)
 #ifndef QT_NEEDS_QMAIN
-#ifdef REPLACE_MAIN_FUNCTION
+#ifdef SPL_REPLACE_MAIN_FUNCTION
 
 #ifndef main
 #define main qMain
 #endif // main
 
-#endif // REPLACE_MAIN_FUNCTION
+#endif // SPL_REPLACE_MAIN_FUNCTION
 #endif // QT_NEEDS_QMAIN
 
 // replace "multimain(foo)" definition with:

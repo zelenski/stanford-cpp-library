@@ -3,6 +3,8 @@
  * ----------------
  *
  * @author Marty Stepp
+ * @version 2019/04/22
+ * - added setIcon with QIcon and QPixmap
  * @version 2019/02/02
  * - destructor now stops event processing
  * @version 2018/10/04
@@ -41,6 +43,26 @@ GLabel::GLabel(const std::string& text, const std::string& iconFileName, QWidget
     if (!iconFileName.empty()) {
         setIcon(iconFileName);
     }
+    setVisible(false);   // all widgets are not shown until added to a window
+}
+
+GLabel::GLabel(const std::string& text, const QIcon& icon, QWidget* parent)
+        : _gtext(nullptr) {
+    GThread::runOnQtGuiThread([this, parent]() {
+        _iqlabel = new _Internal_QLabel(this, getInternalParent(parent));
+    });
+    setText(text);
+    setIcon(icon);
+    setVisible(false);   // all widgets are not shown until added to a window
+}
+
+GLabel::GLabel(const std::string& text, const QPixmap& icon, QWidget* parent)
+        : _gtext(nullptr) {
+    GThread::runOnQtGuiThread([this, parent]() {
+        _iqlabel = new _Internal_QLabel(this, getInternalParent(parent));
+    });
+    setText(text);
+    setIcon(icon);
     setVisible(false);   // all widgets are not shown until added to a window
 }
 
@@ -188,6 +210,39 @@ void GLabel::setHeight(double height) {
     ensureGText();   // setting size triggers GText mode
     _gtext->setHeight(height);
     GInteractor::setHeight(height);
+}
+
+void GLabel::setIcon(const QIcon& icon) {
+    GInteractor::setIcon(icon);
+    GThread::runOnQtGuiThread([this, &icon]() {
+        QSize size(16, 16);   // default size
+        if (!icon.availableSizes().empty()) {
+            size = icon.availableSizes()[0];
+        }
+        QPixmap pixmap = icon.pixmap(size);
+        _iqlabel->setPixmap(pixmap);
+        _iqlabel->updateGeometry();
+        _iqlabel->update();
+
+        // TODO: loses text; how to have both icon and text in same label?
+        if (!getText().empty()) {
+            std::cerr << "Warning: a GLabel cannot currently have both text and icon." << std::endl;
+        }
+    });
+}
+
+void GLabel::setIcon(const QPixmap& icon) {
+    GInteractor::setIcon(icon);
+    GThread::runOnQtGuiThread([this, &icon]() {
+        _iqlabel->setPixmap(icon);
+        _iqlabel->updateGeometry();
+        _iqlabel->update();
+
+        // TODO: loses text; how to have both icon and text in same label?
+        if (!getText().empty()) {
+            std::cerr << "Warning: a GLabel cannot currently have both text and icon." << std::endl;
+        }
+    });
 }
 
 void GLabel::setIcon(const std::string& filename, bool retainIconSize) {

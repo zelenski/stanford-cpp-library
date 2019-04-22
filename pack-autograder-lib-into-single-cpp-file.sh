@@ -11,6 +11,8 @@ OUTFILE="splautograder.cpp"
 echo "Merging library .cpp source into $OUTDIR/$OUTFILE ..."
 FILES=`cd $INDIR/ && find . -name "*.cpp"`
 echo '' > $OUTDIR/$OUTFILE
+cp spl_cpp_header_autograder_text.txt $OUTDIR/$OUTFILE
+
 for file in $FILES; do
 	# echo $file
 	cat $INDIR/$file >> $OUTDIR/$OUTFILE

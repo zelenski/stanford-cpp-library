@@ -15,8 +15,9 @@
 TEST_CATEGORY(StringTests, "string tests");
 
 TIMED_TEST(StringTests, diffOutputFailTest, TEST_TIMEOUT_DEFAULT) {
-    std::string exp = "Hi\nyo\nbye\nok\nthe end";
-    std::string stu = "Hi\nOOPS\nbye\nDOH\nthe end";
+    std::cout << "hi\thow\tare\tyou?" << std::endl;
+    std::string exp = "Hi\nyo\nbye\nhow are you\nok\nthe end";
+    std::string stu = std::string("Hi\nOOPS\nbye\nhow\t are") + '\0' + std::string(" you\\\nDOH\nthe end");
     assertDiff("program output", exp, stu);
 }
 

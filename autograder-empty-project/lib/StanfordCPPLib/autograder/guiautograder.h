@@ -3,6 +3,8 @@
  * ---------------------
  * 
  * @author Marty Stepp
+ * @version 2019/04/22
+ * - now uses image strip file for icons
  * @version 2018/10/07
  * - icon constants and path fixes
  * @version 2018/10/03
@@ -160,6 +162,7 @@ private:
 
     Map<std::string, GContainer*> _allCategories;
     Map<std::string, TestInfo*> _allTestInfo;
+    Map<std::string, QPixmap> _iconStrip;
 
     int _passCount;
     int _testCount;
