@@ -33,6 +33,7 @@ GScrollPane::GScrollPane(GInteractor* interactor, QWidget* parent)
 
 GScrollPane::~GScrollPane() {
     // TODO: delete _iqscrollarea;
+    _iqscrollarea->detach();
     _iqscrollarea = nullptr;
 }
 

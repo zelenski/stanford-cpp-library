@@ -10,6 +10,7 @@
 
 #define INTERNAL_INCLUDE 1
 #include "autogradercompat.h"
+#define INTERNAL_INCLUDE 1
 #include "guiautograder.h"
 #undef INTERNAL_INCLUDE
 

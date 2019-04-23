@@ -3,6 +3,8 @@
  * -------------------
  *
  * @author Marty Stepp
+ * @version 2019/04/23
+ * - added key event support
  * @version 2019/02/02
  * - destructor now stops event processing
  * @version 2018/10/06
@@ -35,7 +37,7 @@ GCheckBox::GCheckBox(const std::string& text, bool checked, QWidget* parent) {
 
 GCheckBox::~GCheckBox() {
     // TODO: delete _iqcheckBox;
-    _iqcheckBox->_gcheckBox = nullptr;
+    _iqcheckBox->detach();
     _iqcheckBox = nullptr;
 }
 
@@ -45,6 +47,10 @@ std::string GCheckBox::getActionCommand() const {
     } else {
         return _actionCommand;
     }
+}
+
+std::string GCheckBox::getActionEventType() const {
+    return "change";
 }
 
 _Internal_QWidget* GCheckBox::getInternalWidget() const {
@@ -69,30 +75,6 @@ bool GCheckBox::isChecked() const {
 
 bool GCheckBox::isSelected() const {
     return _iqcheckBox->isChecked();
-}
-
-void GCheckBox::removeActionListener() {
-    removeEventListener("change");
-}
-
-void GCheckBox::removeDoubleClickListener() {
-    removeEventListener("doubleclick");
-}
-
-void GCheckBox::setActionListener(GEventListener func) {
-    setEventListener("change", func);
-}
-
-void GCheckBox::setActionListener(GEventListenerVoid func) {
-    setEventListener("change", func);
-}
-
-void GCheckBox::setDoubleClickListener(GEventListener func) {
-    setEventListener("doubleclick", func);
-}
-
-void GCheckBox::setDoubleClickListener(GEventListenerVoid func) {
-    setEventListener("doubleclick", func);
 }
 
 void GCheckBox::setChecked(bool checked) {
@@ -125,6 +107,10 @@ _Internal_QCheckBox::_Internal_QCheckBox(GCheckBox* gcheckBox, bool checked, QWi
     connect(this, SIGNAL(stateChanged(int)), this, SLOT(handleStateChange(int)));
 }
 
+void _Internal_QCheckBox::detach() {
+    _gcheckBox = nullptr;
+}
+
 void _Internal_QCheckBox::handleStateChange(int /* state */) {
     if (!_gcheckBox) {
         return;
@@ -136,6 +122,32 @@ void _Internal_QCheckBox::handleStateChange(int /* state */) {
                 /* source */ _gcheckBox);
     changeEvent.setActionCommand(_gcheckBox->getActionCommand());
     _gcheckBox->fireEvent(changeEvent);
+}
+
+void _Internal_QCheckBox::keyPressEvent(QKeyEvent* event) {
+    require::nonNull(event, "_Internal_QCheckBox::keyPressEvent", "event");
+    if (_gcheckBox && _gcheckBox->isAcceptingEvent("keypress")) {
+        event->accept();
+        _gcheckBox->fireGEvent(event, KEY_PRESSED, "keypress");
+        if (event->isAccepted()) {
+            QCheckBox::keyPressEvent(event);   // call super
+        }
+    } else {
+        QCheckBox::keyPressEvent(event);   // call super
+    }
+}
+
+void _Internal_QCheckBox::keyReleaseEvent(QKeyEvent* event) {
+    require::nonNull(event, "_Internal_QCheckBox::keyReleaseEvent", "event");
+    if (_gcheckBox && _gcheckBox->isAcceptingEvent("keyrelease")) {
+        event->accept();
+        _gcheckBox->fireGEvent(event, KEY_RELEASED, "keyrelease");
+        if (event->isAccepted()) {
+            QCheckBox::keyReleaseEvent(event);   // call super
+        }
+    } else {
+        QCheckBox::keyReleaseEvent(event);   // call super
+    }
 }
 
 void _Internal_QCheckBox::mouseDoubleClickEvent(QMouseEvent* event) {

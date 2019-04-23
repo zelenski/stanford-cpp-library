@@ -60,6 +60,7 @@ GDiffGui::GDiffGui(const std::string& name1,
         _window->setCloseOperation(GWindow::CLOSE_HIDE);
 
         // function to close the window when Escape is pressed
+        // (similar to code in gdiffimage.cpp)
         auto windowCloseLambda = [this](GEvent event) {
             if (event.getType() == KEY_PRESSED && event.getKeyChar() == GEvent::ESCAPE_KEY) {
                 _window->close();

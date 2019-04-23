@@ -23,8 +23,11 @@
 
 #define INTERNAL_INCLUDE 1
 #include "testresultprinter.h"
+#define INTERNAL_INCLUDE 1
 #include "autograder.h"
+#define INTERNAL_INCLUDE 1
 #include "stringutils.h"
+#define INTERNAL_INCLUDE 1
 #include "private/static.h"
 #undef INTERNAL_INCLUDE
 
@@ -191,8 +194,7 @@ void MartyGraphicalTestResultPrinter::OnTestEnd(const ::testing::TestInfo& test_
     }
 
     if (test_info.result()->Failed()) {
-        autograder->setTestResult(testFullName,
-                    stanfordcpplib::autograder::Autograder::TEST_RESULT_FAIL);
+        autograder->setTestResult(testFullName, stanfordcpplib::autograder::TEST_RESULT_FAIL);
         for (int i = 0; i < test_info.result()->total_part_count(); i++) {
             testing::TestPartResult part = test_info.result()->GetTestPartResult(i);
             if (part.failed()) {
@@ -203,8 +205,7 @@ void MartyGraphicalTestResultPrinter::OnTestEnd(const ::testing::TestInfo& test_
             }
         }
     } else {
-        autograder->setTestResult(testFullName,
-                stanfordcpplib::autograder::Autograder::TEST_RESULT_PASS);
+        autograder->setTestResult(testFullName, stanfordcpplib::autograder::TEST_RESULT_PASS);
     }
 
     if (autograder->getFlags().testTimers.containsKey(testFullName)) {

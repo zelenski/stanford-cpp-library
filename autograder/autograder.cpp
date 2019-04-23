@@ -6,6 +6,8 @@
  * See autograder.h for documentation of each member.
  * 
  * @author Marty Stepp
+ * @version 2019/04/23
+ * - reset std::cout/cerr flags on every test run
  * @version 2018/10/07
  * - moved main/qMain code out to autogradermainwrapper.cpp
  * @version 2018/08/27
@@ -52,27 +54,49 @@
 #define INTERNAL_INCLUDE 1
 #include "autograder.h"
 #include <cstdio>
+#define INTERNAL_INCLUDE 1
 #include "consoleautograder.h"
+#define INTERNAL_INCLUDE 1
 #include "consoletext.h"
+#define INTERNAL_INCLUDE 1
 #include "exceptions.h"
+#define INTERNAL_INCLUDE 1
 #include "filelib.h"
+#define INTERNAL_INCLUDE 1
 #include "gbufferedimage.h"
+#define INTERNAL_INCLUDE 1
 #include "gevents.h"
+#define INTERNAL_INCLUDE 1
 #include "ginputpanel.h"
+#define INTERNAL_INCLUDE 1
 #include "ginteractors.h"
+#define INTERNAL_INCLUDE 1
 #include "goptionpane.h"
+#define INTERNAL_INCLUDE 1
 #include "guiautograder.h"
+#define INTERNAL_INCLUDE 1
 #include "gwindow.h"
+#define INTERNAL_INCLUDE 1
 #include "map.h"
+#define INTERNAL_INCLUDE 1
 #include "qtgui.h"
+#define INTERNAL_INCLUDE 1
 #include "simpio.h"
+#define INTERNAL_INCLUDE 1
 #include "versionautograder.h"
+#define INTERNAL_INCLUDE 1
 #include "private/static.h"
+#define INTERNAL_INCLUDE 1
 #include "date.h"
+#define INTERNAL_INCLUDE 1
 #include "gtest-marty.h"
+#define INTERNAL_INCLUDE 1
 #include "ioutils.h"
+#define INTERNAL_INCLUDE 1
 #include "stringutils.h"
+#define INTERNAL_INCLUDE 1
 #include "stylecheck.h"
+#define INTERNAL_INCLUDE 1
 #include "testresultprinter.h"
 #undef INTERNAL_INCLUDE
 
@@ -143,7 +167,11 @@ AutograderFlags::AutograderFlags() {
     _instance = autograder;
 }
 
-Autograder::Autograder() {
+Autograder::Autograder()
+        : _iosCoutBackup(nullptr),
+          _iosCerrBackup(nullptr) {
+    _iosCerrBackup.copyfmt(std::cerr);
+    _iosCoutBackup.copyfmt(std::cout);
     setAboutMessage(AUTOGRADER_DEFAULT_ABOUT_TEXT);
 }
 
@@ -167,10 +195,16 @@ AutograderFlags& Autograder::getFlags() {
     return _flags;
 }
 
+void Autograder::resetStandardInputStreams() {
+    std::cerr.copyfmt(_iosCerrBackup);
+    std::cout.copyfmt(_iosCoutBackup);
+}
+
 std::string Autograder::runAndCapture(int (* mainFunc)(),
                           const std::string& cinInput,
                           const std::string& outputFileName) {
     // run the 'main' function, possibly feeding it cin, input, and capture its cout output
+    resetStandardInputStreams();
     if (!cinInput.empty()) {
         ioutils::redirectStdinBegin(cinInput);
     }
@@ -184,6 +218,7 @@ std::string Autograder::runAndCapture(int (* mainFunc)(),
     if (!cinInput.empty()) {
         ioutils::redirectStdinEnd();
     }
+    resetStandardInputStreams();
 
     // return the output as a string (and also possibly write it to a file)
     if (!outputFileName.empty()) {

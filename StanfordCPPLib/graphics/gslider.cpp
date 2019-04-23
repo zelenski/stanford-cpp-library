@@ -3,6 +3,8 @@
  * ------------------
  *
  * @author Marty Stepp
+ * @version 2019/04/23
+ * - added key events
  * @version 2019/02/02
  * - destructor now stops event processing
  * @version 2018/08/23
@@ -53,8 +55,12 @@ GSlider::GSlider(Orientation orientation, int min, int max, int value, QWidget* 
 
 GSlider::~GSlider() {
     // TODO: delete _iqslider;
-    _iqslider->_gslider = nullptr;
+    _iqslider->detach();
     _iqslider = nullptr;
+}
+
+std::string GSlider::getActionEventType() const {
+    return "change";
 }
 
 _Internal_QWidget* GSlider::getInternalWidget() const {
@@ -106,18 +112,6 @@ int GSlider::getValue() const {
 
 QWidget* GSlider::getWidget() const {
     return static_cast<QWidget*>(_iqslider);
-}
-
-void GSlider::removeActionListener() {
-    removeEventListener("change");
-}
-
-void GSlider::setActionListener(GEventListener func) {
-    setEventListener("change", func);
-}
-
-void GSlider::setActionListener(GEventListenerVoid func) {
-    setEventListener("change", func);
 }
 
 void GSlider::setMajorTickSpacing(int value) {
@@ -194,6 +188,10 @@ _Internal_QSlider::_Internal_QSlider(GSlider* gslider, Qt::Orientation orientati
     connect(this, SIGNAL(valueChanged(int)), this, SLOT(handleChange(int)));
 }
 
+void _Internal_QSlider::detach() {
+    _gslider = nullptr;
+}
+
 void _Internal_QSlider::handleChange(int /* value */) {
     if (!_gslider) {
         return;
@@ -205,6 +203,32 @@ void _Internal_QSlider::handleChange(int /* value */) {
                 /* source */ _gslider);
     changeEvent.setActionCommand(_gslider->getActionCommand());
     _gslider->fireEvent(changeEvent);
+}
+
+void _Internal_QSlider::keyPressEvent(QKeyEvent* event) {
+    require::nonNull(event, "_Internal_QSlider::keyPressEvent", "event");
+    if (_gslider && _gslider->isAcceptingEvent("keypress")) {
+        event->accept();
+        _gslider->fireGEvent(event, KEY_PRESSED, "keypress");
+        if (event->isAccepted()) {
+            QSlider::keyPressEvent(event);   // call super
+        }
+    } else {
+        QSlider::keyPressEvent(event);   // call super
+    }
+}
+
+void _Internal_QSlider::keyReleaseEvent(QKeyEvent* event) {
+    require::nonNull(event, "_Internal_QSlider::keyPressEvent", "event");
+    if (_gslider && _gslider->isAcceptingEvent("keyrelease")) {
+        event->accept();
+        _gslider->fireGEvent(event, KEY_RELEASED, "keyrelease");
+        if (event->isAccepted()) {
+            QSlider::keyReleaseEvent(event);   // call super
+        }
+    } else {
+        QSlider::keyReleaseEvent(event);   // call super
+    }
 }
 
 QSize _Internal_QSlider::sizeHint() const {

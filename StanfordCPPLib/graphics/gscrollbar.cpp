@@ -34,8 +34,12 @@ GScrollBar::GScrollBar(GScrollBar::Orientation orientation,
 
 GScrollBar::~GScrollBar() {
     // TODO: delete _iqscrollbar;
-    _iqscrollbar->_gscrollbar = nullptr;
+    _iqscrollbar->detach();
     _iqscrollbar = nullptr;
+}
+
+std::string GScrollBar::getActionEventType() const {
+    return "change";
 }
 
 int GScrollBar::getExtent() const {
@@ -68,18 +72,6 @@ int GScrollBar::getValue() const {
 
 QWidget* GScrollBar::getWidget() const {
     return static_cast<QWidget*>(_iqscrollbar);
-}
-
-void GScrollBar::removeActionListener() {
-    removeEventListener("change");
-}
-
-void GScrollBar::setActionListener(GEventListener func) {
-    setEventListener("change", func);
-}
-
-void GScrollBar::setActionListener(GEventListenerVoid func) {
-    setEventListener("change", func);
 }
 
 void GScrollBar::setExtent(int extent) {
@@ -143,6 +135,10 @@ _Internal_QScrollBar::_Internal_QScrollBar(GScrollBar* gscrollbar, Qt::Orientati
     require::nonNull(gscrollbar, "_Internal_QScrollBar::constructor");
     setObjectName(QString::fromStdString("_Internal_QScrollBar_" + std::to_string(gscrollbar->getID())));
     connect(this, SIGNAL(valueChanged(int)), this, SLOT(handleValueChange(int)));
+}
+
+void _Internal_QScrollBar::detach() {
+    _gscrollbar = nullptr;
 }
 
 void _Internal_QScrollBar::handleValueChange(int /* value */) {

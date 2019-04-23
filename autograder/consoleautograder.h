@@ -11,7 +11,9 @@
 #ifndef _consoleautograder_h
 #define _consoleautograder_h
 
+#define INTERNAL_INCLUDE 1
 #include "autograder.h"
+#undef INTERNAL_INCLUDE
 
 namespace stanfordcpplib {
 namespace autograder {
@@ -23,9 +25,10 @@ class ConsoleAutograder : public Autograder {
 public:
     ConsoleAutograder();
     virtual ~ConsoleAutograder() Q_DECL_OVERRIDE;
-    virtual void addCategory(const std::string& categoryName) Q_DECL_OVERRIDE;
+    virtual void addCategory(const std::string& categoryName, const std::string& categoryDescription = "") Q_DECL_OVERRIDE;
     virtual void addTest(const std::string& testName, const std::string& categoryName = "") Q_DECL_OVERRIDE;
     virtual bool autograderYesOrNo(std::string prompt, std::string reprompt = "", std::string defaultValue = "") Q_DECL_OVERRIDE;
+    virtual bool containsCategory(const std::string& categoryName) Q_DECL_OVERRIDE;
     virtual void displayDiffs(const std::string& expectedOutput, const std::string& studentOutput,
                               const std::string& diffs, const std::string& diffFile = "",
                               int truncateHeight = -1) Q_DECL_OVERRIDE;

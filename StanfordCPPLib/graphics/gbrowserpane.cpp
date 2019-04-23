@@ -4,6 +4,8 @@
  * This file contains the implementation of the <code>GBrowserPane</code> class
  * as declared in gbrowserpane.h.
  *
+ * @version 2019/04/23
+ * - moved some event-handling code to GInteractor superclass
  * @version 2018/12/28
  * - added methods for text selection, scrolling, cursor position, key/mouse listeners
  * @version 2018/09/17
@@ -43,6 +45,7 @@ GBrowserPane::GBrowserPane(const std::string& url, QWidget* parent) {
 
 GBrowserPane::~GBrowserPane() {
     // TODO: delete _iqtextbrowser;
+    _iqtextbrowser->detach();
     _iqtextbrowser = nullptr;
 }
 
@@ -182,19 +185,8 @@ void GBrowserPane::readTextFromUrl(const std::string& url) {
     });
 }
 
-void GBrowserPane::removeKeyListener() {
-    removeEventListeners({"keypress",
-                          "keyrelease",
-                          "keytype"});
-}
-
 void GBrowserPane::removeLinkListener() {
     removeEventListener("linkclick");
-}
-
-void GBrowserPane::removeMouseListener() {
-    removeEventListeners({"mousepress",
-                          "mouserelease"});
 }
 
 void GBrowserPane::removeTextChangeListener() {
@@ -254,24 +246,6 @@ void GBrowserPane::setEditable(bool value) {
     });
 }
 
-void GBrowserPane::setKeyListener(GEventListener func) {
-    GThread::runOnQtGuiThread([this]() {
-        _iqtextbrowser->setFocusPolicy(Qt::StrongFocus);
-    });
-    setEventListeners({"keypress",
-                       "keyrelease",
-                       "keytype"}, func);
-}
-
-void GBrowserPane::setKeyListener(GEventListenerVoid func) {
-    GThread::runOnQtGuiThread([this]() {
-        _iqtextbrowser->setFocusPolicy(Qt::StrongFocus);
-    });
-    setEventListeners({"keypress",
-                       "keyrelease",
-                       "keytype"}, func);
-}
-
 void GBrowserPane::setMouseListener(GEventListener func) {
     setEventListeners({"mousepress",
                        "mouserelease"}, func);
@@ -316,6 +290,11 @@ _Internal_QTextBrowser::_Internal_QTextBrowser(GBrowserPane* gbrowserpane, QWidg
           _gbrowserpane(gbrowserpane) {
     require::nonNull(gbrowserpane, "_Internal_QTextBrowser::constructor");
     setObjectName(QString::fromStdString("_Internal_QTextBrowser_" + std::to_string(gbrowserpane->getID())));
+    setFocusPolicy(Qt::StrongFocus);
+}
+
+void _Internal_QTextBrowser::detach() {
+    _gbrowserpane = nullptr;
 }
 
 QVariant _Internal_QTextBrowser::loadResource(int type, const QUrl &url) {

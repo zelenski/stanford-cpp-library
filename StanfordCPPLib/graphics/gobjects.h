@@ -6,6 +6,8 @@
  * <include src="pictures/ClassHierarchies/GObjectHierarchy-h.html">
  *
  * @author Marty Stepp
+ * @version 2019/04/23
+ * - bug fix for loading GImage from file on Windows related to istream change
  * @version 2019/03/07
  * - added support for loading a GImage directly from istream (htiek)
  * @version 2018/09/14
@@ -1033,6 +1035,12 @@ protected:
     QImage* getQImage() const;
 
 private:
+    /**
+     * Reads the image's pixel contents from the given file.
+     * @return true if loaded successfully and false if the load failed
+     */
+    bool load(const std::string& filename);
+
     /**
      * Reads the image's pixel contents from the given stream.
      * @return true if loaded successfully and false if the load failed

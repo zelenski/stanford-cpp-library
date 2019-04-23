@@ -195,6 +195,7 @@ void endOfLibraryStudentThread() {
     if (GThread::getStudentThread() != nullptr) {
         result = GThread::getStudentThread()->getResult();
     }
+    static_cast<void>(result);   // so it won't be unused
 
     // if I get here, student's main() has finished running;
     // indicate this by showing a completed title on the graphical console
@@ -207,7 +208,8 @@ void endOfLibraryStudentThread() {
 #endif // SPL_HEADLESS_MODE
     } else {
         // need to exit here else program will not terminate
-        QtGui::instance()->exitGraphics(result);
+        // BUGFIX: no, this is not needed and is bad; it exits the window too soon; disable
+        // QtGui::instance()->exitGraphics(result);
     }
 }
 } // namespace stanfordcpplib

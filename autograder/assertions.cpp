@@ -9,6 +9,7 @@
 
 #define INTERNAL_INCLUDE 1
 #include "assertions.h"
+#define INTERNAL_INCLUDE 1
 #include "gbufferedimage.h"
 #undef INTERNAL_INCLUDE
 

@@ -3,6 +3,8 @@
  * ------------------
  *
  * @author Marty Stepp
+ * @version 2019/04/23
+ * - added key event support
  * @version 2019/02/02
  * - destructor now stops event processing
  * @version 2018/08/23
@@ -48,7 +50,7 @@ GChooser::GChooser(const Vector<std::string>& items, QWidget* parent) {
 
 GChooser::~GChooser() {
     // TODO: delete _iqcomboBox;
-    _iqcomboBox->_gchooser = nullptr;
+    _iqcomboBox->detach();
     _iqcomboBox = nullptr;
 }
 
@@ -100,6 +102,10 @@ std::string GChooser::getActionCommand() const {
     }
 }
 
+std::string GChooser::getActionEventType() const {
+    return "change";
+}
+
 _Internal_QWidget* GChooser::getInternalWidget() const {
     return _iqcomboBox;
 }
@@ -135,18 +141,6 @@ bool GChooser::isEditable() const {
 
 bool GChooser::isEmpty() const {
     return getItemCount() == 0;
-}
-
-void GChooser::removeActionListener() {
-    removeEventListener("change");
-}
-
-void GChooser::setActionListener(GEventListener func) {
-    setEventListener("change", func);
-}
-
-void GChooser::setActionListener(GEventListenerVoid func) {
-    setEventListener("change", func);
 }
 
 void GChooser::setItem(int index, const std::string& item) {
@@ -192,6 +186,10 @@ _Internal_QComboBox::_Internal_QComboBox(GChooser* gchooser, QWidget* parent)
     connect(this, SIGNAL(currentIndexChanged(int)), this, SLOT(handleChange()));
 }
 
+void _Internal_QComboBox::detach() {
+    _gchooser = nullptr;
+}
+
 void _Internal_QComboBox::handleChange() {
     if (!_gchooser) {
         return;
@@ -203,6 +201,32 @@ void _Internal_QComboBox::handleChange() {
                 /* source */ _gchooser);
     changeEvent.setActionCommand(_gchooser->getActionCommand());
     _gchooser->fireEvent(changeEvent);
+}
+
+void _Internal_QComboBox::keyPressEvent(QKeyEvent* event) {
+    require::nonNull(event, "_Internal_QComboBox::keyPressEvent", "event");
+    if (_gchooser && _gchooser->isAcceptingEvent("keypress")) {
+        event->accept();
+        _gchooser->fireGEvent(event, KEY_PRESSED, "keypress");
+        if (event->isAccepted()) {
+            QComboBox::keyPressEvent(event);   // call super
+        }
+    } else {
+        QComboBox::keyPressEvent(event);   // call super
+    }
+}
+
+void _Internal_QComboBox::keyReleaseEvent(QKeyEvent* event) {
+    require::nonNull(event, "_Internal_QComboBox::keyReleaseEvent", "event");
+    if (_gchooser && _gchooser->isAcceptingEvent("keyrelease")) {
+        event->accept();
+        _gchooser->fireGEvent(event, KEY_RELEASED, "keyrelease");
+        if (event->isAccepted()) {
+            QComboBox::keyReleaseEvent(event);   // call super
+        }
+    } else {
+        QComboBox::keyReleaseEvent(event);   // call super
+    }
 }
 
 QSize _Internal_QComboBox::sizeHint() const {

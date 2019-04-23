@@ -100,26 +100,6 @@ public:
     virtual QWidget* getWidget() const Q_DECL_OVERRIDE;
 
     /**
-     * Removes the action listener from this scroll bar so that it will no longer
-     * call it when events occur.
-     */
-    virtual void removeActionListener();
-
-    /**
-     * Sets an action listener on this scroll bar so that it will be called
-     * when the user scrolls.
-     * Any existing action listener will be replaced.
-     */
-    virtual void setActionListener(GEventListener func);
-
-    /**
-     * Sets an action listener on this scroll bar so that it will be called
-     * when the user scrolls.
-     * Any existing action listener will be replaced.
-     */
-    virtual void setActionListener(GEventListenerVoid func);
-
-    /**
      * Sets the scroll bar's extent, meaning the amount of its range that is
      * currently in view.
      */
@@ -149,6 +129,12 @@ public:
      */
     virtual void setValue(int value);
 
+protected:
+    /**
+     * @private
+     */
+    virtual std::string getActionEventType() const Q_DECL_OVERRIDE;
+
 private:
     Q_DISABLE_COPY(GScrollBar)
 
@@ -168,6 +154,7 @@ class _Internal_QScrollBar : public QScrollBar, public _Internal_QWidget {
 
 public:
     _Internal_QScrollBar(GScrollBar* qgscrollbar, Qt::Orientation orientation, QWidget* parent = nullptr);
+    virtual void detach() Q_DECL_OVERRIDE;
     virtual QSize sizeHint() const Q_DECL_OVERRIDE;
 
 public slots:

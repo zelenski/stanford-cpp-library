@@ -3,6 +3,8 @@
  * -----------------
  *
  * @author Marty Stepp
+ * @version 2019/04/23
+ * - moved some event listener code to GInteractor superclass
  * @version 2018/09/10
  * - added doc comments for new documentation generation
  * @version 2018/08/23
@@ -189,18 +191,6 @@ public:
     virtual void moveCursorToStart();
 
     /**
-     * Removes the key listener from this text area so that it will no longer
-     * call it when the user types keys.
-     */
-    virtual void removeKeyListener();
-
-    /**
-     * Removes the mouse listener from this text area so that it will no longer
-     * call it when the user moves/clicks the mouse.
-     */
-    virtual void removeMouseListener();
-
-    /**
      * Removes the text change listener from this text area so that it will no longer
      * call it when the user modifies the text.
      */
@@ -266,20 +256,6 @@ public:
     virtual void setHtml(const std::string& html);
 
     /**
-     * Sets a key listener on this text area so that it will be called
-     * when the user presses any key.
-     * Any existing key listener will be replaced.
-     */
-    virtual void setKeyListener(GEventListener func);
-
-    /**
-     * Sets a key listener on this text area so that it will be called
-     * when the user presses any key.
-     * Any existing key listener will be replaced.
-     */
-    virtual void setKeyListener(GEventListenerVoid func);
-
-    /**
      * Sets whether the text area wraps its text when a line becomes too long.
      * Default true.
      */
@@ -290,14 +266,14 @@ public:
      * when the user moves or clicks the mouse.
      * Any existing mouse listener will be replaced.
      */
-    virtual void setMouseListener(GEventListener func);
+    virtual void setMouseListener(GEventListener func) Q_DECL_OVERRIDE;
 
     /**
      * Sets a mouse listener on this text area so that it will be called
      * when the user moves or clicks the mouse.
      * Any existing mouse listener will be replaced.
      */
-    virtual void setMouseListener(GEventListenerVoid func);
+    virtual void setMouseListener(GEventListenerVoid func) Q_DECL_OVERRIDE;
 
     /**
      * Sets the text area's placeholder text, which is usually displayed
@@ -381,6 +357,7 @@ class _Internal_QTextEdit : public QTextEdit, public _Internal_QWidget {
 public:
     _Internal_QTextEdit(GTextArea* gtextArea, QWidget* parent = nullptr);
     virtual void contextMenuEvent(QContextMenuEvent* event) Q_DECL_OVERRIDE;
+    virtual void detach() Q_DECL_OVERRIDE;
     virtual void keyPressEvent(QKeyEvent* event) Q_DECL_OVERRIDE;
     virtual void keyReleaseEvent(QKeyEvent* event) Q_DECL_OVERRIDE;
     virtual void mousePressEvent(QMouseEvent* event) Q_DECL_OVERRIDE;

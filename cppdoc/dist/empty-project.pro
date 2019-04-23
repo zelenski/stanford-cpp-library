@@ -6,9 +6,9 @@
 # You should not need to modify this file to complete your assignment.
 #
 # @author Marty Stepp (past authors/support by Keith Schwarz, Reid Watson, etc.)
-# @version 2019/04/22
+# @version 2019/04/23
 # - revert copydata code for copying resource files
-DEFINES += SPL_PROJECT_VERSION=20190422   # kludgy YYYYMMDD constant used by lib to know its version
+DEFINES += SPL_PROJECT_VERSION=20190423   # kludgy YYYYMMDD constant used by lib to know its version
 
 # global Qt/project settings
 TEMPLATE = app
@@ -367,6 +367,10 @@ CONFIG(debug, debug|release) {
     }
     unix:macx {
         equals(COMPILERNAME, clang++) {
+            QMAKE_CXXFLAGS += -Wno-unused-command-line-argument
+            QMAKE_CXXFLAGS += -Wl,-export_dynamic
+            QMAKE_CXXFLAGS += -Wl,-export-dynamic
+            QMAKE_CXXFLAGS += -Wl,--export-dynamic
             QMAKE_LFLAGS += -rdynamic
             QMAKE_LFLAGS += -Wl,-no_pie
         }
@@ -463,8 +467,6 @@ exists($$PWD/lib/autograder/*.h) | exists($$PWD/lib/StanfordCPPLib/autograder/*.
 # BEGIN SECTION FOR DEFINING HELPER FUNCTIONS FOR RESOURCE COPYING            #
 ###############################################################################
 
-# copy res/* to root of build directory (input files, etc.)
-# COPY_RESOURCE_FILES_INPUT = ""    # defined above so that autograder files can be included
 COPY_RESOURCE_FILES_INPUT = ""
 
 win32 {
@@ -500,11 +502,37 @@ exists($$PWD/res/*) {
         COPY_RESOURCE_FILES_INPUT += $$files($$PWD/res/*, true)
     }
 }
+# input/ and output/ have same nested subfolder issue as res/
 exists($$PWD/input/*) {
-    COPY_RESOURCE_FILES_INPUT += $$files($$PWD/input, true)
+    win32 {
+        exists($$PWD/input/*/*) {
+            COPY_RESOURCE_FILES_INPUT += $$files($$PWD/input)
+        } else {
+            COPY_RESOURCE_FILES_INPUT += $$files($$PWD/input/*.*)
+        }
+    } else {
+        COPY_RESOURCE_FILES_INPUT += $$files($$PWD/input, true)
+    }
 }
 exists($$PWD/output/*) {
-    COPY_RESOURCE_FILES_INPUT += $$files($$PWD/output, true)
+    win32 {
+        exists($$PWD/output/*/*) {
+            COPY_RESOURCE_FILES_INPUT += $$files($$PWD/output)
+        } else {
+            COPY_RESOURCE_FILES_INPUT += $$files($$PWD/output/*.*)
+        }
+    } else {
+        COPY_RESOURCE_FILES_INPUT += $$files($$PWD/output, true)
+    }
+}
+exists($$PWD/lib/autograder/*.h) | exists($$PWD/lib/StanfordCPPLib/autograder/*.h) | exists($$PWD/src/autograder/$$PROJECT_FILTER/*.cpp) {
+    # in autograder projects, copy over student's .cpp and .h files for possible style checking
+    exists($$PWD/*.cpp) {
+        COPY_RESOURCE_FILES_INPUT += $$files($$PWD/*.cpp)
+    }
+    exists($$PWD/*.h) {
+        COPY_RESOURCE_FILES_INPUT += $$files($$PWD/*.h)
+    }
 }
 
 # platform-specific commands to copy files and folders to build directory
@@ -529,4 +557,4 @@ QMAKE_EXTRA_COMPILERS += copy_resource_files
 # END SECTION FOR DEFINING HELPER FUNCTIONS FOR RESOURCE COPYING              #
 ###############################################################################
 
-# END OF FILE (this should be line #532; if not, your .pro has been changed!)
+# END OF FILE (this should be line #560; if not, your .pro has been changed!)

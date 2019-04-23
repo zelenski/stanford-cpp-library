@@ -233,17 +233,17 @@ void testQwindow() {
     window->addToRegion(checkboxs, GWindow::REGION_SOUTH);
 
     GButton* timerButton = new GButton("Timer");
-    GTimer* timer = nullptr;
-    timerButton->setActionListener([&timer]() {
-        if (timer) {
-            timer->stop();
-            delete timer;
-            timer = nullptr;
-        } else {
-            timer = new GTimer(1000);
-            timer->start();
-        }
-    });
+//    GTimer* timer = nullptr;
+//    timerButton->setActionListener([&timer]() {
+//        if (timer) {
+//            timer->stop();
+//            delete timer;
+//            timer = nullptr;
+//        } else {
+//            timer = new GTimer(1000);
+//            timer->start();
+//        }
+//    });
     window->addToRegion(timerButton, GWindow::REGION_SOUTH);
 
 //    window->setRegionAlignment(GWindow::REGION_SOUTH, "Center");

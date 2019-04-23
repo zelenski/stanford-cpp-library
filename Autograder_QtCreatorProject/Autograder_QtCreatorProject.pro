@@ -6,9 +6,9 @@
 # You should not need to modify this file to complete your assignment.
 #
 # @author Marty Stepp (past authors/support by Keith Schwarz, Reid Watson, etc.)
-# @version 2019/04/22
+# @version 2019/04/23
 # - revert copydata code for copying resource files
-DEFINES += SPL_PROJECT_VERSION=20190422   # kludgy YYYYMMDD constant used by lib to know its version
+DEFINES += SPL_PROJECT_VERSION=20190423   # kludgy YYYYMMDD constant used by lib to know its version
 
 # global Qt/project settings
 TEMPLATE = app
@@ -367,6 +367,10 @@ CONFIG(debug, debug|release) {
     }
     unix:macx {
         equals(COMPILERNAME, clang++) {
+            QMAKE_CXXFLAGS += -Wno-unused-command-line-argument
+            QMAKE_CXXFLAGS += -Wl,-export_dynamic
+            QMAKE_CXXFLAGS += -Wl,-export-dynamic
+            QMAKE_CXXFLAGS += -Wl,--export-dynamic
             QMAKE_LFLAGS += -rdynamic
             QMAKE_LFLAGS += -Wl,-no_pie
         }
@@ -406,90 +410,6 @@ CONFIG(release, debug|release) {
 
 ###############################################################################
 # END SECTION FOR SPECIFYING COMPILER/LINKER FLAGS AND LIBRARIES              #
-###############################################################################
-
-
-###############################################################################
-# BEGIN SECTION FOR DEFINING HELPER FUNCTIONS FOR RESOURCE COPYING            #
-###############################################################################
-
-# copy res/* to root of build directory (input files, etc.)
-# COPY_RESOURCE_FILES_INPUT = ""    # defined above so that autograder files can be included
-COPY_RESOURCE_FILES_INPUT = ""
-
-win32 {
-    # copy addr2line exe program(s) to capture stack traces on Windows
-    exists($$PWD/lib/*.exe) {
-        COPY_RESOURCE_FILES_INPUT += $$files($$PWD/lib/*.exe)
-    }
-    # optional .dll files for network features on Windows
-    exists($$PWD/lib/*.dll) {
-        COPY_RESOURCE_FILES_INPUT += $$files($$PWD/lib/*.dll)
-    }
-}
-# copy icons and image strips for library GUI/console windows
-exists($$PWD/lib/*.gif) {
-    COPY_RESOURCE_FILES_INPUT += $$files($$PWD/lib/*.gif)
-}
-exists($$PWD/lib/*.png) {
-    COPY_RESOURCE_FILES_INPUT += $$files($$PWD/lib/*.png)
-}
-exists($$PWD/*.txt) {
-    COPY_RESOURCE_FILES_INPUT += $$files($$PWD/*.txt)
-}
-exists($$PWD/lib/autograder/*.h) | exists($$PWD/lib/StanfordCPPLib/autograder/*.h) | exists($$PWD/src/autograder/$$PROJECT_FILTER/*.cpp) {
-    # copy autograder source files for optional style checking
-    exists($$PWD/*.cpp) {
-        COPY_RESOURCE_FILES_INPUT += $$files($$PWD/*.cpp)
-    }
-    exists($$PWD/*.h) {
-        COPY_RESOURCE_FILES_INPUT += $$files($$PWD/*.h)
-    }
-}
-
-exists($$PWD/res/*) {
-    win32 {
-        exists($$PWD/res/*/*) {
-            # this will preserve the nested res/ directory structure on Windows,
-            # at the unfortunate cost of copying res/ to build dir on every run;
-            # recommended: avoid res subfolders to avoid this penalty on Windows
-            COPY_RESOURCE_FILES_INPUT += $$files($$PWD/res)
-        } else {
-            # res/ with no subdirectories will properly be copied only on modification
-            COPY_RESOURCE_FILES_INPUT += $$files($$PWD/res/*.*)
-        }
-    } else {
-        # Mac/Linux have proper recursive file-copying semantics in all cases
-        COPY_RESOURCE_FILES_INPUT += $$files($$PWD/res/*, true)
-    }
-}
-exists($$PWD/input/*) {
-    COPY_RESOURCE_FILES_INPUT += $$files($$PWD/input, true)
-}
-exists($$PWD/output/*) {
-    COPY_RESOURCE_FILES_INPUT += $$files($$PWD/output, true)
-}
-
-# platform-specific commands to copy files and folders to build directory
-copy_resource_files.name = Copy resource files to the build directory
-win32 {
-    # https://support.microsoft.com/en-us/help/289483/switches-that-you-can-use-with-xcopy-and-xcopy32-commands
-    # /s - copy subfolders
-    # /q - quiet (no verbose output)
-    # /y - overwrite without prompting
-    # /i - if destination does not exist and copying more than one file, assumes destination is a folder
-    copy_resource_files.commands = xcopy /s /q /y ${QMAKE_FILE_IN}
-} else {
-    copy_resource_files.commands = cp -rf ${QMAKE_FILE_IN} .
-}
-# copy_resource_files.commands = ${COPY_FILE} ${QMAKE_FILE_IN} ${QMAKE_FILE_OUT}
-copy_resource_files.input = COPY_RESOURCE_FILES_INPUT
-copy_resource_files.output = $${OUT_PWD}/${QMAKE_FILE_BASE}${QMAKE_FILE_EXT}
-copy_resource_files.CONFIG = no_link no_clean target_predeps
-QMAKE_EXTRA_COMPILERS += copy_resource_files
-
-###############################################################################
-# END SECTION FOR DEFINING HELPER FUNCTIONS FOR RESOURCE COPYING              #
 ###############################################################################
 
 
@@ -542,4 +462,99 @@ exists($$PWD/lib/autograder/*.h) | exists($$PWD/lib/StanfordCPPLib/autograder/*.
 # END SECTION FOR CS 106B/X AUTOGRADER PROGRAMS                               #
 ###############################################################################
 
-# END OF FILE (this should be line #545; if not, your .pro has been changed!)
+
+###############################################################################
+# BEGIN SECTION FOR DEFINING HELPER FUNCTIONS FOR RESOURCE COPYING            #
+###############################################################################
+
+COPY_RESOURCE_FILES_INPUT = ""
+
+win32 {
+    # copy addr2line exe program(s) to capture stack traces on Windows
+    exists($$PWD/lib/*.exe) {
+        COPY_RESOURCE_FILES_INPUT += $$files($$PWD/lib/*.exe)
+    }
+    # optional .dll files for network features on Windows
+    exists($$PWD/lib/*.dll) {
+        COPY_RESOURCE_FILES_INPUT += $$files($$PWD/lib/*.dll)
+    }
+}
+# copy icons and image strips for library GUI/console windows
+exists($$PWD/lib/*.png) {
+    COPY_RESOURCE_FILES_INPUT += $$files($$PWD/lib/*.png)
+}
+exists($$PWD/*.txt) {
+    COPY_RESOURCE_FILES_INPUT += $$files($$PWD/*.txt)
+}
+exists($$PWD/res/*) {
+    win32 {
+        exists($$PWD/res/*/*) {
+            # this will preserve the nested res/ directory structure on Windows,
+            # at the unfortunate cost of copying res/ to build dir on every run;
+            # recommended: avoid res subfolders to avoid this penalty on Windows
+            COPY_RESOURCE_FILES_INPUT += $$files($$PWD/res)
+        } else {
+            # res/ with no subdirectories will properly be copied only on modification
+            COPY_RESOURCE_FILES_INPUT += $$files($$PWD/res/*.*)
+        }
+    } else {
+        # Mac/Linux have proper recursive file-copying semantics in all cases
+        COPY_RESOURCE_FILES_INPUT += $$files($$PWD/res/*, true)
+    }
+}
+# input/ and output/ have same nested subfolder issue as res/
+exists($$PWD/input/*) {
+    win32 {
+        exists($$PWD/input/*/*) {
+            COPY_RESOURCE_FILES_INPUT += $$files($$PWD/input)
+        } else {
+            COPY_RESOURCE_FILES_INPUT += $$files($$PWD/input/*.*)
+        }
+    } else {
+        COPY_RESOURCE_FILES_INPUT += $$files($$PWD/input, true)
+    }
+}
+exists($$PWD/output/*) {
+    win32 {
+        exists($$PWD/output/*/*) {
+            COPY_RESOURCE_FILES_INPUT += $$files($$PWD/output)
+        } else {
+            COPY_RESOURCE_FILES_INPUT += $$files($$PWD/output/*.*)
+        }
+    } else {
+        COPY_RESOURCE_FILES_INPUT += $$files($$PWD/output, true)
+    }
+}
+exists($$PWD/lib/autograder/*.h) | exists($$PWD/lib/StanfordCPPLib/autograder/*.h) | exists($$PWD/src/autograder/$$PROJECT_FILTER/*.cpp) {
+    # in autograder projects, copy over student's .cpp and .h files for possible style checking
+    exists($$PWD/*.cpp) {
+        COPY_RESOURCE_FILES_INPUT += $$files($$PWD/*.cpp)
+    }
+    exists($$PWD/*.h) {
+        COPY_RESOURCE_FILES_INPUT += $$files($$PWD/*.h)
+    }
+}
+
+# platform-specific commands to copy files and folders to build directory
+copy_resource_files.name = Copy resource files to the build directory
+win32 {
+    # https://support.microsoft.com/en-us/help/289483/switches-that-you-can-use-with-xcopy-and-xcopy32-commands
+    # /s - copy subfolders
+    # /q - quiet (no verbose output)
+    # /y - overwrite without prompting
+    # /i - if destination does not exist and copying more than one file, assumes destination is a folder
+    copy_resource_files.commands = xcopy /s /q /y ${QMAKE_FILE_IN}
+} else {
+    copy_resource_files.commands = cp -rf ${QMAKE_FILE_IN} .
+}
+# copy_resource_files.commands = ${COPY_FILE} ${QMAKE_FILE_IN} ${QMAKE_FILE_OUT}
+copy_resource_files.input = COPY_RESOURCE_FILES_INPUT
+copy_resource_files.output = $${OUT_PWD}/${QMAKE_FILE_BASE}${QMAKE_FILE_EXT}
+copy_resource_files.CONFIG = no_link no_clean target_predeps
+QMAKE_EXTRA_COMPILERS += copy_resource_files
+
+###############################################################################
+# END SECTION FOR DEFINING HELPER FUNCTIONS FOR RESOURCE COPYING              #
+###############################################################################
+
+# END OF FILE (this should be line #560; if not, your .pro has been changed!)

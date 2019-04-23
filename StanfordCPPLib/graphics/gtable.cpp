@@ -59,8 +59,8 @@ GTable::GTable(int rows, int columns, double width, double height, QWidget* pare
 }
 
 GTable::~GTable() {
-    // TODO: delete
-    _iqtableview->_gtable = nullptr;
+    // TODO: delete _iqtableview;
+    _iqtableview->detach();
     _iqtableview = nullptr;
 }
 
@@ -268,7 +268,7 @@ int GTable::height() const {
     return numRows();
 }
 
-bool GTable::inBounds(int row, int column) const {
+bool GTable::inTableBounds(int row, int column) const {
     return 0 <= row && row < height() && 0 <= column && column < width();
 }
 
@@ -852,22 +852,8 @@ _Internal_QTableWidget::_Internal_QTableWidget(GTable* gtable, int rows, int col
     connect(this->selectionModel(), SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)), this, SLOT(handleSelectionChange(const QItemSelection&, const QItemSelection&)));
 }
 
-void _Internal_QTableWidget::fireTableEvent(EventType eventType, const std::string& eventName, int row, int col) {
-    if (!_gtable) {
-        return;
-    }
-    GEvent tableEvent(
-                /* class  */ TABLE_EVENT,
-                /* type   */ eventType,
-                /* name   */ eventName,
-                /* source */ _gtable);
-    if (row < 0 && col < 0) {
-        tableEvent.setRowAndColumn(_gtable->getSelectedRow(), _gtable->getSelectedColumn());
-    } else {
-        tableEvent.setRowAndColumn(row, col);
-    }
-    tableEvent.setActionCommand(_gtable->getActionCommand());
-    _gtable->fireEvent(tableEvent);
+void _Internal_QTableWidget::detach() {
+    _gtable = nullptr;
 }
 
 bool _Internal_QTableWidget::edit(const QModelIndex& index, QAbstractItemView::EditTrigger trigger, QEvent* event) {
@@ -885,6 +871,24 @@ bool _Internal_QTableWidget::edit(const QModelIndex& index, QAbstractItemView::E
         }
     }
     return result;
+}
+
+void _Internal_QTableWidget::fireTableEvent(EventType eventType, const std::string& eventName, int row, int col) {
+    if (!_gtable) {
+        return;
+    }
+    GEvent tableEvent(
+                /* class  */ TABLE_EVENT,
+                /* type   */ eventType,
+                /* name   */ eventName,
+                /* source */ _gtable);
+    if (row < 0 && col < 0) {
+        tableEvent.setRowAndColumn(_gtable->getSelectedRow(), _gtable->getSelectedColumn());
+    } else {
+        tableEvent.setRowAndColumn(row, col);
+    }
+    tableEvent.setActionCommand(_gtable->getActionCommand());
+    _gtable->fireEvent(tableEvent);
 }
 
 QWidget* _Internal_QTableWidget::getEditor() const {

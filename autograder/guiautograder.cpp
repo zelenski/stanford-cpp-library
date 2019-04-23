@@ -5,6 +5,8 @@
  * See autograderunittestgui.h for declarations and documentation.
  *
  * @author Marty Stepp
+ * @version 2019/04/23
+ * - reset std::cout/cerr flags on every test run
  * @version 2019/04/22
  * - now uses image strip file for icons
  * @version 2019/04/20
@@ -68,6 +70,8 @@
 #include "stylecheck.h"
 #define INTERNAL_INCLUDE 1
 #include "testresultprinter.h"
+#define INTERNAL_INCLUDE 1
+#include "unittestdetails.h"
 #undef INTERNAL_INCLUDE
 #include <sstream>
 
@@ -310,12 +314,13 @@ void GuiAutograder::addCallbackButton(void (* func)(),
     _bigButtons->add(button);
 }
 
-void GuiAutograder::addCategory(const std::string& categoryName) {
+void GuiAutograder::addCategory(const std::string& categoryName, const std::string& categoryDescription) {
     if (_allCategories.containsKey(categoryName)) {
         return;
     }
 
     GContainer* category = new GContainer(GContainer::LAYOUT_FLOW_VERTICAL);
+    category->setName("category");
     category->setMargin(0);
     category->setPadding(0);
     category->setSpacing(0);
@@ -356,6 +361,11 @@ void GuiAutograder::addCategory(const std::string& categoryName) {
         minimizeButton->setActionListener([this, category]() {
             minimize(category);
         });
+        minimizeButton->setDoubleClickListener([this]() {
+            GThread::runOnQtGuiThreadAsync([this]() {
+                minimizeAll(true);
+            });
+        });
 
         if (_checkboxesShown) {
             top->add(selectAllButton);
@@ -370,6 +380,14 @@ void GuiAutograder::addCategory(const std::string& categoryName) {
         }
 
         category->add(top);
+
+        if (!categoryDescription.empty()) {
+            GLabel* descriptionLabel = new GLabel(categoryDescription);
+            descriptionLabel->setName("description");
+            descriptionLabel->setWordWrap(true);
+            GFont::changeFontSize(descriptionLabel, -1);
+            category->add(descriptionLabel);
+        }
     }
 
     _center->add(category);
@@ -377,7 +395,7 @@ void GuiAutograder::addCategory(const std::string& categoryName) {
 }
 
 void GuiAutograder::addTest(const std::string& testName, const std::string& categoryName) {
-    if (!_allCategories.containsKey(categoryName)) {
+    if (!containsCategory(categoryName)) {
         addCategory(categoryName);
     }
 
@@ -497,6 +515,10 @@ void GuiAutograder::clearTests() {
     // TODO
 }
 
+bool GuiAutograder::containsCategory(const std::string& categoryName) {
+    return _allCategories.containsKey(categoryName);
+}
+
 void GuiAutograder::displayDiffs(const std::string& /*expectedOutput*/,
                                  const std::string& /*studentOutput*/,
                                  const std::string& /*diffs*/,
@@ -547,7 +569,7 @@ int GuiAutograder::getCheckedTestCount() const {
     return checkedCount;
 }
 
-GuiAutograder::TestResult GuiAutograder::getTestResult(const std::string& testFullName) const {
+stanfordcpplib::autograder::TestResult GuiAutograder::getTestResult(const std::string& testFullName) const {
     if (!_allTestInfo.containsKey(testFullName)) {
         return TEST_RESULT_UNKNOWN;
     }
@@ -619,14 +641,16 @@ void GuiAutograder::minimize(GContainer* category, bool minimized) {
     }
 
     for (GInteractor* interactor : category->getInteractors()) {
-        if (interactor->getType() != "GContainer"
-                || interactor->getName() != "testPanel") {
-            continue;
+        if ((interactor->getType() == "GContainer" && interactor->getName() == "testPanel")
+                || (interactor->getType() == "GLabel" && interactor->getName() == "description")) {
+            interactor->setVisible(!minimized);
         }
+    }
+}
 
-        // TODO: set height
-
-        interactor->setVisible(!minimized);
+void GuiAutograder::minimizeAll(bool minimized) {
+    for (GContainer* category : _allCategories.values()) {
+        minimize(category, minimized);
     }
 }
 
@@ -761,6 +785,7 @@ void GuiAutograder::runStyleChecker() {
 }
 
 void GuiAutograder::runTest(stanfordcpplib::autograder::AutograderTest* test) {
+    resetStandardInputStreams();
     int timeoutMS = test->getTestTimeout();
     std::string testName = test->getName();
     std::string testFullName = test->getFullName();
@@ -810,6 +835,7 @@ void GuiAutograder::runTest(stanfordcpplib::autograder::AutograderTest* test) {
         }
     }, /* threadName */ testName);
 
+    resetStandardInputStreams();
     if (GThread::wait(thread, timeoutMS)) {
         // thread is still running; timed out
         printf("  timed out after %d ms.\n", timeoutMS); fflush(stdout);
@@ -1091,9 +1117,19 @@ void GuiAutograder::showTestDetails(const std::string& testFullName, bool force)
                     htmlMessage += "</ul>";
                 }
 
+                std::string resultColor = COLOR_PASS;
+                std::string resultText = "PASS";
+                if (!deets.passed) {
+                    if (deets.result == TEST_RESULT_WARN) {
+                        resultColor = COLOR_WARN;
+                        resultText = "WARNING";
+                    } else {
+                        resultColor = COLOR_FAIL;
+                        resultText = "FAIL";
+                    }
+                }
                 htmlMessage += std::string("<p>result: ")
-                        + "<font color='" + (deets.passed ? COLOR_PASS : COLOR_FAIL) + "'><b>"
-                        + (deets.passed ? "PASS" : "FAIL")
+                        + "<font color='" + resultColor + "'><b>" + resultText
                         + "</b></font></p>";
 
                 // if (!stack.isEmpty()) {

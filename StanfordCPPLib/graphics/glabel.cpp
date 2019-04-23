@@ -3,6 +3,8 @@
  * ----------------
  *
  * @author Marty Stepp
+ * @version 2019/04/23
+ * - moved some event-handling code to GInteractor superclass
  * @version 2019/04/22
  * - added setIcon with QIcon and QPixmap
  * @version 2019/02/02
@@ -69,7 +71,7 @@ GLabel::GLabel(const std::string& text, const QPixmap& icon, QWidget* parent)
 GLabel::~GLabel() {
     // TODO: if (_gtext) { delete _gtext; }
     // TODO: delete _iqlabel;
-    _iqlabel->_glabel = nullptr;
+    _iqlabel->detach();
     _iqlabel = nullptr;
 }
 
@@ -124,30 +126,6 @@ bool GLabel::hasGText() const {
 
 bool GLabel::isWordWrap() const {
     return _iqlabel->wordWrap();
-}
-
-void GLabel::removeActionListener() {
-    removeEventListener("click");
-}
-
-void GLabel::removeDoubleClickListener() {
-    removeEventListener("doubleclick");
-}
-
-void GLabel::setActionListener(GEventListener func) {
-    setEventListener("click", func);
-}
-
-void GLabel::setActionListener(GEventListenerVoid func) {
-    setEventListener("click", func);
-}
-
-void GLabel::setDoubleClickListener(GEventListener func) {
-    setEventListener("doubleclick", func);
-}
-
-void GLabel::setDoubleClickListener(GEventListenerVoid func) {
-    setEventListener("doubleclick", func);
 }
 
 void GLabel::setBounds(double x, double y, double width, double height) {
@@ -350,6 +328,10 @@ _Internal_QLabel::_Internal_QLabel(GLabel* glabel, QWidget* parent)
           _glabel(glabel) {
     require::nonNull(glabel, "_Internal_QLabel::constructor");
     setObjectName(QString::fromStdString("_Internal_QLabel_" + std::to_string(glabel->getID())));
+}
+
+void _Internal_QLabel::detach() {
+    _glabel = nullptr;
 }
 
 void _Internal_QLabel::mouseDoubleClickEvent(QMouseEvent* event) {

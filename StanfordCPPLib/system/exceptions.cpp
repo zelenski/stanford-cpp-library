@@ -49,6 +49,7 @@
 #define INTERNAL_INCLUDE 1
 #include "exceptions.h"
 #include <csignal>
+#include <cstdlib>
 #include <iomanip>
 #include <iostream>
 #include <string>
@@ -102,7 +103,7 @@ STATIC_CONST_VARIABLE_DECLARE_COLLECTION(Vector<int>, SIGNALS_HANDLED, SIGSEGV, 
 static void signalHandlerDisable();
 static void signalHandlerEnable();
 static void stanfordCppLibSignalHandler(int sig);
-static void stanfordCppLibTerminateHandler();
+static Q_NORETURN void stanfordCppLibTerminateHandler();
 static void stanfordCppLibUnexpectedHandler();
 
 std::string cleanupFunctionNameForStackTrace(std::string function) {
@@ -485,12 +486,9 @@ void printStackTrace(std::ostream& out) {
         out << lineout.str() << std::endl;
     }
     
-//    out << "***" << std::endl;
-//    out << "*** NOTE:" << std::endl;
-//    out << "*** Any line numbers listed above are approximate." << std::endl;
-//    out << "*** To learn more about why the program crashed, we" << std::endl;
-//    out << "*** suggest running your program under the debugger." << std::endl;
-    
+    out << "***" << std::endl;
+    out << "*** To learn more about the crash, we strongly" << std::endl;
+    out << "*** suggest running your program under the debugger." << std::endl;
     out << "***" << std::endl;
 }
 
@@ -507,8 +505,8 @@ void printStackTrace(std::ostream& out) {
     std::string __desc = (desc); \
     if ((!__kind.empty())) { stringReplaceInPlace(msg, DEFAULT_EXCEPTION_KIND, __kind); } \
     if ((!__desc.empty())) { stringReplaceInPlace(msg, DEFAULT_EXCEPTION_DETAILS, __desc); } \
-    std::cout.flush(); \
     out << msg; \
+    out.flush(); \
     printStackTrace(out); \
     THROW_NOT_ON_WINDOWS(ex); \
     }
@@ -519,7 +517,6 @@ void printStackTrace(std::ostream& out) {
     std::string __desc = (desc); \
     if ((!__kind.empty())) { stringReplaceInPlace(msg, DEFAULT_EXCEPTION_KIND, __kind); } \
     if ((!__desc.empty())) { stringReplaceInPlace(msg, DEFAULT_EXCEPTION_DETAILS, __desc); } \
-    std::cout.flush(); \
     out << msg; \
     printStackTrace(out); \
     ErrorException errorEx(out.str()); \
@@ -666,7 +663,7 @@ static std::string insertStarsBeforeEachLine(const std::string& s) {
  * A general handler for any uncaught exception.
  * Prints details about the exception and then tries to print a stack trace.
  */
-static void stanfordCppLibTerminateHandler() {
+static Q_NORETURN void stanfordCppLibTerminateHandler() {
     std::string DEFAULT_EXCEPTION_KIND = "An exception";
     std::string DEFAULT_EXCEPTION_DETAILS = "(unknown exception details)";
     
@@ -703,11 +700,13 @@ static void stanfordCppLibTerminateHandler() {
     } catch (bool b) {
         FILL_IN_EXCEPTION_TRACE(b, "A bool exception", boolToString(b));
     } catch (double d) {
-        FILL_IN_EXCEPTION_TRACE(d, "A double exception", std::to_string(d));
+        FILL_IN_EXCEPTION_TRACE(d, "A double exception", realToString(d));
     } catch (...) {
         std::string ex = "Unknown";
         FILL_IN_EXCEPTION_TRACE(ex, "An exception", std::string());
     }
+
+    abort();   // terminate the program with a SIGABRT signal
 }
 
 /*
@@ -742,7 +741,7 @@ static void stanfordCppLibUnexpectedHandler() {
         message = str;
     } catch (double d) {
         kind = "double";
-        message = std::to_string(d);
+        message = realToString(d);
     } catch (const ErrorException& ex) {
         kind = "error";
         message = ex.what();

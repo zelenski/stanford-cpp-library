@@ -208,7 +208,7 @@ public:
      * of the table.  In other words, whether the index is between (0, 0)
      * and (numRows-1, numCols-1) inclusive.
      */
-    virtual bool inBounds(int row, int column) const;
+    virtual bool inTableBounds(int row, int column) const;
 
     /**
      * Returns whether cells of the table can be edited.
@@ -654,6 +654,7 @@ class _Internal_QTableWidget : public QTableWidget, public _Internal_QWidget {
 
 public:
     _Internal_QTableWidget(GTable* gtable, int rows, int columns, QWidget* parent = nullptr);
+    virtual void detach() Q_DECL_OVERRIDE;
     virtual bool edit(const QModelIndex& index, QAbstractItemView::EditTrigger trigger, QEvent* event) Q_DECL_OVERRIDE;
     virtual QWidget* getEditor() const;
     virtual _Internal_QItemDelegate* getItemDelegate() const;

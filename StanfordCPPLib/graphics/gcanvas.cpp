@@ -3,6 +3,9 @@
  * -----------------
  *
  * @author Marty Stepp
+ * @version 2019/04/23
+ * - bug fix for loading canvas from file on Windows related to istream change
+ * - moved most event listener code to GInteractor superclass
  * @version 2019/03/07
  * - added support for loading canvas directly from istream (htiek)
  * @version 2019/02/06
@@ -140,8 +143,8 @@ void GCanvas::init(double width, double height, int rgbBackground, QWidget* pare
 }
 
 GCanvas::~GCanvas() {
-    // TODO: delete _GCanvas;
-    _iqcanvas->_gcanvas = nullptr;
+    // TODO: delete _iqcanvas;
+    _iqcanvas->detach();
     _iqcanvas = nullptr;
 }
 
@@ -564,15 +567,32 @@ bool GCanvas::isAutoRepaint() const {
 }
 
 void GCanvas::load(const std::string& filename) {
-    std::ifstream input(filename);
-    if (!input) {
-        error("GCanvas::load: file \"" + filename + "\" not found.");
-    }
-    if (!loadFromStream(input)) {
-        error("GCanvas::load: failed to load from " + filename);
+    // for efficiency, let's at least check whether the file exists
+    // and throw error immediately rather than contacting the back-end
+    if (!fileExists(filename)) {
+        error("GCanvas::load: file not found: " + filename);
     }
 
-    _filename = filename;
+    bool hasError = false;
+    GThread::runOnQtGuiThread([this, filename, &hasError]() {
+        ensureBackgroundImage();
+        lockForWrite();
+        if (!_backgroundImage->load(QString::fromStdString(filename))) {
+            hasError = true;
+            unlock();
+            return;
+        }
+
+        _filename = filename;
+        GInteractor::setSize(_backgroundImage->width(), _backgroundImage->height());
+        // setSize(_qimage->width(), _qimage->height());
+        unlock();
+        conditionalRepaint();
+    });
+
+    if (hasError) {
+        error("GCanvas::load: failed to load from " + filename);
+    }
 }
 
 bool GCanvas::loadFromStream(std::istream& input) {
@@ -587,6 +607,7 @@ bool GCanvas::loadFromStream(std::istream& input) {
         lockForWrite();
         if (!_backgroundImage->loadFromData(reinterpret_cast<const uchar *>(bytes.data()), bytes.length())) {
             hasError = true;
+            unlock();
             return;
         }
 
@@ -651,32 +672,6 @@ void GCanvas::removeAll() {
         _gcompound.removeAll();
         unlock();
     });
-}
-
-void GCanvas::removeClickListener() {
-    removeEventListener("click");
-}
-
-void GCanvas::removeDoubleClickListener() {
-    removeEventListener("doubleclick");
-}
-
-void GCanvas::removeKeyListener() {
-    removeEventListeners({"keypress",
-                         "keyrelease",
-                         "keytype"});
-}
-
-void GCanvas::removeMouseListener() {
-    removeEventListeners({"click",
-                         "mousedrag",
-                         "mouseenter",
-                         "mouseexit",
-                         "mousemove",
-                         "mousepress",
-                         "mouserelease",
-                         "mousewheeldown",
-                         "mousewheelup"});
 }
 
 void GCanvas::repaint() {
@@ -767,28 +762,12 @@ void GCanvas::setBackground(const std::string& color) {
     setBackground(GColor::convertColorToRGB(color));
 }
 
-void GCanvas::setClickListener(GEventListener func) {
-    setEventListener("click", func);
-}
-
-void GCanvas::setClickListener(GEventListenerVoid func) {
-    setEventListener("click", func);
-}
-
 void GCanvas::setColor(int color) {
     GDrawingSurface::setColor(color);
 }
 
 void GCanvas::setColor(const std::string& color) {
     setColor(GColor::convertColorToRGB(color));
-}
-
-void GCanvas::setDoubleClickListener(GEventListener func) {
-    setEventListener("doubleclick", func);
-}
-
-void GCanvas::setDoubleClickListener(GEventListenerVoid func) {
-    setEventListener("doubleclick", func);
 }
 
 void GCanvas::setFont(const QFont& font) {
@@ -813,9 +792,7 @@ void GCanvas::setKeyListener(GEventListener func) {
         _iqcanvas->setFocusPolicy(Qt::StrongFocus);
         unlock();
     });
-    setEventListeners({"keypress",
-                       "keyrelease",
-                       "keytype"}, func);
+    GInteractor::setKeyListener(func);   // call super
 }
 
 void GCanvas::setKeyListener(GEventListenerVoid func) {
@@ -824,33 +801,7 @@ void GCanvas::setKeyListener(GEventListenerVoid func) {
         _iqcanvas->setFocusPolicy(Qt::StrongFocus);
         unlock();
     });
-    setEventListeners({"keypress",
-                       "keyrelease",
-                       "keytype"}, func);
-}
-
-void GCanvas::setMouseListener(GEventListener func) {
-    setEventListeners({"click",
-                       "mousedrag",
-                       "mouseenter",
-                       "mouseexit",
-                       "mousemove",
-                       "mousepress",
-                       "mouserelease",
-                       "mousewheeldown",
-                       "mousewheelup"}, func);
-}
-
-void GCanvas::setMouseListener(GEventListenerVoid func) {
-    setEventListeners({"click",
-                       "mousedrag",
-                       "mouseenter",
-                       "mouseexit",
-                       "mousemove",
-                       "mousepress",
-                       "mouserelease",
-                       "mousewheeldown",
-                       "mousewheelup"}, func);
+    GInteractor::setKeyListener(func);   // call super
 }
 
 void GCanvas::setPixel(double x, double y, int rgb) {
@@ -985,6 +936,10 @@ _Internal_QCanvas::_Internal_QCanvas(GCanvas* gcanvas, QWidget* parent)
 //    setAutoFillBackground(true);
 //    setPalette(pal);
     setMouseTracking(true);   // causes mouse move events to occur
+}
+
+void _Internal_QCanvas::detach() {
+    _gcanvas = nullptr;
 }
 
 void _Internal_QCanvas::enterEvent(QEvent* event) {

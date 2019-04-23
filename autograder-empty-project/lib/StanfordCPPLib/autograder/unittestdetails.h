@@ -16,11 +16,21 @@
 #define _unittestdetails_h
 
 #include <string>
+#define INTERNAL_INCLUDE 1
 #include "gtest.h"
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
+#undef INTERNAL_INCLUDE
 
 namespace stanfordcpplib {
 namespace autograder {
+
+enum TestResult {
+    TEST_RESULT_UNKNOWN,
+    TEST_RESULT_FAIL,
+    TEST_RESULT_WARN,
+    TEST_RESULT_PASS
+};
 
 // NOTE: must keep in sync with UNIT_TEST_TYPE_NAMES in unittestdetails.cpp
 enum UnitTestType {
@@ -50,6 +60,7 @@ public:
     int diffFlags;
     bool passed;
     bool overwrite;
+    TestResult result;
     
     UnitTestDetails();
     

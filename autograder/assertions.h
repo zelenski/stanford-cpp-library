@@ -28,9 +28,13 @@
 #ifndef _assertions_h
 #define _assertions_h
 
+#define INTERNAL_INCLUDE 1
 #include "gtest.h"
+#define INTERNAL_INCLUDE 1
 #include "autograder.h"
+#define INTERNAL_INCLUDE 1
 #include "diff.h"
+#undef INTERNAL_INCLUDE
 
 #define TEST_FAIL_PREFIX std::string("Test case failed: ")
 #define FAIL_PREFIX      std::string("Assertion failed: ")

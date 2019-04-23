@@ -45,6 +45,10 @@ void ErrorException::dump(std::ostream& out) const {
     }
     out << "***" << std::endl;
     out << insertStarsBeforeEachLine(getStackTrace()) << std::endl;
+    // out << "***" << std::endl;
+    // out << "*** To learn more about the crash, we strongly" << std::endl;
+    // out << "*** suggest running your program under the debugger." << std::endl;
+    // out << "***" << std::endl;
     out.flush();
 }
 

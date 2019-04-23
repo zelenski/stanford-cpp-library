@@ -4,6 +4,8 @@
  * This file declares the <code>GBrowserPane</code> class, which is a
  * graphical interactor that displays a web page.
  *
+ * @version 2019/04/23
+ * - moved some event-handling code to GInteractor superclass
  * @version 2018/12/28
  * - added methods for text selection, scrolling, cursor position, key/mouse listeners
  * @version 2018/09/17
@@ -186,22 +188,10 @@ public:
     virtual void readTextFromUrl(const std::string& url);
 
     /**
-     * Removes the key listener from this text pane so that it will no longer
-     * call it when the user types keys.
-     */
-    virtual void removeKeyListener();
-
-    /**
      * Removes the link listener from the canvas so that it will no longer
      * call it when hyperlink events occur.
      */
     virtual void removeLinkListener();
-
-    /**
-     * Removes the mouse listener from this text pane so that it will no longer
-     * call it when the user moves/clicks the mouse.
-     */
-    virtual void removeMouseListener();
 
     /**
      * Removes the text change listener from this text pane so that it will no longer
@@ -258,20 +248,6 @@ public:
     virtual void setEditable(bool value);
 
     /**
-     * Sets a key listener on this text pane so that it will be called
-     * when the user presses any key.
-     * Any existing key listener will be replaced.
-     */
-    virtual void setKeyListener(GEventListener func);
-
-    /**
-     * Sets a key listener on this text pane so that it will be called
-     * when the user presses any key.
-     * Any existing key listener will be replaced.
-     */
-    virtual void setKeyListener(GEventListenerVoid func);
-
-    /**
      * Sets whether the text pane wraps its text when a line becomes too long.
      * Default true.
      */
@@ -296,14 +272,14 @@ public:
      * when the user moves or clicks the mouse.
      * Any existing mouse listener will be replaced.
      */
-    virtual void setMouseListener(GEventListener func);
+    virtual void setMouseListener(GEventListener func) Q_DECL_OVERRIDE;
 
     /**
      * Sets a mouse listener on this text pane so that it will be called
      * when the user moves or clicks the mouse.
      * Any existing mouse listener will be replaced.
      */
-    virtual void setMouseListener(GEventListenerVoid func);
+    virtual void setMouseListener(GEventListenerVoid func) Q_DECL_OVERRIDE;
 
     /**
      * Sets the pane to display to the given contents using its current content type.
@@ -363,6 +339,7 @@ class _Internal_QTextBrowser : public QTextBrowser, public _Internal_QWidget {
 
 public:
     _Internal_QTextBrowser(GBrowserPane* gbrowserpane, QWidget* parent = nullptr);
+    virtual void detach() Q_DECL_OVERRIDE;
     QVariant loadResource(int type, const QUrl &url) Q_DECL_OVERRIDE;
     virtual void mousePressEvent(QMouseEvent* event) Q_DECL_OVERRIDE;
     virtual void mouseReleaseEvent(QMouseEvent* event) Q_DECL_OVERRIDE;

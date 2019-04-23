@@ -14,6 +14,7 @@
 
 #define INTERNAL_INCLUDE 1
 #include "autogradertest.h"
+#define INTERNAL_INCLUDE 1
 #include "autograder.h"
 //#include "autogradergui.h"
 #undef INTERNAL_INCLUDE

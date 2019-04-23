@@ -16,9 +16,13 @@
 #include <map>
 #include <string>
 #include <vector>
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "gtest.h"
+#define INTERNAL_INCLUDE 1
 #include "timer.h"
+#undef INTERNAL_INCLUDE
 
 namespace stanfordcpplib {
 namespace autograder {

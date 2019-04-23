@@ -3,13 +3,14 @@
  * --------------------
  * 
  * @author Marty Stepp
+ * @version 2019/04/23
+ * - can press Escape key to close window
  * @version 2018/10/12
  * - added "highlight diffs in color" checkbox and functionality
  * @version 2018/09/15
  * - initial version, converted from Java back-end DiffImage class
  */
 
-// TODO: add checkbox for highlighting diffs in color
 // TODO: free memory
 
 #define INTERNAL_INCLUDE 1
@@ -71,17 +72,28 @@ GDiffImage::GDiffImage(
     // _window->setResizable(false);
     _window->setAutoRepaint(false);
 
+    // function to close the window when Escape is pressed
+    // (similar to code in gdiffgui.cpp)
+    auto windowCloseLambda = [this](GEvent event) {
+        if (event.getType() == KEY_PRESSED && event.getKeyChar() == GEvent::ESCAPE_KEY) {
+            _window->close();
+        }
+    };
+    _window->setKeyListener(windowCloseLambda);
+
     _slider = new GSlider();
     _slider->setActionListener([this]() {
         _image2->setOpacity(_slider->getValue() / 100.0);
         drawImages();
     });
+    _slider->setKeyListener(windowCloseLambda);
 
     _highlightDiffsBox = new GCheckBox("&Highlight diffs in color: ");
     _highlightDiffsBox->setActionListener([this]() {
         _slider->setEnabled(!_highlightDiffsBox->isChecked());
         drawImages();
     });
+    _highlightDiffsBox->setKeyListener(windowCloseLambda);
 
     _highlightColor = HIGHLIGHT_COLOR_DEFAULT;
     _colorButton = new GButton("&X");
@@ -90,6 +102,7 @@ GDiffImage::GDiffImage(
     _colorButton->setActionListener([this]() {
         chooseHighlightColor();
     });
+    _colorButton->setKeyListener(windowCloseLambda);
 
     _diffPixelsLabel = new GLabel("(" + std::to_string(diffPixelsCount) + " pixels differ)");
     GFont::boldFont(_diffPixelsLabel);

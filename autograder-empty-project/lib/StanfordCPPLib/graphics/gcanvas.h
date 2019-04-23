@@ -480,30 +480,6 @@ public:
     virtual void removeAll();
 
     /**
-     * Removes the click listener from the canvas so that it will no longer
-     * call it when events occur.
-     */
-    virtual void removeClickListener();
-
-    /**
-     * Removes the double-click listener from the canvas so that it will no longer
-     * call it when events occur.
-     */
-    virtual void removeDoubleClickListener();
-
-    /**
-     * Removes the key listener from the canvas so that it will no longer
-     * call it when events occur.
-     */
-    virtual void removeKeyListener();
-
-    /**
-     * Removes the mouse listener from the canvas so that it will no longer
-     * call it when events occur.
-     */
-    virtual void removeMouseListener();
-
-    /**
      * Instructs the canvas to redraw its layers.
      * By default the canvas will automatically repaint itself whenever you make
      * a change to either the background or foreground layer.
@@ -553,39 +529,11 @@ public:
     /* @inherit */
     virtual void setBackground(const std::string& color) Q_DECL_OVERRIDE;
 
-    /**
-     * Sets a mouse listener on this canvas so that it will be called
-     * when the mouse is clicked on the canvas.
-     * Any existing click listener will be replaced.
-     */
-    virtual void setClickListener(GEventListener func);
-
-    /**
-     * Sets a mouse listener on this canvas so that it will be called
-     * when the mouse is clicked on the canvas.
-     * Any existing click listener will be replaced.
-     */
-    virtual void setClickListener(GEventListenerVoid func);
-
     /* @inherit */
     virtual void setColor(int color) Q_DECL_OVERRIDE;
 
     /* @inherit */
     virtual void setColor(const std::string& color) Q_DECL_OVERRIDE;
-
-    /**
-     * Sets a mouse listener on this canvas so that it will be called
-     * when the mouse is double-clicked on the canvas.
-     * Any existing double-click listener will be replaced.
-     */
-    virtual void setDoubleClickListener(GEventListener func);
-
-    /**
-     * Sets a mouse listener on this canvas so that it will be called
-     * when the mouse is double-clicked on the canvas.
-     * Any existing double-click listener will be replaced.
-     */
-    virtual void setDoubleClickListener(GEventListenerVoid func);
 
     /* @inherit */
     virtual void setFont(const QFont& font) Q_DECL_OVERRIDE;
@@ -604,28 +552,14 @@ public:
      * when any key is pressed or released on the canvas.
      * Any existing key listener will be replaced.
      */
-    virtual void setKeyListener(GEventListener func);
+    virtual void setKeyListener(GEventListener func) Q_DECL_OVERRIDE;
 
     /**
      * Sets a key listener on this canvas so that it will be called
      * when any key is pressed or released on the canvas.
      * Any existing key listener will be replaced.
      */
-    virtual void setKeyListener(GEventListenerVoid func);
-
-    /**
-     * Sets a mouse listener on this canvas so that it will be called
-     * when the mouse is moved or clicked on the canvas.
-     * Any existing mouse listener will be replaced.
-     */
-    virtual void setMouseListener(GEventListener func);
-
-    /**
-     * Sets a mouse listener on this canvas so that it will be called
-     * when the mouse is moved or clicked on the canvas.
-     * Any existing mouse listener will be replaced.
-     */
-    virtual void setMouseListener(GEventListenerVoid func);
+    virtual void setKeyListener(GEventListenerVoid func) Q_DECL_OVERRIDE;
 
     /**
      * Sets the color of the given x/y pixel in the background layer of the
@@ -758,7 +692,7 @@ class _Internal_QCanvas : public QWidget, public _Internal_QWidget {
 
 public:
     _Internal_QCanvas(GCanvas* gcanvas, QWidget* parent = nullptr);
-
+    virtual void detach() Q_DECL_OVERRIDE;
     virtual void enterEvent(QEvent* event) Q_DECL_OVERRIDE;
     virtual void keyPressEvent(QKeyEvent* event) Q_DECL_OVERRIDE;
     virtual void keyReleaseEvent(QKeyEvent* event) Q_DECL_OVERRIDE;

@@ -3,6 +3,8 @@
  * ------------------
  *
  * @author Marty Stepp
+ * @version 2019/04/23
+ * - moved some event-handling code to GInteractor superclass
  * @version 2019/04/22
  * - added setIcon with QIcon and QPixmap
  * @version 2019/02/02
@@ -58,8 +60,8 @@ GButton::GButton(const std::string& text, const QPixmap& icon, QWidget* parent) 
 }
 
 GButton::~GButton() {
-    // TODO: delete _button;
-    _iqpushbutton->_gbutton = nullptr;
+    // TODO: delete _iqpushbutton;
+    _iqpushbutton->detach();
     _iqpushbutton = nullptr;
 }
 
@@ -103,35 +105,11 @@ QWidget* GButton::getWidget() const {
     return static_cast<QWidget*>(_iqpushbutton);
 }
 
-void GButton::removeActionListener() {
-    removeEventListener("click");
-}
-
-void GButton::removeDoubleClickListener() {
-    removeEventListener("doubleclick");
-}
-
 void GButton::setAccelerator(const std::string& accelerator) {
     GThread::runOnQtGuiThread([this, accelerator]() {
         QKeySequence keySeq(QString::fromStdString(normalizeAccelerator(accelerator)));
         _iqpushbutton->setShortcut(keySeq);
     });
-}
-
-void GButton::setActionListener(GEventListener func) {
-    setEventListener("click", func);
-}
-
-void GButton::setActionListener(GEventListenerVoid func) {
-    setEventListener("click", func);
-}
-
-void GButton::setDoubleClickListener(GEventListener func) {
-    setEventListener("doubleclick", func);
-}
-
-void GButton::setDoubleClickListener(GEventListenerVoid func) {
-    setEventListener("doubleclick", func);
 }
 
 void GButton::setIcon(const QIcon& icon) {
@@ -211,6 +189,10 @@ _Internal_QPushButton::_Internal_QPushButton(GButton* button, QWidget* parent)
     setObjectName(QString::fromStdString("_Internal_QPushButton_" + std::to_string(button->getID())));
     setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     connect(this, SIGNAL(clicked()), this, SLOT(handleClick()));
+}
+
+void _Internal_QPushButton::detach() {
+    _gbutton = nullptr;
 }
 
 void _Internal_QPushButton::handleClick() {

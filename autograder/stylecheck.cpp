@@ -29,14 +29,25 @@
 #define INTERNAL_INCLUDE 1
 #include "stylecheck.h"
 #include <cstring>
+#define INTERNAL_INCLUDE 1
 #include "autograder.h"
+#define INTERNAL_INCLUDE 1
 #include "filelib.h"
+#define INTERNAL_INCLUDE 1
 #include "gtest-marty.h"
+#define INTERNAL_INCLUDE 1
 #include "rapidxml.h"
+#define INTERNAL_INCLUDE 1
 #include "regexpr.h"
+#define INTERNAL_INCLUDE 1
 #include "stringutils.h"
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
+#define INTERNAL_INCLUDE 1
+#include "unittestdetails.h"
+#define INTERNAL_INCLUDE 1
 #include "xmlutils.h"
+#define INTERNAL_INCLUDE 1
 #include "private/static.h"
 #undef INTERNAL_INCLUDE
 
@@ -69,12 +80,12 @@ static bool processPatternNode(const std::string& codeFileName,
     bool patternList = xmlutils::getAttributeBool(patternNode, "list", true);
     bool showCounts = xmlutils::getAttributeBool(patternNode, "showcounts", true);
     
-    stanfordcpplib::autograder::Autograder::TestResult failResult =
-            stanfordcpplib::autograder::Autograder::TEST_RESULT_WARN;   // default
+    stanfordcpplib::autograder::TestResult failResult =
+            stanfordcpplib::autograder::TEST_RESULT_WARN;   // default
     if (xmlutils::hasAttribute(patternNode, "failtype")) {
         std::string failTypeStr = trim(xmlutils::getAttribute(patternNode, "failtype"));
-        failResult = failTypeStr == "warn" ? stanfordcpplib::autograder::Autograder::TEST_RESULT_WARN
-                                           : stanfordcpplib::autograder::Autograder::TEST_RESULT_FAIL;
+        failResult = failTypeStr == "fail" ? stanfordcpplib::autograder::TEST_RESULT_FAIL
+                                           : stanfordcpplib::autograder::TEST_RESULT_WARN;
     }
 
     // see if student's code text matches the regex
@@ -123,8 +134,12 @@ static bool processPatternNode(const std::string& codeFileName,
     if (!pass || !omitOnPass) {
         out << "    STYLE CHECK " << (pass ? "PASSED : " : "WARNING: ") << patternDescription << std::endl;
         stanfordcpplib::autograder::Autograder* autograder = stanfordcpplib::autograder::Autograder::instance();
-        stanfordcpplib::autograder::Autograder::TestResult result = pass
-                ? stanfordcpplib::autograder::Autograder::TEST_RESULT_PASS : failResult;
+        stanfordcpplib::autograder::TestResult result = pass
+                ? stanfordcpplib::autograder::TEST_RESULT_PASS : failResult;
+        if (!autograder->containsCategory(prefix + categoryName)) {
+            autograder->addCategory(prefix + categoryName,
+                                    "Note: the style checker does not check all aspects of the student's code, and it is merely offering suggestions based on code text patterns. A warning here does not necessarily mean that there should be a deduction, merely that there may be an issue to investigate.");
+        }
         autograder->addTest(testName, prefix + categoryName);
         autograder->setTestResult(testFullName, result);
         stanfordcpplib::autograder::UnitTestDetails deets;
@@ -132,11 +147,14 @@ static bool processPatternNode(const std::string& codeFileName,
         deets.passed = pass;
         deets.expected = rangeStr;
         deets.student = "actually occurs " + std::to_string(matchCount) + " time(s)";
-        if (static_cast<int>(linesStr.length()) > 0) {
+        if (!linesStr.empty()) {
             deets.student += " on line " + linesStr;
         }
         deets.testType = stanfordcpplib::autograder::UnitTestType::TEST_STYLE_CHECK;
         deets.valueType = "T";
+        deets.overwrite = true;
+        deets.result = pass ? stanfordcpplib::autograder::TEST_RESULT_PASS
+                            : stanfordcpplib::autograder::TEST_RESULT_WARN;
         out.str("");
         out << deets;
         autograder->setTestDetails(testFullName, deets);
@@ -145,7 +163,7 @@ static bool processPatternNode(const std::string& codeFileName,
         if (showCounts) {
             out << "         " << rangeStr << std::endl;
             out << "         actually occurs " << matchCount << " time(s)";
-            if (static_cast<int>(linesStr.length()) > 0) {
+            if (!linesStr.empty()) {
                 out << " on line " << linesStr;
             }
             autograder->showOutput(out, /* graphical */ false, /* console */ true);

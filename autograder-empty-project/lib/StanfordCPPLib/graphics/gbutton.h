@@ -3,6 +3,8 @@
  * ---------------
  *
  * @author Marty Stepp
+ * @version 2019/04/23
+ * - moved some event-handling code to GInteractor superclass
  * @version 2019/04/22
  * - added setIcon with QIcon and QPixmap
  * @version 2018/09/07
@@ -96,48 +98,8 @@ public:
     /* @inherit */
     virtual QWidget* getWidget() const Q_DECL_OVERRIDE;
 
-    /**
-     * Removes the action listener from this button so that it will no longer
-     * call it when events occur.
-     */
-    virtual void removeActionListener();
-
-    /**
-     * Removes the double-click listener from this button so that it will no longer
-     * call it when events occur.
-     */
-    virtual void removeDoubleClickListener();
-
     /* @inherit */
     virtual void setAccelerator(const std::string& accelerator) Q_DECL_OVERRIDE;
-
-    /**
-     * Sets an action listener on this button so that it will be called
-     * when the button is clicked.
-     * Any existing action listener will be replaced.
-     */
-    virtual void setActionListener(GEventListener func);
-
-    /**
-     * Sets an action listener on this button so that it will be called
-     * when the button is clicked.
-     * Any existing action listener will be replaced.
-     */
-    virtual void setActionListener(GEventListenerVoid func);
-
-    /**
-     * Sets a listener on this button so that it will be called
-     * when the button is double-clicked.
-     * Any existing double-click listener will be replaced.
-     */
-    virtual void setDoubleClickListener(GEventListener func);
-
-    /**
-     * Sets a listener on this button so that it will be called
-     * when the button is double-clicked.
-     * Any existing double-click listener will be replaced.
-     */
-    virtual void setDoubleClickListener(GEventListenerVoid func);
 
     /* @inherit */
     virtual void setIcon(const QIcon& icon) Q_DECL_OVERRIDE;
@@ -183,6 +145,7 @@ class _Internal_QPushButton : public QToolButton, public _Internal_QWidget {
 
 public:
     _Internal_QPushButton(GButton* button, QWidget* parent = nullptr);
+    virtual void detach() Q_DECL_OVERRIDE;
     virtual QSize sizeHint() const Q_DECL_OVERRIDE;
 
 signals:

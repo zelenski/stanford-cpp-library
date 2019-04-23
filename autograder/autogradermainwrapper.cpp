@@ -12,8 +12,11 @@
 
 #define INTERNAL_INCLUDE 1
 #include "autograder.h"
+#define INTERNAL_INCLUDE 1
 #include "consoleautograder.h"
+#define INTERNAL_INCLUDE 1
 #include "guiautograder.h"
+#define INTERNAL_INCLUDE 1
 #include "qtgui.h"
 #include <string>
 #undef INTERNAL_INCLUDE

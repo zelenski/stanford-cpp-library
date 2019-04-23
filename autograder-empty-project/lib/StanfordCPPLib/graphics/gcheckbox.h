@@ -3,6 +3,8 @@
  * -----------------
  *
  * @author Marty Stepp
+ * @version 2019/04/23
+ * - added key event support
  * @version 2018/10/06
  * - added toggle()
  * @version 2018/09/07
@@ -49,7 +51,7 @@ class _Internal_QCheckBox;
 /**
  * This interactor subclass represents an onscreen check box.
  * Clicking once on the check box selects it; clicking again removes the selection.
- * You can listen for clicks on a checkbox using the setActionListener method,
+ * You can listen for clicks on a checkbox by setting an action listener,
  * passing the function you want to call on each click.
  */
 class GCheckBox : public GInteractor {
@@ -95,46 +97,6 @@ public:
     virtual bool isSelected() const;
 
     /**
-     * Removes the action listener from this checkbox so that it will no longer
-     * call it when events occur.
-     */
-    virtual void removeActionListener();
-
-    /**
-     * Removes the double-click listener from this checkbox so that it will no longer
-     * call it when events occur.
-     */
-    virtual void removeDoubleClickListener();
-
-    /**
-     * Sets an action listener on this checkbox so that it will be called
-     * when the checkbox is clicked.
-     * Any existing action listener will be replaced.
-     */
-    virtual void setActionListener(GEventListener func);
-
-    /**
-     * Sets an action listener on this checkbox so that it will be called
-     * when the checkbox is clicked.
-     * Any existing action listener will be replaced.
-     */
-    virtual void setActionListener(GEventListenerVoid func);
-
-    /**
-     * Sets a listener on this checkbox so that it will be called
-     * when the checkbox is double-clicked.
-     * Any existing double-click listener will be replaced.
-     */
-    virtual void setDoubleClickListener(GEventListener func);
-
-    /**
-     * Sets a listener on this checkbox so that it will be called
-     * when the checkbox is double-clicked.
-     * Any existing double-click listener will be replaced.
-     */
-    virtual void setDoubleClickListener(GEventListenerVoid func);
-
-    /**
      * Sets whether the checkbox should be checked.
      * Equivalent to setSelected.
      */
@@ -157,6 +119,12 @@ public:
      */
     virtual void toggle();
 
+protected:
+    /**
+     * @private
+     */
+    virtual std::string getActionEventType() const Q_DECL_OVERRIDE;
+
 private:
     Q_DISABLE_COPY(GCheckBox)
 
@@ -174,6 +142,9 @@ class _Internal_QCheckBox : public QCheckBox, public _Internal_QWidget {
 
 public:
     _Internal_QCheckBox(GCheckBox* gcheckBox, bool checked = false, QWidget* parent = nullptr);
+    virtual void detach() Q_DECL_OVERRIDE;
+    virtual void keyPressEvent(QKeyEvent* event) Q_DECL_OVERRIDE;
+    virtual void keyReleaseEvent(QKeyEvent* event) Q_DECL_OVERRIDE;
     virtual QSize sizeHint() const Q_DECL_OVERRIDE;
 
 signals:

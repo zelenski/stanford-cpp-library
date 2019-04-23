@@ -9,6 +9,7 @@
 
 #define INTERNAL_INCLUDE 1
 #include "date.h"
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
 #undef INTERNAL_INCLUDE
 

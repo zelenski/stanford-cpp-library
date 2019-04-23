@@ -13,7 +13,9 @@
 #define _autogradercompat_h
 
 #include <string>
+#define INTERNAL_INCLUDE 1
 #include "autograder.h"
+#undef INTERNAL_INCLUDE
 
 namespace autograder {
 

@@ -23,6 +23,7 @@
 
 #define INTERNAL_INCLUDE 1
 #include "autogradercompat.h"
+#define INTERNAL_INCLUDE 1
 #include "guiautograder.h"
 #undef INTERNAL_INCLUDE
 
@@ -243,7 +244,8 @@ UnitTestDetails::UnitTestDetails()
       expected(""),
       student(""),
       passed(false),
-      overwrite(false) {
+      overwrite(false),
+      result(TEST_RESULT_UNKNOWN) {
     // empty
 }
 
@@ -257,7 +259,8 @@ UnitTestDetails::UnitTestDetails(
       student(""),
       diffFlags(0),
       passed(pass),
-      overwrite(false) {
+      overwrite(false),
+      result(pass ? TEST_RESULT_PASS : TEST_RESULT_FAIL) {
     // empty
 }
 
@@ -274,7 +277,8 @@ UnitTestDetails::UnitTestDetails(autograder::UnitTestType tp,
       valueType(vtype),
       diffFlags(0),
       passed(pass),
-      overwrite(false) {
+      overwrite(false),
+      result(pass ? TEST_RESULT_PASS : TEST_RESULT_FAIL) {
     // empty
 }
 
@@ -292,7 +296,8 @@ UnitTestDetails::UnitTestDetails(autograder::UnitTestType tp,
       valueType(vtype),
       diffFlags(theDiffFlags),
       passed(pass),
-      overwrite(false) {
+      overwrite(false),
+      result(pass ? TEST_RESULT_PASS : TEST_RESULT_FAIL) {
     // empty
 }
 
@@ -307,7 +312,8 @@ UnitTestDetails::UnitTestDetails(autograder::UnitTestType tp,
       valueType("bool"),
       diffFlags(0),
       passed(pass),
-      overwrite(false) {
+      overwrite(false),
+      result(pass ? TEST_RESULT_PASS : TEST_RESULT_FAIL) {
     expected = boolToString(exp);
     student = boolToString(stu);
 }
@@ -323,7 +329,8 @@ UnitTestDetails::UnitTestDetails(autograder::UnitTestType tp,
       valueType("char"),
       diffFlags(0),
       passed(pass),
-      overwrite(false) {
+      overwrite(false),
+      result(pass ? TEST_RESULT_PASS : TEST_RESULT_FAIL) {
     expected = charToString(exp);
     student = charToString(stu);
 }
@@ -339,7 +346,8 @@ UnitTestDetails::UnitTestDetails(autograder::UnitTestType tp,
       valueType("double"),
       diffFlags(0),
       passed(pass),
-      overwrite(false) {
+      overwrite(false),
+      result(pass ? TEST_RESULT_PASS : TEST_RESULT_FAIL) {
     expected = realToString(exp);
     student = realToString(stu);
 }
@@ -355,7 +363,8 @@ UnitTestDetails::UnitTestDetails(autograder::UnitTestType tp,
       valueType("int"),
       diffFlags(0),
       passed(pass),
-      overwrite(false) {
+      overwrite(false),
+      result(pass ? TEST_RESULT_PASS : TEST_RESULT_FAIL) {
     expected = std::to_string(exp);
     student = std::to_string(stu);
 }
@@ -373,7 +382,8 @@ UnitTestDetails::UnitTestDetails(autograder::UnitTestType tp,
       valueType("string"),
       diffFlags(0),
       passed(pass),
-      overwrite(false) {
+      overwrite(false),
+      result(pass ? TEST_RESULT_PASS : TEST_RESULT_FAIL) {
     // empty
 }
 UnitTestDetails::UnitTestDetails(autograder::UnitTestType tp,
@@ -387,7 +397,8 @@ UnitTestDetails::UnitTestDetails(autograder::UnitTestType tp,
       valueType("pointer"),
       diffFlags(0),
       passed(pass),
-      overwrite(false) {
+      overwrite(false),
+      result(pass ? TEST_RESULT_PASS : TEST_RESULT_FAIL) {
     expected = std::to_string(exp);
     student = std::to_string(stu);
 }
@@ -424,6 +435,8 @@ std::ostream& operator <<(std::ostream& out, const UnitTestDetails& deets) {
  * See autograder.h for documentation of each member.
  * 
  * @author Marty Stepp
+ * @version 2019/04/23
+ * - reset std::cout/cerr flags on every test run
  * @version 2018/10/07
  * - moved main/qMain code out to autogradermainwrapper.cpp
  * @version 2018/08/27
@@ -470,27 +483,49 @@ std::ostream& operator <<(std::ostream& out, const UnitTestDetails& deets) {
 #define INTERNAL_INCLUDE 1
 #include "autograder.h"
 #include <cstdio>
+#define INTERNAL_INCLUDE 1
 #include "consoleautograder.h"
+#define INTERNAL_INCLUDE 1
 #include "consoletext.h"
+#define INTERNAL_INCLUDE 1
 #include "exceptions.h"
+#define INTERNAL_INCLUDE 1
 #include "filelib.h"
+#define INTERNAL_INCLUDE 1
 #include "gbufferedimage.h"
+#define INTERNAL_INCLUDE 1
 #include "gevents.h"
+#define INTERNAL_INCLUDE 1
 #include "ginputpanel.h"
+#define INTERNAL_INCLUDE 1
 #include "ginteractors.h"
+#define INTERNAL_INCLUDE 1
 #include "goptionpane.h"
+#define INTERNAL_INCLUDE 1
 #include "guiautograder.h"
+#define INTERNAL_INCLUDE 1
 #include "gwindow.h"
+#define INTERNAL_INCLUDE 1
 #include "map.h"
+#define INTERNAL_INCLUDE 1
 #include "qtgui.h"
+#define INTERNAL_INCLUDE 1
 #include "simpio.h"
+#define INTERNAL_INCLUDE 1
 #include "versionautograder.h"
+#define INTERNAL_INCLUDE 1
 #include "private/static.h"
+#define INTERNAL_INCLUDE 1
 #include "date.h"
+#define INTERNAL_INCLUDE 1
 #include "gtest-marty.h"
+#define INTERNAL_INCLUDE 1
 #include "ioutils.h"
+#define INTERNAL_INCLUDE 1
 #include "stringutils.h"
+#define INTERNAL_INCLUDE 1
 #include "stylecheck.h"
+#define INTERNAL_INCLUDE 1
 #include "testresultprinter.h"
 #undef INTERNAL_INCLUDE
 
@@ -561,7 +596,11 @@ AutograderFlags::AutograderFlags() {
     _instance = autograder;
 }
 
-Autograder::Autograder() {
+Autograder::Autograder()
+        : _iosCoutBackup(nullptr),
+          _iosCerrBackup(nullptr) {
+    _iosCerrBackup.copyfmt(std::cerr);
+    _iosCoutBackup.copyfmt(std::cout);
     setAboutMessage(AUTOGRADER_DEFAULT_ABOUT_TEXT);
 }
 
@@ -585,10 +624,16 @@ AutograderFlags& Autograder::getFlags() {
     return _flags;
 }
 
+void Autograder::resetStandardInputStreams() {
+    std::cerr.copyfmt(_iosCerrBackup);
+    std::cout.copyfmt(_iosCoutBackup);
+}
+
 std::string Autograder::runAndCapture(int (* mainFunc)(),
                           const std::string& cinInput,
                           const std::string& outputFileName) {
     // run the 'main' function, possibly feeding it cin, input, and capture its cout output
+    resetStandardInputStreams();
     if (!cinInput.empty()) {
         ioutils::redirectStdinBegin(cinInput);
     }
@@ -602,6 +647,7 @@ std::string Autograder::runAndCapture(int (* mainFunc)(),
     if (!cinInput.empty()) {
         ioutils::redirectStdinEnd();
     }
+    resetStandardInputStreams();
 
     // return the output as a string (and also possibly write it to a file)
     if (!outputFileName.empty()) {
@@ -723,8 +769,11 @@ bool Autograder::testShouldRun(const std::string& testFullName) const {
 
 #define INTERNAL_INCLUDE 1
 #include "autograder.h"
+#define INTERNAL_INCLUDE 1
 #include "consoleautograder.h"
+#define INTERNAL_INCLUDE 1
 #include "guiautograder.h"
+#define INTERNAL_INCLUDE 1
 #include "qtgui.h"
 #include <string>
 #undef INTERNAL_INCLUDE
@@ -801,6 +850,8 @@ int qMain(int argc, char** argv) {
  * See autograderunittestgui.h for declarations and documentation.
  *
  * @author Marty Stepp
+ * @version 2019/04/23
+ * - reset std::cout/cerr flags on every test run
  * @version 2019/04/22
  * - now uses image strip file for icons
  * @version 2019/04/20
@@ -864,6 +915,8 @@ int qMain(int argc, char** argv) {
 #include "stylecheck.h"
 #define INTERNAL_INCLUDE 1
 #include "testresultprinter.h"
+#define INTERNAL_INCLUDE 1
+#include "unittestdetails.h"
 #undef INTERNAL_INCLUDE
 #include <sstream>
 
@@ -1106,12 +1159,13 @@ void GuiAutograder::addCallbackButton(void (* func)(),
     _bigButtons->add(button);
 }
 
-void GuiAutograder::addCategory(const std::string& categoryName) {
+void GuiAutograder::addCategory(const std::string& categoryName, const std::string& categoryDescription) {
     if (_allCategories.containsKey(categoryName)) {
         return;
     }
 
     GContainer* category = new GContainer(GContainer::LAYOUT_FLOW_VERTICAL);
+    category->setName("category");
     category->setMargin(0);
     category->setPadding(0);
     category->setSpacing(0);
@@ -1152,6 +1206,11 @@ void GuiAutograder::addCategory(const std::string& categoryName) {
         minimizeButton->setActionListener([this, category]() {
             minimize(category);
         });
+        minimizeButton->setDoubleClickListener([this]() {
+            GThread::runOnQtGuiThreadAsync([this]() {
+                minimizeAll(true);
+            });
+        });
 
         if (_checkboxesShown) {
             top->add(selectAllButton);
@@ -1166,6 +1225,14 @@ void GuiAutograder::addCategory(const std::string& categoryName) {
         }
 
         category->add(top);
+
+        if (!categoryDescription.empty()) {
+            GLabel* descriptionLabel = new GLabel(categoryDescription);
+            descriptionLabel->setName("description");
+            descriptionLabel->setWordWrap(true);
+            GFont::changeFontSize(descriptionLabel, -1);
+            category->add(descriptionLabel);
+        }
     }
 
     _center->add(category);
@@ -1173,7 +1240,7 @@ void GuiAutograder::addCategory(const std::string& categoryName) {
 }
 
 void GuiAutograder::addTest(const std::string& testName, const std::string& categoryName) {
-    if (!_allCategories.containsKey(categoryName)) {
+    if (!containsCategory(categoryName)) {
         addCategory(categoryName);
     }
 
@@ -1293,6 +1360,10 @@ void GuiAutograder::clearTests() {
     // TODO
 }
 
+bool GuiAutograder::containsCategory(const std::string& categoryName) {
+    return _allCategories.containsKey(categoryName);
+}
+
 void GuiAutograder::displayDiffs(const std::string& /*expectedOutput*/,
                                  const std::string& /*studentOutput*/,
                                  const std::string& /*diffs*/,
@@ -1343,7 +1414,7 @@ int GuiAutograder::getCheckedTestCount() const {
     return checkedCount;
 }
 
-GuiAutograder::TestResult GuiAutograder::getTestResult(const std::string& testFullName) const {
+stanfordcpplib::autograder::TestResult GuiAutograder::getTestResult(const std::string& testFullName) const {
     if (!_allTestInfo.containsKey(testFullName)) {
         return TEST_RESULT_UNKNOWN;
     }
@@ -1415,14 +1486,16 @@ void GuiAutograder::minimize(GContainer* category, bool minimized) {
     }
 
     for (GInteractor* interactor : category->getInteractors()) {
-        if (interactor->getType() != "GContainer"
-                || interactor->getName() != "testPanel") {
-            continue;
+        if ((interactor->getType() == "GContainer" && interactor->getName() == "testPanel")
+                || (interactor->getType() == "GLabel" && interactor->getName() == "description")) {
+            interactor->setVisible(!minimized);
         }
+    }
+}
 
-        // TODO: set height
-
-        interactor->setVisible(!minimized);
+void GuiAutograder::minimizeAll(bool minimized) {
+    for (GContainer* category : _allCategories.values()) {
+        minimize(category, minimized);
     }
 }
 
@@ -1557,6 +1630,7 @@ void GuiAutograder::runStyleChecker() {
 }
 
 void GuiAutograder::runTest(stanfordcpplib::autograder::AutograderTest* test) {
+    resetStandardInputStreams();
     int timeoutMS = test->getTestTimeout();
     std::string testName = test->getName();
     std::string testFullName = test->getFullName();
@@ -1606,6 +1680,7 @@ void GuiAutograder::runTest(stanfordcpplib::autograder::AutograderTest* test) {
         }
     }, /* threadName */ testName);
 
+    resetStandardInputStreams();
     if (GThread::wait(thread, timeoutMS)) {
         // thread is still running; timed out
         printf("  timed out after %d ms.\n", timeoutMS); fflush(stdout);
@@ -1887,9 +1962,19 @@ void GuiAutograder::showTestDetails(const std::string& testFullName, bool force)
                     htmlMessage += "</ul>";
                 }
 
+                std::string resultColor = COLOR_PASS;
+                std::string resultText = "PASS";
+                if (!deets.passed) {
+                    if (deets.result == TEST_RESULT_WARN) {
+                        resultColor = COLOR_WARN;
+                        resultText = "WARNING";
+                    } else {
+                        resultColor = COLOR_FAIL;
+                        resultText = "FAIL";
+                    }
+                }
                 htmlMessage += std::string("<p>result: ")
-                        + "<font color='" + (deets.passed ? COLOR_PASS : COLOR_FAIL) + "'><b>"
-                        + (deets.passed ? "PASS" : "FAIL")
+                        + "<font color='" + resultColor + "'><b>" + resultText
                         + "</b></font></p>";
 
                 // if (!stack.isEmpty()) {
@@ -2013,6 +2098,7 @@ void GuiAutograder::showStudentTextFile(const std::string& filename, int maxWidt
 
 #define INTERNAL_INCLUDE 1
 #include "autogradertest.h"
+#define INTERNAL_INCLUDE 1
 #include "autograder.h"
 //#include "autogradergui.h"
 #undef INTERNAL_INCLUDE
@@ -2139,8 +2225,11 @@ void AutograderTest::TestRealBody() throw (ErrorException) {
 
 #define INTERNAL_INCLUDE 1
 #include "testresultprinter.h"
+#define INTERNAL_INCLUDE 1
 #include "autograder.h"
+#define INTERNAL_INCLUDE 1
 #include "stringutils.h"
+#define INTERNAL_INCLUDE 1
 #include "private/static.h"
 #undef INTERNAL_INCLUDE
 
@@ -2307,8 +2396,7 @@ void MartyGraphicalTestResultPrinter::OnTestEnd(const ::testing::TestInfo& test_
     }
 
     if (test_info.result()->Failed()) {
-        autograder->setTestResult(testFullName,
-                    stanfordcpplib::autograder::Autograder::TEST_RESULT_FAIL);
+        autograder->setTestResult(testFullName, stanfordcpplib::autograder::TEST_RESULT_FAIL);
         for (int i = 0; i < test_info.result()->total_part_count(); i++) {
             testing::TestPartResult part = test_info.result()->GetTestPartResult(i);
             if (part.failed()) {
@@ -2319,8 +2407,7 @@ void MartyGraphicalTestResultPrinter::OnTestEnd(const ::testing::TestInfo& test_
             }
         }
     } else {
-        autograder->setTestResult(testFullName,
-                stanfordcpplib::autograder::Autograder::TEST_RESULT_PASS);
+        autograder->setTestResult(testFullName, stanfordcpplib::autograder::TEST_RESULT_PASS);
     }
 
     if (autograder->getFlags().testTimers.containsKey(testFullName)) {
@@ -2385,6 +2472,7 @@ void MartyGraphicalTestResultPrinter::OnTestEnd(const ::testing::TestInfo& test_
 #define INTERNAL_INCLUDE 1
 #include "gtest.h"
 #include <iostream>
+#define INTERNAL_INCLUDE 1
 #include "autogradertest.h"
 #undef INTERNAL_INCLUDE
 
@@ -11967,6 +12055,7 @@ const char* TypedTestCasePState::VerifyRegisteredTestNames(
 
 #define INTERNAL_INCLUDE 1
 #include "date.h"
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
 #undef INTERNAL_INCLUDE
 
@@ -12238,21 +12327,37 @@ Date operator--(const Date& d, int) {
 #define INTERNAL_INCLUDE 1
 #include "consoleautograder.h"
 #include <cstdio>
+#define INTERNAL_INCLUDE 1
 #include "consoletext.h"
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "exceptions.h"
+#define INTERNAL_INCLUDE 1
 #include "filelib.h"
+#define INTERNAL_INCLUDE 1
 #include "gconsolewindow.h"
+#define INTERNAL_INCLUDE 1
 #include "gwindow.h"
+#define INTERNAL_INCLUDE 1
 #include "map.h"
+#define INTERNAL_INCLUDE 1
 #include "simpio.h"
+#define INTERNAL_INCLUDE 1
 #include "private/static.h"
+#define INTERNAL_INCLUDE 1
 #include "date.h"
+#define INTERNAL_INCLUDE 1
 #include "gtest-marty.h"
+#define INTERNAL_INCLUDE 1
 #include "ioutils.h"
+#define INTERNAL_INCLUDE 1
 #include "qtgui.h"
+#define INTERNAL_INCLUDE 1
 #include "stringutils.h"
+#define INTERNAL_INCLUDE 1
 #include "stylecheck.h"
+#define INTERNAL_INCLUDE 1
 #include "testresultprinter.h"
 #undef INTERNAL_INCLUDE
 
@@ -12274,7 +12379,7 @@ ConsoleAutograder::~ConsoleAutograder() {
     // TODO
 }
 
-void ConsoleAutograder::addCategory(const std::string& /*categoryName*/) {
+void ConsoleAutograder::addCategory(const std::string& /*categoryName*/, const std::string& /*categoryDescription*/) {
     // empty
 }
 
@@ -12284,6 +12389,11 @@ void ConsoleAutograder::addTest(const std::string& /*testName*/, const std::stri
 
 bool ConsoleAutograder::autograderYesOrNo(std::string prompt, std::string reprompt, std::string defaultValue) {
     return getYesOrNo(prompt, reprompt, defaultValue);
+}
+
+bool ConsoleAutograder::containsCategory(const std::string& /*categoryName*/) {
+    // empty
+    return false;
 }
 
 void ConsoleAutograder::displayDiffs(const std::string& expectedOutput,
@@ -12376,6 +12486,7 @@ void ConsoleAutograder::runStyleChecker() {
 
 void ConsoleAutograder::runTest(stanfordcpplib::autograder::AutograderTest* /*test*/) {
     // TODO
+    resetStandardInputStreams();
     error("oops! not implemented");
 }
 
@@ -12554,10 +12665,15 @@ int ConsoleAutograder::mainFunc() {
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#define INTERNAL_INCLUDE 1
 #include "consoletext.h"
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "private/echoinputstreambuf.h"
+#define INTERNAL_INCLUDE 1
 #include "private/limitoutputstreambuf.h"
+#define INTERNAL_INCLUDE 1
 #include "private/static.h"
 #undef INTERNAL_INCLUDE
 
@@ -12678,6 +12794,7 @@ void setConsoleOutputLimit(int limit) {
 
 #define INTERNAL_INCLUDE 1
 #include "assertions.h"
+#define INTERNAL_INCLUDE 1
 #include "gbufferedimage.h"
 #undef INTERNAL_INCLUDE
 
@@ -12753,14 +12870,25 @@ void assertEqualsImage(const std::string& msg,
 #define INTERNAL_INCLUDE 1
 #include "stylecheck.h"
 #include <cstring>
+#define INTERNAL_INCLUDE 1
 #include "autograder.h"
+#define INTERNAL_INCLUDE 1
 #include "filelib.h"
+#define INTERNAL_INCLUDE 1
 #include "gtest-marty.h"
+#define INTERNAL_INCLUDE 1
 #include "rapidxml.h"
+#define INTERNAL_INCLUDE 1
 #include "regexpr.h"
+#define INTERNAL_INCLUDE 1
 #include "stringutils.h"
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
+#define INTERNAL_INCLUDE 1
+#include "unittestdetails.h"
+#define INTERNAL_INCLUDE 1
 #include "xmlutils.h"
+#define INTERNAL_INCLUDE 1
 #include "private/static.h"
 #undef INTERNAL_INCLUDE
 
@@ -12793,12 +12921,12 @@ static bool processPatternNode(const std::string& codeFileName,
     bool patternList = xmlutils::getAttributeBool(patternNode, "list", true);
     bool showCounts = xmlutils::getAttributeBool(patternNode, "showcounts", true);
     
-    stanfordcpplib::autograder::Autograder::TestResult failResult =
-            stanfordcpplib::autograder::Autograder::TEST_RESULT_WARN;   // default
+    stanfordcpplib::autograder::TestResult failResult =
+            stanfordcpplib::autograder::TEST_RESULT_WARN;   // default
     if (xmlutils::hasAttribute(patternNode, "failtype")) {
         std::string failTypeStr = trim(xmlutils::getAttribute(patternNode, "failtype"));
-        failResult = failTypeStr == "warn" ? stanfordcpplib::autograder::Autograder::TEST_RESULT_WARN
-                                           : stanfordcpplib::autograder::Autograder::TEST_RESULT_FAIL;
+        failResult = failTypeStr == "fail" ? stanfordcpplib::autograder::TEST_RESULT_FAIL
+                                           : stanfordcpplib::autograder::TEST_RESULT_WARN;
     }
 
     // see if student's code text matches the regex
@@ -12847,8 +12975,12 @@ static bool processPatternNode(const std::string& codeFileName,
     if (!pass || !omitOnPass) {
         out << "    STYLE CHECK " << (pass ? "PASSED : " : "WARNING: ") << patternDescription << std::endl;
         stanfordcpplib::autograder::Autograder* autograder = stanfordcpplib::autograder::Autograder::instance();
-        stanfordcpplib::autograder::Autograder::TestResult result = pass
-                ? stanfordcpplib::autograder::Autograder::TEST_RESULT_PASS : failResult;
+        stanfordcpplib::autograder::TestResult result = pass
+                ? stanfordcpplib::autograder::TEST_RESULT_PASS : failResult;
+        if (!autograder->containsCategory(prefix + categoryName)) {
+            autograder->addCategory(prefix + categoryName,
+                                    "Note: the style checker does not check all aspects of the student's code, and it is merely offering suggestions based on code text patterns. A warning here does not necessarily mean that there should be a deduction, merely that there may be an issue to investigate.");
+        }
         autograder->addTest(testName, prefix + categoryName);
         autograder->setTestResult(testFullName, result);
         stanfordcpplib::autograder::UnitTestDetails deets;
@@ -12856,11 +12988,14 @@ static bool processPatternNode(const std::string& codeFileName,
         deets.passed = pass;
         deets.expected = rangeStr;
         deets.student = "actually occurs " + std::to_string(matchCount) + " time(s)";
-        if (static_cast<int>(linesStr.length()) > 0) {
+        if (!linesStr.empty()) {
             deets.student += " on line " + linesStr;
         }
         deets.testType = stanfordcpplib::autograder::UnitTestType::TEST_STYLE_CHECK;
         deets.valueType = "T";
+        deets.overwrite = true;
+        deets.result = pass ? stanfordcpplib::autograder::TEST_RESULT_PASS
+                            : stanfordcpplib::autograder::TEST_RESULT_WARN;
         out.str("");
         out << deets;
         autograder->setTestDetails(testFullName, deets);
@@ -12869,7 +13004,7 @@ static bool processPatternNode(const std::string& codeFileName,
         if (showCounts) {
             out << "         " << rangeStr << std::endl;
             out << "         actually occurs " << matchCount << " time(s)";
-            if (static_cast<int>(linesStr.length()) > 0) {
+            if (!linesStr.empty()) {
                 out << " on line " << linesStr;
             }
             autograder->showOutput(out, /* graphical */ false, /* console */ true);

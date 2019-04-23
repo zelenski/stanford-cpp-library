@@ -48,6 +48,7 @@
 #define INTERNAL_INCLUDE 1
 #include "gtest.h"
 #include <iostream>
+#define INTERNAL_INCLUDE 1
 #include "autogradertest.h"
 #undef INTERNAL_INCLUDE
 

@@ -3,6 +3,12 @@
  * -------------------
  *
  * @author Marty Stepp
+ * @version 2019/04/23
+ * - added set/removeActionListener
+ * - added set/removeClickListener
+ * - added set/removeDoubleClickListener
+ * - added set/removeKeyListener
+ * - added set/removeMouseListener
  * @version 2019/04/22
  * - added setIcon with QIcon and QPixmap
  * @version 2018/09/20
@@ -321,9 +327,46 @@ public:
     virtual bool isVisible() const;
 
     /**
+     * Removes the action listener from this interactor so that it will no longer
+     * call it when events occur.
+     */
+    virtual void removeActionListener();
+
+    /**
+     * Removes the click listener from this interactor so that it will no longer
+     * call it when events occur.
+     */
+    virtual void removeClickListener();
+
+    /**
+     * Removes the double-click listener from this interactor so that it will no longer
+     * call it when events occur.
+     */
+    virtual void removeDoubleClickListener();
+
+    /**
+     * Removes the key listener from this interactor so that it will no longer
+     * call it when key events occur.
+     */
+    virtual void removeKeyListener();
+
+    /**
+     * Removes the mouse listener from this interactor so that it will no longer
+     * call it when events occur.
+     */
+    virtual void removeMouseListener();
+
+    /**
      * Transfers keyboard focus to this interactor.
      */
     virtual void requestFocus();
+
+    /**
+     * Sets an accelerator hotkey for this interactor, such as "Ctrl-S".
+     * Not all interactor types support accelerators.
+     * @param accelerator a hotkey such as "Ctrl-S"
+     */
+    virtual void setAccelerator(const std::string& accelerator);
 
     /**
      * Sets the action command for this interactor.
@@ -338,11 +381,20 @@ public:
     virtual void setActionCommand(const std::string& actionCommand);
 
     /**
-     * Sets an accelerator hotkey for this interactor, such as "Ctrl-S".
-     * Not all interactor types support accelerators.
-     * @param accelerator a hotkey such as "Ctrl-S"
+     * Sets an action listener on this interactor so that it will be called
+     * when it is interacted with in its primary way.
+     * For example, if this interactor is a button, this will fire when it is clicked.
+     * Any existing action listener will be replaced.
      */
-    virtual void setAccelerator(const std::string& accelerator);
+    virtual void setActionListener(GEventListener func);
+
+    /**
+     * Sets an action listener on this interactor so that it will be called
+     * when it is interacted with in its primary way.
+     * For example, if this interactor is a button, this will fire when it is clicked.
+     * Any existing action listener will be replaced.
+     */
+    virtual void setActionListener(GEventListenerVoid func);
 
     /**
      * Sets the background color of the interactor to the color represented by
@@ -375,6 +427,20 @@ public:
     virtual void setBounds(const GRectangle& size);
 
     /**
+     * Sets a mouse listener on this interactor so that it will be called
+     * when the mouse is clicked on it.
+     * Any existing click listener will be replaced.
+     */
+    virtual void setClickListener(GEventListener func);
+
+    /**
+     * Sets a mouse listener on this interactor so that it will be called
+     * when the mouse is clicked on it.
+     * Any existing click listener will be replaced.
+     */
+    virtual void setClickListener(GEventListenerVoid func);
+
+    /**
      * Sets the foreground/text color of the interactor to the color represented by
      * the given RGB integer.
      * Equivalent to setForeground.
@@ -389,6 +455,20 @@ public:
      * @param color a string such as "blue" or "#7700ff"
      */
     virtual void setColor(const std::string& color);
+
+    /**
+     * Sets a mouse listener on this interactor so that it will be called
+     * when the mouse is double-clicked on it.
+     * Any existing double-click listener will be replaced.
+     */
+    virtual void setDoubleClickListener(GEventListener func);
+
+    /**
+     * Sets a mouse listener on this interactor so that it will be called
+     * when the mouse is double-clicked on it.
+     * Any existing double-click listener will be replaced.
+     */
+    virtual void setDoubleClickListener(GEventListenerVoid func);
 
     /**
      * Sets whether this interactor is currently enabled.
@@ -457,6 +537,20 @@ public:
     virtual void setIcon(const std::string& filename, bool retainIconSize = true);
 
     /**
+     * Sets a key listener on this interactor so that it will be called
+     * when the user presses any key.
+     * Any existing key listener will be replaced.
+     */
+    virtual void setKeyListener(GEventListener func);
+
+    /**
+     * Sets a key listener on this interactor so that it will be called
+     * when the user presses any key.
+     * Any existing key listener will be replaced.
+     */
+    virtual void setKeyListener(GEventListenerVoid func);
+
+    /**
      * Sets the onscreen x/y-coordinate of the top-left corner of the interactor
      * relative to its window.
      * Generally clients should not call this and should instead use containers
@@ -486,6 +580,20 @@ public:
      * @private
      */
     virtual void setMnemonic(char mnemonic) Q_DECL_DEPRECATED;
+
+    /**
+     * Sets a mouse listener on this interactor so that it will be called
+     * when the mouse is moved or clicked on it.
+     * Any existing mouse listener will be replaced.
+     */
+    virtual void setMouseListener(GEventListener func);
+
+    /**
+     * Sets a mouse listener on this interactor so that it will be called
+     * when the mouse is moved or clicked on it.
+     * Any existing mouse listener will be replaced.
+     */
+    virtual void setMouseListener(GEventListenerVoid func);
 
     /**
      * Sets a string representing a unique name for this interactor.
@@ -590,6 +698,11 @@ protected:
     /**
      * @private
      */
+    std::string _actionEventType;
+
+    /**
+     * @private
+     */
     std::string _icon;
 
     /**
@@ -620,7 +733,7 @@ protected:
     /**
      * @private
      */
-    static std::string normalizeAccelerator(const std::string& accelerator);
+    virtual std::string getActionEventType() const;
 
     /**
      * @private
@@ -646,6 +759,11 @@ protected:
      * @private
      */
     virtual void lockForWriteConst() const;
+
+    /**
+     * @private
+     */
+    static std::string normalizeAccelerator(const std::string& accelerator);
 
     /**
      * @private
@@ -683,6 +801,7 @@ class _Internal_QWidget {
 public:
     _Internal_QWidget();
     virtual ~_Internal_QWidget();
+    virtual void detach();
     virtual QSize getMinimumSize() const;
     virtual bool hasMinimumSize() const;
     virtual QSize getPreferredSize() const;

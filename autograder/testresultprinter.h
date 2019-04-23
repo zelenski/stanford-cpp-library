@@ -12,10 +12,15 @@
 #ifndef _testresultprinter_h
 #define _testresultprinter_h
 
+#define INTERNAL_INCLUDE 1
 #include "autogradertest.h"
+#define INTERNAL_INCLUDE 1
 #include "gtest.h"
+#define INTERNAL_INCLUDE 1
 #include "map.h"
+#define INTERNAL_INCLUDE 1
 #include "unittestdetails.h"
+#undef INTERNAL_INCLUDE
 
 namespace stanfordcpplib {
 namespace autograder {

@@ -3,6 +3,8 @@
  * ----------------
  *
  * @author Marty Stepp
+ * @version 2019/04/23
+ * - added key event support
  * @version 2018/09/07
  * - added doc comments for new documentation generation
  * @version 2018/09/04
@@ -133,26 +135,6 @@ public:
     virtual bool isEmpty() const;
 
     /**
-     * Removes the action listener from this checkbox so that it will no longer
-     * call it when events occur.
-     */
-    virtual void removeActionListener();
-
-    /**
-     * Sets an action listener on this chooser so that it will be called
-     * when an item is selected.
-     * Any existing action listener will be replaced.
-     */
-    virtual void setActionListener(GEventListener func);
-
-    /**
-     * Sets an action listener on this chooser so that it will be called
-     * when an item is selected.
-     * Any existing action listener will be replaced.
-     */
-    virtual void setActionListener(GEventListenerVoid func);
-
-    /**
      * Sets whether the chooser has an editable area for typing new items.
      * Initially false.
      */
@@ -181,6 +163,12 @@ public:
      */
     virtual int size() const;
 
+protected:
+    /**
+     * @private
+     */
+    virtual std::string getActionEventType() const Q_DECL_OVERRIDE;
+
 private:
     Q_DISABLE_COPY(GChooser)
 
@@ -200,6 +188,9 @@ class _Internal_QComboBox : public QComboBox, public _Internal_QWidget {
 
 public:
     _Internal_QComboBox(GChooser* gchooser, QWidget* parent = nullptr);
+    virtual void detach() Q_DECL_OVERRIDE;
+    virtual void keyPressEvent(QKeyEvent* event) Q_DECL_OVERRIDE;
+    virtual void keyReleaseEvent(QKeyEvent* event) Q_DECL_OVERRIDE;
     virtual QSize sizeHint() const Q_DECL_OVERRIDE;
 
 public slots:

@@ -3,6 +3,8 @@
  * --------------------
  *
  * @author Marty Stepp
+ * @version 2019/04/23
+ * - added key event support
  * @version 2018/10/06
  * - added toggle()
  * @version 2018/09/08
@@ -53,7 +55,7 @@ class _Internal_QRadioButton;
  * at a time.  Clicking one radio button from a group checks it and also unchecks
  * any other checked radio button from that same group.
  *
- * You can listen for clicks on a radio button using the setActionListener method,
+ * You can listen for clicks on a radio button by setting an action listener,
  * passing the function you want to call on each click.
  */
 class GRadioButton : public GInteractor {
@@ -102,46 +104,6 @@ public:
     virtual bool isSelected() const;
 
     /**
-     * Removes the action listener from this radio button so that it will
-     * no longer call it when events occur.
-     */
-    virtual void removeActionListener();
-
-    /**
-     * Removes the double-click listener from this radio button so that it will
-     * no longer call it when events occur.
-     */
-    virtual void removeDoubleClickListener();
-
-    /**
-     * Sets an action listener on this radio button so that it will be called
-     * when the radio button is clicked.
-     * Any existing action listener will be replaced.
-     */
-    virtual void setActionListener(GEventListener func);
-
-    /**
-     * Sets an action listener on this radio button so that it will be called
-     * when the radio button is clicked.
-     * Any existing action listener will be replaced.
-     */
-    virtual void setActionListener(GEventListenerVoid func);
-
-    /**
-     * Sets a listener on this radio button so that it will be called
-     * when the radio button is double-clicked.
-     * Any existing double-click listener will be replaced.
-     */
-    virtual void setDoubleClickListener(GEventListener func);
-
-    /**
-     * Sets a listener on this radio button so that it will be called
-     * when the radio button is double-clicked.
-     * Any existing double-click listener will be replaced.
-     */
-    virtual void setDoubleClickListener(GEventListenerVoid func);
-
-    /**
      * Sets whether the radio button should be checked.
      * Equivalent to setSelected.
      */
@@ -164,6 +126,12 @@ public:
      */
     virtual void toggle();
 
+protected:
+    /**
+     * @private
+     */
+    virtual std::string getActionEventType() const Q_DECL_OVERRIDE;
+
 private:
     Q_DISABLE_COPY(GRadioButton)
 
@@ -185,6 +153,9 @@ class _Internal_QRadioButton : public QRadioButton, public _Internal_QWidget {
 
 public:
     _Internal_QRadioButton(GRadioButton* gradioButton, bool checked = false, QWidget* parent = nullptr);
+    virtual void detach() Q_DECL_OVERRIDE;
+    virtual void keyPressEvent(QKeyEvent* event) Q_DECL_OVERRIDE;
+    virtual void keyReleaseEvent(QKeyEvent* event) Q_DECL_OVERRIDE;
     virtual QSize sizeHint() const Q_DECL_OVERRIDE;
 
 signals:

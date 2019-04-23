@@ -19,10 +19,15 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#define INTERNAL_INCLUDE 1
 #include "consoletext.h"
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "private/echoinputstreambuf.h"
+#define INTERNAL_INCLUDE 1
 #include "private/limitoutputstreambuf.h"
+#define INTERNAL_INCLUDE 1
 #include "private/static.h"
 #undef INTERNAL_INCLUDE
 

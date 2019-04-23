@@ -3,6 +3,8 @@
  * ---------------
  *
  * @author Marty Stepp
+ * @version 2019/04/23
+ * - added key events
  * @version 2018/09/08
  * - added doc comments for new documentation generation
  * @version 2018/08/23
@@ -141,26 +143,6 @@ public:
     virtual QWidget* getWidget() const Q_DECL_OVERRIDE;
 
     /**
-     * Removes the action listener from this slider so that it will no longer
-     * call it when events occur.
-     */
-    virtual void removeActionListener();
-
-    /**
-     * Sets an action listener on this slider so that it will be called
-     * when the user slides it to change its value.
-     * Any existing action listener will be replaced.
-     */
-    virtual void setActionListener(GEventListener func);
-
-    /**
-     * Sets an action listener on this slider so that it will be called
-     * when the user slides it to change its value.
-     * Any existing action listener will be replaced.
-     */
-    virtual void setActionListener(GEventListenerVoid func);
-
-    /**
      * Sets the number of pixels of spacing between ticks on the slider.
      * @private
      */
@@ -222,6 +204,12 @@ public:
      */
     virtual void setValue(int value);
 
+protected:
+    /**
+     * @private
+     */
+    virtual std::string getActionEventType() const Q_DECL_OVERRIDE;
+
 private:
     Q_DISABLE_COPY(GSlider)
 
@@ -239,6 +227,9 @@ class _Internal_QSlider : public QSlider, public _Internal_QWidget {
 
 public:
     _Internal_QSlider(GSlider* qgslider, Qt::Orientation orientation = Qt::Horizontal, QWidget* parent = nullptr);
+    virtual void detach() Q_DECL_OVERRIDE;
+    virtual void keyPressEvent(QKeyEvent* event) Q_DECL_OVERRIDE;
+    virtual void keyReleaseEvent(QKeyEvent* event) Q_DECL_OVERRIDE;
     virtual QSize sizeHint() const Q_DECL_OVERRIDE;
 
 public slots:

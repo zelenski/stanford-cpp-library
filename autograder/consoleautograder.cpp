@@ -8,21 +8,37 @@
 #define INTERNAL_INCLUDE 1
 #include "consoleautograder.h"
 #include <cstdio>
+#define INTERNAL_INCLUDE 1
 #include "consoletext.h"
+#define INTERNAL_INCLUDE 1
 #include "error.h"
+#define INTERNAL_INCLUDE 1
 #include "exceptions.h"
+#define INTERNAL_INCLUDE 1
 #include "filelib.h"
+#define INTERNAL_INCLUDE 1
 #include "gconsolewindow.h"
+#define INTERNAL_INCLUDE 1
 #include "gwindow.h"
+#define INTERNAL_INCLUDE 1
 #include "map.h"
+#define INTERNAL_INCLUDE 1
 #include "simpio.h"
+#define INTERNAL_INCLUDE 1
 #include "private/static.h"
+#define INTERNAL_INCLUDE 1
 #include "date.h"
+#define INTERNAL_INCLUDE 1
 #include "gtest-marty.h"
+#define INTERNAL_INCLUDE 1
 #include "ioutils.h"
+#define INTERNAL_INCLUDE 1
 #include "qtgui.h"
+#define INTERNAL_INCLUDE 1
 #include "stringutils.h"
+#define INTERNAL_INCLUDE 1
 #include "stylecheck.h"
+#define INTERNAL_INCLUDE 1
 #include "testresultprinter.h"
 #undef INTERNAL_INCLUDE
 
@@ -44,7 +60,7 @@ ConsoleAutograder::~ConsoleAutograder() {
     // TODO
 }
 
-void ConsoleAutograder::addCategory(const std::string& /*categoryName*/) {
+void ConsoleAutograder::addCategory(const std::string& /*categoryName*/, const std::string& /*categoryDescription*/) {
     // empty
 }
 
@@ -54,6 +70,11 @@ void ConsoleAutograder::addTest(const std::string& /*testName*/, const std::stri
 
 bool ConsoleAutograder::autograderYesOrNo(std::string prompt, std::string reprompt, std::string defaultValue) {
     return getYesOrNo(prompt, reprompt, defaultValue);
+}
+
+bool ConsoleAutograder::containsCategory(const std::string& /*categoryName*/) {
+    // empty
+    return false;
 }
 
 void ConsoleAutograder::displayDiffs(const std::string& expectedOutput,
@@ -146,6 +167,7 @@ void ConsoleAutograder::runStyleChecker() {
 
 void ConsoleAutograder::runTest(stanfordcpplib::autograder::AutograderTest* /*test*/) {
     // TODO
+    resetStandardInputStreams();
     error("oops! not implemented");
 }
 

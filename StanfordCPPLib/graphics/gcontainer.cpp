@@ -62,7 +62,7 @@ GContainer::GContainer(Layout /*layout*/, int rows, int cols, QWidget* parent)
 
 GContainer::~GContainer() {
     // TODO: delete _iqcontainer;
-    _iqcontainer->_gcontainer = nullptr;
+    _iqcontainer->detach();
     _iqcontainer = nullptr;
 }
 
@@ -724,6 +724,11 @@ bool _Internal_QContainer::contains(QWidget* widget) const {
     } else {
         return GLayout::contains(getQLayout(), widget);
     }
+}
+
+void _Internal_QContainer::detach() {
+    // TODO: nullify/delete regions
+    _gcontainer = nullptr;
 }
 
 void _Internal_QContainer::fixAlignment(QWidget* widget, GContainer::Region region) {

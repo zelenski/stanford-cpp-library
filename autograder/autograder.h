@@ -5,6 +5,8 @@
  * autograder programs for grading student assignments.
  * 
  * @author Marty Stepp
+ * @version 2019/04/23
+ * - reset std::cout/cerr flags on every test run
  * @version 2018/10/03
  * - refactored to Autograder virtual base class
  * @version 2016/12/01
@@ -19,14 +21,23 @@
 #ifndef _autograder_h
 #define _autograder_h
 
+#include <iomanip>
+#include <iostream>
 #include <string>
+#define INTERNAL_INCLUDE 1
 #include "map.h"
+#define INTERNAL_INCLUDE 1
 #include "set.h"
+#define INTERNAL_INCLUDE 1
 #include "vector.h"
 
+#define INTERNAL_INCLUDE 1
 #include "autogradertest.h"
+#define INTERNAL_INCLUDE 1
 #include "gtest-marty.h"
+#define INTERNAL_INCLUDE 1
 #include "unittestdetails.h"
+#undef INTERNAL_INCLUDE
 
 #define AUTOGRADER_DEFAULT_ABOUT_TEXT (std::string("CS 106 B/X Autograder Framework\nDeveloped by Marty Stepp (stepp@cs.stanford.edu)"))
 #define EXCEPTION_ERROR_MESSAGE (std::string("test threw an exception!"))
@@ -112,24 +123,19 @@ std::string formatDate(const std::string& dateStr);
  */
 /*abstract*/ class Autograder {
 public:
-    enum TestResult {
-        TEST_RESULT_UNKNOWN,
-        TEST_RESULT_FAIL,
-        TEST_RESULT_WARN,
-        TEST_RESULT_PASS
-    };
-
     virtual ~Autograder();
 
     static Autograder* instance();
 
     static void setInstance(Autograder* autograder);
 
-    virtual void addCategory(const std::string& categoryName) = 0;
+    virtual void addCategory(const std::string& categoryName, const std::string& categoryDescription = "") = 0;
 
     virtual void addTest(const std::string& testName, const std::string& categoryName = "") = 0;
 
     virtual bool autograderYesOrNo(std::string prompt, std::string reprompt = "", std::string defaultValue = "") = 0;
+
+    virtual bool containsCategory(const std::string& categoryName) = 0;
 
     /**
      * Called internally by autograder; do not use.
@@ -169,6 +175,8 @@ public:
     virtual bool isGraphicalUI() const = 0;
 
     virtual int mainFunc() = 0;
+
+    virtual void resetStandardInputStreams();
 
     virtual int runAllTestCases() = 0;
 
@@ -337,12 +345,16 @@ protected:
     Autograder();
 
     AutograderFlags _flags;
+    std::ios _iosCoutBackup;   // for saving cout/cerr state/flags between tests
+    std::ios _iosCerrBackup;
 }; // class Autograder
 
 } // namespace autograder
 } // namespace stanfordcpplib
 
 // for older programs
+#define INTERNAL_INCLUDE 1
 #include "autogradercompat.h"
+#undef INTERNAL_INCLUDE
 
 #endif // _autograder_h

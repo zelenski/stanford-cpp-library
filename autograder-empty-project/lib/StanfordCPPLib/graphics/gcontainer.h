@@ -705,6 +705,7 @@ private:
     virtual void clear();
     virtual void clearRegion(GContainer::Region region);
     virtual bool contains(QWidget* widget) const;
+    virtual void detach() Q_DECL_OVERRIDE;
     virtual void fixAlignment(QWidget* widget, GContainer::Region region = GContainer::REGION_CENTER);
     virtual void fixMargin(QLayout* layout, bool hasStretch = false);
     virtual HorizontalAlignment getHorizontalAlignment() const;

@@ -144,6 +144,10 @@ void ErrorException::dump(std::ostream& out) const {
     }
     out << "***" << std::endl;
     out << insertStarsBeforeEachLine(getStackTrace()) << std::endl;
+    // out << "***" << std::endl;
+    // out << "*** To learn more about the crash, we strongly" << std::endl;
+    // out << "*** suggest running your program under the debugger." << std::endl;
+    // out << "***" << std::endl;
     out.flush();
 }
 
@@ -726,6 +730,7 @@ call_stack::~call_stack() throw() {
 #define INTERNAL_INCLUDE 1
 #include "exceptions.h"
 #include <csignal>
+#include <cstdlib>
 #include <iomanip>
 #include <iostream>
 #include <string>
@@ -779,7 +784,7 @@ STATIC_CONST_VARIABLE_DECLARE_COLLECTION(Vector<int>, SIGNALS_HANDLED, SIGSEGV, 
 static void signalHandlerDisable();
 static void signalHandlerEnable();
 static void stanfordCppLibSignalHandler(int sig);
-static void stanfordCppLibTerminateHandler();
+static Q_NORETURN void stanfordCppLibTerminateHandler();
 static void stanfordCppLibUnexpectedHandler();
 
 std::string cleanupFunctionNameForStackTrace(std::string function) {
@@ -1162,12 +1167,9 @@ void printStackTrace(std::ostream& out) {
         out << lineout.str() << std::endl;
     }
     
-//    out << "***" << std::endl;
-//    out << "*** NOTE:" << std::endl;
-//    out << "*** Any line numbers listed above are approximate." << std::endl;
-//    out << "*** To learn more about why the program crashed, we" << std::endl;
-//    out << "*** suggest running your program under the debugger." << std::endl;
-    
+    out << "***" << std::endl;
+    out << "*** To learn more about the crash, we strongly" << std::endl;
+    out << "*** suggest running your program under the debugger." << std::endl;
     out << "***" << std::endl;
 }
 
@@ -1184,8 +1186,8 @@ void printStackTrace(std::ostream& out) {
     std::string __desc = (desc); \
     if ((!__kind.empty())) { stringReplaceInPlace(msg, DEFAULT_EXCEPTION_KIND, __kind); } \
     if ((!__desc.empty())) { stringReplaceInPlace(msg, DEFAULT_EXCEPTION_DETAILS, __desc); } \
-    std::cout.flush(); \
     out << msg; \
+    out.flush(); \
     printStackTrace(out); \
     THROW_NOT_ON_WINDOWS(ex); \
     }
@@ -1196,7 +1198,6 @@ void printStackTrace(std::ostream& out) {
     std::string __desc = (desc); \
     if ((!__kind.empty())) { stringReplaceInPlace(msg, DEFAULT_EXCEPTION_KIND, __kind); } \
     if ((!__desc.empty())) { stringReplaceInPlace(msg, DEFAULT_EXCEPTION_DETAILS, __desc); } \
-    std::cout.flush(); \
     out << msg; \
     printStackTrace(out); \
     ErrorException errorEx(out.str()); \
@@ -1343,7 +1344,7 @@ static std::string insertStarsBeforeEachLine(const std::string& s) {
  * A general handler for any uncaught exception.
  * Prints details about the exception and then tries to print a stack trace.
  */
-static void stanfordCppLibTerminateHandler() {
+static Q_NORETURN void stanfordCppLibTerminateHandler() {
     std::string DEFAULT_EXCEPTION_KIND = "An exception";
     std::string DEFAULT_EXCEPTION_DETAILS = "(unknown exception details)";
     
@@ -1380,11 +1381,13 @@ static void stanfordCppLibTerminateHandler() {
     } catch (bool b) {
         FILL_IN_EXCEPTION_TRACE(b, "A bool exception", boolToString(b));
     } catch (double d) {
-        FILL_IN_EXCEPTION_TRACE(d, "A double exception", std::to_string(d));
+        FILL_IN_EXCEPTION_TRACE(d, "A double exception", realToString(d));
     } catch (...) {
         std::string ex = "Unknown";
         FILL_IN_EXCEPTION_TRACE(ex, "An exception", std::string());
     }
+
+    abort();   // terminate the program with a SIGABRT signal
 }
 
 /*
@@ -1419,7 +1422,7 @@ static void stanfordCppLibUnexpectedHandler() {
         message = str;
     } catch (double d) {
         kind = "double";
-        message = std::to_string(d);
+        message = realToString(d);
     } catch (const ErrorException& ex) {
         kind = "error";
         message = ex.what();
@@ -8018,6 +8021,8 @@ std::istream& operator >>(std::istream& input, IntRange2D& r) {
  * ------------------
  *
  * @author Marty Stepp
+ * @version 2019/04/23
+ * - added key event support
  * @version 2019/02/02
  * - destructor now stops event processing
  * @version 2018/08/23
@@ -8063,7 +8068,7 @@ GChooser::GChooser(const Vector<std::string>& items, QWidget* parent) {
 
 GChooser::~GChooser() {
     // TODO: delete _iqcomboBox;
-    _iqcomboBox->_gchooser = nullptr;
+    _iqcomboBox->detach();
     _iqcomboBox = nullptr;
 }
 
@@ -8115,6 +8120,10 @@ std::string GChooser::getActionCommand() const {
     }
 }
 
+std::string GChooser::getActionEventType() const {
+    return "change";
+}
+
 _Internal_QWidget* GChooser::getInternalWidget() const {
     return _iqcomboBox;
 }
@@ -8150,18 +8159,6 @@ bool GChooser::isEditable() const {
 
 bool GChooser::isEmpty() const {
     return getItemCount() == 0;
-}
-
-void GChooser::removeActionListener() {
-    removeEventListener("change");
-}
-
-void GChooser::setActionListener(GEventListener func) {
-    setEventListener("change", func);
-}
-
-void GChooser::setActionListener(GEventListenerVoid func) {
-    setEventListener("change", func);
 }
 
 void GChooser::setItem(int index, const std::string& item) {
@@ -8207,6 +8204,10 @@ _Internal_QComboBox::_Internal_QComboBox(GChooser* gchooser, QWidget* parent)
     connect(this, SIGNAL(currentIndexChanged(int)), this, SLOT(handleChange()));
 }
 
+void _Internal_QComboBox::detach() {
+    _gchooser = nullptr;
+}
+
 void _Internal_QComboBox::handleChange() {
     if (!_gchooser) {
         return;
@@ -8218,6 +8219,32 @@ void _Internal_QComboBox::handleChange() {
                 /* source */ _gchooser);
     changeEvent.setActionCommand(_gchooser->getActionCommand());
     _gchooser->fireEvent(changeEvent);
+}
+
+void _Internal_QComboBox::keyPressEvent(QKeyEvent* event) {
+    require::nonNull(event, "_Internal_QComboBox::keyPressEvent", "event");
+    if (_gchooser && _gchooser->isAcceptingEvent("keypress")) {
+        event->accept();
+        _gchooser->fireGEvent(event, KEY_PRESSED, "keypress");
+        if (event->isAccepted()) {
+            QComboBox::keyPressEvent(event);   // call super
+        }
+    } else {
+        QComboBox::keyPressEvent(event);   // call super
+    }
+}
+
+void _Internal_QComboBox::keyReleaseEvent(QKeyEvent* event) {
+    require::nonNull(event, "_Internal_QComboBox::keyReleaseEvent", "event");
+    if (_gchooser && _gchooser->isAcceptingEvent("keyrelease")) {
+        event->accept();
+        _gchooser->fireGEvent(event, KEY_RELEASED, "keyrelease");
+        if (event->isAccepted()) {
+            QComboBox::keyReleaseEvent(event);   // call super
+        }
+    } else {
+        QComboBox::keyReleaseEvent(event);   // call super
+    }
 }
 
 QSize _Internal_QComboBox::sizeHint() const {
@@ -8239,6 +8266,8 @@ QSize _Internal_QComboBox::sizeHint() const {
  * --------------------
  *
  * @author Marty Stepp
+ * @version 2019/04/23
+ * - added key events
  * @version 2019/02/02
  * - destructor now stops event processing
  * @version 2019/02/01
@@ -8323,17 +8352,21 @@ GTextField::GTextField(double value, double min, double max, double step, QWidge
 GTextField::~GTextField() {
     // TODO: delete _iqlineedit;
     if (_iqlineedit) {
-        _iqlineedit->_gtextfield = nullptr;
+        _iqlineedit->detach();
         _iqlineedit = nullptr;
     }
     if (_iqspinbox) {
-        _iqspinbox->_gtextfield = nullptr;
+        _iqspinbox->detach();
         _iqspinbox = nullptr;
     }
     if (_iqdoublespinbox) {
-        _iqdoublespinbox->_gtextfield = nullptr;
+        _iqdoublespinbox->detach();
         _iqdoublespinbox = nullptr;
     }
+}
+
+std::string GTextField::getActionEventType() const {
+    return "change";
 }
 
 int GTextField::getCharsWide() const {
@@ -8461,20 +8494,8 @@ bool GTextField::isEditable() const {
     }
 }
 
-void GTextField::removeActionListener() {
-    removeEventListener("action");
-}
-
 void GTextField::removeTextChangeListener() {
     removeEventListener("textchange");
-}
-
-void GTextField::setActionListener(GEventListener func) {
-    setEventListener("action", func);
-}
-
-void GTextField::setActionListener(GEventListenerVoid func) {
-    setEventListener("action", func);
 }
 
 void GTextField::setAutocompleteList(std::initializer_list<std::string> strings) {
@@ -8596,7 +8617,7 @@ void GTextField::setValue(char value) {
 }
 
 void GTextField::setValue(double value) {
-    setText(std::to_string(value));
+    setText(realToString(value));
 }
 
 void GTextField::setValue(int value) {
@@ -8640,6 +8661,10 @@ _Internal_QLineEdit::_Internal_QLineEdit(GTextField* gtextField, QWidget* parent
     connect(this, SIGNAL(textChanged(QString)), this, SLOT(handleTextChange(const QString&)));
 }
 
+void _Internal_QLineEdit::detach() {
+    _gtextfield = nullptr;
+}
+
 void _Internal_QLineEdit::handleTextChange(const QString&) {
     if (!_gtextfield) {
         return;
@@ -8665,18 +8690,38 @@ void _Internal_QLineEdit::handleTextChange(const QString&) {
 
 void _Internal_QLineEdit::keyPressEvent(QKeyEvent* event) {
     require::nonNull(event, "_Internal_QLineEdit::keyPressEvent", "event");
-    QLineEdit::keyPressEvent(event);   // call super
-    if (!_gtextfield || !_gtextfield->isAcceptingEvent("action")) {
-        return;
+    if (_gtextfield && _gtextfield->isAcceptingEvent("action")) {
+        QLineEdit::keyPressEvent(event);   // call super
+        if (event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return) {
+            GEvent actionEvent(
+                        /* class  */ ACTION_EVENT,
+                        /* type   */ ACTION_PERFORMED,
+                        /* name   */ "action",
+                        /* source */ _gtextfield);
+            actionEvent.setActionCommand(_gtextfield->getActionCommand());
+            _gtextfield->fireEvent(actionEvent);
+        }
+    } else if (_gtextfield && _gtextfield->isAcceptingEvent("keypress")) {
+        event->accept();
+        _gtextfield->fireGEvent(event, KEY_PRESSED, "keypress");
+        if (event->isAccepted()) {
+            QLineEdit::keyPressEvent(event);   // call super
+        }
+    } else {
+        QLineEdit::keyPressEvent(event);   // call super
     }
-    if (event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return) {
-        GEvent actionEvent(
-                    /* class  */ ACTION_EVENT,
-                    /* type   */ ACTION_PERFORMED,
-                    /* name   */ "action",
-                    /* source */ _gtextfield);
-        actionEvent.setActionCommand(_gtextfield->getActionCommand());
-        _gtextfield->fireEvent(actionEvent);
+}
+
+void _Internal_QLineEdit::keyReleaseEvent(QKeyEvent* event) {
+    require::nonNull(event, "_Internal_QLineEdit::keyReleaseEvent", "event");
+    if (_gtextfield && _gtextfield->isAcceptingEvent("keyrelease")) {
+        event->accept();
+        _gtextfield->fireGEvent(event, KEY_RELEASED, "keyrelease");
+        if (event->isAccepted()) {
+            QLineEdit::keyReleaseEvent(event);   // call super
+        }
+    } else {
+        QLineEdit::keyReleaseEvent(event);   // call super
     }
 }
 
@@ -8697,6 +8742,10 @@ _Internal_QSpinBox::_Internal_QSpinBox(GTextField* gtextField, int min, int max,
     setSingleStep(step);
 }
 
+void _Internal_QSpinBox::detach() {
+    _gtextfield = nullptr;
+}
+
 void _Internal_QSpinBox::handleTextChange(const QString&) {
     if (!_gtextfield) {
         return;
@@ -8708,6 +8757,43 @@ void _Internal_QSpinBox::handleTextChange(const QString&) {
                 /* source */ _gtextfield);
     textChangeEvent.setActionCommand(_gtextfield->getActionCommand());
     _gtextfield->fireEvent(textChangeEvent);
+}
+
+void _Internal_QSpinBox::keyPressEvent(QKeyEvent* event) {
+    require::nonNull(event, "_Internal_QSpinBox::keyPressEvent", "event");
+    if (_gtextfield && _gtextfield->isAcceptingEvent("action")) {
+        QSpinBox::keyPressEvent(event);   // call super
+        if (event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return) {
+            GEvent actionEvent(
+                        /* class  */ ACTION_EVENT,
+                        /* type   */ ACTION_PERFORMED,
+                        /* name   */ "action",
+                        /* source */ _gtextfield);
+            actionEvent.setActionCommand(_gtextfield->getActionCommand());
+            _gtextfield->fireEvent(actionEvent);
+        }
+    } else if (_gtextfield && _gtextfield->isAcceptingEvent("keypress")) {
+        event->accept();
+        _gtextfield->fireGEvent(event, KEY_PRESSED, "keypress");
+        if (event->isAccepted()) {
+            QSpinBox::keyPressEvent(event);   // call super
+        }
+    } else {
+        QSpinBox::keyPressEvent(event);   // call super
+    }
+}
+
+void _Internal_QSpinBox::keyReleaseEvent(QKeyEvent* event) {
+    require::nonNull(event, "_Internal_QSpinBox::keyReleaseEvent", "event");
+    if (_gtextfield && _gtextfield->isAcceptingEvent("keyrelease")) {
+        event->accept();
+        _gtextfield->fireGEvent(event, KEY_RELEASED, "keyrelease");
+        if (event->isAccepted()) {
+            QSpinBox::keyReleaseEvent(event);   // call super
+        }
+    } else {
+        QSpinBox::keyReleaseEvent(event);   // call super
+    }
 }
 
 QLineEdit* _Internal_QSpinBox::lineEdit() const {
@@ -8731,6 +8817,10 @@ _Internal_QDoubleSpinBox::_Internal_QDoubleSpinBox(GTextField* gtextField, doubl
     setSingleStep(step);
 }
 
+void _Internal_QDoubleSpinBox::detach() {
+    _gtextfield = nullptr;
+}
+
 void _Internal_QDoubleSpinBox::handleTextChange(const QString&) {
     if (!_gtextfield) {
         return;
@@ -8742,6 +8832,43 @@ void _Internal_QDoubleSpinBox::handleTextChange(const QString&) {
                 /* source */ _gtextfield);
     textChangeEvent.setActionCommand(_gtextfield->getActionCommand());
     _gtextfield->fireEvent(textChangeEvent);
+}
+
+void _Internal_QDoubleSpinBox::keyPressEvent(QKeyEvent* event) {
+    require::nonNull(event, "_Internal_QDoubleSpinBox::keyPressEvent", "event");
+    if (_gtextfield && _gtextfield->isAcceptingEvent("action")) {
+        QDoubleSpinBox::keyPressEvent(event);   // call super
+        if (event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return) {
+            GEvent actionEvent(
+                        /* class  */ ACTION_EVENT,
+                        /* type   */ ACTION_PERFORMED,
+                        /* name   */ "action",
+                        /* source */ _gtextfield);
+            actionEvent.setActionCommand(_gtextfield->getActionCommand());
+            _gtextfield->fireEvent(actionEvent);
+        }
+    } else if (_gtextfield && _gtextfield->isAcceptingEvent("keypress")) {
+        event->accept();
+        _gtextfield->fireGEvent(event, KEY_PRESSED, "keypress");
+        if (event->isAccepted()) {
+            QDoubleSpinBox::keyPressEvent(event);   // call super
+        }
+    } else {
+        QDoubleSpinBox::keyPressEvent(event);   // call super
+    }
+}
+
+void _Internal_QDoubleSpinBox::keyReleaseEvent(QKeyEvent* event) {
+    require::nonNull(event, "_Internal_QDoubleSpinBox::keyReleaseEvent", "event");
+    if (_gtextfield && _gtextfield->isAcceptingEvent("keyrelease")) {
+        event->accept();
+        _gtextfield->fireGEvent(event, KEY_RELEASED, "keyrelease");
+        if (event->isAccepted()) {
+            QDoubleSpinBox::keyReleaseEvent(event);   // call super
+        }
+    } else {
+        QDoubleSpinBox::keyReleaseEvent(event);   // call super
+    }
 }
 
 QLineEdit* _Internal_QDoubleSpinBox::lineEdit() const {
@@ -8956,6 +9083,8 @@ GEvent waitForEvent(int mask) {
  * This file contains the implementation of the <code>GBrowserPane</code> class
  * as declared in gbrowserpane.h.
  *
+ * @version 2019/04/23
+ * - moved some event-handling code to GInteractor superclass
  * @version 2018/12/28
  * - added methods for text selection, scrolling, cursor position, key/mouse listeners
  * @version 2018/09/17
@@ -8995,6 +9124,7 @@ GBrowserPane::GBrowserPane(const std::string& url, QWidget* parent) {
 
 GBrowserPane::~GBrowserPane() {
     // TODO: delete _iqtextbrowser;
+    _iqtextbrowser->detach();
     _iqtextbrowser = nullptr;
 }
 
@@ -9134,19 +9264,8 @@ void GBrowserPane::readTextFromUrl(const std::string& url) {
     });
 }
 
-void GBrowserPane::removeKeyListener() {
-    removeEventListeners({"keypress",
-                          "keyrelease",
-                          "keytype"});
-}
-
 void GBrowserPane::removeLinkListener() {
     removeEventListener("linkclick");
-}
-
-void GBrowserPane::removeMouseListener() {
-    removeEventListeners({"mousepress",
-                          "mouserelease"});
 }
 
 void GBrowserPane::removeTextChangeListener() {
@@ -9206,24 +9325,6 @@ void GBrowserPane::setEditable(bool value) {
     });
 }
 
-void GBrowserPane::setKeyListener(GEventListener func) {
-    GThread::runOnQtGuiThread([this]() {
-        _iqtextbrowser->setFocusPolicy(Qt::StrongFocus);
-    });
-    setEventListeners({"keypress",
-                       "keyrelease",
-                       "keytype"}, func);
-}
-
-void GBrowserPane::setKeyListener(GEventListenerVoid func) {
-    GThread::runOnQtGuiThread([this]() {
-        _iqtextbrowser->setFocusPolicy(Qt::StrongFocus);
-    });
-    setEventListeners({"keypress",
-                       "keyrelease",
-                       "keytype"}, func);
-}
-
 void GBrowserPane::setMouseListener(GEventListener func) {
     setEventListeners({"mousepress",
                        "mouserelease"}, func);
@@ -9268,6 +9369,11 @@ _Internal_QTextBrowser::_Internal_QTextBrowser(GBrowserPane* gbrowserpane, QWidg
           _gbrowserpane(gbrowserpane) {
     require::nonNull(gbrowserpane, "_Internal_QTextBrowser::constructor");
     setObjectName(QString::fromStdString("_Internal_QTextBrowser_" + std::to_string(gbrowserpane->getID())));
+    setFocusPolicy(Qt::StrongFocus);
+}
+
+void _Internal_QTextBrowser::detach() {
+    _gbrowserpane = nullptr;
 }
 
 QVariant _Internal_QTextBrowser::loadResource(int type, const QUrl &url) {
@@ -12441,6 +12547,9 @@ QSize GBorderLayout::calculateSize(SizeType sizeType) const {
  * -----------------
  *
  * @author Marty Stepp
+ * @version 2019/04/23
+ * - bug fix for loading canvas from file on Windows related to istream change
+ * - moved most event listener code to GInteractor superclass
  * @version 2019/03/07
  * - added support for loading canvas directly from istream (htiek)
  * @version 2019/02/06
@@ -12578,8 +12687,8 @@ void GCanvas::init(double width, double height, int rgbBackground, QWidget* pare
 }
 
 GCanvas::~GCanvas() {
-    // TODO: delete _GCanvas;
-    _iqcanvas->_gcanvas = nullptr;
+    // TODO: delete _iqcanvas;
+    _iqcanvas->detach();
     _iqcanvas = nullptr;
 }
 
@@ -13002,15 +13111,32 @@ bool GCanvas::isAutoRepaint() const {
 }
 
 void GCanvas::load(const std::string& filename) {
-    std::ifstream input(filename);
-    if (!input) {
-        error("GCanvas::load: file \"" + filename + "\" not found.");
-    }
-    if (!loadFromStream(input)) {
-        error("GCanvas::load: failed to load from " + filename);
+    // for efficiency, let's at least check whether the file exists
+    // and throw error immediately rather than contacting the back-end
+    if (!fileExists(filename)) {
+        error("GCanvas::load: file not found: " + filename);
     }
 
-    _filename = filename;
+    bool hasError = false;
+    GThread::runOnQtGuiThread([this, filename, &hasError]() {
+        ensureBackgroundImage();
+        lockForWrite();
+        if (!_backgroundImage->load(QString::fromStdString(filename))) {
+            hasError = true;
+            unlock();
+            return;
+        }
+
+        _filename = filename;
+        GInteractor::setSize(_backgroundImage->width(), _backgroundImage->height());
+        // setSize(_qimage->width(), _qimage->height());
+        unlock();
+        conditionalRepaint();
+    });
+
+    if (hasError) {
+        error("GCanvas::load: failed to load from " + filename);
+    }
 }
 
 bool GCanvas::loadFromStream(std::istream& input) {
@@ -13025,6 +13151,7 @@ bool GCanvas::loadFromStream(std::istream& input) {
         lockForWrite();
         if (!_backgroundImage->loadFromData(reinterpret_cast<const uchar *>(bytes.data()), bytes.length())) {
             hasError = true;
+            unlock();
             return;
         }
 
@@ -13089,32 +13216,6 @@ void GCanvas::removeAll() {
         _gcompound.removeAll();
         unlock();
     });
-}
-
-void GCanvas::removeClickListener() {
-    removeEventListener("click");
-}
-
-void GCanvas::removeDoubleClickListener() {
-    removeEventListener("doubleclick");
-}
-
-void GCanvas::removeKeyListener() {
-    removeEventListeners({"keypress",
-                         "keyrelease",
-                         "keytype"});
-}
-
-void GCanvas::removeMouseListener() {
-    removeEventListeners({"click",
-                         "mousedrag",
-                         "mouseenter",
-                         "mouseexit",
-                         "mousemove",
-                         "mousepress",
-                         "mouserelease",
-                         "mousewheeldown",
-                         "mousewheelup"});
 }
 
 void GCanvas::repaint() {
@@ -13205,28 +13306,12 @@ void GCanvas::setBackground(const std::string& color) {
     setBackground(GColor::convertColorToRGB(color));
 }
 
-void GCanvas::setClickListener(GEventListener func) {
-    setEventListener("click", func);
-}
-
-void GCanvas::setClickListener(GEventListenerVoid func) {
-    setEventListener("click", func);
-}
-
 void GCanvas::setColor(int color) {
     GDrawingSurface::setColor(color);
 }
 
 void GCanvas::setColor(const std::string& color) {
     setColor(GColor::convertColorToRGB(color));
-}
-
-void GCanvas::setDoubleClickListener(GEventListener func) {
-    setEventListener("doubleclick", func);
-}
-
-void GCanvas::setDoubleClickListener(GEventListenerVoid func) {
-    setEventListener("doubleclick", func);
 }
 
 void GCanvas::setFont(const QFont& font) {
@@ -13251,9 +13336,7 @@ void GCanvas::setKeyListener(GEventListener func) {
         _iqcanvas->setFocusPolicy(Qt::StrongFocus);
         unlock();
     });
-    setEventListeners({"keypress",
-                       "keyrelease",
-                       "keytype"}, func);
+    GInteractor::setKeyListener(func);   // call super
 }
 
 void GCanvas::setKeyListener(GEventListenerVoid func) {
@@ -13262,33 +13345,7 @@ void GCanvas::setKeyListener(GEventListenerVoid func) {
         _iqcanvas->setFocusPolicy(Qt::StrongFocus);
         unlock();
     });
-    setEventListeners({"keypress",
-                       "keyrelease",
-                       "keytype"}, func);
-}
-
-void GCanvas::setMouseListener(GEventListener func) {
-    setEventListeners({"click",
-                       "mousedrag",
-                       "mouseenter",
-                       "mouseexit",
-                       "mousemove",
-                       "mousepress",
-                       "mouserelease",
-                       "mousewheeldown",
-                       "mousewheelup"}, func);
-}
-
-void GCanvas::setMouseListener(GEventListenerVoid func) {
-    setEventListeners({"click",
-                       "mousedrag",
-                       "mouseenter",
-                       "mouseexit",
-                       "mousemove",
-                       "mousepress",
-                       "mouserelease",
-                       "mousewheeldown",
-                       "mousewheelup"}, func);
+    GInteractor::setKeyListener(func);   // call super
 }
 
 void GCanvas::setPixel(double x, double y, int rgb) {
@@ -13423,6 +13480,10 @@ _Internal_QCanvas::_Internal_QCanvas(GCanvas* gcanvas, QWidget* parent)
 //    setAutoFillBackground(true);
 //    setPalette(pal);
     setMouseTracking(true);   // causes mouse move events to occur
+}
+
+void _Internal_QCanvas::detach() {
+    _gcanvas = nullptr;
 }
 
 void _Internal_QCanvas::enterEvent(QEvent* event) {
@@ -13585,6 +13646,12 @@ void _Internal_QCanvas::wheelEvent(QWheelEvent* event) {
  * ---------------------
  *
  * @author Marty Stepp
+ * @version 2019/04/23
+ * - added set/removeActionListener
+ * - added set/removeClickListener
+ * - added set/removeDoubleClickListener
+ * - added set/removeKeyListener
+ * - added set/removeMouseListener
  * @version 2019/04/22
  * - added setIcon with QIcon and QPixmap
  * @version 2019/04/10
@@ -13621,6 +13688,7 @@ int GInteractor::_interactorCount = 0;
 
 GInteractor::GInteractor()
         : _actionCommand(""),
+          _actionEventType("click"),
           _icon(""),
           _name(""),
           _id(-1),
@@ -13649,6 +13717,10 @@ std::string GInteractor::getAccelerator() const {
 
 std::string GInteractor::getActionCommand() const {
     return _actionCommand;
+}
+
+std::string GInteractor::getActionEventType() const {
+    return _actionEventType;
 }
 
 std::string GInteractor::getBackground() const {
@@ -13811,15 +13883,6 @@ void GInteractor::lockForWriteConst() const {
     that->lockForWrite();
 }
 
-void GInteractor::unlock() {
-    _lock.unlock();
-}
-
-void GInteractor::unlockConst() const {
-    GInteractor* that = const_cast<GInteractor*>(this);
-    that->unlock();
-}
-
 std::string GInteractor::normalizeAccelerator(const std::string& accelerator) {
     std::string acceleratorStr = stringReplace(accelerator, "Alt-", "Alt+");
     acceleratorStr = stringReplace(acceleratorStr, "Command-", "Command+");
@@ -13827,6 +13890,36 @@ std::string GInteractor::normalizeAccelerator(const std::string& accelerator) {
     acceleratorStr = stringReplace(acceleratorStr, "Meta-", "Meta+");
     acceleratorStr = stringReplace(acceleratorStr, "Shift-", "Shift+");
     return acceleratorStr;
+}
+
+void GInteractor::removeActionListener() {
+    removeEventListener(getActionEventType());
+}
+
+void GInteractor::removeClickListener() {
+    removeEventListener("click");
+}
+
+void GInteractor::removeDoubleClickListener() {
+    removeEventListener("doubleclick");
+}
+
+void GInteractor::removeKeyListener() {
+    removeEventListeners({"keypress",
+                         "keyrelease",
+                         "keytype"});
+}
+
+void GInteractor::removeMouseListener() {
+    removeEventListeners({"click",
+                         "mousedrag",
+                         "mouseenter",
+                         "mouseexit",
+                         "mousemove",
+                         "mousepress",
+                         "mouserelease",
+                         "mousewheeldown",
+                         "mousewheelup"});
 }
 
 void GInteractor::requestFocus() {
@@ -13841,6 +13934,14 @@ void GInteractor::setActionCommand(const std::string& actionCommand) {
 
 void GInteractor::setAccelerator(const std::string& /* accelerator */) {
     // override in subclasses
+}
+
+void GInteractor::setActionListener(GEventListener func) {
+    setEventListener(getActionEventType(), func);
+}
+
+void GInteractor::setActionListener(GEventListenerVoid func) {
+    setEventListener(getActionEventType(), func);
 }
 
 void GInteractor::setBackground(int rgb) {
@@ -13903,6 +14004,14 @@ void GInteractor::setBounds(const GRectangle& size) {
     setBounds(size.getX(), size.getY(), size.getWidth(), size.getHeight());
 }
 
+void GInteractor::setClickListener(GEventListener func) {
+    setEventListener("click", func);
+}
+
+void GInteractor::setClickListener(GEventListenerVoid func) {
+    setEventListener("click", func);
+}
+
 void GInteractor::setColor(int rgb) {
     setForeground(rgb);
 }
@@ -13922,6 +14031,14 @@ void GInteractor::setContainer(GContainer* container) {
         });
         setVisible(false);
     }
+}
+
+void GInteractor::setDoubleClickListener(GEventListener func) {
+    setEventListener("doubleclick", func);
+}
+
+void GInteractor::setDoubleClickListener(GEventListenerVoid func) {
+    setEventListener("doubleclick", func);
 }
 
 void GInteractor::setEnabled(bool value) {
@@ -13985,6 +14102,18 @@ void GInteractor::setIcon(const std::string& filename, bool /* retainIconSize */
     // override in subclasses as appropriate; make sure to call super
 }
 
+void GInteractor::setKeyListener(GEventListener func) {
+    setEventListeners({"keypress",
+                       "keyrelease",
+                       "keytype"}, func);
+}
+
+void GInteractor::setKeyListener(GEventListenerVoid func) {
+    setEventListeners({"keypress",
+                       "keyrelease",
+                       "keytype"}, func);
+}
+
 void GInteractor::setLocation(double x, double y) {
     GThread::runOnQtGuiThread([this, x, y]() {
         getWidget()->setGeometry(x, y, getWidth(), getHeight());
@@ -14005,6 +14134,30 @@ void GInteractor::setMinimumSize(const GDimension& size) {
 
 void GInteractor::setMnemonic(char /* mnemonic */) {
     // empty; use an & before mnemonic character in interactor's text instead
+}
+
+void GInteractor::setMouseListener(GEventListener func) {
+    setEventListeners({"click",
+                       "mousedrag",
+                       "mouseenter",
+                       "mouseexit",
+                       "mousemove",
+                       "mousepress",
+                       "mouserelease",
+                       "mousewheeldown",
+                       "mousewheelup"}, func);
+}
+
+void GInteractor::setMouseListener(GEventListenerVoid func) {
+    setEventListeners({"click",
+                       "mousedrag",
+                       "mouseenter",
+                       "mouseexit",
+                       "mousemove",
+                       "mousepress",
+                       "mouserelease",
+                       "mousewheeldown",
+                       "mousewheelup"}, func);
 }
 
 void GInteractor::setName(const std::string& name) {
@@ -14078,6 +14231,15 @@ void GInteractor::setY(double y) {
     setLocation(getX(), y);
 }
 
+void GInteractor::unlock() {
+    _lock.unlock();
+}
+
+void GInteractor::unlockConst() const {
+    GInteractor* that = const_cast<GInteractor*>(this);
+    that->unlock();
+}
+
 
 _Internal_QWidget::_Internal_QWidget()
         : _minimumSize(-1, -1),
@@ -14086,6 +14248,10 @@ _Internal_QWidget::_Internal_QWidget()
 }
 
 _Internal_QWidget::~_Internal_QWidget() {
+    detach();
+}
+
+void _Internal_QWidget::detach() {
     // empty
 }
 
@@ -16050,7 +16216,7 @@ GContainer::GContainer(Layout /*layout*/, int rows, int cols, QWidget* parent)
 
 GContainer::~GContainer() {
     // TODO: delete _iqcontainer;
-    _iqcontainer->_gcontainer = nullptr;
+    _iqcontainer->detach();
     _iqcontainer = nullptr;
 }
 
@@ -16712,6 +16878,11 @@ bool _Internal_QContainer::contains(QWidget* widget) const {
     } else {
         return GLayout::contains(getQLayout(), widget);
     }
+}
+
+void _Internal_QContainer::detach() {
+    // TODO: nullify/delete regions
+    _gcontainer = nullptr;
 }
 
 void _Internal_QContainer::fixAlignment(QWidget* widget, GContainer::Region region) {
@@ -17405,8 +17576,12 @@ GScrollBar::GScrollBar(GScrollBar::Orientation orientation,
 
 GScrollBar::~GScrollBar() {
     // TODO: delete _iqscrollbar;
-    _iqscrollbar->_gscrollbar = nullptr;
+    _iqscrollbar->detach();
     _iqscrollbar = nullptr;
+}
+
+std::string GScrollBar::getActionEventType() const {
+    return "change";
 }
 
 int GScrollBar::getExtent() const {
@@ -17439,18 +17614,6 @@ int GScrollBar::getValue() const {
 
 QWidget* GScrollBar::getWidget() const {
     return static_cast<QWidget*>(_iqscrollbar);
-}
-
-void GScrollBar::removeActionListener() {
-    removeEventListener("change");
-}
-
-void GScrollBar::setActionListener(GEventListener func) {
-    setEventListener("change", func);
-}
-
-void GScrollBar::setActionListener(GEventListenerVoid func) {
-    setEventListener("change", func);
 }
 
 void GScrollBar::setExtent(int extent) {
@@ -17516,6 +17679,10 @@ _Internal_QScrollBar::_Internal_QScrollBar(GScrollBar* gscrollbar, Qt::Orientati
     connect(this, SIGNAL(valueChanged(int)), this, SLOT(handleValueChange(int)));
 }
 
+void _Internal_QScrollBar::detach() {
+    _gscrollbar = nullptr;
+}
+
 void _Internal_QScrollBar::handleValueChange(int /* value */) {
     if (!_gscrollbar) {
         return;
@@ -17548,6 +17715,8 @@ QSize _Internal_QScrollBar::sizeHint() const {
  * ----------------
  *
  * @author Marty Stepp
+ * @version 2019/04/23
+ * - moved some event-handling code to GInteractor superclass
  * @version 2019/04/22
  * - added setIcon with QIcon and QPixmap
  * @version 2019/02/02
@@ -17614,7 +17783,7 @@ GLabel::GLabel(const std::string& text, const QPixmap& icon, QWidget* parent)
 GLabel::~GLabel() {
     // TODO: if (_gtext) { delete _gtext; }
     // TODO: delete _iqlabel;
-    _iqlabel->_glabel = nullptr;
+    _iqlabel->detach();
     _iqlabel = nullptr;
 }
 
@@ -17669,30 +17838,6 @@ bool GLabel::hasGText() const {
 
 bool GLabel::isWordWrap() const {
     return _iqlabel->wordWrap();
-}
-
-void GLabel::removeActionListener() {
-    removeEventListener("click");
-}
-
-void GLabel::removeDoubleClickListener() {
-    removeEventListener("doubleclick");
-}
-
-void GLabel::setActionListener(GEventListener func) {
-    setEventListener("click", func);
-}
-
-void GLabel::setActionListener(GEventListenerVoid func) {
-    setEventListener("click", func);
-}
-
-void GLabel::setDoubleClickListener(GEventListener func) {
-    setEventListener("doubleclick", func);
-}
-
-void GLabel::setDoubleClickListener(GEventListenerVoid func) {
-    setEventListener("doubleclick", func);
 }
 
 void GLabel::setBounds(double x, double y, double width, double height) {
@@ -17897,6 +18042,10 @@ _Internal_QLabel::_Internal_QLabel(GLabel* glabel, QWidget* parent)
     setObjectName(QString::fromStdString("_Internal_QLabel_" + std::to_string(glabel->getID())));
 }
 
+void _Internal_QLabel::detach() {
+    _glabel = nullptr;
+}
+
 void _Internal_QLabel::mouseDoubleClickEvent(QMouseEvent* event) {
     require::nonNull(event, "_Internal_QLabel::mouseDoubleClickEvent", "event");
     QWidget::mouseDoubleClickEvent(event);   // call super
@@ -17969,6 +18118,8 @@ QSize _Internal_QLabel::sizeHint() const {
  * This file implements the gobjects.h interface.
  *
  * @author Marty Stepp
+ * @version 2019/04/23
+ * - bug fix for loading GImage from file on Windows related to istream change
  * @version 2019/03/07
  * - added support for loading a GImage directly from istream (htiek)
  * @version 2018/09/14
@@ -18952,17 +19103,8 @@ GImage::GImage(const std::string& filename, double x, double y)
         : GObject(x, y),
           _filename(filename),
           _qimage(nullptr) {
-    if (!_filename.empty()) {
-        // pull the bytes from the file and forward to the internal construction routine
-        std::ifstream input(filename, std::ios::binary);
-        if (!input) {
-            error("GImage::constructor: file not found: \"" + filename + "\"");
-        }
-
-        // load from that source
-        if (!loadFromStream(input)) {
-            error("GImage::constructor: unable to load image from: \"" + filename + "\"");
-        }
+    if (!load(filename)) {
+        error("GImage::constructor: unable to load image from: \"" + filename + "\"");
     }
 }
 
@@ -18994,6 +19136,23 @@ GImage::GImage(QImage* qimage) {
 GImage::~GImage() {
     // TODO: delete _image;
     _qimage = nullptr;
+}
+
+bool GImage::load(const std::string& filename) {
+    if (filename.empty() || !fileExists(filename)) {
+        return false;
+    }
+    bool hasError = false;
+    GThread::runOnQtGuiThread([this, filename, &hasError]() {
+        _qimage = new QImage;
+        if (_qimage->load(QString::fromStdString(_filename))) {
+            _width = _qimage->width();
+            _height = _qimage->height();
+        } else {
+            hasError = true;
+        }
+    });
+    return hasError;
 }
 
 bool GImage::loadFromStream(std::istream& input) {
@@ -19586,6 +19745,8 @@ static double dsq(double x0, double y0, double x1, double y1) {
  * ------------------
  *
  * @author Marty Stepp
+ * @version 2019/04/23
+ * - moved some event-handling code to GInteractor superclass
  * @version 2019/04/22
  * - added setIcon with QIcon and QPixmap
  * @version 2019/02/02
@@ -19641,8 +19802,8 @@ GButton::GButton(const std::string& text, const QPixmap& icon, QWidget* parent) 
 }
 
 GButton::~GButton() {
-    // TODO: delete _button;
-    _iqpushbutton->_gbutton = nullptr;
+    // TODO: delete _iqpushbutton;
+    _iqpushbutton->detach();
     _iqpushbutton = nullptr;
 }
 
@@ -19686,35 +19847,11 @@ QWidget* GButton::getWidget() const {
     return static_cast<QWidget*>(_iqpushbutton);
 }
 
-void GButton::removeActionListener() {
-    removeEventListener("click");
-}
-
-void GButton::removeDoubleClickListener() {
-    removeEventListener("doubleclick");
-}
-
 void GButton::setAccelerator(const std::string& accelerator) {
     GThread::runOnQtGuiThread([this, accelerator]() {
         QKeySequence keySeq(QString::fromStdString(normalizeAccelerator(accelerator)));
         _iqpushbutton->setShortcut(keySeq);
     });
-}
-
-void GButton::setActionListener(GEventListener func) {
-    setEventListener("click", func);
-}
-
-void GButton::setActionListener(GEventListenerVoid func) {
-    setEventListener("click", func);
-}
-
-void GButton::setDoubleClickListener(GEventListener func) {
-    setEventListener("doubleclick", func);
-}
-
-void GButton::setDoubleClickListener(GEventListenerVoid func) {
-    setEventListener("doubleclick", func);
 }
 
 void GButton::setIcon(const QIcon& icon) {
@@ -19794,6 +19931,10 @@ _Internal_QPushButton::_Internal_QPushButton(GButton* button, QWidget* parent)
     setObjectName(QString::fromStdString("_Internal_QPushButton_" + std::to_string(button->getID())));
     setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     connect(this, SIGNAL(clicked()), this, SLOT(handleClick()));
+}
+
+void _Internal_QPushButton::detach() {
+    _gbutton = nullptr;
 }
 
 void _Internal_QPushButton::handleClick() {
@@ -20036,6 +20177,7 @@ GDiffGui::GDiffGui(const std::string& name1,
         _window->setCloseOperation(GWindow::CLOSE_HIDE);
 
         // function to close the window when Escape is pressed
+        // (similar to code in gdiffimage.cpp)
         auto windowCloseLambda = [this](GEvent event) {
             if (event.getType() == KEY_PRESSED && event.getKeyChar() == GEvent::ESCAPE_KEY) {
                 _window->close();
@@ -20684,6 +20826,7 @@ void endOfLibraryStudentThread() {
     if (GThread::getStudentThread() != nullptr) {
         result = GThread::getStudentThread()->getResult();
     }
+    static_cast<void>(result);   // so it won't be unused
 
     // if I get here, student's main() has finished running;
     // indicate this by showing a completed title on the graphical console
@@ -20696,7 +20839,8 @@ void endOfLibraryStudentThread() {
 #endif // SPL_HEADLESS_MODE
     } else {
         // need to exit here else program will not terminate
-        QtGui::instance()->exitGraphics(result);
+        // BUGFIX: no, this is not needed and is bad; it exits the window too soon; disable
+        // QtGui::instance()->exitGraphics(result);
     }
 }
 } // namespace stanfordcpplib
@@ -22179,13 +22323,14 @@ void GThreadStd::yield() {
  * --------------------
  * 
  * @author Marty Stepp
+ * @version 2019/04/23
+ * - can press Escape key to close window
  * @version 2018/10/12
  * - added "highlight diffs in color" checkbox and functionality
  * @version 2018/09/15
  * - initial version, converted from Java back-end DiffImage class
  */
 
-// TODO: add checkbox for highlighting diffs in color
 // TODO: free memory
 
 #define INTERNAL_INCLUDE 1
@@ -22247,17 +22392,28 @@ GDiffImage::GDiffImage(
     // _window->setResizable(false);
     _window->setAutoRepaint(false);
 
+    // function to close the window when Escape is pressed
+    // (similar to code in gdiffgui.cpp)
+    auto windowCloseLambda = [this](GEvent event) {
+        if (event.getType() == KEY_PRESSED && event.getKeyChar() == GEvent::ESCAPE_KEY) {
+            _window->close();
+        }
+    };
+    _window->setKeyListener(windowCloseLambda);
+
     _slider = new GSlider();
     _slider->setActionListener([this]() {
         _image2->setOpacity(_slider->getValue() / 100.0);
         drawImages();
     });
+    _slider->setKeyListener(windowCloseLambda);
 
     _highlightDiffsBox = new GCheckBox("&Highlight diffs in color: ");
     _highlightDiffsBox->setActionListener([this]() {
         _slider->setEnabled(!_highlightDiffsBox->isChecked());
         drawImages();
     });
+    _highlightDiffsBox->setKeyListener(windowCloseLambda);
 
     _highlightColor = HIGHLIGHT_COLOR_DEFAULT;
     _colorButton = new GButton("&X");
@@ -22266,6 +22422,7 @@ GDiffImage::GDiffImage(
     _colorButton->setActionListener([this]() {
         chooseHighlightColor();
     });
+    _colorButton->setKeyListener(windowCloseLambda);
 
     _diffPixelsLabel = new GLabel("(" + std::to_string(diffPixelsCount) + " pixels differ)");
     GFont::boldFont(_diffPixelsLabel);
@@ -22404,6 +22561,8 @@ std::string GDiffImage::getPixelString(GImage* image, int x, int y) const {
  * ----------------------
  *
  * @author Marty Stepp
+ * @version 2019/04/23
+ * - added key event support
  * @version 2019/02/02
  * - destructor now stops event processing
  * @version 2018/10/06
@@ -22440,7 +22599,7 @@ GRadioButton::GRadioButton(const std::string& text, const std::string& group, bo
 
 GRadioButton::~GRadioButton() {
     // TODO: delete _iqradioButton;
-    _iqradioButton->_gradioButton = nullptr;
+    _iqradioButton->detach();
     _iqradioButton = nullptr;
 }
 
@@ -22450,6 +22609,10 @@ std::string GRadioButton::getActionCommand() const {
     } else {
         return _actionCommand;
     }
+}
+
+std::string GRadioButton::getActionEventType() const {
+    return "change";
 }
 
 _Internal_QWidget* GRadioButton::getInternalWidget() const {
@@ -22474,30 +22637,6 @@ bool GRadioButton::isChecked() const {
 
 bool GRadioButton::isSelected() const {
     return _iqradioButton->isChecked();
-}
-
-void GRadioButton::removeActionListener() {
-    removeEventListener("change");
-}
-
-void GRadioButton::removeDoubleClickListener() {
-    removeEventListener("doubleclick");
-}
-
-void GRadioButton::setActionListener(GEventListener func) {
-    setEventListener("change", func);
-}
-
-void GRadioButton::setActionListener(GEventListenerVoid func) {
-    setEventListener("change", func);
-}
-
-void GRadioButton::setDoubleClickListener(GEventListener func) {
-    setEventListener("doubleclick", func);
-}
-
-void GRadioButton::setDoubleClickListener(GEventListenerVoid func) {
-    setEventListener("doubleclick", func);
 }
 
 void GRadioButton::setChecked(bool checked) {
@@ -22542,6 +22681,10 @@ _Internal_QRadioButton::_Internal_QRadioButton(GRadioButton* gradioButton, bool 
     connect(this, SIGNAL(clicked()), this, SLOT(handleClick()));
 }
 
+void _Internal_QRadioButton::detach() {
+    _gradioButton = nullptr;
+}
+
 void _Internal_QRadioButton::handleClick() {
     GEvent changeEvent(
                 /* class  */ CHANGE_EVENT,
@@ -22550,6 +22693,32 @@ void _Internal_QRadioButton::handleClick() {
                 /* source */ _gradioButton);
     changeEvent.setActionCommand(_gradioButton->getActionCommand());
     _gradioButton->fireEvent(changeEvent);
+}
+
+void _Internal_QRadioButton::keyPressEvent(QKeyEvent* event) {
+    require::nonNull(event, "_Internal_QRadioButton::keyPressEvent", "event");
+    if (_gradioButton && _gradioButton->isAcceptingEvent("keypress")) {
+        event->accept();
+        _gradioButton->fireGEvent(event, KEY_PRESSED, "keypress");
+        if (event->isAccepted()) {
+            QRadioButton::keyPressEvent(event);   // call super
+        }
+    } else {
+        QRadioButton::keyPressEvent(event);   // call super
+    }
+}
+
+void _Internal_QRadioButton::keyReleaseEvent(QKeyEvent* event) {
+    require::nonNull(event, "_Internal_QRadioButton::keyReleaseEvent", "event");
+    if (_gradioButton && _gradioButton->isAcceptingEvent("keyrelease")) {
+        event->accept();
+        _gradioButton->fireGEvent(event, KEY_RELEASED, "keyrelease");
+        if (event->isAccepted()) {
+            QRadioButton::keyReleaseEvent(event);   // call super
+        }
+    } else {
+        QRadioButton::keyReleaseEvent(event);   // call super
+    }
 }
 
 void _Internal_QRadioButton::mouseDoubleClickEvent(QMouseEvent* event) {
@@ -22594,6 +22763,8 @@ QSize _Internal_QRadioButton::sizeHint() const {
  * -------------------
  *
  * @author Marty Stepp
+ * @version 2019/04/23
+ * - added key event support
  * @version 2019/02/02
  * - destructor now stops event processing
  * @version 2018/10/06
@@ -22626,7 +22797,7 @@ GCheckBox::GCheckBox(const std::string& text, bool checked, QWidget* parent) {
 
 GCheckBox::~GCheckBox() {
     // TODO: delete _iqcheckBox;
-    _iqcheckBox->_gcheckBox = nullptr;
+    _iqcheckBox->detach();
     _iqcheckBox = nullptr;
 }
 
@@ -22636,6 +22807,10 @@ std::string GCheckBox::getActionCommand() const {
     } else {
         return _actionCommand;
     }
+}
+
+std::string GCheckBox::getActionEventType() const {
+    return "change";
 }
 
 _Internal_QWidget* GCheckBox::getInternalWidget() const {
@@ -22660,30 +22835,6 @@ bool GCheckBox::isChecked() const {
 
 bool GCheckBox::isSelected() const {
     return _iqcheckBox->isChecked();
-}
-
-void GCheckBox::removeActionListener() {
-    removeEventListener("change");
-}
-
-void GCheckBox::removeDoubleClickListener() {
-    removeEventListener("doubleclick");
-}
-
-void GCheckBox::setActionListener(GEventListener func) {
-    setEventListener("change", func);
-}
-
-void GCheckBox::setActionListener(GEventListenerVoid func) {
-    setEventListener("change", func);
-}
-
-void GCheckBox::setDoubleClickListener(GEventListener func) {
-    setEventListener("doubleclick", func);
-}
-
-void GCheckBox::setDoubleClickListener(GEventListenerVoid func) {
-    setEventListener("doubleclick", func);
 }
 
 void GCheckBox::setChecked(bool checked) {
@@ -22716,6 +22867,10 @@ _Internal_QCheckBox::_Internal_QCheckBox(GCheckBox* gcheckBox, bool checked, QWi
     connect(this, SIGNAL(stateChanged(int)), this, SLOT(handleStateChange(int)));
 }
 
+void _Internal_QCheckBox::detach() {
+    _gcheckBox = nullptr;
+}
+
 void _Internal_QCheckBox::handleStateChange(int /* state */) {
     if (!_gcheckBox) {
         return;
@@ -22727,6 +22882,32 @@ void _Internal_QCheckBox::handleStateChange(int /* state */) {
                 /* source */ _gcheckBox);
     changeEvent.setActionCommand(_gcheckBox->getActionCommand());
     _gcheckBox->fireEvent(changeEvent);
+}
+
+void _Internal_QCheckBox::keyPressEvent(QKeyEvent* event) {
+    require::nonNull(event, "_Internal_QCheckBox::keyPressEvent", "event");
+    if (_gcheckBox && _gcheckBox->isAcceptingEvent("keypress")) {
+        event->accept();
+        _gcheckBox->fireGEvent(event, KEY_PRESSED, "keypress");
+        if (event->isAccepted()) {
+            QCheckBox::keyPressEvent(event);   // call super
+        }
+    } else {
+        QCheckBox::keyPressEvent(event);   // call super
+    }
+}
+
+void _Internal_QCheckBox::keyReleaseEvent(QKeyEvent* event) {
+    require::nonNull(event, "_Internal_QCheckBox::keyReleaseEvent", "event");
+    if (_gcheckBox && _gcheckBox->isAcceptingEvent("keyrelease")) {
+        event->accept();
+        _gcheckBox->fireGEvent(event, KEY_RELEASED, "keyrelease");
+        if (event->isAccepted()) {
+            QCheckBox::keyReleaseEvent(event);   // call super
+        }
+    } else {
+        QCheckBox::keyReleaseEvent(event);   // call super
+    }
 }
 
 void _Internal_QCheckBox::mouseDoubleClickEvent(QMouseEvent* event) {
@@ -22824,8 +23005,8 @@ GTable::GTable(int rows, int columns, double width, double height, QWidget* pare
 }
 
 GTable::~GTable() {
-    // TODO: delete
-    _iqtableview->_gtable = nullptr;
+    // TODO: delete _iqtableview;
+    _iqtableview->detach();
     _iqtableview = nullptr;
 }
 
@@ -23033,7 +23214,7 @@ int GTable::height() const {
     return numRows();
 }
 
-bool GTable::inBounds(int row, int column) const {
+bool GTable::inTableBounds(int row, int column) const {
     return 0 <= row && row < height() && 0 <= column && column < width();
 }
 
@@ -23617,22 +23798,8 @@ _Internal_QTableWidget::_Internal_QTableWidget(GTable* gtable, int rows, int col
     connect(this->selectionModel(), SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)), this, SLOT(handleSelectionChange(const QItemSelection&, const QItemSelection&)));
 }
 
-void _Internal_QTableWidget::fireTableEvent(EventType eventType, const std::string& eventName, int row, int col) {
-    if (!_gtable) {
-        return;
-    }
-    GEvent tableEvent(
-                /* class  */ TABLE_EVENT,
-                /* type   */ eventType,
-                /* name   */ eventName,
-                /* source */ _gtable);
-    if (row < 0 && col < 0) {
-        tableEvent.setRowAndColumn(_gtable->getSelectedRow(), _gtable->getSelectedColumn());
-    } else {
-        tableEvent.setRowAndColumn(row, col);
-    }
-    tableEvent.setActionCommand(_gtable->getActionCommand());
-    _gtable->fireEvent(tableEvent);
+void _Internal_QTableWidget::detach() {
+    _gtable = nullptr;
 }
 
 bool _Internal_QTableWidget::edit(const QModelIndex& index, QAbstractItemView::EditTrigger trigger, QEvent* event) {
@@ -23650,6 +23817,24 @@ bool _Internal_QTableWidget::edit(const QModelIndex& index, QAbstractItemView::E
         }
     }
     return result;
+}
+
+void _Internal_QTableWidget::fireTableEvent(EventType eventType, const std::string& eventName, int row, int col) {
+    if (!_gtable) {
+        return;
+    }
+    GEvent tableEvent(
+                /* class  */ TABLE_EVENT,
+                /* type   */ eventType,
+                /* name   */ eventName,
+                /* source */ _gtable);
+    if (row < 0 && col < 0) {
+        tableEvent.setRowAndColumn(_gtable->getSelectedRow(), _gtable->getSelectedColumn());
+    } else {
+        tableEvent.setRowAndColumn(row, col);
+    }
+    tableEvent.setActionCommand(_gtable->getActionCommand());
+    _gtable->fireEvent(tableEvent);
 }
 
 QWidget* _Internal_QTableWidget::getEditor() const {
@@ -23851,6 +24036,8 @@ std::string GColorChooser::showDialog(QWidget* parent, const std::string& title,
  * -------------------
  *
  * @author Marty Stepp
+ * @version 2019/04/23
+ * - moved some event listener code to GInteractor superclass
  * @version 2019/02/02
  * - destructor now stops event processing
  * @version 2018/08/23
@@ -23895,7 +24082,7 @@ GTextArea::GTextArea(const std::string& text, QWidget* parent)
 
 GTextArea::~GTextArea() {
     // TODO: delete _iqtextedit;
-    _iqtextedit->_gtextarea = nullptr;
+    _iqtextedit->detach();
     _iqtextedit = nullptr;
 }
 
@@ -24064,17 +24251,6 @@ void GTextArea::moveCursorToStart() {
     });
 }
 
-void GTextArea::removeKeyListener() {
-    removeEventListeners({"keypress",
-                          "keyrelease",
-                          "keytype"});
-}
-
-void GTextArea::removeMouseListener() {
-    removeEventListeners({"mousepress",
-                          "mouserelease"});
-}
-
 void GTextArea::removeTextChangeListener() {
     removeEventListener("textchange");
 }
@@ -24145,6 +24321,22 @@ void GTextArea::setHtml(const std::string& html) {
     });
 }
 
+void GTextArea::setLineWrap(bool wrap) {
+    GThread::runOnQtGuiThread([this, wrap]() {
+        _iqtextedit->setLineWrapMode(wrap ? QTextEdit::WidgetWidth : QTextEdit::NoWrap);
+    });
+}
+
+void GTextArea::setMouseListener(GEventListener func) {
+    setEventListeners({"mousepress",
+                       "mouserelease"}, func);
+}
+
+void GTextArea::setMouseListener(GEventListenerVoid func) {
+    setEventListeners({"mousepress",
+                       "mouserelease"}, func);
+}
+
 void GTextArea::setPlaceholder(const std::string& text) {
     GThread::runOnQtGuiThread([this, text]() {
         _iqtextedit->setPlaceholderText(QString::fromStdString(text));
@@ -24172,40 +24364,6 @@ void GTextArea::setText(const std::string& text) {
     });
 }
 
-void GTextArea::setKeyListener(GEventListener func) {
-    GThread::runOnQtGuiThread([this]() {
-        _iqtextedit->setFocusPolicy(Qt::StrongFocus);
-    });
-    setEventListeners({"keypress",
-                       "keyrelease",
-                       "keytype"}, func);
-}
-
-void GTextArea::setKeyListener(GEventListenerVoid func) {
-    GThread::runOnQtGuiThread([this]() {
-        _iqtextedit->setFocusPolicy(Qt::StrongFocus);
-    });
-    setEventListeners({"keypress",
-                       "keyrelease",
-                       "keytype"}, func);
-}
-
-void GTextArea::setMouseListener(GEventListener func) {
-    setEventListeners({"mousepress",
-                       "mouserelease"}, func);
-}
-
-void GTextArea::setMouseListener(GEventListenerVoid func) {
-    setEventListeners({"mousepress",
-                       "mouserelease"}, func);
-}
-
-void GTextArea::setLineWrap(bool wrap) {
-    GThread::runOnQtGuiThread([this, wrap]() {
-        _iqtextedit->setLineWrapMode(wrap ? QTextEdit::WidgetWidth : QTextEdit::NoWrap);
-    });
-}
-
 void GTextArea::setTextChangeListener(GEventListener func) {
     setEventListener("textchange", func);
 }
@@ -24221,6 +24379,7 @@ _Internal_QTextEdit::_Internal_QTextEdit(GTextArea* gtextArea, QWidget* parent)
     require::nonNull(gtextArea, "_Internal_QTextEdit::constructor");
     setObjectName(QString::fromStdString("_Internal_QTextEdit_" + std::to_string(gtextArea->getID())));
     ensureCursorVisible();
+    setFocusPolicy(Qt::StrongFocus);
     setTabChangesFocus(false);
     document()->setUndoRedoEnabled(false);
     connect(this, SIGNAL(textChanged()), this, SLOT(handleTextChange()));
@@ -24237,6 +24396,10 @@ void _Internal_QTextEdit::contextMenuEvent(QContextMenuEvent* event) {
     } else {
         event->ignore();
     }
+}
+
+void _Internal_QTextEdit::detach() {
+    _gtextarea = nullptr;
 }
 
 void _Internal_QTextEdit::handleScroll(int value) {
@@ -24278,7 +24441,7 @@ void _Internal_QTextEdit::keyPressEvent(QKeyEvent* event) {
 }
 
 void _Internal_QTextEdit::keyReleaseEvent(QKeyEvent* event) {
-    require::nonNull(event, "_Internal_QTextEdit::keyPressEvent", "event");
+    require::nonNull(event, "_Internal_QTextEdit::keyReleaseEvent", "event");
     if (_gtextarea && _gtextarea->isAcceptingEvent("keyrelease")) {
         event->accept();
         _gtextarea->fireGEvent(event, KEY_RELEASED, "keyrelease");
@@ -24365,6 +24528,7 @@ GScrollPane::GScrollPane(GInteractor* interactor, QWidget* parent)
 
 GScrollPane::~GScrollPane() {
     // TODO: delete _iqscrollarea;
+    _iqscrollarea->detach();
     _iqscrollarea = nullptr;
 }
 
@@ -24724,6 +24888,8 @@ void GDownloader::waitForDownload() {
  * ------------------
  *
  * @author Marty Stepp
+ * @version 2019/04/23
+ * - added key events
  * @version 2019/02/02
  * - destructor now stops event processing
  * @version 2018/08/23
@@ -24774,8 +24940,12 @@ GSlider::GSlider(Orientation orientation, int min, int max, int value, QWidget* 
 
 GSlider::~GSlider() {
     // TODO: delete _iqslider;
-    _iqslider->_gslider = nullptr;
+    _iqslider->detach();
     _iqslider = nullptr;
+}
+
+std::string GSlider::getActionEventType() const {
+    return "change";
 }
 
 _Internal_QWidget* GSlider::getInternalWidget() const {
@@ -24827,18 +24997,6 @@ int GSlider::getValue() const {
 
 QWidget* GSlider::getWidget() const {
     return static_cast<QWidget*>(_iqslider);
-}
-
-void GSlider::removeActionListener() {
-    removeEventListener("change");
-}
-
-void GSlider::setActionListener(GEventListener func) {
-    setEventListener("change", func);
-}
-
-void GSlider::setActionListener(GEventListenerVoid func) {
-    setEventListener("change", func);
 }
 
 void GSlider::setMajorTickSpacing(int value) {
@@ -24915,6 +25073,10 @@ _Internal_QSlider::_Internal_QSlider(GSlider* gslider, Qt::Orientation orientati
     connect(this, SIGNAL(valueChanged(int)), this, SLOT(handleChange(int)));
 }
 
+void _Internal_QSlider::detach() {
+    _gslider = nullptr;
+}
+
 void _Internal_QSlider::handleChange(int /* value */) {
     if (!_gslider) {
         return;
@@ -24926,6 +25088,32 @@ void _Internal_QSlider::handleChange(int /* value */) {
                 /* source */ _gslider);
     changeEvent.setActionCommand(_gslider->getActionCommand());
     _gslider->fireEvent(changeEvent);
+}
+
+void _Internal_QSlider::keyPressEvent(QKeyEvent* event) {
+    require::nonNull(event, "_Internal_QSlider::keyPressEvent", "event");
+    if (_gslider && _gslider->isAcceptingEvent("keypress")) {
+        event->accept();
+        _gslider->fireGEvent(event, KEY_PRESSED, "keypress");
+        if (event->isAccepted()) {
+            QSlider::keyPressEvent(event);   // call super
+        }
+    } else {
+        QSlider::keyPressEvent(event);   // call super
+    }
+}
+
+void _Internal_QSlider::keyReleaseEvent(QKeyEvent* event) {
+    require::nonNull(event, "_Internal_QSlider::keyPressEvent", "event");
+    if (_gslider && _gslider->isAcceptingEvent("keyrelease")) {
+        event->accept();
+        _gslider->fireGEvent(event, KEY_RELEASED, "keyrelease");
+        if (event->isAccepted()) {
+            QSlider::keyReleaseEvent(event);   // call super
+        }
+    } else {
+        QSlider::keyReleaseEvent(event);   // call super
+    }
 }
 
 QSize _Internal_QSlider::sizeHint() const {
@@ -25200,6 +25388,7 @@ GSpacer::GSpacer(double width, double height, QWidget* parent)
 
 GSpacer::~GSpacer() {
     // TODO: delete _iqspacer;
+    _iqspacer->detach();
     _iqspacer = nullptr;
 }
 
