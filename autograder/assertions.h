@@ -217,7 +217,8 @@
     stanfordcpplib::autograder::Autograder::instance()->setFailDetails(stanfordcpplib::autograder::UnitTestDetails( \
         stanfordcpplib::autograder::UnitTestType::TEST_PASS, \
         (msg), true)); \
-    GTEST_SUCCESS_((msg))
+    GTEST_SUCCESS_((std::string(msg).c_str()))
+// JDZ accept either old or new style string, convert to C-string
 
 #define assertPassQuiet() \
     stanfordcpplib::autograder::Autograder::instance()->setFailDetails(stanfordcpplib::autograder::UnitTestDetails( \
@@ -225,6 +226,7 @@
         "", true)); \
     GTEST_SUCCESS_("")
 
+// JDZ: these not quite right -- setFailDetails to passed before knows whether exception thrown or not
 #define assertThrowsAny(msg, stmt) \
     stanfordcpplib::autograder::Autograder::instance()->setFailDetails(stanfordcpplib::autograder::UnitTestDetails( \
         stanfordcpplib::autograder::UnitTestType::TEST_EXCEPTION, \
@@ -240,6 +242,13 @@
         stanfordcpplib::autograder::UnitTestType::TEST_NOT_EXCEPTION, \
         msg, true)); \
     EXPECT_NO_THROW(stmt)
+
+// JDZ: if you have info on whether exception thrown or not, use this one
+#define assertDidThrow(msg, didThrow) \
+    stanfordcpplib::autograder::Autograder::instance()->setFailDetails(stanfordcpplib::autograder::UnitTestDetails( \
+        stanfordcpplib::autograder::UnitTestType::TEST_NOT_EXCEPTION, \
+        msg, didThrow)); \
+    EXPECT_TRUE(didThrow)
 
 void assertEqualsImage(const std::string& msg,
                        const std::string& imagefile1,

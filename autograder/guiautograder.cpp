@@ -504,6 +504,7 @@ void GuiAutograder::clearTestResults() {
         }
         UnitTestDetails deets;   // clear it out
         testInfo->details = deets;
+        testInfo->completed = false;   // JDZ: must reset! if not, default/empty result treated as valid
         testInfo->descriptionLabel->setForeground(COLOR_NORMAL);
         testInfo->resultIconLabel->setText("");
         testInfo->resultIconLabel->setIcon(_iconStrip[ICON_RUNNING_FILENAME]);

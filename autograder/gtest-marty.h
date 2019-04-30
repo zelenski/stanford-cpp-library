@@ -69,6 +69,7 @@ class ErrorException;
         if (!shouldRun()) { \
             return; \
         } \
+        this->setTestTimeout(timeoutMS); \
         autograder->setCurrentTestCaseName(this->getTestFullName()); \
         autograder->runTest(this); \
     } \
