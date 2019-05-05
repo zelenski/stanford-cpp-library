@@ -3,6 +3,8 @@
  * ---------------------
  * 
  * @author Marty Stepp
+ * @version 2019/05/05
+ * - dark mode support
  * @version 2019/04/23
  * - reset std::cout/cerr flags on every test run
  * @version 2019/04/22
@@ -134,12 +136,18 @@ private:
     static const int DEFAULT_WINDOW_HEIGHT;
     static const int MAX_VALUE_DISPLAY_LENGTH;
     static int MAX_WINDOW_HEIGHT;
+
     static const std::string COLOR_PASS;
+    static const std::string COLOR_PASS_DARK_MODE;
     static const std::string COLOR_FAIL;
+    static const std::string COLOR_FAIL_DARK_MODE;
     static const std::string COLOR_WARN;
-    static std::string COLOR_NORMAL;
+    static const std::string COLOR_WARN_DARK_MODE;
     static const std::string COLOR_ZEBRA_STRIPE_1;
+    static const std::string COLOR_ZEBRA_STRIPE_1_DARK_MODE;
     static const std::string COLOR_ZEBRA_STRIPE_2;
+    static const std::string COLOR_ZEBRA_STRIPE_2_DARK_MODE;
+
     static const std::string ICON_FOLDER;
     static const std::string ICON_ABOUT_FILENAME;
     static const std::string ICON_AUTOGRADE_FILENAME;

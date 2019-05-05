@@ -2,6 +2,10 @@
  * File: gwindow.cpp
  * -----------------
  *
+ * @author Marty Stepp
+ * @version 2019/05/05
+ * - added static method for isDarkMode checking support
+ * - added static methods to ask for system default widget bg/fg color
  * @version 2019/04/27
  * - fixed more bugs with getting/setting window size and location
  * @version 2019/04/25
@@ -57,6 +61,8 @@
 #include "glabel.h"
 #define INTERNAL_INCLUDE 1
 #include "glayout.h"
+#define INTERNAL_INCLUDE 1
+#include "gtextfield.h"
 #define INTERNAL_INCLUDE 1
 #include "gthread.h"
 #define INTERNAL_INCLUDE 1
@@ -598,6 +604,15 @@ void GWindow::center() {
                 screenSize.getHeight() / 2 - windowSize.getHeight() / 2);
 }
 
+/*static*/ std::string GWindow::chooseLightDarkModeColor(
+        const std::string& lightColor, const std::string& darkColor) {
+    return isDarkMode() ? darkColor : lightColor;
+}
+
+/*static*/ int GWindow::chooseLightDarkModeColorInt(int lightColor, int darkColor) {
+    return isDarkMode() ? darkColor : lightColor;
+}
+
 void GWindow::close() {
     GThread::runOnQtGuiThread([this]() {
         _iqmainwindow->close();
@@ -663,6 +678,36 @@ double GWindow::getCanvasWidth() const {
 
 GWindow::CloseOperation GWindow::getCloseOperation() const {
     return _closeOperation;
+}
+
+/*static*/ std::string GWindow::getDefaultInteractorBackgroundColor() {
+    return GColor::convertRGBToColor(getDefaultInteractorBackgroundColorInt());
+}
+
+/*static*/ int GWindow::getDefaultInteractorBackgroundColorInt() {
+    static bool everCheckedBefore = false;
+    static int previousBg = 0;
+    if (!everCheckedBefore) {
+        GTextField* tempTextField = new GTextField();
+        previousBg = tempTextField->getBackgroundInt();
+        everCheckedBefore = true;
+    }
+    return previousBg;
+}
+
+/*static*/ std::string GWindow::getDefaultInteractorTextColor() {
+    return GColor::convertRGBToColor(getDefaultInteractorTextColorInt());
+}
+
+/*static*/ int GWindow::getDefaultInteractorTextColorInt() {
+    static bool everCheckedBefore = false;
+    static int previousFg = 0;
+    if (!everCheckedBefore) {
+        GTextField* tempTextField = new GTextField();
+        previousFg = tempTextField->getForegroundInt();
+        everCheckedBefore = true;
+    }
+    return previousFg;
 }
 
 GObject* GWindow::getGObject(int index) const {
@@ -796,6 +841,21 @@ bool GWindow::inBounds(double x, double y) const {
 
 bool GWindow::inCanvasBounds(double x, double y) const {
     return 0 <= x && x < getCanvasWidth() && 0 <= y && y < getCanvasHeight();
+}
+
+/*static*/ bool GWindow::isDarkMode() {
+    if (!getLastWindow()) {
+        // cannot check yet
+        return false;
+    }
+    int bg = getDefaultInteractorBackgroundColorInt();
+    int fg = getDefaultInteractorTextColorInt();
+
+    // our heuristic: if the text is brighter than the background,
+    // we'll assume they are in dark mode
+    double bgLum = GColor::getLuminance(bg);
+    double fgLum = GColor::getLuminance(fg);
+    return fgLum > bgLum;
 }
 
 /*static*/ bool GWindow::isHighDensityScreen() {

@@ -3,6 +3,9 @@
  * ---------------
  *
  * @author Marty Stepp
+ * @version 2019/05/05
+ * - added static method for isDarkMode checking support
+ * - added static methods to ask for system default widget bg/fg color
  * @version 2019/04/09
  * - added toolbar support
  * @version 2018/10/20
@@ -454,6 +457,21 @@ public:
     virtual void center();
 
     /**
+     * Returns which color to use depending on whether the user's computer is
+     * in light or dark mode.
+     * If in light mode, returns lightColor; else returns darkColor.
+     */
+    static std::string chooseLightDarkModeColor(const std::string& lightColor,
+                                                const std::string& darkColor);
+
+    /**
+     * Returns which color to use depending on whether the user's computer is
+     * in light or dark mode.
+     * If in light mode, returns lightColor; else returns darkColor.
+     */
+    static int chooseLightDarkModeColorInt(int lightColor, int darkColor);
+
+    /**
      * Closes the window.
      * If a window listener has been set, a WINDOW_CLOSING and then
      * WINDOW_CLOSED event is sent to it.
@@ -505,6 +523,38 @@ public:
      * user closes the window.
      */
     virtual CloseOperation getCloseOperation() const;
+
+    /**
+     * Returns the default color for backgrounds of interactors as a string.
+     * This is normally a light-grayish color, depending on the user's
+     * system settings.
+     * On some systems that are in "dark mode" this may be a color closer to black.
+     */
+    static std::string getDefaultInteractorBackgroundColor();
+
+    /**
+     * Returns the default color for text on interactors as an RGB integer.
+     * This is normally a light-grayish color, depending on the user's
+     * system settings.
+     * On some systems that are in "dark mode" this may be a color closer to black.
+     */
+    static int getDefaultInteractorBackgroundColorInt();
+
+    /**
+     * Returns the default color for text on interactors as a string.
+     * This is normally black or a nearly-black color, depending on the user's
+     * system settings.
+     * On some systems that are in "dark mode" this may be a color closer to white.
+     */
+    static std::string getDefaultInteractorTextColor();
+
+    /**
+     * Returns the default color for text on interactors as an RGB integer.
+     * This is normally black or a nearly-black color, depending on the user's
+     * system settings.
+     * On some systems that are in "dark mode" this may be a color closer to white.
+     */
+    static int getDefaultInteractorTextColorInt();
 
     /**
      * Returns the graphical object at the given 0-based index in the window's
@@ -674,6 +724,14 @@ public:
      * canvas area of the window.
      */
     virtual bool inCanvasBounds(double x, double y) const;
+
+    /**
+     * Returns true if the user's computer is in "dark mode."
+     * This is a popular dark color scheme mostly used on recent Macs.
+     * Our checking is imperfect and basically just creates a dummy widget
+     * and checks whether it has bright text and a dark background.
+     */
+    static bool isDarkMode();
 
     /**
      * Returns whether the dots-per-inch of the screen are high enough to

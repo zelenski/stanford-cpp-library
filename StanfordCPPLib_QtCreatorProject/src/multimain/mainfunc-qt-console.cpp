@@ -65,11 +65,11 @@ void testQtConsole() {
     cout << "student GThread is: " << GThread::getStudentThread() << endl;
     cout << "Qt GUI GThread is: " << GThread::getQtMainThread() << endl;
 
-    cout << "How about a nasty error?!" << endl;
+//    cout << "How about a nasty error?!" << endl;
 
-    // produce an error
-    Vector<int> v;
-    cout << v[99] << endl;
+//    // produce an error
+//    Vector<int> v;
+//    cout << v[99] << endl;
 
 //    string s;
 //    s.erase(999);
@@ -98,15 +98,15 @@ void testQtConsole() {
 ////    set5.difference(set2);
 ////    cout << "difference = " << set5 << endl;
 
-//    // user input
-//    std::string line = getLine("Type: ");
-//    cout << "You typed: \"" << line << "\"" << endl;
+    // user input
+    std::string line = getLine("Type: ");
+    cout << "You typed: \"" << line << "\"" << endl;
 
-//    int num = getInteger("Type an integer: ");
-//    cout << "You typed: " << num << endl;
+    int num = getInteger("Type an integer: ");
+    cout << "You typed: " << num << endl;
 
-//    double realnum = getDouble("Type a real number: ");
-//    cout << "You typed: " << realnum << endl;
+    double realnum = getDouble("Type a real number: ");
+    cout << "You typed: " << realnum << endl;
 
 //    cout << "Partial line; what about me? :-(";   // no endl
 //    // error("oooooooooops");

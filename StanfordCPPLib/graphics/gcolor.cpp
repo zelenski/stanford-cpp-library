@@ -3,6 +3,8 @@
  * ----------------
  *
  * @author Marty Stepp
+ * @version 2019/05/05
+ * - added getLuminance
  * @version 2018/09/16
  * - added splitRGB/ARGB, hasAlpha; better ARGB support
  * @version 2018/08/23
@@ -190,6 +192,17 @@ GColor::GColor() {
         argb = argb | 0xff000000;   // set full 255 alpha
     }
     return argb;
+}
+
+/*static*/ double GColor::getLuminance(int rgb) {
+    // https://en.wikipedia.org/wiki/Relative_luminance
+    int r, g, b;
+    splitRGB(rgb, r, g, b);
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+
+/*static*/ double GColor::getLuminance(const std::string& color) {
+    return getLuminance(convertColorToRGB(color));
 }
 
 /*static*/ bool GColor::hasAlpha(const std::string& color) {

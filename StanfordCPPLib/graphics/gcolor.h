@@ -3,6 +3,8 @@
  * --------------
  *
  * @author Marty Stepp
+ * @version 2019/05/05
+ * - added getLuminance
  * @version 2018/09/16
  * - added splitRGB/ARGB, hasAlpha; better ARGB support
  * @version 2018/09/07
@@ -175,6 +177,22 @@ public:
      * client meant to use an opaque color and add ff as alpha channel.
      */
     static int fixAlpha(int argb);
+
+    /**
+     * Returns the photometric luminance of the given RGB integer,
+     * which is a measure of how bright the color is.
+     * This is calculated using the following formula:
+     * https://en.wikipedia.org/wiki/Relative_luminance
+     */
+    static double getLuminance(int rgb);
+
+    /**
+     * Returns the photometric luminance of the given color,
+     * which is a measure of how bright the color is.
+     * This is calculated using the following formula:
+     * https://en.wikipedia.org/wiki/Relative_luminance
+     */
+    static double getLuminance(const std::string& color);
 
     /**
      * Returns true if the given color string is of the 8-hex-character form

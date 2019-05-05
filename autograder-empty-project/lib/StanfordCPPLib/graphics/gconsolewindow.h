@@ -104,6 +104,7 @@ public:
     virtual std::string getForeground() const Q_DECL_OVERRIDE;
     virtual int getForegroundInt() const Q_DECL_OVERRIDE;
     virtual std::string getOutputColor() const;
+    virtual std::string getUserInputColor() const;
     virtual bool hasInputScript() const;
     virtual bool isClearEnabled() const;
     virtual bool isEcho() const;
@@ -137,6 +138,7 @@ public:
     virtual void setOutputColor(int rgb);
     virtual void setOutputColor(const std::string& outputColor);
     virtual void setSize(double width, double height) Q_DECL_OVERRIDE;
+    virtual void setUserInputColor(const std::string& userInputColor);
     virtual void showAboutDialog();
     virtual void showColorDialog(bool background = false);
     virtual void showCompareOutputDialog();
@@ -158,10 +160,10 @@ private:
     static const int DEFAULT_FONT_SIZE;
     static const int MIN_FONT_SIZE;
     static const int MAX_FONT_SIZE;
-    static const std::string DEFAULT_BACKGROUND_COLOR;
     static const std::string DEFAULT_ERROR_COLOR;
-    static const std::string DEFAULT_OUTPUT_COLOR;
-    static const std::string USER_INPUT_COLOR;
+    static const std::string DEFAULT_ERROR_COLOR_DARK_MODE;
+    static const std::string DEFAULT_USER_INPUT_COLOR;
+    static const std::string DEFAULT_USER_INPUT_COLOR_DARK_MODE;
     static GConsoleWindow* _instance;
     static bool _consoleEnabled;
 
@@ -196,6 +198,7 @@ private:
     int _commandHistoryIndex;
     std::string _errorColor;
     std::string _outputColor;
+    std::string _userInputColor;
     std::string _inputBuffer;
     std::string _lastSaveFileName;
     Queue<std::string> _inputLines;

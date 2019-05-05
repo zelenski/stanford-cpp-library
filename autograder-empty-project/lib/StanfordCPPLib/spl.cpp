@@ -10214,30 +10214,30 @@ int hashCode(const GRectangle& r) {
 
 void setConsolePropertiesQt();
 
-const bool GConsoleWindow::GConsoleWindow::ALLOW_RICH_INPUT_EDITING = true;
-const double GConsoleWindow::DEFAULT_WIDTH = 900;
-const double GConsoleWindow::DEFAULT_HEIGHT = 550;
-const double GConsoleWindow::DEFAULT_X = 10;
-const double GConsoleWindow::DEFAULT_Y = 40;
-const std::string GConsoleWindow::CONFIG_FILE_NAME = "spl-jar-settings.txt";
-const std::string GConsoleWindow::DEFAULT_WINDOW_TITLE = "Console";
-const std::string GConsoleWindow::DEFAULT_FONT_FAMILY = "Monospace";
-const std::string GConsoleWindow::DEFAULT_FONT_WEIGHT = "";
-const int GConsoleWindow::DEFAULT_FONT_SIZE = 12;
-const int GConsoleWindow::MIN_FONT_SIZE = 4;
-const int GConsoleWindow::MAX_FONT_SIZE = 255;
-const std::string GConsoleWindow::DEFAULT_BACKGROUND_COLOR = "white";
-const std::string GConsoleWindow::DEFAULT_ERROR_COLOR = "red";
-const std::string GConsoleWindow::DEFAULT_OUTPUT_COLOR = "black";
-const std::string GConsoleWindow::USER_INPUT_COLOR = "blue";
-GConsoleWindow* GConsoleWindow::_instance = nullptr;
-bool GConsoleWindow::_consoleEnabled = false;
+/*static*/ const bool GConsoleWindow::GConsoleWindow::ALLOW_RICH_INPUT_EDITING = true;
+/*static*/ const double GConsoleWindow::DEFAULT_WIDTH = 900;
+/*static*/ const double GConsoleWindow::DEFAULT_HEIGHT = 550;
+/*static*/ const double GConsoleWindow::DEFAULT_X = 10;
+/*static*/ const double GConsoleWindow::DEFAULT_Y = 40;
+/*static*/ const std::string GConsoleWindow::CONFIG_FILE_NAME = "spl-jar-settings.txt";
+/*static*/ const std::string GConsoleWindow::DEFAULT_WINDOW_TITLE = "Console";
+/*static*/ const std::string GConsoleWindow::DEFAULT_FONT_FAMILY = "Monospace";
+/*static*/ const std::string GConsoleWindow::DEFAULT_FONT_WEIGHT = "";
+/*static*/ const int GConsoleWindow::DEFAULT_FONT_SIZE = 12;
+/*static*/ const int GConsoleWindow::MIN_FONT_SIZE = 4;
+/*static*/ const int GConsoleWindow::MAX_FONT_SIZE = 255;
+/*static*/ const std::string GConsoleWindow::DEFAULT_ERROR_COLOR = "#cc0000";
+/*static*/ const std::string GConsoleWindow::DEFAULT_ERROR_COLOR_DARK_MODE = "#f47862";
+/*static*/ const std::string GConsoleWindow::DEFAULT_USER_INPUT_COLOR = "#0000cc";
+/*static*/ const std::string GConsoleWindow::DEFAULT_USER_INPUT_COLOR_DARK_MODE = "#2c90e5";
+/*static*/ GConsoleWindow* GConsoleWindow::_instance = nullptr;
+/*static*/ bool GConsoleWindow::_consoleEnabled = false;
 
-/* static */ bool GConsoleWindow::consoleEnabled() {
+/*static*/ bool GConsoleWindow::consoleEnabled() {
     return _consoleEnabled;
 }
 
-/* static */ std::string GConsoleWindow::getDefaultFont() {
+/*static*/ std::string GConsoleWindow::getDefaultFont() {
     if (OS::isMac()) {
         // for some reason, using "Monospace" doesn't work for me on Mac testing
         return "Courier New-"
@@ -10250,7 +10250,7 @@ bool GConsoleWindow::_consoleEnabled = false;
     }
 }
 
-/* static */ GConsoleWindow* GConsoleWindow::instance() {
+/*static*/ GConsoleWindow* GConsoleWindow::instance() {
     if (!_instance) {
         // initialize Qt system and Qt Console window
         GThread::runOnQtGuiThread([]() {
@@ -10264,11 +10264,11 @@ bool GConsoleWindow::_consoleEnabled = false;
     return _instance;
 }
 
-/* static */ bool GConsoleWindow::isInitialized() {
+/*static*/ bool GConsoleWindow::isInitialized() {
     return _instance != nullptr;
 }
 
-/* static */ void GConsoleWindow::setConsoleEnabled(bool enabled) {
+/*static*/ void GConsoleWindow::setConsoleEnabled(bool enabled) {
     _consoleEnabled = enabled;
 }
 
@@ -10284,6 +10284,7 @@ GConsoleWindow::GConsoleWindow()
           _commandHistoryIndex(-1),
           _errorColor(""),
           _outputColor(""),
+          _userInputColor(""),
           _inputBuffer(""),
           _lastSaveFileName(""),
           _cinout_new_buf(nullptr),
@@ -10490,9 +10491,9 @@ void GConsoleWindow::_initWidgets() {
     _textArea = new GTextArea();
     _outputColor = _textArea->getColor();
 
-    // BUGFIX: don't set bg/fg colors; let them be the OS defaults (helps w/ Mac dark mode)
-//    _textArea->setBackground(DEFAULT_BACKGROUND_COLOR);
-//    _textArea->setColor(DEFAULT_OUTPUT_COLOR);
+    // BUGFIX: use OS defaults for BG/FG colors (helps w/ Mac dark mode)
+    _textArea->setBackground(GWindow::getDefaultInteractorBackgroundColorInt());
+    _textArea->setColor(GWindow::getDefaultInteractorTextColorInt());
     _textArea->setContextMenuEnabled(false);
     _textArea->setLineWrap(true);
     _textArea->setFont(getDefaultFont());
@@ -10698,7 +10699,11 @@ int GConsoleWindow::getColorInt() const {
 }
 
 std::string GConsoleWindow::getErrorColor() const {
-    return _errorColor.empty() ? DEFAULT_ERROR_COLOR : _errorColor;
+    if (!_errorColor.empty()) {
+        return _errorColor;
+    } else {
+        return GWindow::isDarkMode() ? DEFAULT_ERROR_COLOR_DARK_MODE : DEFAULT_ERROR_COLOR;
+    }
 }
 
 std::string GConsoleWindow::getFont() const {
@@ -10714,7 +10719,15 @@ int GConsoleWindow::getForegroundInt() const {
 }
 
 std::string GConsoleWindow::getOutputColor() const {
-    return _outputColor.empty() ? DEFAULT_OUTPUT_COLOR : _outputColor;
+    return _outputColor.empty() ? GWindow::getDefaultInteractorTextColor() : _outputColor;
+}
+
+std::string GConsoleWindow::getUserInputColor() const {
+    if (!_userInputColor.empty()) {
+        return _userInputColor;
+    } else {
+        return GWindow::isDarkMode() ? DEFAULT_USER_INPUT_COLOR_DARK_MODE : DEFAULT_USER_INPUT_COLOR;
+    }
 }
 
 QTextFragment GConsoleWindow::getUserInputFragment() const {
@@ -11266,7 +11279,7 @@ void GConsoleWindow::processUserInputEnterKey() {
     _cinQueueMutex.unlock();
     _allOutputBuffer << _inputBuffer << std::endl;
     _inputBuffer = "";   // clear input buffer
-    this->_textArea->appendFormattedText("\n", USER_INPUT_COLOR);
+    this->_textArea->appendFormattedText("\n", getUserInputColor());
     _cinMutex.unlock();
 }
 
@@ -11341,7 +11354,7 @@ void GConsoleWindow::processUserInputKey(int key) {
             // append to end of buffer/fragment
             _inputBuffer += keyStr;
             // display in blue highlighted text
-            this->_textArea->appendFormattedText(keyStr, USER_INPUT_COLOR, "*-*-Bold");
+            this->_textArea->appendFormattedText(keyStr, getUserInputColor(), "*-*-Bold");
         }
 
         _cinMutex.unlock();
@@ -11377,7 +11390,7 @@ std::string GConsoleWindow::readLine() {
             GThread::runOnQtGuiThreadAsync([this, line]() {
                 _coutMutex.lock();
                 _allOutputBuffer << line << std::endl;
-                _textArea->appendFormattedText(line + "\n", USER_INPUT_COLOR, "*-*-Bold");
+                _textArea->appendFormattedText(line + "\n", getUserInputColor(), "*-*-Bold");
                 _coutMutex.unlock();
             });
         }
@@ -11585,6 +11598,10 @@ void GConsoleWindow::setUserInput(const std::string& userInput) {
     for (int i = 0; i < (int) userInput.length(); i++) {
         processUserInputKey(userInput[i]);
     }
+}
+
+void GConsoleWindow::setUserInputColor(const std::string& userInputColor) {
+    _userInputColor = userInputColor;
 }
 
 void GConsoleWindow::showAboutDialog() {
@@ -14315,6 +14332,10 @@ void _Internal_QWidget::setPreferredSize(const QSize& size) {
  * File: gwindow.cpp
  * -----------------
  *
+ * @author Marty Stepp
+ * @version 2019/05/05
+ * - added static method for isDarkMode checking support
+ * - added static methods to ask for system default widget bg/fg color
  * @version 2019/04/27
  * - fixed more bugs with getting/setting window size and location
  * @version 2019/04/25
@@ -14370,6 +14391,8 @@ void _Internal_QWidget::setPreferredSize(const QSize& size) {
 #include "glabel.h"
 #define INTERNAL_INCLUDE 1
 #include "glayout.h"
+#define INTERNAL_INCLUDE 1
+#include "gtextfield.h"
 #define INTERNAL_INCLUDE 1
 #include "gthread.h"
 #define INTERNAL_INCLUDE 1
@@ -14911,6 +14934,15 @@ void GWindow::center() {
                 screenSize.getHeight() / 2 - windowSize.getHeight() / 2);
 }
 
+/*static*/ std::string GWindow::chooseLightDarkModeColor(
+        const std::string& lightColor, const std::string& darkColor) {
+    return isDarkMode() ? darkColor : lightColor;
+}
+
+/*static*/ int GWindow::chooseLightDarkModeColorInt(int lightColor, int darkColor) {
+    return isDarkMode() ? darkColor : lightColor;
+}
+
 void GWindow::close() {
     GThread::runOnQtGuiThread([this]() {
         _iqmainwindow->close();
@@ -14976,6 +15008,36 @@ double GWindow::getCanvasWidth() const {
 
 GWindow::CloseOperation GWindow::getCloseOperation() const {
     return _closeOperation;
+}
+
+/*static*/ std::string GWindow::getDefaultInteractorBackgroundColor() {
+    return GColor::convertRGBToColor(getDefaultInteractorBackgroundColorInt());
+}
+
+/*static*/ int GWindow::getDefaultInteractorBackgroundColorInt() {
+    static bool everCheckedBefore = false;
+    static int previousBg = 0;
+    if (!everCheckedBefore) {
+        GTextField* tempTextField = new GTextField();
+        previousBg = tempTextField->getBackgroundInt();
+        everCheckedBefore = true;
+    }
+    return previousBg;
+}
+
+/*static*/ std::string GWindow::getDefaultInteractorTextColor() {
+    return GColor::convertRGBToColor(getDefaultInteractorTextColorInt());
+}
+
+/*static*/ int GWindow::getDefaultInteractorTextColorInt() {
+    static bool everCheckedBefore = false;
+    static int previousFg = 0;
+    if (!everCheckedBefore) {
+        GTextField* tempTextField = new GTextField();
+        previousFg = tempTextField->getForegroundInt();
+        everCheckedBefore = true;
+    }
+    return previousFg;
 }
 
 GObject* GWindow::getGObject(int index) const {
@@ -15109,6 +15171,21 @@ bool GWindow::inBounds(double x, double y) const {
 
 bool GWindow::inCanvasBounds(double x, double y) const {
     return 0 <= x && x < getCanvasWidth() && 0 <= y && y < getCanvasHeight();
+}
+
+/*static*/ bool GWindow::isDarkMode() {
+    if (!getLastWindow()) {
+        // cannot check yet
+        return false;
+    }
+    int bg = getDefaultInteractorBackgroundColorInt();
+    int fg = getDefaultInteractorTextColorInt();
+
+    // our heuristic: if the text is brighter than the background,
+    // we'll assume they are in dark mode
+    double bgLum = GColor::getLuminance(bg);
+    double fgLum = GColor::getLuminance(fg);
+    return fgLum > bgLum;
 }
 
 /*static*/ bool GWindow::isHighDensityScreen() {
@@ -19378,8 +19455,8 @@ void GLine::setPoints(double x0, double y0, double x1, double y1) {
     }
     _x = x0;
     _y = y0;
-    _dx = x0 - x1;
-    _dy = y0 - y1;
+    _dx = x1 - x0;
+    _dy = y1 - y0;
     repaint();
 }
 
@@ -20201,8 +20278,11 @@ std::string GFileChooser::normalizeFileFilter(const std::string& fileFilter) {
 #undef INTERNAL_INCLUDE
 
 /*static*/ const std::string GDiffGui::COLOR_EXPECTED = "#009900";
+/*static*/ const std::string GDiffGui::COLOR_EXPECTED_DARK_MODE = "#55ff44";
 /*static*/ const std::string GDiffGui::COLOR_LINE_NUMBERS = "#888888";
+/*static*/ const std::string GDiffGui::COLOR_LINE_NUMBERS_DARK_MODE = "#aaaaaa";
 /*static*/ const std::string GDiffGui::COLOR_STUDENT  = "#bb0000";
+/*static*/ const std::string GDiffGui::COLOR_STUDENT_DARK_MODE = "#f47862";
 /*static*/ const bool GDiffGui::LINE_NUMBERS = true;
 
 void GDiffGui::showDialog(const std::string& name1,
@@ -20306,9 +20386,9 @@ void GDiffGui::setupDiffText(const std::string& diffs) {
     for (std::string line : lines) {
         std::string color;
         if (startsWith(line, "EXPECTED <")) {
-            color = COLOR_EXPECTED;
+            color = GWindow::chooseLightDarkModeColor(COLOR_EXPECTED, COLOR_EXPECTED_DARK_MODE);
         } else if (startsWith(line, "STUDENT  >")) {
-            color = COLOR_STUDENT;
+            color = GWindow::chooseLightDarkModeColor(COLOR_STUDENT, COLOR_STUDENT_DARK_MODE);
         } else {
             color = COLOR_NORMAL;
         }
@@ -20336,7 +20416,7 @@ void GDiffGui::setupLeftRightText(GTextArea* textArea, const std::string& text) 
         int digits = static_cast<int>(std::to_string(lines.size()).length());
         std::string lineNumberString =
                 padLeft(i == 0 ? std::string("") : std::to_string(i), digits) + "  ";
-        textArea->appendFormattedText(lineNumberString, COLOR_LINE_NUMBERS);
+        textArea->appendFormattedText(lineNumberString, GWindow::chooseLightDarkModeColor(COLOR_LINE_NUMBERS, COLOR_LINE_NUMBERS_DARK_MODE));
         textArea->appendFormattedText(toPrintable(line) + "\n", COLOR_NORMAL);
     }
 }
@@ -25203,6 +25283,8 @@ QSize _Internal_QSlider::sizeHint() const {
  * ----------------
  *
  * @author Marty Stepp
+ * @version 2019/05/05
+ * - added getLuminance
  * @version 2018/09/16
  * - added splitRGB/ARGB, hasAlpha; better ARGB support
  * @version 2018/08/23
@@ -25390,6 +25472,17 @@ GColor::GColor() {
         argb = argb | 0xff000000;   // set full 255 alpha
     }
     return argb;
+}
+
+/*static*/ double GColor::getLuminance(int rgb) {
+    // https://en.wikipedia.org/wiki/Relative_luminance
+    int r, g, b;
+    splitRGB(rgb, r, g, b);
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+
+/*static*/ double GColor::getLuminance(const std::string& color) {
+    return getLuminance(convertColorToRGB(color));
 }
 
 /*static*/ bool GColor::hasAlpha(const std::string& color) {

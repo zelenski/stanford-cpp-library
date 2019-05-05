@@ -850,6 +850,8 @@ int qMain(int argc, char** argv) {
  * See autograderunittestgui.h for declarations and documentation.
  *
  * @author Marty Stepp
+ * @version 2019/05/05
+ * - dark mode support
  * @version 2019/04/23
  * - reset std::cout/cerr flags on every test run
  * @version 2019/04/22
@@ -926,35 +928,39 @@ extern int main();
 namespace stanfordcpplib {
 namespace autograder {
 
-GuiAutograder* GuiAutograder::_instance = nullptr;
-GuiAutograder* GuiAutograder::_instanceStyleCheck = nullptr;
-const bool GuiAutograder::AUTO_EXPAND_FAILED_TESTS = false;
-const int GuiAutograder::DEFAULT_WINDOW_WIDTH  = 500;
-const int GuiAutograder::DEFAULT_WINDOW_HEIGHT = 700;
-const int GuiAutograder::MAX_VALUE_DISPLAY_LENGTH = 150;
-int GuiAutograder::MAX_WINDOW_HEIGHT = -1;
-const std::string GuiAutograder::COLOR_PASS           = "#006600";
-const std::string GuiAutograder::COLOR_FAIL           = "#660000";
-const std::string GuiAutograder::COLOR_WARN           = "#999900";
-std::string GuiAutograder::COLOR_NORMAL               = "#111111";
-const std::string GuiAutograder::COLOR_ZEBRA_STRIPE_1 = "#fafafa";
-const std::string GuiAutograder::COLOR_ZEBRA_STRIPE_2 = "#ebebeb";
-const std::string GuiAutograder::ICON_FOLDER = "";
-const std::string GuiAutograder::ICON_ABOUT_FILENAME        = GuiAutograder::ICON_FOLDER + "helpbig.gif";
-const std::string GuiAutograder::ICON_AUTOGRADE_FILENAME    = GuiAutograder::ICON_FOLDER + "check.gif";
-const std::string GuiAutograder::ICON_DESELECT_ALL_FILENAME = GuiAutograder::ICON_FOLDER + "checkbox-unchecked.gif";
-const std::string GuiAutograder::ICON_EXIT_FILENAME         = GuiAutograder::ICON_FOLDER + "stop.gif";
-const std::string GuiAutograder::ICON_FAIL_FILENAME         = GuiAutograder::ICON_FOLDER + "fail.gif";
-const std::string GuiAutograder::ICON_LATE_DAYS_FILENAME    = GuiAutograder::ICON_FOLDER + "calendar.gif";
-const std::string GuiAutograder::ICON_MANUAL_FILENAME       = GuiAutograder::ICON_FOLDER + "play.gif";
-const std::string GuiAutograder::ICON_MINIMIZE_FILENAME     = GuiAutograder::ICON_FOLDER + "minus.gif";
-const std::string GuiAutograder::ICON_PASS_FILENAME         = GuiAutograder::ICON_FOLDER + "pass.gif";
-const std::string GuiAutograder::ICON_PROGRESS_FILENAME     = GuiAutograder::ICON_FOLDER + "progress.gif";
-const std::string GuiAutograder::ICON_RUNNING_FILENAME      = GuiAutograder::ICON_FOLDER + "running.gif";
-const std::string GuiAutograder::ICON_SELECT_ALL_FILENAME   = GuiAutograder::ICON_FOLDER + "checkbox-checked.gif";
-const std::string GuiAutograder::ICON_STYLE_CHECK_FILENAME  = GuiAutograder::ICON_FOLDER + "magnifier.gif";
-const std::string GuiAutograder::ICON_UNKNOWN_FILENAME      = GuiAutograder::ICON_FOLDER + "unknown.gif";
-const std::string GuiAutograder::ICON_WARNING_FILENAME      = GuiAutograder::ICON_FOLDER + "warn.gif";
+/*static*/ GuiAutograder* GuiAutograder::_instance = nullptr;
+/*static*/ GuiAutograder* GuiAutograder::_instanceStyleCheck = nullptr;
+/*static*/ const bool GuiAutograder::AUTO_EXPAND_FAILED_TESTS = false;
+/*static*/ const int GuiAutograder::DEFAULT_WINDOW_WIDTH  = 500;
+/*static*/ const int GuiAutograder::DEFAULT_WINDOW_HEIGHT = 700;
+/*static*/ const int GuiAutograder::MAX_VALUE_DISPLAY_LENGTH = 150;
+/*static*/ int GuiAutograder::MAX_WINDOW_HEIGHT = -1;
+/*static*/ const std::string GuiAutograder::COLOR_PASS                     = "#006600";
+/*static*/ const std::string GuiAutograder::COLOR_PASS_DARK_MODE           = "#55ff44";
+/*static*/ const std::string GuiAutograder::COLOR_FAIL                     = "#660000";
+/*static*/ const std::string GuiAutograder::COLOR_FAIL_DARK_MODE           = "#f47862";
+/*static*/ const std::string GuiAutograder::COLOR_WARN                     = "#999900";
+/*static*/ const std::string GuiAutograder::COLOR_WARN_DARK_MODE           = "#eeee22";
+/*static*/ const std::string GuiAutograder::COLOR_ZEBRA_STRIPE_1           = "#fafafa";
+/*static*/ const std::string GuiAutograder::COLOR_ZEBRA_STRIPE_1_DARK_MODE = "#1e1e1e";
+/*static*/ const std::string GuiAutograder::COLOR_ZEBRA_STRIPE_2           = "#ebebeb";
+/*static*/ const std::string GuiAutograder::COLOR_ZEBRA_STRIPE_2_DARK_MODE = "#2d2d2d";
+/*static*/ const std::string GuiAutograder::ICON_FOLDER = "";
+/*static*/ const std::string GuiAutograder::ICON_ABOUT_FILENAME        = GuiAutograder::ICON_FOLDER + "helpbig.gif";
+/*static*/ const std::string GuiAutograder::ICON_AUTOGRADE_FILENAME    = GuiAutograder::ICON_FOLDER + "check.gif";
+/*static*/ const std::string GuiAutograder::ICON_DESELECT_ALL_FILENAME = GuiAutograder::ICON_FOLDER + "checkbox-unchecked.gif";
+/*static*/ const std::string GuiAutograder::ICON_EXIT_FILENAME         = GuiAutograder::ICON_FOLDER + "stop.gif";
+/*static*/ const std::string GuiAutograder::ICON_FAIL_FILENAME         = GuiAutograder::ICON_FOLDER + "fail.gif";
+/*static*/ const std::string GuiAutograder::ICON_LATE_DAYS_FILENAME    = GuiAutograder::ICON_FOLDER + "calendar.gif";
+/*static*/ const std::string GuiAutograder::ICON_MANUAL_FILENAME       = GuiAutograder::ICON_FOLDER + "play.gif";
+/*static*/ const std::string GuiAutograder::ICON_MINIMIZE_FILENAME     = GuiAutograder::ICON_FOLDER + "minus.gif";
+/*static*/ const std::string GuiAutograder::ICON_PASS_FILENAME         = GuiAutograder::ICON_FOLDER + "pass.gif";
+/*static*/ const std::string GuiAutograder::ICON_PROGRESS_FILENAME     = GuiAutograder::ICON_FOLDER + "progress.gif";
+/*static*/ const std::string GuiAutograder::ICON_RUNNING_FILENAME      = GuiAutograder::ICON_FOLDER + "running.gif";
+/*static*/ const std::string GuiAutograder::ICON_SELECT_ALL_FILENAME   = GuiAutograder::ICON_FOLDER + "checkbox-checked.gif";
+/*static*/ const std::string GuiAutograder::ICON_STYLE_CHECK_FILENAME  = GuiAutograder::ICON_FOLDER + "magnifier.gif";
+/*static*/ const std::string GuiAutograder::ICON_UNKNOWN_FILENAME      = GuiAutograder::ICON_FOLDER + "unknown.gif";
+/*static*/ const std::string GuiAutograder::ICON_WARNING_FILENAME      = GuiAutograder::ICON_FOLDER + "warn.gif";
 
 GuiAutograder* GuiAutograder::instance() {
     if (!_instance) {
@@ -1254,7 +1260,9 @@ void GuiAutograder::addTest(const std::string& testName, const std::string& cate
     test->setMargin(0);
     test->setPadding(0);
     test->setSpacing(0);
-    std::string bgColor = _testCount % 2 == 0 ? COLOR_ZEBRA_STRIPE_1 : COLOR_ZEBRA_STRIPE_2;
+    std::string bgColor = _testCount % 2 == 0
+            ? GWindow::chooseLightDarkModeColor(COLOR_ZEBRA_STRIPE_1, COLOR_ZEBRA_STRIPE_1_DARK_MODE)
+            : GWindow::chooseLightDarkModeColor(COLOR_ZEBRA_STRIPE_2, COLOR_ZEBRA_STRIPE_2_DARK_MODE);
     test->setBackground(bgColor);
     GContainer* testWest = new GContainer;
     testWest->setBackground(bgColor);
@@ -1350,7 +1358,7 @@ void GuiAutograder::clearTestResults() {
         UnitTestDetails deets;   // clear it out
         testInfo->details = deets;
         testInfo->completed = false;   // JDZ: must reset! if not, default/empty result treated as valid
-        testInfo->descriptionLabel->setForeground(COLOR_NORMAL);
+        testInfo->descriptionLabel->setForeground(GWindow::getDefaultInteractorTextColorInt());
         testInfo->resultIconLabel->setText("");
         testInfo->resultIconLabel->setIcon(_iconStrip[ICON_RUNNING_FILENAME]);
     }
@@ -1387,7 +1395,9 @@ void GuiAutograder::failWithException(const std::string& testFullName,
         out << " with the 'Catch exceptions' box unchecked.)</small>" << std::endl;
     } else {
         out << "Stack trace:" << std::endl;
-        out << "<pre>" << stackTrace << "</pre>" << std::endl;
+        out << "<pre><font color='"
+               + GWindow::chooseLightDarkModeColor(GDiffGui::COLOR_STUDENT, GDiffGui::COLOR_STUDENT_DARK_MODE)
+               + "'>" << stackTrace << "</font></pre>" << std::endl;
     }
     // TODO: can I get this stack trace?
 
@@ -1420,11 +1430,12 @@ stanfordcpplib::autograder::TestResult GuiAutograder::getTestResult(const std::s
         return TEST_RESULT_UNKNOWN;
     }
     TestInfo* testInfo = _allTestInfo[testFullName];
-    if (testInfo->descriptionLabel->getForeground() == COLOR_FAIL) {
+    std::string fg = testInfo->descriptionLabel->getForeground();
+    if (fg == COLOR_FAIL || fg == COLOR_FAIL_DARK_MODE) {
         return TEST_RESULT_FAIL;
-    } else if (testInfo->descriptionLabel->getForeground() == COLOR_WARN) {
+    } else if (fg == COLOR_WARN || fg == COLOR_WARN_DARK_MODE) {
         return TEST_RESULT_WARN;
-    } else if (testInfo->descriptionLabel->getForeground() == COLOR_PASS) {
+    } else if (fg == COLOR_PASS || fg == COLOR_PASS_DARK_MODE) {
         return TEST_RESULT_PASS;
     } else if (testInfo->completed) {
         return testInfo->details.passed ? TEST_RESULT_PASS : TEST_RESULT_FAIL;
@@ -1763,20 +1774,20 @@ bool GuiAutograder::setTestResult(const std::string& testFullName, TestResult re
     switch (result) {
     case TEST_RESULT_FAIL:
         iconFile = ICON_FAIL_FILENAME;
-        labelForegroundColor = COLOR_FAIL;
+        labelForegroundColor = GWindow::chooseLightDarkModeColor(COLOR_FAIL, COLOR_FAIL_DARK_MODE);
         break;
     case TEST_RESULT_PASS:
         iconFile = ICON_PASS_FILENAME;
-        labelForegroundColor = COLOR_PASS;
+        labelForegroundColor = GWindow::chooseLightDarkModeColor(COLOR_PASS, COLOR_PASS_DARK_MODE);
         _passCount++;
         break;
     case TEST_RESULT_WARN:
         iconFile = ICON_WARNING_FILENAME;
-        labelForegroundColor = COLOR_WARN;
+        labelForegroundColor = GWindow::chooseLightDarkModeColor(COLOR_WARN, COLOR_WARN_DARK_MODE);
         break;
     case TEST_RESULT_UNKNOWN:
         iconFile = ICON_UNKNOWN_FILENAME;
-        labelForegroundColor = COLOR_NORMAL;
+        labelForegroundColor = GWindow::getDefaultInteractorTextColor();
         break;
     }
 
@@ -1958,19 +1969,19 @@ void GuiAutograder::showTestDetails(const std::string& testFullName, bool force)
                     std::string expectedHtml = stringReplace(expectedTruncated, " ", "&nbsp;");
                     std::string studentHtml  = stringReplace(studentTruncated, " ", "&nbsp;");
                     htmlMessage += "<ul>";
-                    htmlMessage += "<li><code><font color='" + GDiffGui::COLOR_EXPECTED + "'>expected:</font></code><code>&nbsp;" + expectedHtml + "</code></li>";
-                    htmlMessage += "<li><code><font color='" + GDiffGui::COLOR_STUDENT  + "'>student&nbsp;:</font></code><code>&nbsp;" + studentHtml + "</code></li>";
+                    htmlMessage += "<li><code><font color='" + GWindow::chooseLightDarkModeColor(GDiffGui::COLOR_EXPECTED, GDiffGui::COLOR_EXPECTED_DARK_MODE) + "'>expected:</font></code><code>&nbsp;" + expectedHtml + "</code></li>";
+                    htmlMessage += "<li><code><font color='" + GWindow::chooseLightDarkModeColor(GDiffGui::COLOR_STUDENT, GDiffGui::COLOR_STUDENT_DARK_MODE)  + "'>student&nbsp;:</font></code><code>&nbsp;" + studentHtml + "</code></li>";
                     htmlMessage += "</ul>";
                 }
 
-                std::string resultColor = COLOR_PASS;
+                std::string resultColor = GWindow::chooseLightDarkModeColor(COLOR_PASS, COLOR_PASS_DARK_MODE);
                 std::string resultText = "PASS";
                 if (!deets.passed) {
                     if (deets.result == TEST_RESULT_WARN) {
-                        resultColor = COLOR_WARN;
+                        resultColor = GWindow::chooseLightDarkModeColor(COLOR_WARN, COLOR_WARN_DARK_MODE);
                         resultText = "WARNING";
                     } else {
-                        resultColor = COLOR_FAIL;
+                        resultColor = GWindow::chooseLightDarkModeColor(COLOR_FAIL, COLOR_FAIL_DARK_MODE);
                         resultText = "FAIL";
                     }
                 }

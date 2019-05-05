@@ -49,8 +49,11 @@
 class GDiffGui {
 public:
     static const std::string COLOR_EXPECTED;
+    static const std::string COLOR_EXPECTED_DARK_MODE;
     static const std::string COLOR_LINE_NUMBERS;
+    static const std::string COLOR_LINE_NUMBERS_DARK_MODE;
     static const std::string COLOR_STUDENT;
+    static const std::string COLOR_STUDENT_DARK_MODE;
 
     /**
      * Pops up a diff GUI window to display
