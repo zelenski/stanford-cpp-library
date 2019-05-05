@@ -2,6 +2,10 @@
  * File: gwindow.cpp
  * -----------------
  *
+ * @version 2019/04/27
+ * - fixed more bugs with getting/setting window size and location
+ * @version 2019/04/25
+ * - fixed bugs with getting window geometry and requesting focus
  * @version 2019/04/12
  * - moved pause() headless mode implementation (empty) to console.cpp
  * @version 2019/04/09
@@ -689,13 +693,12 @@ int GWindow::getGObjectCount() const {
     return _lastWindow;
 }
 
-GPoint GWindow::getLocation() const {
-    QRect geom = _iqmainwindow->geometry();
-    return GPoint(geom.x(), geom.y());
+double GWindow::getHeight() const {
+    return _iqmainwindow->height();
 }
 
-double GWindow::getHeight() const {
-    return _iqmainwindow->geometry().height();
+GPoint GWindow::getLocation() const {
+    return GPoint(_iqmainwindow->x(), _iqmainwindow->y());
 }
 
 GDimension GWindow::getPreferredSize() const {
@@ -752,8 +755,7 @@ double GWindow::getRegionWidth(const std::string& region) const {
 }
 
 GDimension GWindow::getSize() const {
-    QRect geom = _iqmainwindow->geometry();
-    return GDimension(geom.width(), geom.height());
+    return GDimension(_iqmainwindow->width(), _iqmainwindow->height());
 }
 
 std::string GWindow::getTitle() const {
@@ -769,15 +771,15 @@ QWidget* GWindow::getWidget() const {
 }
 
 double GWindow::getWidth() const {
-    return _iqmainwindow->geometry().width();
+    return _iqmainwindow->width();
 }
 
 double GWindow::getX() const {
-    return _iqmainwindow->geometry().x();
+    return _iqmainwindow->x();
 }
 
 double GWindow::getY() const {
-    return _iqmainwindow->geometry().y();
+    return _iqmainwindow->y();
 }
 
 bool GWindow::hasToolbar() const {
@@ -965,6 +967,7 @@ void GWindow::removeWindowListener() {
 void GWindow::requestFocus() {
     GThread::runOnQtGuiThread([this]() {
         _iqmainwindow->setFocus();
+        _iqmainwindow->activateWindow();
     });
 }
 
@@ -1037,10 +1040,7 @@ void GWindow::setHeight(double height) {
 
 void GWindow::setLocation(double x, double y) {
     GThread::runOnQtGuiThread([this, x, y]() {
-        _iqmainwindow->setGeometry(static_cast<int>(x),
-                                   static_cast<int>(y),
-                                   static_cast<int>(getWidth()),
-                                   static_cast<int>(getHeight()));
+        _iqmainwindow->move(static_cast<int>(x), static_cast<int>(y));
     });
 }
 

@@ -1,4 +1,7 @@
 /*
+ * @version 2019/04/24
+ * - add setFromFile
+ * - remove STL includes
  * @version 2017/10/06
  * - hid POSIX signal handler behind preprocessor macro
  * @version 2016/12/07
@@ -19,25 +22,36 @@
 #include <sstream>
 #include <string>
 
-// STL
-#include <algorithm>
-#include <deque>
-#include <list>
-#include <map>
-#include <queue>
-#include <set>
-#include <stack>
-#include <vector>
+//// STL
+//#include <algorithm>
+//#include <deque>
+//#include <list>
+//#include <map>
+//#include <queue>
+//#include <set>
+//#include <stack>
+//#include <vector>
 
 // Stanford lib stuff
+#define INTERNAL_INCLUDE 1
 #include "strlib.h"
+#define INTERNAL_INCLUDE 1
 #include "ArrayIntList.h"
+#define INTERNAL_INCLUDE 1
 #include "basicgraph.h"
+#define INTERNAL_INCLUDE 1
 #include "BinaryTree.h"
+#define INTERNAL_INCLUDE 1
 #include "HashTableMap.h"
+#define INTERNAL_INCLUDE 1
 #include "HashTableSet.h"
+#define INTERNAL_INCLUDE 1
 #include "HeapPriorityQueue.h"
+#define INTERNAL_INCLUDE 1
 #include "LinkedIntList.h"
+#define INTERNAL_INCLUDE 1
+#include "set.h"
+#undef INTERNAL_INCLUDE
 
 namespace CodeStepByStep {
 
@@ -135,6 +149,10 @@ void Vector_fromString(Vector<T>& v, const std::string& str) {
     std::istringstream input(str);
     input >> v;
 }
+
+// build a set of words from a file, a la Lexicon
+// (we use this to initialize a set of words from a file in one line)
+Set<string> setFromFile(const std::string& filename, bool cache = true);
 
 // helpers for parts of main() function
 void main_begin(int argc, char** argv);

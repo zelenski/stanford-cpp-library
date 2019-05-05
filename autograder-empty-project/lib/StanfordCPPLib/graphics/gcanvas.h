@@ -3,6 +3,9 @@
  * ---------------
  *
  * @author Marty Stepp
+ * @version 2019/05/01
+ * - added createArgbPixel
+ * - bug fixes related to save / setPixels with alpha transparency
  * @version 2019/03/07
  * - added support for loading canvas directly from istream (htiek)
  * @version 2018/09/10
@@ -91,6 +94,12 @@ public:
      * Error will be thrown if you try to make/resize an image larger than this.
      */
     static const int WIDTH_HEIGHT_MAX;
+
+    /**
+     * Creates a single ARGB integer from the given A-R-G-B components from 0-255.
+     * @throw ErrorException if alpha, red, green, or blue is not between 0-255 inclusive
+     */
+    static int createArgbPixel(int alpha, int red, int green, int blue);
 
     /**
      * Creates a single RGB integer from the given R-G-B components from 0-255.

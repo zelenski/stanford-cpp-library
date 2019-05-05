@@ -533,13 +533,14 @@ public:
     static QMainWindow* getLastWindow();
 
     /**
-     * Returns the x/y location of the top-left corner of the window on screen.
+     * Returns the x/y location of the top-left corner of the interior of the window on screen,
+     * excluding any onscreen window title bar and frame.
      */
     virtual GPoint getLocation() const;
 
     /**
-     * Returns the total height of the window in pixels, including its title
-     * bar, menus, borders, etc.
+     * Returns the total height of the window in pixels, excluding its title
+     * bar and borders.
      */
     virtual double getHeight() const;
 
@@ -609,8 +610,8 @@ public:
     static double getScreenWidth();
 
     /**
-     * Returns the total width and height of the window in pixels, including
-     * its title bar, menus, borders, etc.
+     * Returns the total width and height of the window in pixels, excluding
+     * its title bar and borders.
      */
     virtual GDimension getSize() const;
 
@@ -630,18 +631,20 @@ public:
     virtual QWidget* getWidget() const;
 
     /**
-     * Returns the total width of the window in pixels, including its title
-     * bar, menus, borders, etc.
+     * Returns the total width of the window in pixels, excluding its title
+     * bar and borders.
      */
     virtual double getWidth() const;
 
     /**
-     * Returns the x location of the left edge of the window on screen.
+     * Returns the x location of the left edge of the interior of the window on screen,
+     * excluding any onscreen window title bar and frame.
      */
     virtual double getX() const;
 
     /**
-     * Returns the y location of the top edge of the window on screen.
+     * Returns the y location of the top edge of the interior of the window on screen,
+     * excluding any onscreen window title bar and frame.
      */
     virtual double getY() const;
 

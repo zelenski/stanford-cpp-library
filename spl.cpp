@@ -1,6 +1,6 @@
 // Stanford C++ library (extracted)
 // @author Marty Stepp
-// @version Mon Apr 22 13:29:21 PDT 2019
+// @version Wed Apr 24 11:34:25 PDT 2019
 //
 // This library has been merged into a single .h and .cpp file by an automatic script
 // to make it easier to include and use with the CodeStepByStep tool.
@@ -4796,6 +4796,10 @@ void ErrorException::dump(std::ostream& out) const {
     }
     out << "***" << std::endl;
     out << insertStarsBeforeEachLine(getStackTrace()) << std::endl;
+    // out << "***" << std::endl;
+    // out << "*** To learn more about the crash, we strongly" << std::endl;
+    // out << "*** suggest running your program under the debugger." << std::endl;
+    // out << "***" << std::endl;
     out.flush();
 }
 
@@ -5119,6 +5123,7 @@ void setEcho(bool value) {
 #define INTERNAL_INCLUDE 1
 
 #include <csignal>
+#include <cstdlib>
 #include <iomanip>
 #include <iostream>
 #include <string>
@@ -5172,7 +5177,7 @@ STATIC_CONST_VARIABLE_DECLARE_COLLECTION(Vector<int>, SIGNALS_HANDLED, SIGSEGV, 
 static void signalHandlerDisable();
 static void signalHandlerEnable();
 static void stanfordCppLibSignalHandler(int sig);
-static void stanfordCppLibTerminateHandler();
+[[noreturn]] static void stanfordCppLibTerminateHandler();
 static void stanfordCppLibUnexpectedHandler();
 
 std::string cleanupFunctionNameForStackTrace(std::string function) {
@@ -5555,12 +5560,9 @@ void printStackTrace(std::ostream& out) {
         out << lineout.str() << std::endl;
     }
     
-//    out << "***" << std::endl;
-//    out << "*** NOTE:" << std::endl;
-//    out << "*** Any line numbers listed above are approximate." << std::endl;
-//    out << "*** To learn more about why the program crashed, we" << std::endl;
-//    out << "*** suggest running your program under the debugger." << std::endl;
-    
+    out << "***" << std::endl;
+    out << "*** To learn more about the crash, we strongly" << std::endl;
+    out << "*** suggest running your program under the debugger." << std::endl;
     out << "***" << std::endl;
 }
 
@@ -5577,8 +5579,8 @@ void printStackTrace(std::ostream& out) {
     std::string __desc = (desc); \
     if ((!__kind.empty())) { stringReplaceInPlace(msg, DEFAULT_EXCEPTION_KIND, __kind); } \
     if ((!__desc.empty())) { stringReplaceInPlace(msg, DEFAULT_EXCEPTION_DETAILS, __desc); } \
-    std::cout.flush(); \
     out << msg; \
+    out.flush(); \
     printStackTrace(out); \
     THROW_NOT_ON_WINDOWS(ex); \
     }
@@ -5589,7 +5591,6 @@ void printStackTrace(std::ostream& out) {
     std::string __desc = (desc); \
     if ((!__kind.empty())) { stringReplaceInPlace(msg, DEFAULT_EXCEPTION_KIND, __kind); } \
     if ((!__desc.empty())) { stringReplaceInPlace(msg, DEFAULT_EXCEPTION_DETAILS, __desc); } \
-    std::cout.flush(); \
     out << msg; \
     printStackTrace(out); \
     ErrorException errorEx(out.str()); \
@@ -5736,7 +5737,7 @@ static std::string insertStarsBeforeEachLine(const std::string& s) {
  * A general handler for any uncaught exception.
  * Prints details about the exception and then tries to print a stack trace.
  */
-static void stanfordCppLibTerminateHandler() {
+[[noreturn]] static void stanfordCppLibTerminateHandler() {
     std::string DEFAULT_EXCEPTION_KIND = "An exception";
     std::string DEFAULT_EXCEPTION_DETAILS = "(unknown exception details)";
     
@@ -5773,11 +5774,13 @@ static void stanfordCppLibTerminateHandler() {
     } catch (bool b) {
         FILL_IN_EXCEPTION_TRACE(b, "A bool exception", boolToString(b));
     } catch (double d) {
-        FILL_IN_EXCEPTION_TRACE(d, "A double exception", std::to_string(d));
+        FILL_IN_EXCEPTION_TRACE(d, "A double exception", realToString(d));
     } catch (...) {
         std::string ex = "Unknown";
         FILL_IN_EXCEPTION_TRACE(ex, "An exception", std::string());
     }
+
+    abort();   // terminate the program with a SIGABRT signal
 }
 
 /*
@@ -5812,7 +5815,7 @@ static void stanfordCppLibUnexpectedHandler() {
         message = str;
     } catch (double d) {
         kind = "double";
-        message = std::to_string(d);
+        message = realToString(d);
     } catch (const ErrorException& ex) {
         kind = "error";
         message = ex.what();
@@ -8748,7 +8751,11 @@ istream& operator >>(istream& input, Domino& d) {
 #include <climits>
 #define INTERNAL_INCLUDE 1
 
+#define INTERNAL_INCLUDE 1
 
+#define INTERNAL_INCLUDE 1
+
+#define INTERNAL_INCLUDE 1
 
 #undef INTERNAL_INCLUDE
 
@@ -8999,6 +9006,25 @@ void ListNodeString_fromString(ListNodeString*& ptr, const std::string& str) {
 void ListNodeStringptr_fromString(ListNodeString*& ptr, const std::string& str) {
     std::istringstream input(str);
     input >> ptr;
+}
+
+Set<string> setFromFile(const std::string& filename, bool cache) {
+    static Map<std::string, Set<string>> CACHE;
+    if (cache && CACHE.containsKey(filename)) {
+        return CACHE[filename];
+    }
+
+    ifstream input;
+    input.open(filename.c_str());
+    Set<string> result;
+    string line;
+    while (getline(input, line)) {
+        result.add(toLowerCase(trim(line)));
+    }
+    if (cache) {
+        CACHE[filename] = result;
+    }
+    return result;
 }
 
 

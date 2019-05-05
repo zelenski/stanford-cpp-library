@@ -109,7 +109,7 @@ GDiffGui::GDiffGui(const std::string& name1,
         _vsplitter->setSizes(QList<int>({INT_MAX, INT_MAX}));   // evenly size the two halves
         _vsplitterInteractor = new GGenericInteractor<QSplitter>(_vsplitter);
 
-        _window->addToRegion(_vsplitterInteractor, "Center");
+        _window->addToRegion(_vsplitterInteractor, GWindow::REGION_CENTER);
         _window->setKeyListener(windowCloseLambda);
         _window->center();
         _window->show();

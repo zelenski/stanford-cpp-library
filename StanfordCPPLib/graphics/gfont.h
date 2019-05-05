@@ -3,6 +3,8 @@
  * -------------
  *
  * @author Marty Stepp
+ * @version 2019/04/30
+ * - added changeFontSize for a GText*
  * @version 2018/09/07
  * - added doc comments for new documentation generation
  * @version 2018/08/23
@@ -27,6 +29,8 @@
 
 #define INTERNAL_INCLUDE 1
 #include "ginteractor.h"
+#define INTERNAL_INCLUDE 1
+#include "gobjects.h"
 #undef INTERNAL_INCLUDE
 
 /**
@@ -56,6 +60,13 @@ public:
      * @throws ErrorException if the interactor is null
      */
     static void changeFontSize(GInteractor* interactor, int dsize);
+
+    /**
+     * Modifies the font of the given label, changing its size by the given
+     * number of points.  The change in size can be positive or negative.
+     * @throws ErrorException if the interactor is null
+     */
+    static void changeFontSize(GText* label, int dsize);
 
     /**
      * Modifies the size of the given Qt font object, changing its size by the given

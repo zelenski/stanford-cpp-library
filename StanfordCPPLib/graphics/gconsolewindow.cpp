@@ -4,6 +4,8 @@
  * This file implements the gconsolewindow.h interface.
  *
  * @author Marty Stepp
+ * @version 2019/04/25
+ * - added hasInputScript
  * @version 2019/04/16
  * - bug fix for wrong text color on Mac dark mode
  * @version 2019/04/10
@@ -626,6 +628,10 @@ int GConsoleWindow::getUserInputEnd() const {
     } else {
         return -1;
     }
+}
+
+bool GConsoleWindow::hasInputScript() const {
+    return !_inputScript.isEmpty();
 }
 
 bool GConsoleWindow::isClearEnabled() const {

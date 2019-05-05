@@ -3,6 +3,8 @@
  * ---------------
  *
  * @author Marty Stepp
+ * @version 2019/04/30
+ * - added changeFontSize for a GText*
  * @version 2018/09/23
  * - added macro checks to improve compatibility with old Qt versions
  * @version 2018/09/14
@@ -43,6 +45,12 @@ void GFont::changeFontSize(GInteractor* interactor, int dsize) {
     require::nonNull(interactor, "GFont::changeFontSize", "interactor");
     QFont newFont = changeFontSize(toQFont(interactor->getFont()), dsize);
     interactor->setFont(newFont);
+}
+
+void GFont::changeFontSize(GText* label, int dsize) {
+    require::nonNull(label, "GFont::changeFontSize", "label");
+    QFont newFont = changeFontSize(toQFont(label->getFont()), dsize);
+    label->setFont(newFont);
 }
 
 QFont GFont::changeFontSize(const QFont& font, int dsize) {

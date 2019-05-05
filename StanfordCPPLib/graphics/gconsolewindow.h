@@ -1,8 +1,16 @@
 /*
  * File: gconsolewindow.h
  * ----------------------
+ * This file describes the GConsoleWindow class, which is the class used to
+ * represent the graphical console.
+ * The class is implemented as a singleton which can be accessed using the
+ * static method GConsoleWindow::instance().
  * 
  * @author Marty Stepp
+ * @version 2019/04/25
+ * - added hasInputScript
+ * @version 2019/04/10
+ * - toolbar support with icons from icon strip image
  * @version 2018/09/23
  * - added getFont
  * @version 2018/09/07
@@ -96,6 +104,7 @@ public:
     virtual std::string getForeground() const Q_DECL_OVERRIDE;
     virtual int getForegroundInt() const Q_DECL_OVERRIDE;
     virtual std::string getOutputColor() const;
+    virtual bool hasInputScript() const;
     virtual bool isClearEnabled() const;
     virtual bool isEcho() const;
     virtual bool isLocationSaved() const;

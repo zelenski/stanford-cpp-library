@@ -784,7 +784,7 @@ STATIC_CONST_VARIABLE_DECLARE_COLLECTION(Vector<int>, SIGNALS_HANDLED, SIGSEGV, 
 static void signalHandlerDisable();
 static void signalHandlerEnable();
 static void stanfordCppLibSignalHandler(int sig);
-static Q_NORETURN void stanfordCppLibTerminateHandler();
+[[noreturn]] static void stanfordCppLibTerminateHandler();
 static void stanfordCppLibUnexpectedHandler();
 
 std::string cleanupFunctionNameForStackTrace(std::string function) {
@@ -1344,7 +1344,7 @@ static std::string insertStarsBeforeEachLine(const std::string& s) {
  * A general handler for any uncaught exception.
  * Prints details about the exception and then tries to print a stack trace.
  */
-static Q_NORETURN void stanfordCppLibTerminateHandler() {
+[[noreturn]] static void stanfordCppLibTerminateHandler() {
     std::string DEFAULT_EXCEPTION_KIND = "An exception";
     std::string DEFAULT_EXCEPTION_DETAILS = "(unknown exception details)";
     
@@ -9557,6 +9557,8 @@ void GInputPanel::load(const std::string& xmlFilename) {
  * ---------------
  *
  * @author Marty Stepp
+ * @version 2019/04/30
+ * - added changeFontSize for a GText*
  * @version 2018/09/23
  * - added macro checks to improve compatibility with old Qt versions
  * @version 2018/09/14
@@ -9597,6 +9599,12 @@ void GFont::changeFontSize(GInteractor* interactor, int dsize) {
     require::nonNull(interactor, "GFont::changeFontSize", "interactor");
     QFont newFont = changeFontSize(toQFont(interactor->getFont()), dsize);
     interactor->setFont(newFont);
+}
+
+void GFont::changeFontSize(GText* label, int dsize) {
+    require::nonNull(label, "GFont::changeFontSize", "label");
+    QFont newFont = changeFontSize(toQFont(label->getFont()), dsize);
+    label->setFont(newFont);
 }
 
 QFont GFont::changeFontSize(const QFont& font, int dsize) {
@@ -10133,6 +10141,8 @@ int hashCode(const GRectangle& r) {
  * This file implements the gconsolewindow.h interface.
  *
  * @author Marty Stepp
+ * @version 2019/04/25
+ * - added hasInputScript
  * @version 2019/04/16
  * - bug fix for wrong text color on Mac dark mode
  * @version 2019/04/10
@@ -10755,6 +10765,10 @@ int GConsoleWindow::getUserInputEnd() const {
     } else {
         return -1;
     }
+}
+
+bool GConsoleWindow::hasInputScript() const {
+    return !_inputScript.isEmpty();
 }
 
 bool GConsoleWindow::isClearEnabled() const {
@@ -12547,6 +12561,9 @@ QSize GBorderLayout::calculateSize(SizeType sizeType) const {
  * -----------------
  *
  * @author Marty Stepp
+ * @version 2019/05/01
+ * - added createArgbPixel
+ * - bug fixes related to save / setPixels with alpha transparency
  * @version 2019/04/23
  * - bug fix for loading canvas from file on Windows related to istream change
  * - moved most event listener code to GInteractor superclass
@@ -12587,6 +12604,13 @@ QSize GBorderLayout::calculateSize(SizeType sizeType) const {
 #define CHAR_TO_HEX(ch) ((ch >= '0' && ch <= '9') ? (ch - '0') : (ch - 'a' + 10))
 
 const int GCanvas::WIDTH_HEIGHT_MAX = 65535;
+
+int GCanvas::createArgbPixel(int alpha, int red, int green, int blue) {
+    if (alpha < 0 || alpha > 255 || red < 0 || red > 255 || green < 0 || green > 255 || blue < 0 || blue > 255) {
+        error("ARGB values must be between 0-255");
+    }
+    return (alpha << 24 & 0xff000000) | (red << 16 & 0xff0000) | (green << 8 & 0x00ff00) | (blue & 0x0000ff);
+}
 
 int GCanvas::createRgbPixel(int red, int green, int blue) {
     if (red < 0 || red > 255 || green < 0 || green > 255 || blue < 0 || blue > 255) {
@@ -12952,13 +12976,7 @@ void GCanvas::fillRegion(double x, double y, double width, double height, int rg
     GThread::runOnQtGuiThread([this, x, y, width, height, rgb]() {
         ensureBackgroundImage();
         lockForWrite();
-
-        // fix alpha for 0-alpha non-0-rgb ints
-        int argb = rgb;
-        if (rgb != 0 && getAlpha(rgb) == 0) {
-            argb = rgb | 0xff000000;
-        }
-
+        int argb = rgb | 0xff000000;
         for (int yy = static_cast<int>(y); yy < y + height; yy++) {
             for (int xx = static_cast<int>(x); xx < x + width; xx++) {
                 _backgroundImage->setPixel(xx, yy, static_cast<unsigned int>(argb));
@@ -13000,8 +13018,8 @@ void GCanvas::fromGrid(const Grid<int>& grid) {
         lockForWrite();
         for (int row = 0, width = grid.width(), height = grid.height(); row < height; row++) {
             for (int col = 0; col < width; col++) {
-                // setPixel(col, row, grid[row][col]);
-                _backgroundImage->setPixel(col, row, static_cast<unsigned int>(grid[row][col]) | 0xff000000);
+                int argb = GColor::fixAlpha(grid[row][col]);
+                _backgroundImage->setPixel(col, row, static_cast<unsigned int>(argb));
             }
         }
         unlock();
@@ -13075,9 +13093,11 @@ int GCanvas::getPixelARGB(double x, double y) const {
 Grid<int> GCanvas::getPixels() const {
     ensureBackgroundImageConstHack();
     lockForReadConst();
-    Grid<int> grid(static_cast<int>(getHeight()), static_cast<int>(getWidth()));
-    for (int y = 0; y < static_cast<int>(getHeight()); y++) {
-        for (int x = 0; x < static_cast<int>(getWidth()); x++) {
+    int w = static_cast<int>(getWidth());
+    int h = static_cast<int>(getHeight());
+    Grid<int> grid(h, w);
+    for (int y = 0; y < h; y++) {
+        for (int x = 0; x < w; x++) {
             grid[y][x] = _backgroundImage->pixel(x, y) & 0x00ffffff;
         }
     }
@@ -13232,7 +13252,6 @@ void GCanvas::repaintRegion(int x, int y, int width, int height) {
         lockForRead();
         getWidget()->repaint(x, y, width, height);
         unlock();
-        // _gcompound.repaintRegion(x, y, width, height);   // runs on Qt GUI thread
     });
 }
 
@@ -13354,10 +13373,11 @@ void GCanvas::setPixel(double x, double y, int rgb) {
     GThread::runOnQtGuiThread([this, x, y, rgb]() {
         ensureBackgroundImage();
         lockForWrite();
+        int argb = GColor::fixAlpha(rgb);
         _backgroundImage->setPixel(
                 static_cast<int>(x),
                 static_cast<int>(y),
-                static_cast<unsigned int>(rgb) | 0xff000000);
+                static_cast<unsigned int>(argb));
         unlock();
         conditionalRepaintRegion(
                 static_cast<int>(x),
@@ -13368,7 +13388,9 @@ void GCanvas::setPixel(double x, double y, int rgb) {
 }
 
 void GCanvas::setPixel(double x, double y, int r, int g, int b) {
-    setPixel(x, y, GColor::convertRGBToRGB(r, g, b) | 0xff000000);
+    int rgb = GColor::convertRGBToRGB(r, g, b);
+    int argb = rgb | 0xff000000;
+    setPixel(x, y, argb);
 }
 
 void GCanvas::setPixelARGB(double x, double y, int argb) {
@@ -13388,6 +13410,7 @@ void GCanvas::setPixelARGB(double x, double y, int a, int r, int g, int b) {
 }
 
 void GCanvas::setPixels(const Grid<int>& pixels) {
+    // TODO: is this redundant with fromGrid?
     ensureBackgroundImage();
     if (pixels.width() != (int) getWidth() || pixels.height() != (int) getHeight()) {
         // TODO
@@ -13396,9 +13419,10 @@ void GCanvas::setPixels(const Grid<int>& pixels) {
     }
     GThread::runOnQtGuiThread([this, &pixels]() {
         lockForWrite();
-        for (int y = 0; y < pixels.height(); y++) {
-            for (int x = 0; x < pixels.width(); x++) {
-                _backgroundImage->setPixel(x, y, pixels[y][x]);
+        for (int y = 0, w = pixels.width(), h = pixels.height(); y < h; y++) {
+            for (int x = 0; x < w; x++) {
+                int argb = pixels[y][x] | 0xff000000;
+                _backgroundImage->setPixel(x, y, static_cast<unsigned int>(argb));
             }
         }
         unlock();
@@ -14291,6 +14315,10 @@ void _Internal_QWidget::setPreferredSize(const QSize& size) {
  * File: gwindow.cpp
  * -----------------
  *
+ * @version 2019/04/27
+ * - fixed more bugs with getting/setting window size and location
+ * @version 2019/04/25
+ * - fixed bugs with getting window geometry and requesting focus
  * @version 2019/04/12
  * - moved pause() headless mode implementation (empty) to console.cpp
  * @version 2019/04/09
@@ -14978,13 +15006,12 @@ int GWindow::getGObjectCount() const {
     return _lastWindow;
 }
 
-GPoint GWindow::getLocation() const {
-    QRect geom = _iqmainwindow->geometry();
-    return GPoint(geom.x(), geom.y());
+double GWindow::getHeight() const {
+    return _iqmainwindow->height();
 }
 
-double GWindow::getHeight() const {
-    return _iqmainwindow->geometry().height();
+GPoint GWindow::getLocation() const {
+    return GPoint(_iqmainwindow->x(), _iqmainwindow->y());
 }
 
 GDimension GWindow::getPreferredSize() const {
@@ -15041,8 +15068,7 @@ double GWindow::getRegionWidth(const std::string& region) const {
 }
 
 GDimension GWindow::getSize() const {
-    QRect geom = _iqmainwindow->geometry();
-    return GDimension(geom.width(), geom.height());
+    return GDimension(_iqmainwindow->width(), _iqmainwindow->height());
 }
 
 std::string GWindow::getTitle() const {
@@ -15058,15 +15084,15 @@ QWidget* GWindow::getWidget() const {
 }
 
 double GWindow::getWidth() const {
-    return _iqmainwindow->geometry().width();
+    return _iqmainwindow->width();
 }
 
 double GWindow::getX() const {
-    return _iqmainwindow->geometry().x();
+    return _iqmainwindow->x();
 }
 
 double GWindow::getY() const {
-    return _iqmainwindow->geometry().y();
+    return _iqmainwindow->y();
 }
 
 bool GWindow::hasToolbar() const {
@@ -15254,6 +15280,7 @@ void GWindow::removeWindowListener() {
 void GWindow::requestFocus() {
     GThread::runOnQtGuiThread([this]() {
         _iqmainwindow->setFocus();
+        _iqmainwindow->activateWindow();
     });
 }
 
@@ -15326,10 +15353,7 @@ void GWindow::setHeight(double height) {
 
 void GWindow::setLocation(double x, double y) {
     GThread::runOnQtGuiThread([this, x, y]() {
-        _iqmainwindow->setGeometry(static_cast<int>(x),
-                                   static_cast<int>(y),
-                                   static_cast<int>(getWidth()),
-                                   static_cast<int>(getHeight()));
+        _iqmainwindow->move(static_cast<int>(x), static_cast<int>(y));
     });
 }
 
@@ -18118,6 +18142,8 @@ QSize _Internal_QLabel::sizeHint() const {
  * This file implements the gobjects.h interface.
  *
  * @author Marty Stepp
+ * @version 2019/05/05
+ * - added predictable GLine point ordering
  * @version 2019/04/23
  * - bug fix for loading GImage from file on Windows related to istream change
  * @version 2019/03/07
@@ -18345,6 +18371,10 @@ void GObject::initializeBrushAndPen(QPainter* painter) {
     } else {
         painter->setBrush(STATIC_VARIABLE(DEFAULT_BRUSH));
     }
+
+    // anti-aliasing
+    painter->setRenderHint(QPainter::Antialiasing, GObject::isAntiAliasing());
+    painter->setRenderHint(QPainter::TextAntialiasing, GObject::isAntiAliasing());
 
     // opacity
     painter->setOpacity(_opacity);
@@ -19228,6 +19258,7 @@ GLine::GLine(double x0, double y0, double x1, double y1, GObject::LineStyle line
         : GObject(x0, y0),
           _dx(x1 - x0),
           _dy(y1 - y0) {
+    setPoints(x0, y0, x1, y1);   // checks if point swap is needed
     setLineStyle(lineStyle);
 }
 
@@ -19243,10 +19274,10 @@ bool GLine::contains(double x, double y) const {
         // TODO
         // return stanfordcpplib::getPlatform()->gobject_contains(this, x, y);
     }
-    double x0 = getX();
-    double y0 = getY();
-    double x1 = x0 + _dx;
-    double y1 = y0 + _dy;
+    double x0 = getStartX();
+    double y0 = getStartY();
+    double x1 = getEndX();
+    double y1 = getEndY();
     double tSquared = STATIC_VARIABLE(LINE_TOLERANCE) * STATIC_VARIABLE(LINE_TOLERANCE);
     if (dsq(x, y, x0, y0) < tSquared) {
         return true;
@@ -19279,7 +19310,10 @@ void GLine::draw(QPainter* painter) {
         return;
     }
     initializeBrushAndPen(painter);
-    painter->drawLine((int) getX(), (int) getY(), (int) (getX() + _dx), (int) getY() + _dy);
+    painter->drawLine(static_cast<int>(getStartX()),
+                      static_cast<int>(getStartY()),
+                      static_cast<int>(getEndX()),
+                      static_cast<int>(getEndY()));
 }
 
 GRectangle GLine::getBounds() const {
@@ -19287,9 +19321,9 @@ GRectangle GLine::getBounds() const {
         // TODO
         // return stanfordcpplib::getPlatform()->gobject_getBounds(this);
     }
-    double x0 = (_dx < 0) ? getX() + _dx : getX();
-    double y0 = (_dy < 0) ? getY() + _dy : getY();
-    return GRectangle(x0, y0, getWidth(), getHeight());
+    double minX = std::min(getStartX(), getEndX());
+    double minY = std::min(getStartY(), getEndY());
+    return GRectangle(minX, minY, getWidth(), getHeight());
 }
 
 GPoint GLine::getEndPoint() const {
@@ -19328,21 +19362,42 @@ double GLine::getWidth() const {
     return std::fabs(_dx);
 }
 
-void GLine::setEndPoint(double x, double y) {
-    _dx = x - this->getX();
-    _dy = y - this->getY();
+void GLine::setEndPoint(double x1, double y1) {
+    setPoints(getStartX(), getStartY(), x1, y1);
+}
+
+void GLine::setEndPoint(const GPoint& p) {
+    setEndPoint(p.getX(), p.getY());
+}
+
+void GLine::setPoints(double x0, double y0, double x1, double y1) {
+    if (x1 < x0 || (floatingPointEqual(x1, x0) && y1 < y0)) {
+        // points are out of order; swap
+        std::swap(x0, x1);
+        std::swap(y0, y1);
+    }
+    _x = x0;
+    _y = y0;
+    _dx = x0 - x1;
+    _dy = y0 - y1;
     repaint();
 }
 
-void GLine::setStartPoint(double x, double y) {
-    _dx += getX() - x;
-    _dy += getY() - y;
-    setLocation(x, y);   // calls repaint
+void GLine::setPoints(const GPoint& p0, const GPoint& p1) {
+    setPoints(p0.getX(), p0.getY(), p1.getX(), p1.getY());
+}
+
+void GLine::setStartPoint(double x0, double y0) {
+    setPoints(x0, y0, getEndX(), getEndY());
+}
+
+void GLine::setStartPoint(const GPoint& p) {
+    setStartPoint(p.getX(), p.getY());
 }
 
 std::string GLine::toStringExtra() const {
     std::ostringstream oss;
-    oss << "x2=" << (_x + _dx) << " y2=" << (_y + _dy);
+    oss << "x2=" << getEndX() << " y2=" << getEndY();
     return oss.str();
 }
 
@@ -19699,7 +19754,7 @@ std::string GText::getText() const {
 }
 
 std::string GText::getType() const {
-    return "GString";
+    return "GText";
 }
 
 void GText::setFont(const QFont& font) {
@@ -20226,7 +20281,7 @@ GDiffGui::GDiffGui(const std::string& name1,
         _vsplitter->setSizes(QList<int>({INT_MAX, INT_MAX}));   // evenly size the two halves
         _vsplitterInteractor = new GGenericInteractor<QSplitter>(_vsplitter);
 
-        _window->addToRegion(_vsplitterInteractor, "Center");
+        _window->addToRegion(_vsplitterInteractor, GWindow::REGION_CENTER);
         _window->setKeyListener(windowCloseLambda);
         _window->center();
         _window->show();
@@ -20316,6 +20371,8 @@ void GDiffGui::syncScrollBars(bool left) {
  * Qt's QMessageBox and QInputDialog classes.
  *
  * @author Marty Stepp
+ * @version 2019/04/23
+ * - can press Esc to close a TextFileDialog
  * @version 2018/12/28
  * - bug fix for auto mnemonics/hotkeys in showOptionDialog
  * @version 2018/11/14
@@ -20623,6 +20680,17 @@ void GOptionPane::showTextFileDialog(QWidget* /*parent*/,
         window->close();
     });
     window->addToRegion(button, GWindow::REGION_SOUTH);
+
+    // function to close the window when Escape is pressed
+    // (similar to code in gdiffgui.cpp and gdiffimage.cpp)
+    auto windowCloseLambda = [window](GEvent event) {
+        if (event.getType() == KEY_PRESSED && event.getKeyChar() == GEvent::ESCAPE_KEY) {
+            window->close();
+        }
+    };
+    window->setKeyListener(windowCloseLambda);
+    textArea->setKeyListener(windowCloseLambda);
+    button->setKeyListener(windowCloseLambda);
 
     window->pack();
     window->center();
@@ -25160,7 +25228,7 @@ GColor::GColor() {
     // empty
 }
 
-std::string GColor::canonicalColorName(const std::string& str) {
+/*static*/ std::string GColor::canonicalColorName(const std::string& str) {
     std::string result = "";
     int nChars = static_cast<int>(str.length());
     for (int i = 0; i < nChars; i++) {
@@ -25170,7 +25238,7 @@ std::string GColor::canonicalColorName(const std::string& str) {
     return result;
 }
 
-const Map<std::string, int>& GColor::colorTable() {
+/*static*/ const Map<std::string, int>& GColor::colorTable() {
     if (_colorTable.isEmpty()) {
         _colorTable["black"] = 0x000000;
         _colorTable["blue"] = 0x0000FF;
@@ -25191,7 +25259,7 @@ const Map<std::string, int>& GColor::colorTable() {
     return _colorTable;
 }
 
-const Map<std::string, std::string>& GColor::colorNameTable() {
+/*static*/ const Map<std::string, std::string>& GColor::colorNameTable() {
     if (_colorNameTable.isEmpty()) {
         _colorNameTable["#000000"] = "black";
         _colorNameTable["#ff000000"] = "black";
@@ -25227,11 +25295,11 @@ const Map<std::string, std::string>& GColor::colorNameTable() {
     return _colorNameTable;
 }
 
-int GColor::convertARGBToARGB(int a, int r, int g, int b) {
+/*static*/ int GColor::convertARGBToARGB(int a, int r, int g, int b) {
     return (a << 24) | (r << 16) | (g << 8) | b;
 }
 
-std::string GColor::convertARGBToColor(int a, int r, int g, int b) {
+/*static*/ std::string GColor::convertARGBToColor(int a, int r, int g, int b) {
     if (a < 0 || a > 255 || r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255) {
         error("GColor::convertARGBToColor: invalid ARGB value (must be 0-255)");
     }
@@ -25244,17 +25312,17 @@ std::string GColor::convertARGBToColor(int a, int r, int g, int b) {
     return os.str();
 }
 
-std::string GColor::convertARGBToColor(int argb) {
+/*static*/ std::string GColor::convertARGBToColor(int argb) {
     int a, r, g, b;
     splitARGB(argb, a, r, g, b);
     return convertARGBToColor(a, r, g, b);
 }
 
-int GColor::convertColorToARGB(const std::string& colorName) {
+/*static*/ int GColor::convertColorToARGB(const std::string& colorName) {
     return convertColorToRGB(colorName);
 }
 
-int GColor::convertColorToRGB(const std::string& colorName) {
+/*static*/ int GColor::convertColorToRGB(const std::string& colorName) {
     if (colorName == "") return -1;
     if (colorName[0] == '#') {
         std::istringstream is(colorName.substr(1) + "@");
@@ -25273,15 +25341,15 @@ int GColor::convertColorToRGB(const std::string& colorName) {
     return colorTable()[name];
 }
 
-std::string GColor::convertQColorToColor(const QColor& color) {
+/*static*/ std::string GColor::convertQColorToColor(const QColor& color) {
     return convertRGBToColor(color.red(), color.green(), color.blue());
 }
 
-int GColor::convertQColorToRGB(const QColor& color) {
+/*static*/ int GColor::convertQColorToRGB(const QColor& color) {
     return convertRGBToRGB(color.red(), color.green(), color.blue());
 }
 
-std::string GColor::convertRGBToColor(int rgb) {
+/*static*/ std::string GColor::convertRGBToColor(int rgb) {
     std::ostringstream os;
     os << std::hex << std::setfill('0') << std::uppercase << "#";
     os << std::setw(2) << (rgb >> 16 & 0xFF);
@@ -25295,7 +25363,7 @@ std::string GColor::convertRGBToColor(int rgb) {
     }
 }
 
-std::string GColor::convertRGBToColor(int r, int g, int b) {
+/*static*/ std::string GColor::convertRGBToColor(int r, int g, int b) {
     if (r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255) {
         error("GColor::convertRGBToColor: invalid RGB value (must be 0-255)");
     }
@@ -25312,29 +25380,37 @@ std::string GColor::convertRGBToColor(int r, int g, int b) {
     }
 }
 
-int GColor::convertRGBToRGB(int r, int g, int b) {
+/*static*/ int GColor::convertRGBToRGB(int r, int g, int b) {
     return (r << 16) | (g << 8) | b;
 }
 
-bool GColor::hasAlpha(const std::string& color) {
+/*static*/ int GColor::fixAlpha(int argb) {
+    int alpha = ((argb & 0xff000000) >> 24) & 0x000000ff;
+    if (alpha == 0 && (argb & 0x00ffffff) != 0) {
+        argb = argb | 0xff000000;   // set full 255 alpha
+    }
+    return argb;
+}
+
+/*static*/ bool GColor::hasAlpha(const std::string& color) {
     return static_cast<int>(color.length()) == 9
             && color[0] == '#';
 }
 
-void GColor::splitARGB(int argb, int& a, int& r, int& g, int& b) {
+/*static*/ void GColor::splitARGB(int argb, int& a, int& r, int& g, int& b) {
     a = ((static_cast<unsigned int>(argb) & 0xff000000) >> 24) & 0x000000ff;
     r = (argb & 0x00ff0000) >> 16;
     g = (argb & 0x0000ff00) >> 8;
     b = (argb & 0x000000ff);
 }
 
-void GColor::splitRGB(int rgb, int& r, int& g, int& b) {
+/*static*/ void GColor::splitRGB(int rgb, int& r, int& g, int& b) {
     r = (rgb & 0x00ff0000) >> 16;
     g = (rgb & 0x0000ff00) >> 8;
     b = (rgb & 0x000000ff);
 }
 
-QColor GColor::toQColor(const std::string& color) {
+/*static*/ QColor GColor::toQColor(const std::string& color) {
     if (hasAlpha(color)) {
         int argb = convertColorToARGB(color);
         int a, r, g, b;
@@ -25346,18 +25422,10 @@ QColor GColor::toQColor(const std::string& color) {
     }
 }
 
-QColor GColor::toQColorARGB(int argb) {
+/*static*/ QColor GColor::toQColorARGB(int argb) {
     int a, r, g, b;
     splitARGB(argb, a, r, g, b);
     return QColor(r, g, b, a);
-}
-
-int GColor::fixAlpha(int argb) {
-    int alpha = ((argb & 0xff000000) >> 24) & 0x000000ff;
-    if (alpha == 0 && (argb & 0x00ffffff) != 0) {
-        argb = argb | 0xff000000;   // set full 255 alpha
-    }
-    return argb;
 }
 
 /*

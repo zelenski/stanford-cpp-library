@@ -184,6 +184,14 @@ int f() {
     }
 }
 
+/*
+ * A custom autograder UI button to show the student's creative input file.
+ */
+void showMyInputTxt() {
+    // empty
+    autograder::showStudentTextFile("myinput.txt", /* maxWidth */ 75, /* maxHeight */ 30);
+}
+
 // this just needs to be here so that it will become studentMain()
 int main() {
     cout << "Hello, world!" << endl;
@@ -205,4 +213,5 @@ void autograderMain() {
 
     //stylecheck::setStyleCheckMergedWithUnitTests(true);
     //autograder::styleCheckAddFile("mainfunc.cpp");
+    autograder::addCallbackButton(showMyInputTxt, "View\nmyinput.txt", "textfile.gif");
 }

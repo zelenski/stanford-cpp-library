@@ -28,7 +28,7 @@ GColor::GColor() {
     // empty
 }
 
-std::string GColor::canonicalColorName(const std::string& str) {
+/*static*/ std::string GColor::canonicalColorName(const std::string& str) {
     std::string result = "";
     int nChars = static_cast<int>(str.length());
     for (int i = 0; i < nChars; i++) {
@@ -38,7 +38,7 @@ std::string GColor::canonicalColorName(const std::string& str) {
     return result;
 }
 
-const Map<std::string, int>& GColor::colorTable() {
+/*static*/ const Map<std::string, int>& GColor::colorTable() {
     if (_colorTable.isEmpty()) {
         _colorTable["black"] = 0x000000;
         _colorTable["blue"] = 0x0000FF;
@@ -59,7 +59,7 @@ const Map<std::string, int>& GColor::colorTable() {
     return _colorTable;
 }
 
-const Map<std::string, std::string>& GColor::colorNameTable() {
+/*static*/ const Map<std::string, std::string>& GColor::colorNameTable() {
     if (_colorNameTable.isEmpty()) {
         _colorNameTable["#000000"] = "black";
         _colorNameTable["#ff000000"] = "black";
@@ -95,11 +95,11 @@ const Map<std::string, std::string>& GColor::colorNameTable() {
     return _colorNameTable;
 }
 
-int GColor::convertARGBToARGB(int a, int r, int g, int b) {
+/*static*/ int GColor::convertARGBToARGB(int a, int r, int g, int b) {
     return (a << 24) | (r << 16) | (g << 8) | b;
 }
 
-std::string GColor::convertARGBToColor(int a, int r, int g, int b) {
+/*static*/ std::string GColor::convertARGBToColor(int a, int r, int g, int b) {
     if (a < 0 || a > 255 || r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255) {
         error("GColor::convertARGBToColor: invalid ARGB value (must be 0-255)");
     }
@@ -112,17 +112,17 @@ std::string GColor::convertARGBToColor(int a, int r, int g, int b) {
     return os.str();
 }
 
-std::string GColor::convertARGBToColor(int argb) {
+/*static*/ std::string GColor::convertARGBToColor(int argb) {
     int a, r, g, b;
     splitARGB(argb, a, r, g, b);
     return convertARGBToColor(a, r, g, b);
 }
 
-int GColor::convertColorToARGB(const std::string& colorName) {
+/*static*/ int GColor::convertColorToARGB(const std::string& colorName) {
     return convertColorToRGB(colorName);
 }
 
-int GColor::convertColorToRGB(const std::string& colorName) {
+/*static*/ int GColor::convertColorToRGB(const std::string& colorName) {
     if (colorName == "") return -1;
     if (colorName[0] == '#') {
         std::istringstream is(colorName.substr(1) + "@");
@@ -141,15 +141,15 @@ int GColor::convertColorToRGB(const std::string& colorName) {
     return colorTable()[name];
 }
 
-std::string GColor::convertQColorToColor(const QColor& color) {
+/*static*/ std::string GColor::convertQColorToColor(const QColor& color) {
     return convertRGBToColor(color.red(), color.green(), color.blue());
 }
 
-int GColor::convertQColorToRGB(const QColor& color) {
+/*static*/ int GColor::convertQColorToRGB(const QColor& color) {
     return convertRGBToRGB(color.red(), color.green(), color.blue());
 }
 
-std::string GColor::convertRGBToColor(int rgb) {
+/*static*/ std::string GColor::convertRGBToColor(int rgb) {
     std::ostringstream os;
     os << std::hex << std::setfill('0') << std::uppercase << "#";
     os << std::setw(2) << (rgb >> 16 & 0xFF);
@@ -163,7 +163,7 @@ std::string GColor::convertRGBToColor(int rgb) {
     }
 }
 
-std::string GColor::convertRGBToColor(int r, int g, int b) {
+/*static*/ std::string GColor::convertRGBToColor(int r, int g, int b) {
     if (r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255) {
         error("GColor::convertRGBToColor: invalid RGB value (must be 0-255)");
     }
@@ -180,29 +180,37 @@ std::string GColor::convertRGBToColor(int r, int g, int b) {
     }
 }
 
-int GColor::convertRGBToRGB(int r, int g, int b) {
+/*static*/ int GColor::convertRGBToRGB(int r, int g, int b) {
     return (r << 16) | (g << 8) | b;
 }
 
-bool GColor::hasAlpha(const std::string& color) {
+/*static*/ int GColor::fixAlpha(int argb) {
+    int alpha = ((argb & 0xff000000) >> 24) & 0x000000ff;
+    if (alpha == 0 && (argb & 0x00ffffff) != 0) {
+        argb = argb | 0xff000000;   // set full 255 alpha
+    }
+    return argb;
+}
+
+/*static*/ bool GColor::hasAlpha(const std::string& color) {
     return static_cast<int>(color.length()) == 9
             && color[0] == '#';
 }
 
-void GColor::splitARGB(int argb, int& a, int& r, int& g, int& b) {
+/*static*/ void GColor::splitARGB(int argb, int& a, int& r, int& g, int& b) {
     a = ((static_cast<unsigned int>(argb) & 0xff000000) >> 24) & 0x000000ff;
     r = (argb & 0x00ff0000) >> 16;
     g = (argb & 0x0000ff00) >> 8;
     b = (argb & 0x000000ff);
 }
 
-void GColor::splitRGB(int rgb, int& r, int& g, int& b) {
+/*static*/ void GColor::splitRGB(int rgb, int& r, int& g, int& b) {
     r = (rgb & 0x00ff0000) >> 16;
     g = (rgb & 0x0000ff00) >> 8;
     b = (rgb & 0x000000ff);
 }
 
-QColor GColor::toQColor(const std::string& color) {
+/*static*/ QColor GColor::toQColor(const std::string& color) {
     if (hasAlpha(color)) {
         int argb = convertColorToARGB(color);
         int a, r, g, b;
@@ -214,16 +222,8 @@ QColor GColor::toQColor(const std::string& color) {
     }
 }
 
-QColor GColor::toQColorARGB(int argb) {
+/*static*/ QColor GColor::toQColorARGB(int argb) {
     int a, r, g, b;
     splitARGB(argb, a, r, g, b);
     return QColor(r, g, b, a);
-}
-
-int GColor::fixAlpha(int argb) {
-    int alpha = ((argb & 0xff000000) >> 24) & 0x000000ff;
-    if (alpha == 0 && (argb & 0x00ffffff) != 0) {
-        argb = argb | 0xff000000;   // set full 255 alpha
-    }
-    return argb;
 }

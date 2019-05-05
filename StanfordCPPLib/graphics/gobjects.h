@@ -6,6 +6,8 @@
  * <include src="pictures/ClassHierarchies/GObjectHierarchy-h.html">
  *
  * @author Marty Stepp
+ * @version 2019/05/05
+ * - added predictable GLine point ordering
  * @version 2019/04/23
  * - bug fix for loading GImage from file on Windows related to istream change
  * @version 2019/03/07
@@ -1129,18 +1131,48 @@ public:
     virtual double getWidth() const Q_DECL_OVERRIDE;
 
     /**
-     * Sets the end point in the line to (<code>x</code>,&nbsp;<code>y</code>),
+     * Sets the end point in the line to (<code>x1</code>,&nbsp;<code>y1</code>),
      * leaving the start point unchanged.  This method is therefore different from
      * <code>setLocation</code>, which moves both components of the line segment.
      */
-    virtual void setEndPoint(double x, double y);
+    virtual void setEndPoint(double x1, double y1);
 
     /**
-     * Sets the initial point in the line to (<code>x</code>,&nbsp;<code>y</code>),
+     * Sets the end point in the line to p,
+     * leaving the start point unchanged.  This method is therefore different from
+     * <code>setLocation</code>, which moves both components of the line segment.
+     */
+    virtual void setEndPoint(const GPoint& p);
+
+    /**
+     * Sets this line's two end points to (x0, y0) and (x1, y1).
+     * The points are rearranged into x-major, y-minor order; that is, if
+     * x1 < x0 or (x1 == x0 and y1 < y0), the points are swapped.
+     * This is done to improve consistency when drawing lines.
+     */
+    virtual void setPoints(double x0, double y0, double x1, double y1);
+
+    /**
+     * Sets this line's two end points to p0 and p1.
+     * The points are rearranged into x-major, y-minor order; that is, if
+     * x1 < x0 or (x1 == x0 and y1 < y0), the points are swapped.
+     * This is done to improve consistency when drawing lines.
+     */
+    virtual void setPoints(const GPoint& p0, const GPoint& p1);
+
+    /**
+     * Sets the initial point in the line to (<code>x0</code>,&nbsp;<code>y0</code>),
      * leaving the end point unchanged.  This method is therefore different from
      * <code>setLocation</code>, which moves both components of the line segment.
      */
-    virtual void setStartPoint(double x, double y);
+    virtual void setStartPoint(double x0, double y0);
+
+    /**
+     * Sets the initial point in the line to p,
+     * leaving the end point unchanged.  This method is therefore different from
+     * <code>setLocation</code>, which moves both components of the line segment.
+     */
+    virtual void setStartPoint(const GPoint& p);
 
     /* @inherit */
     virtual std::string toStringExtra() const Q_DECL_OVERRIDE;

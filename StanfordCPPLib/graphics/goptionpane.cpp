@@ -6,6 +6,8 @@
  * Qt's QMessageBox and QInputDialog classes.
  *
  * @author Marty Stepp
+ * @version 2019/04/23
+ * - can press Esc to close a TextFileDialog
  * @version 2018/12/28
  * - bug fix for auto mnemonics/hotkeys in showOptionDialog
  * @version 2018/11/14
@@ -313,6 +315,17 @@ void GOptionPane::showTextFileDialog(QWidget* /*parent*/,
         window->close();
     });
     window->addToRegion(button, GWindow::REGION_SOUTH);
+
+    // function to close the window when Escape is pressed
+    // (similar to code in gdiffgui.cpp and gdiffimage.cpp)
+    auto windowCloseLambda = [window](GEvent event) {
+        if (event.getType() == KEY_PRESSED && event.getKeyChar() == GEvent::ESCAPE_KEY) {
+            window->close();
+        }
+    };
+    window->setKeyListener(windowCloseLambda);
+    textArea->setKeyListener(windowCloseLambda);
+    button->setKeyListener(windowCloseLambda);
 
     window->pack();
     window->center();

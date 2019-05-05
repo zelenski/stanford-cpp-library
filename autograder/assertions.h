@@ -34,6 +34,8 @@
 #include "autograder.h"
 #define INTERNAL_INCLUDE 1
 #include "diff.h"
+#define INTERNAL_INCLUDE 1
+#include "gbufferedimage.h"
 #undef INTERNAL_INCLUDE
 
 #define TEST_FAIL_PREFIX std::string("Test case failed: ")
@@ -251,8 +253,19 @@
     EXPECT_TRUE(didThrow)
 
 void assertEqualsImage(const std::string& msg,
+                       GBufferedImage& imagefile1,
+                       GBufferedImage& imagefile2);
+
+void assertEqualsImage(const std::string& msg,
                        const std::string& imagefile1,
                        const std::string& imagefile2);
+
+void assertSimilarImage(const std::string& msg,
+                        GBufferedImage& image1,
+                        GBufferedImage& image2,
+                        int diffPixelTolerance = 0,
+                        int xmin = -1, int ymin = -1,
+                        int xmax = -1, int ymax = -1);
 
 void assertSimilarImage(const std::string& msg,
                         const std::string& imagefile1,

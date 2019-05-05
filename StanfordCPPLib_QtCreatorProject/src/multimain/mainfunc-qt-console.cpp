@@ -48,6 +48,8 @@ void testQtConsole() {
 
     Timer tim;
     tim.start();
+    string s = "hi";
+    s = s.substr(1, 1);
     for (int i = 0; i < 1001; i++) {
         cout << setw(5) << i;
         if (i > 0 && i % 10 == 0) {

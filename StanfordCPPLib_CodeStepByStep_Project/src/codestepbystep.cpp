@@ -12,7 +12,11 @@
 #include <climits>
 #define INTERNAL_INCLUDE 1
 #include "codestepbystep.h"
+#define INTERNAL_INCLUDE 1
 #include "exceptions.h"
+#define INTERNAL_INCLUDE 1
+#include "map.h"
+#define INTERNAL_INCLUDE 1
 #include "plainconsole.h"
 #undef INTERNAL_INCLUDE
 
@@ -263,6 +267,25 @@ void ListNodeString_fromString(ListNodeString*& ptr, const std::string& str) {
 void ListNodeStringptr_fromString(ListNodeString*& ptr, const std::string& str) {
     std::istringstream input(str);
     input >> ptr;
+}
+
+Set<string> setFromFile(const std::string& filename, bool cache) {
+    static Map<std::string, Set<string>> CACHE;
+    if (cache && CACHE.containsKey(filename)) {
+        return CACHE[filename];
+    }
+
+    ifstream input;
+    input.open(filename.c_str());
+    Set<string> result;
+    string line;
+    while (getline(input, line)) {
+        result.add(toLowerCase(trim(line)));
+    }
+    if (cache) {
+        CACHE[filename] = result;
+    }
+    return result;
 }
 
 

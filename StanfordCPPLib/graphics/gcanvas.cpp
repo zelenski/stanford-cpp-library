@@ -3,6 +3,9 @@
  * -----------------
  *
  * @author Marty Stepp
+ * @version 2019/05/01
+ * - added createArgbPixel
+ * - bug fixes related to save / setPixels with alpha transparency
  * @version 2019/04/23
  * - bug fix for loading canvas from file on Windows related to istream change
  * - moved most event listener code to GInteractor superclass
@@ -43,6 +46,13 @@
 #define CHAR_TO_HEX(ch) ((ch >= '0' && ch <= '9') ? (ch - '0') : (ch - 'a' + 10))
 
 const int GCanvas::WIDTH_HEIGHT_MAX = 65535;
+
+int GCanvas::createArgbPixel(int alpha, int red, int green, int blue) {
+    if (alpha < 0 || alpha > 255 || red < 0 || red > 255 || green < 0 || green > 255 || blue < 0 || blue > 255) {
+        error("ARGB values must be between 0-255");
+    }
+    return (alpha << 24 & 0xff000000) | (red << 16 & 0xff0000) | (green << 8 & 0x00ff00) | (blue & 0x0000ff);
+}
 
 int GCanvas::createRgbPixel(int red, int green, int blue) {
     if (red < 0 || red > 255 || green < 0 || green > 255 || blue < 0 || blue > 255) {
@@ -408,13 +418,7 @@ void GCanvas::fillRegion(double x, double y, double width, double height, int rg
     GThread::runOnQtGuiThread([this, x, y, width, height, rgb]() {
         ensureBackgroundImage();
         lockForWrite();
-
-        // fix alpha for 0-alpha non-0-rgb ints
-        int argb = rgb;
-        if (rgb != 0 && getAlpha(rgb) == 0) {
-            argb = rgb | 0xff000000;
-        }
-
+        int argb = rgb | 0xff000000;
         for (int yy = static_cast<int>(y); yy < y + height; yy++) {
             for (int xx = static_cast<int>(x); xx < x + width; xx++) {
                 _backgroundImage->setPixel(xx, yy, static_cast<unsigned int>(argb));
@@ -456,8 +460,8 @@ void GCanvas::fromGrid(const Grid<int>& grid) {
         lockForWrite();
         for (int row = 0, width = grid.width(), height = grid.height(); row < height; row++) {
             for (int col = 0; col < width; col++) {
-                // setPixel(col, row, grid[row][col]);
-                _backgroundImage->setPixel(col, row, static_cast<unsigned int>(grid[row][col]) | 0xff000000);
+                int argb = GColor::fixAlpha(grid[row][col]);
+                _backgroundImage->setPixel(col, row, static_cast<unsigned int>(argb));
             }
         }
         unlock();
@@ -531,9 +535,11 @@ int GCanvas::getPixelARGB(double x, double y) const {
 Grid<int> GCanvas::getPixels() const {
     ensureBackgroundImageConstHack();
     lockForReadConst();
-    Grid<int> grid(static_cast<int>(getHeight()), static_cast<int>(getWidth()));
-    for (int y = 0; y < static_cast<int>(getHeight()); y++) {
-        for (int x = 0; x < static_cast<int>(getWidth()); x++) {
+    int w = static_cast<int>(getWidth());
+    int h = static_cast<int>(getHeight());
+    Grid<int> grid(h, w);
+    for (int y = 0; y < h; y++) {
+        for (int x = 0; x < w; x++) {
             grid[y][x] = _backgroundImage->pixel(x, y) & 0x00ffffff;
         }
     }
@@ -688,7 +694,6 @@ void GCanvas::repaintRegion(int x, int y, int width, int height) {
         lockForRead();
         getWidget()->repaint(x, y, width, height);
         unlock();
-        // _gcompound.repaintRegion(x, y, width, height);   // runs on Qt GUI thread
     });
 }
 
@@ -810,10 +815,11 @@ void GCanvas::setPixel(double x, double y, int rgb) {
     GThread::runOnQtGuiThread([this, x, y, rgb]() {
         ensureBackgroundImage();
         lockForWrite();
+        int argb = GColor::fixAlpha(rgb);
         _backgroundImage->setPixel(
                 static_cast<int>(x),
                 static_cast<int>(y),
-                static_cast<unsigned int>(rgb) | 0xff000000);
+                static_cast<unsigned int>(argb));
         unlock();
         conditionalRepaintRegion(
                 static_cast<int>(x),
@@ -824,7 +830,9 @@ void GCanvas::setPixel(double x, double y, int rgb) {
 }
 
 void GCanvas::setPixel(double x, double y, int r, int g, int b) {
-    setPixel(x, y, GColor::convertRGBToRGB(r, g, b) | 0xff000000);
+    int rgb = GColor::convertRGBToRGB(r, g, b);
+    int argb = rgb | 0xff000000;
+    setPixel(x, y, argb);
 }
 
 void GCanvas::setPixelARGB(double x, double y, int argb) {
@@ -844,6 +852,7 @@ void GCanvas::setPixelARGB(double x, double y, int a, int r, int g, int b) {
 }
 
 void GCanvas::setPixels(const Grid<int>& pixels) {
+    // TODO: is this redundant with fromGrid?
     ensureBackgroundImage();
     if (pixels.width() != (int) getWidth() || pixels.height() != (int) getHeight()) {
         // TODO
@@ -852,9 +861,10 @@ void GCanvas::setPixels(const Grid<int>& pixels) {
     }
     GThread::runOnQtGuiThread([this, &pixels]() {
         lockForWrite();
-        for (int y = 0; y < pixels.height(); y++) {
-            for (int x = 0; x < pixels.width(); x++) {
-                _backgroundImage->setPixel(x, y, pixels[y][x]);
+        for (int y = 0, w = pixels.width(), h = pixels.height(); y < h; y++) {
+            for (int x = 0; x < w; x++) {
+                int argb = pixels[y][x] | 0xff000000;
+                _backgroundImage->setPixel(x, y, static_cast<unsigned int>(argb));
             }
         }
         unlock();

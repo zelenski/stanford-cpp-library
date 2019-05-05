@@ -103,7 +103,7 @@ STATIC_CONST_VARIABLE_DECLARE_COLLECTION(Vector<int>, SIGNALS_HANDLED, SIGSEGV, 
 static void signalHandlerDisable();
 static void signalHandlerEnable();
 static void stanfordCppLibSignalHandler(int sig);
-static Q_NORETURN void stanfordCppLibTerminateHandler();
+[[noreturn]] static void stanfordCppLibTerminateHandler();
 static void stanfordCppLibUnexpectedHandler();
 
 std::string cleanupFunctionNameForStackTrace(std::string function) {
@@ -663,7 +663,7 @@ static std::string insertStarsBeforeEachLine(const std::string& s) {
  * A general handler for any uncaught exception.
  * Prints details about the exception and then tries to print a stack trace.
  */
-static Q_NORETURN void stanfordCppLibTerminateHandler() {
+[[noreturn]] static void stanfordCppLibTerminateHandler() {
     std::string DEFAULT_EXCEPTION_KIND = "An exception";
     std::string DEFAULT_EXCEPTION_DETAILS = "(unknown exception details)";
     
