@@ -5,6 +5,8 @@
  * by student code on the console.
  * 
  * @author Marty Stepp
+ * @version 2019/05/16
+ * - added more function names to filter from stack trace
  * @version 2019/04/16
  * - filter Qt/std thread methods from stack trace
  * @version 2019/04/02
@@ -304,6 +306,9 @@ bool shouldFilterOutFromStackTrace(const std::string& function) {
         "BaseThreadInitThunk",
         "call_stack_gcc.cpp",
         "call_stack_windows.cpp",
+        "CFRunLoopDoSource",
+        "CFRunLoopRun",
+        "CFRUNLOOP_IS",
         "crtexe.c",
         "decltype(forward",
         "ErrorException::ErrorException",
@@ -326,17 +331,20 @@ bool shouldFilterOutFromStackTrace(const std::string& function) {
         "printStackTrace",
         // "QAbstractItemModel::",
         // "QAbstractProxyModel::",
+        "QApplication::notify",
         "QApplicationPrivate::",
         "QCoreApplication::",
         "QGuiApplicationPrivate::",
         "QMetaMethod::",
         "QMetaObject::",
         "QObjectPrivate::",
+        "qt_plugin_instance",
         "QtGui::startBackgroundEventLoop",
         // "QWidget::",
         "QWidgetBackingStore::",
         "QWindowSystemInterface::",
         "require::_errorMessage",
+        "RunCurrentEventLoopInMode",
         "shouldFilterOutFromStackTrace",
         "stacktrace::",
         "stanfordCppLibPosixSignalHandler",
@@ -344,7 +352,8 @@ bool shouldFilterOutFromStackTrace(const std::string& function) {
         "stanfordCppLibTerminateHandler",
         "stanfordCppLibUnexpectedHandler",
         "testing::",
-        "UnhandledException"
+        "UnhandledException",
+        "WinMain@"
     };
 
     // prefixes to filter (don't show any func whose name starts with these)
@@ -600,7 +609,7 @@ static void stanfordCppLibSignalHandler(int sig) {
     std::string SIGNAL_DETAILS = "No details were provided about the error.";
     if (sig == SIGSEGV) {
         SIGNAL_KIND = "A segmentation fault (SIGSEGV)";
-        SIGNAL_DETAILS = "This typically happens when you try to dereference a pointer\n*** that is NULL or invalid.";
+        SIGNAL_DETAILS = "This typically happens when you try to dereference a pointer\n*** that is null or invalid.";
     } else if (sig == SIGABRT) {
         SIGNAL_KIND = "An abort error (SIGABRT)";
         SIGNAL_DETAILS = "This error is thrown by system functions that detect corrupt state.";

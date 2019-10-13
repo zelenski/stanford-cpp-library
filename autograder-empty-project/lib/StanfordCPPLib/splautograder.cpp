@@ -12876,6 +12876,8 @@ void assertSimilarImage(const std::string& msg,
  * See sylecheck.h for documentation of each function.
  * 
  * @author Marty Stepp
+ * @version 2019/05/08
+ * - changed "should occur" strings to remove < char (HTML tag encoding issues)
  * @version 2018/08/27
  * - refactored to use AutograderUnitTestGui cpp class
  * @version 2016/12/01
@@ -12971,9 +12973,9 @@ static bool processPatternNode(const std::string& codeFileName,
     if (patternMinCount == patternMaxCount) {
         rangeStr = "should occur exactly " + std::to_string(patternMinCount) + " times";
     } else if (patternMinCount == 0 && patternMaxCount > 0 && patternMaxCount != STATIC_VARIABLE(DEFAULT_MAX_COUNT)) {
-        rangeStr = "should occur <= " + std::to_string(patternMaxCount) + " times";
+        rangeStr = "should occur at most " + std::to_string(patternMaxCount) + " times";
     } else if (patternMaxCount == STATIC_VARIABLE(DEFAULT_MAX_COUNT) && patternMinCount > 0) {
-        rangeStr = "should occur >= " + std::to_string(patternMinCount) + " times";
+        rangeStr = "should occur at least " + std::to_string(patternMinCount) + " times";
     } else {
         rangeStr = "should be between " + std::to_string(patternMinCount) + "-" + std::to_string(patternMaxCount) + " times";
     }

@@ -352,6 +352,22 @@ public:
     GRectangle(const GPoint& p, const GDimension& size);
 
     /**
+     * Returns <code>true</code> if the rectangle contains the given point.
+     */
+    bool contains(double x, double y) const;
+
+    /**
+     * Returns <code>true</code> if the rectangle contains the given point.
+     */
+    bool contains(const GPoint& pt) const;
+
+    /**
+     * Returns <code>true</code> if this rectangle contains the given rectangle
+     * entirely.
+     */
+    bool contains(const GRectangle& rect) const;
+
+    /**
      * Returns a new rectangle with its boundaries shifted outward by the given
      * amount on all 4 sides.
      * e.g. a 10x10 rectangle at position (55, 42) enlarged by 1 will become
@@ -380,17 +396,15 @@ public:
     double getHeight() const;
 
     /**
+     * Returns true if this rectangle and the given other rectangle overlap.
+     */
+    bool intersects(const GRectangle& other) const;
+
+    /**
      * Returns <code>true</code> if the rectangle is empty, meaning that it
      * has a width and height that are both 0 or negative.
      */
     bool isEmpty() const;
-
-    /**
-     * Returns <code>true</code> if the rectangle contains the given point,
-     * which may be specified either as a point or as distinct coordinates.
-     */
-    bool contains(const GPoint& pt) const;
-    bool contains(double x, double y) const;
 
     /**
      * Converts the <code>GRectangle</code> to a string in the form

@@ -4,9 +4,10 @@
  * This file implements the gobjects.h interface.
  *
  * @author Marty Stepp
+ * @version 2019/08/13
+ * - bug fix for loading GImage (hasError -> !hasError) - thanks to Tyler Conklin
  * @version 2019/05/05
- * - added predictable GLine point ordering
- * @version 2019/04/23
+ * - added predictable GLine point ordering * @version 2019/04/23
  * - bug fix for loading GImage from file on Windows related to istream change
  * @version 2019/03/07
  * - added support for loading a GImage directly from istream (htiek)
@@ -1044,7 +1045,7 @@ bool GImage::load(const std::string& filename) {
             hasError = true;
         }
     });
-    return hasError;
+    return !hasError;   // *** BUGFIX thanks to Tyler Conklin
 }
 
 bool GImage::loadFromStream(std::istream& input) {

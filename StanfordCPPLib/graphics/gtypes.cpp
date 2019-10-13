@@ -3,6 +3,8 @@
  * ----------------
  * This file implements the classes in the gtypes.h interface.
  *
+ * @version 2019/05/16
+ * - added GRectangle contains(GRectangle), intersects
  * @version 2018/07/14
  * - initial version, based on gtypes.cpp
  */
@@ -263,6 +265,21 @@ GRectangle::GRectangle(const GPoint& p, const GDimension& size)
     // empty
 }
 
+bool GRectangle::contains(double x, double y) const {
+    return x >= this->_x && y >= this->_y
+            && x < this->_x + _width
+            && y < this->_y + _height;
+}
+
+bool GRectangle::contains(const GPoint& pt) const {
+    return contains(pt.getX(), pt.getY());
+}
+
+bool GRectangle::contains(const GRectangle& rect) const {
+    return contains(rect.getX(), rect.getY())
+            && contains(rect.getX() + rect.getWidth() - 1, rect.getY() + rect.getHeight() - 1);
+}
+
 GRectangle GRectangle::enlargedBy(double amount) {
     return GRectangle(_x - amount, _y - amount, _width + 2 * amount, _height + 2 * amount);
 }
@@ -283,18 +300,16 @@ double GRectangle::getHeight() const {
     return _height;
 }
 
+bool GRectangle::intersects(const GRectangle& other) const {
+    // check for non-intersecting x coordinates
+    return !(getX() + getWidth() < other.getX()            // I am entirely left of him
+          || getX() > other.getX() + other.getWidth()      // I am entirely right of him
+          || getY() + getHeight() < other.getY()           // I am entirely above him
+          || getY() > other.getY() + other.getHeight());   // I am entirely below him
+}
+
 bool GRectangle::isEmpty() const {
     return _width <= 0 || _height <= 0;
-}
-
-bool GRectangle::contains(double x, double y) const {
-    return x >= this->_x && y >= this->_y
-            && x < this->_x + _width
-            && y < this->_y + _height;
-}
-
-bool GRectangle::contains(const GPoint& pt) const {
-    return contains(pt.getX(), pt.getY());
 }
 
 std::string GRectangle::toString() const {

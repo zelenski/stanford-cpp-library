@@ -1,6 +1,6 @@
 // Stanford C++ library (extracted)
 // @author Marty Stepp
-// @version Wed Apr 24 11:34:25 PDT 2019
+// @version Sat Oct 12 18:21:52 PDT 2019
 //
 // This library has been merged into a single .h and .cpp file by an automatic script
 // to make it easier to include and use with the CodeStepByStep tool.
@@ -691,6 +691,8 @@ int hashCode(T1&& first, T2&& second, Others&&... remaining) {
  * --------------
  * This file exports functions for generating pseudorandom numbers.
  * 
+ * @version 2019/05/16
+ * - added randomColor that takes min/max RGB
  * @version 2018/09/25
  * - added doc comments for new documentation generation
  * @version 2017/10/05
@@ -735,10 +737,26 @@ bool randomChance(double p);
 int randomColor();
 
 /**
+ * Returns a random RGB color as an integer, with the value of the RGB components
+ * bounded between the given minimum and maximum.
+ * @throw ErrorException if min or max is not in [0..255] or min > max
+ * See also: gwindow.h convertRGBToColor()
+ */
+int randomColor(int minRGB, int maxRGB);
+
+/**
  * Returns a random RGB color as a hex string like "#ff00ff" for magenta.
  * See also: gwindow.h convertColorToRGB()
  */
 std::string randomColorString();
+
+/**
+ * Returns a random RGB color as a hex string like "#ff00ff" for magenta,
+ * with the value of the RGB components bounded between the given minimum and maximum.
+ * @throw ErrorException if min or max is not in [0..255] or min > max
+ * See also: gwindow.h convertColorToRGB()
+ */
+std::string randomColorString(int minRGB, int maxRGB);
 
 /**
  * Returns a random integer in the range <code>low</code> to
@@ -1761,6 +1779,8 @@ std::string shuffle(std::string s);
  * Used to implement comparison operators like < and >= on collections.
  *
  * @author Marty Stepp
+ * @version 2019/10/12
+ * - added ARRAY_LENGTH macro
  * @version 2019/04/12
  * - added GenericSet unionWith, intersect, difference methods
  * - added functions to read/write quoted char values
@@ -1803,6 +1823,9 @@ std::string shuffle(std::string s);
 #define INTERNAL_INCLUDE 1
 
 #undef INTERNAL_INCLUDE
+
+// macro to get the length of a stack-allocated array
+#define ARRAY_LENGTH(a) (sizeof(a) / sizeof((a)[0]))
 
 // begin global namespace string read/writing functions from strlib.h
 
@@ -9988,6 +10011,8 @@ template <typename ValueType>
  * This file exports a parameterized Graph class used to represent graphs,
  * which consist of a set of nodes (vertices) and a set of arcs (edges).
  * 
+ * @version 2019/08/13
+ * - fixed compiler error with Graph default constructor on older g++ compilers
  * @version 2018/09/07
  * - reformatted doc-style comments
  * @version 2018/03/10
@@ -10051,6 +10076,8 @@ template <typename ValueType>
 
 #define INTERNAL_INCLUDE 1
 
+#define INTERNAL_INCLUDE 1
+
 #undef INTERNAL_INCLUDE
 
 /**
@@ -10080,7 +10107,7 @@ public:
      * Creates an empty graph.
      * @bigoh O(1)
      */
-    Graph() = default;
+    Graph();
     
     /**
      * Frees the internal storage allocated to represent the graph.
@@ -10779,6 +10806,11 @@ private:
  * work is done by the initializers, which ensure that the nodes and
  * arcs set are given the correct comparison functions.
  */
+
+template <typename NodeType, typename ArcType>
+Graph<NodeType, ArcType>::Graph() {
+    // empty
+}
 
 template <typename NodeType, typename ArcType>
 Graph<NodeType, ArcType>::Graph(const Graph& src) {
@@ -21386,7 +21418,7 @@ typedef BigInteger bigint;
  * Stanford C++ library.
  *
  * @author Marty Stepp
- * @version 2019/04/23
+ * @version 2019/10/12
  */
 
 #ifndef _version_h
@@ -21400,7 +21432,7 @@ typedef BigInteger bigint;
  *       *MUST* be zero-padded to YYYY/MM/DD format;
  *       if month or day is < 10, insert a preceding 0
  */
-#define STANFORD_CPP_LIB_VERSION "2019/04/23"
+#define STANFORD_CPP_LIB_VERSION "2019/10/12"
 
 /*
  * Minimum version of your IDE's project that is supported.
@@ -22898,6 +22930,8 @@ void stringToPQ(HeapPriorityQueue& pq, string elements);
  * A LinkedIntList is a sequential collection of integers stored with 0-based integer
  * indexes and internally represented as a list of linked node structures.
  *
+ * @version 2019/05/17
+ * - added AssassinNode
  * @version 2018/03/19
  * - changed nullptr output to {}
  * @version 2016/11/11
@@ -23046,6 +23080,7 @@ typedef ListNodeGen<int> ListNode;
 typedef ListNodeGen<int> ListNodeInt;
 typedef ListNodeGen<double> ListNodeDouble;
 typedef ListNodeGen<std::string> ListNodeString;
+typedef ListNodeGen<std::string> AssassinNode;
 
 // end "cpp" section of ListNode
 
@@ -23172,6 +23207,10 @@ istream& operator >>(istream& input, Domino& d);
 
 /////////////////////// BEGIN code extracted from StanfordCPPLib_CodeStepByStep_Project/src/codestepbystep.h ///////////////////////
 /*
+ * @version 2019/10/12
+ * - add arrayToString template
+ * @version 2019/05/17
+ * - add AssassinNode support
  * @version 2019/04/24
  * - add setFromFile
  * - remove STL includes
@@ -23206,6 +23245,8 @@ istream& operator >>(istream& input, Domino& d);
 //#include <vector>
 
 // Stanford lib stuff
+#define INTERNAL_INCLUDE 1
+
 #define INTERNAL_INCLUDE 1
 
 #define INTERNAL_INCLUDE 1
@@ -23297,8 +23338,25 @@ void __codeStepByStepSignalHandler(int sig);
 void __posixSignalHandler(int sig, siginfo_t* /*siginfo*/, void* /*context*/);
 #endif // !defined(_WIN32)
 
+// function to convert an array to string for printing
+template <typename T>
+std::string arrayToString(T a[], int length) {
+    std::ostringstream out;
+    out << "{";
+    if (length > 0) {
+        writeGenericValue(out, a[0], /* forceQuotes */ true);
+        for (int i = 1; i < length; i++) {
+            out << ", ";
+            writeGenericValue(out, a[i], /* forceQuotes */ true);
+        }
+    }
+    out << "}";
+    return out.str();
+}
+
 // functions to parse various collections from strings
 void ArrayIntList_fromString(ArrayIntList& list, const std::string& str);
+void AssassinNode_fromString(AssassinNode*& ptr, const std::string& str);
 void BasicGraph_fromString(BasicGraph& graph, const std::string& str);
 void BinaryTree_fromString(BinaryTree& tree, const std::string& str);
 void BinaryTreeNode_fromString(BinaryTreeNode*& root, const std::string& str);

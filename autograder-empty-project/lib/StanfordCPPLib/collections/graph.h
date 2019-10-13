@@ -4,6 +4,8 @@
  * This file exports a parameterized Graph class used to represent graphs,
  * which consist of a set of nodes (vertices) and a set of arcs (edges).
  * 
+ * @version 2019/08/13
+ * - fixed compiler error with Graph default constructor on older g++ compilers
  * @version 2018/09/07
  * - reformatted doc-style comments
  * @version 2018/03/10
@@ -66,6 +68,8 @@
 #define INTERNAL_INCLUDE 1
 #include "set.h"
 #define INTERNAL_INCLUDE 1
+#include "strlib.h"
+#define INTERNAL_INCLUDE 1
 #include "tokenscanner.h"
 #undef INTERNAL_INCLUDE
 
@@ -96,7 +100,7 @@ public:
      * Creates an empty graph.
      * @bigoh O(1)
      */
-    Graph() = default;
+    Graph();
     
     /**
      * Frees the internal storage allocated to represent the graph.
@@ -795,6 +799,11 @@ private:
  * work is done by the initializers, which ensure that the nodes and
  * arcs set are given the correct comparison functions.
  */
+
+template <typename NodeType, typename ArcType>
+Graph<NodeType, ArcType>::Graph() {
+    // empty
+}
 
 template <typename NodeType, typename ArcType>
 Graph<NodeType, ArcType>::Graph(const Graph& src) {

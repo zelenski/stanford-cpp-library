@@ -8,6 +8,8 @@
  * Used to implement comparison operators like < and >= on collections.
  *
  * @author Marty Stepp
+ * @version 2019/10/12
+ * - added ARRAY_LENGTH macro
  * @version 2019/04/12
  * - added GenericSet unionWith, intersect, difference methods
  * - added functions to read/write quoted char values
@@ -50,6 +52,9 @@
 #define INTERNAL_INCLUDE 1
 #include "random.h"
 #undef INTERNAL_INCLUDE
+
+// macro to get the length of a stack-allocated array
+#define ARRAY_LENGTH(a) (sizeof(a) / sizeof((a)[0]))
 
 // begin global namespace string read/writing functions from strlib.h
 

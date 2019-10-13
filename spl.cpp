@@ -1,6 +1,6 @@
 // Stanford C++ library (extracted)
 // @author Marty Stepp
-// @version Wed Apr 24 11:34:25 PDT 2019
+// @version Sat Oct 12 18:21:52 PDT 2019
 //
 // This library has been merged into a single .h and .cpp file by an automatic script
 // to make it easier to include and use with the CodeStepByStep tool.
@@ -5079,6 +5079,8 @@ void setEcho(bool value) {
  * by student code on the console.
  * 
  * @author Marty Stepp
+ * @version 2019/05/16
+ * - added more function names to filter from stack trace
  * @version 2019/04/16
  * - filter Qt/std thread methods from stack trace
  * @version 2019/04/02
@@ -5360,12 +5362,16 @@ bool shouldFilterOutFromStackTrace(const std::string& function) {
         "__cxa_rethrow",
         "__cxa_call_terminate",
         "__cxa_call_unexpected",
+        "__func::",
+        "__function::",
         "_endthreadex",
         "_Function_base::_Base_manager::",
         "_Function_handler",
         "_Internal_",
         "__invoke_impl",
         "__invoke_result::type",
+        "__invoke_void",
+        "__unexpected",
         "thread::_Invoker",
         "thread::_State_impl",
         "_M_invoke",
@@ -5374,7 +5380,11 @@ bool shouldFilterOutFromStackTrace(const std::string& function) {
         "BaseThreadInitThunk",
         "call_stack_gcc.cpp",
         "call_stack_windows.cpp",
+        "CFRunLoopDoSource",
+        "CFRunLoopRun",
+        "CFRUNLOOP_IS",
         "crtexe.c",
+        "decltype(forward",
         "ErrorException::ErrorException",
         "exceptions.cpp",
         "function::operator",
@@ -5390,20 +5400,25 @@ bool shouldFilterOutFromStackTrace(const std::string& function) {
         "M_invoke",
         "multimain.cpp",
         // "operator",
+        "pthread_body",
+        "pthread_start",
         "printStackTrace",
         // "QAbstractItemModel::",
         // "QAbstractProxyModel::",
+        "QApplication::notify",
         "QApplicationPrivate::",
         "QCoreApplication::",
         "QGuiApplicationPrivate::",
         "QMetaMethod::",
         "QMetaObject::",
         "QObjectPrivate::",
+        "qt_plugin_instance",
         "QtGui::startBackgroundEventLoop",
         // "QWidget::",
         "QWidgetBackingStore::",
         "QWindowSystemInterface::",
         "require::_errorMessage",
+        "RunCurrentEventLoopInMode",
         "shouldFilterOutFromStackTrace",
         "stacktrace::",
         "stanfordCppLibPosixSignalHandler",
@@ -5411,7 +5426,8 @@ bool shouldFilterOutFromStackTrace(const std::string& function) {
         "stanfordCppLibTerminateHandler",
         "stanfordCppLibUnexpectedHandler",
         "testing::",
-        "UnhandledException"
+        "UnhandledException",
+        "WinMain@"
     };
 
     // prefixes to filter (don't show any func whose name starts with these)
@@ -5667,7 +5683,7 @@ static void stanfordCppLibSignalHandler(int sig) {
     std::string SIGNAL_DETAILS = "No details were provided about the error.";
     if (sig == SIGSEGV) {
         SIGNAL_KIND = "A segmentation fault (SIGSEGV)";
-        SIGNAL_DETAILS = "This typically happens when you try to dereference a pointer\n*** that is NULL or invalid.";
+        SIGNAL_DETAILS = "This typically happens when you try to dereference a pointer\n*** that is null or invalid.";
     } else if (sig == SIGABRT) {
         SIGNAL_KIND = "An abort error (SIGABRT)";
         SIGNAL_DETAILS = "This error is thrown by system functions that detect corrupt state.";
@@ -6195,6 +6211,8 @@ int hashCode(const Point& pt) {
  * ----------------
  * This file implements the random.h interface.
  * 
+ * @version 2019/05/16
+ * - added randomColor that takes min/max RGB
  * @version 2017/10/05
  * - added randomFeedClear
  * @version 2017/09/28
@@ -6219,6 +6237,8 @@ int hashCode(const Point& pt) {
 #include <iomanip>
 #include <queue>
 #include <sstream>
+#define INTERNAL_INCLUDE 1
+
 #define INTERNAL_INCLUDE 1
 
 #undef INTERNAL_INCLUDE
@@ -6283,14 +6303,38 @@ int randomColor() {
     return rand() & 0x00ffffff;
 }
 
+int randomColor(int minRGB, int maxRGB) {
+    if (!STATIC_VARIABLE(fixedInts).empty()) {
+        return randomColor();
+    }
+    if (minRGB < 0 || minRGB > 255 || maxRGB < 0 || maxRGB > 255
+            || minRGB > maxRGB) {
+        error("randomColor: min/max values out of range");
+    }
+    int r = randomInteger(minRGB, maxRGB);
+    int g = randomInteger(minRGB, maxRGB);
+    int b = randomInteger(minRGB, maxRGB);
+    return r << 16 | g << 8 | b;
+}
+
 // see convertRGBToColor in gcolor.h (repeated here to avoid Qt dependency)
 std::string randomColorString() {
     int rgb = randomColor();
     std::ostringstream os;
-    os << std::hex << std::setfill('0') << std::uppercase << "#";
-    os << std::setw(2) << (rgb >> 16 & 0xFF);
-    os << std::setw(2) << (rgb >> 8 & 0xFF);
-    os << std::setw(2) << (rgb & 0xFF);
+    os << std::hex << std::uppercase << "#";
+    os << std::setw(2) << std::setfill('0') << (rgb >> 16 & 0xFF);
+    os << std::setw(2) << std::setfill('0') << (rgb >> 8 & 0xFF);
+    os << std::setw(2) << std::setfill('0') << (rgb & 0xFF);
+    return os.str();
+}
+
+std::string randomColorString(int minRGB, int maxRGB) {
+    int rgb = randomColor(minRGB, maxRGB);
+    std::ostringstream os;
+    os << std::hex << std::uppercase << "#";
+    os << std::setw(2) << std::setfill('0') << (rgb >> 16 & 0xFF);
+    os << std::setw(2) << std::setfill('0') << (rgb >> 8 & 0xFF);
+    os << std::setw(2) << std::setfill('0') << (rgb & 0xFF);
     return os.str();
 }
 
@@ -8738,6 +8782,8 @@ istream& operator >>(istream& input, Domino& d) {
 
 /////////////////////// BEGIN code extracted from StanfordCPPLib_CodeStepByStep_Project/src/codestepbystep.cpp ///////////////////////
 /*
+ * @version 2019/05/17
+ * - add AssassinNode support
  * @version 2018/12/16
  * - improved printing of real numbers to XML output
  * @version 2017/11/12
@@ -8926,6 +8972,11 @@ void __printlnXml(const std::string& s) {
 void ArrayIntList_fromString(ArrayIntList& list, const std::string& str) {
     std::istringstream input(str);
     input >> list;
+}
+
+void AssassinNode_fromString(AssassinNode*& ptr, const std::string& str) {
+    std::istringstream input(str);
+    input >> ptr;
 }
 
 void BasicGraph_fromString(BasicGraph& graph, const std::string& str) {

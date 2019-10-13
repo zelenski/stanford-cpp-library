@@ -1,4 +1,6 @@
 /*
+ * @version 2019/05/17
+ * - add AssassinNode support
  * @version 2018/12/16
  * - improved printing of real numbers to XML output
  * @version 2017/11/12
@@ -187,6 +189,11 @@ void __printlnXml(const std::string& s) {
 void ArrayIntList_fromString(ArrayIntList& list, const std::string& str) {
     std::istringstream input(str);
     input >> list;
+}
+
+void AssassinNode_fromString(AssassinNode*& ptr, const std::string& str) {
+    std::istringstream input(str);
+    input >> ptr;
 }
 
 void BasicGraph_fromString(BasicGraph& graph, const std::string& str) {

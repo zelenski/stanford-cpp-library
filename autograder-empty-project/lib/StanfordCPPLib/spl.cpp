@@ -686,6 +686,8 @@ call_stack::~call_stack() throw() {
  * by student code on the console.
  * 
  * @author Marty Stepp
+ * @version 2019/05/16
+ * - added more function names to filter from stack trace
  * @version 2019/04/16
  * - filter Qt/std thread methods from stack trace
  * @version 2019/04/02
@@ -985,6 +987,9 @@ bool shouldFilterOutFromStackTrace(const std::string& function) {
         "BaseThreadInitThunk",
         "call_stack_gcc.cpp",
         "call_stack_windows.cpp",
+        "CFRunLoopDoSource",
+        "CFRunLoopRun",
+        "CFRUNLOOP_IS",
         "crtexe.c",
         "decltype(forward",
         "ErrorException::ErrorException",
@@ -1007,17 +1012,20 @@ bool shouldFilterOutFromStackTrace(const std::string& function) {
         "printStackTrace",
         // "QAbstractItemModel::",
         // "QAbstractProxyModel::",
+        "QApplication::notify",
         "QApplicationPrivate::",
         "QCoreApplication::",
         "QGuiApplicationPrivate::",
         "QMetaMethod::",
         "QMetaObject::",
         "QObjectPrivate::",
+        "qt_plugin_instance",
         "QtGui::startBackgroundEventLoop",
         // "QWidget::",
         "QWidgetBackingStore::",
         "QWindowSystemInterface::",
         "require::_errorMessage",
+        "RunCurrentEventLoopInMode",
         "shouldFilterOutFromStackTrace",
         "stacktrace::",
         "stanfordCppLibPosixSignalHandler",
@@ -1025,7 +1033,8 @@ bool shouldFilterOutFromStackTrace(const std::string& function) {
         "stanfordCppLibTerminateHandler",
         "stanfordCppLibUnexpectedHandler",
         "testing::",
-        "UnhandledException"
+        "UnhandledException",
+        "WinMain@"
     };
 
     // prefixes to filter (don't show any func whose name starts with these)
@@ -1281,7 +1290,7 @@ static void stanfordCppLibSignalHandler(int sig) {
     std::string SIGNAL_DETAILS = "No details were provided about the error.";
     if (sig == SIGSEGV) {
         SIGNAL_KIND = "A segmentation fault (SIGSEGV)";
-        SIGNAL_DETAILS = "This typically happens when you try to dereference a pointer\n*** that is NULL or invalid.";
+        SIGNAL_DETAILS = "This typically happens when you try to dereference a pointer\n*** that is null or invalid.";
     } else if (sig == SIGABRT) {
         SIGNAL_KIND = "An abort error (SIGABRT)";
         SIGNAL_DETAILS = "This error is thrown by system functions that detect corrupt state.";
@@ -2142,6 +2151,8 @@ bool isOnStatic(void* const p) {
  * ----------------
  * This file implements the random.h interface.
  * 
+ * @version 2019/05/16
+ * - added randomColor that takes min/max RGB
  * @version 2017/10/05
  * - added randomFeedClear
  * @version 2017/09/28
@@ -2166,6 +2177,8 @@ bool isOnStatic(void* const p) {
 #include <iomanip>
 #include <queue>
 #include <sstream>
+#define INTERNAL_INCLUDE 1
+#include "error.h"
 #define INTERNAL_INCLUDE 1
 #include "private/static.h"
 #undef INTERNAL_INCLUDE
@@ -2230,14 +2243,38 @@ int randomColor() {
     return rand() & 0x00ffffff;
 }
 
+int randomColor(int minRGB, int maxRGB) {
+    if (!STATIC_VARIABLE(fixedInts).empty()) {
+        return randomColor();
+    }
+    if (minRGB < 0 || minRGB > 255 || maxRGB < 0 || maxRGB > 255
+            || minRGB > maxRGB) {
+        error("randomColor: min/max values out of range");
+    }
+    int r = randomInteger(minRGB, maxRGB);
+    int g = randomInteger(minRGB, maxRGB);
+    int b = randomInteger(minRGB, maxRGB);
+    return r << 16 | g << 8 | b;
+}
+
 // see convertRGBToColor in gcolor.h (repeated here to avoid Qt dependency)
 std::string randomColorString() {
     int rgb = randomColor();
     std::ostringstream os;
-    os << std::hex << std::setfill('0') << std::uppercase << "#";
-    os << std::setw(2) << (rgb >> 16 & 0xFF);
-    os << std::setw(2) << (rgb >> 8 & 0xFF);
-    os << std::setw(2) << (rgb & 0xFF);
+    os << std::hex << std::uppercase << "#";
+    os << std::setw(2) << std::setfill('0') << (rgb >> 16 & 0xFF);
+    os << std::setw(2) << std::setfill('0') << (rgb >> 8 & 0xFF);
+    os << std::setw(2) << std::setfill('0') << (rgb & 0xFF);
+    return os.str();
+}
+
+std::string randomColorString(int minRGB, int maxRGB) {
+    int rgb = randomColor(minRGB, maxRGB);
+    std::ostringstream os;
+    os << std::hex << std::uppercase << "#";
+    os << std::setw(2) << std::setfill('0') << (rgb >> 16 & 0xFF);
+    os << std::setw(2) << std::setfill('0') << (rgb >> 8 & 0xFF);
+    os << std::setw(2) << std::setfill('0') << (rgb & 0xFF);
     return os.str();
 }
 
@@ -9805,6 +9842,8 @@ QFont GFont::toQFont(const QFont& basisFont, const std::string& fontString) {
  * ----------------
  * This file implements the classes in the gtypes.h interface.
  *
+ * @version 2019/05/16
+ * - added GRectangle contains(GRectangle), intersects
  * @version 2018/07/14
  * - initial version, based on gtypes.cpp
  */
@@ -10065,6 +10104,21 @@ GRectangle::GRectangle(const GPoint& p, const GDimension& size)
     // empty
 }
 
+bool GRectangle::contains(double x, double y) const {
+    return x >= this->_x && y >= this->_y
+            && x < this->_x + _width
+            && y < this->_y + _height;
+}
+
+bool GRectangle::contains(const GPoint& pt) const {
+    return contains(pt.getX(), pt.getY());
+}
+
+bool GRectangle::contains(const GRectangle& rect) const {
+    return contains(rect.getX(), rect.getY())
+            && contains(rect.getX() + rect.getWidth() - 1, rect.getY() + rect.getHeight() - 1);
+}
+
 GRectangle GRectangle::enlargedBy(double amount) {
     return GRectangle(_x - amount, _y - amount, _width + 2 * amount, _height + 2 * amount);
 }
@@ -10085,18 +10139,16 @@ double GRectangle::getHeight() const {
     return _height;
 }
 
+bool GRectangle::intersects(const GRectangle& other) const {
+    // check for non-intersecting x coordinates
+    return !(getX() + getWidth() < other.getX()            // I am entirely left of him
+          || getX() > other.getX() + other.getWidth()      // I am entirely right of him
+          || getY() + getHeight() < other.getY()           // I am entirely above him
+          || getY() > other.getY() + other.getHeight());   // I am entirely below him
+}
+
 bool GRectangle::isEmpty() const {
     return _width <= 0 || _height <= 0;
-}
-
-bool GRectangle::contains(double x, double y) const {
-    return x >= this->_x && y >= this->_y
-            && x < this->_x + _width
-            && y < this->_y + _height;
-}
-
-bool GRectangle::contains(const GPoint& pt) const {
-    return contains(pt.getX(), pt.getY());
 }
 
 std::string GRectangle::toString() const {
@@ -18226,9 +18278,10 @@ QSize _Internal_QLabel::sizeHint() const {
  * This file implements the gobjects.h interface.
  *
  * @author Marty Stepp
+ * @version 2019/08/13
+ * - bug fix for loading GImage (hasError -> !hasError) - thanks to Tyler Conklin
  * @version 2019/05/05
- * - added predictable GLine point ordering
- * @version 2019/04/23
+ * - added predictable GLine point ordering * @version 2019/04/23
  * - bug fix for loading GImage from file on Windows related to istream change
  * @version 2019/03/07
  * - added support for loading a GImage directly from istream (htiek)
@@ -19266,7 +19319,7 @@ bool GImage::load(const std::string& filename) {
             hasError = true;
         }
     });
-    return hasError;
+    return !hasError;   // *** BUGFIX thanks to Tyler Conklin
 }
 
 bool GImage::loadFromStream(std::istream& input) {

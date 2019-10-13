@@ -2,6 +2,7 @@
  * Test file for verifying the Stanford C++ lib functionality.
  */
 
+#include "basicgraph.h"
 #include "console.h"
 #include "filelib.h"
 #include "map.h"
@@ -24,6 +25,8 @@ int multimain(collections) {
     v2.add(42);
     // std::vector<int> v;
 
+    BasicGraph g;
+
     cout << "v is " << to_string(v2) << endl;
 
     Vector<string> files = listDirectory(".");
@@ -31,6 +34,11 @@ int multimain(collections) {
         cout << "a file: " << file << endl;
     }
 
+    g.addVertex("a");
+    g.addVertex("b");
+    g.addEdge("a", "b");
+
+    cout << "g is " << g << endl;
 
     return 0;
 }

@@ -3,6 +3,8 @@
  * ----------------
  * This file implements the random.h interface.
  * 
+ * @version 2019/05/16
+ * - added randomColor that takes min/max RGB
  * @version 2017/10/05
  * - added randomFeedClear
  * @version 2017/09/28
@@ -27,6 +29,8 @@
 #include <iomanip>
 #include <queue>
 #include <sstream>
+#define INTERNAL_INCLUDE 1
+#include "error.h"
 #define INTERNAL_INCLUDE 1
 #include "private/static.h"
 #undef INTERNAL_INCLUDE
@@ -91,14 +95,38 @@ int randomColor() {
     return rand() & 0x00ffffff;
 }
 
+int randomColor(int minRGB, int maxRGB) {
+    if (!STATIC_VARIABLE(fixedInts).empty()) {
+        return randomColor();
+    }
+    if (minRGB < 0 || minRGB > 255 || maxRGB < 0 || maxRGB > 255
+            || minRGB > maxRGB) {
+        error("randomColor: min/max values out of range");
+    }
+    int r = randomInteger(minRGB, maxRGB);
+    int g = randomInteger(minRGB, maxRGB);
+    int b = randomInteger(minRGB, maxRGB);
+    return r << 16 | g << 8 | b;
+}
+
 // see convertRGBToColor in gcolor.h (repeated here to avoid Qt dependency)
 std::string randomColorString() {
     int rgb = randomColor();
     std::ostringstream os;
-    os << std::hex << std::setfill('0') << std::uppercase << "#";
-    os << std::setw(2) << (rgb >> 16 & 0xFF);
-    os << std::setw(2) << (rgb >> 8 & 0xFF);
-    os << std::setw(2) << (rgb & 0xFF);
+    os << std::hex << std::uppercase << "#";
+    os << std::setw(2) << std::setfill('0') << (rgb >> 16 & 0xFF);
+    os << std::setw(2) << std::setfill('0') << (rgb >> 8 & 0xFF);
+    os << std::setw(2) << std::setfill('0') << (rgb & 0xFF);
+    return os.str();
+}
+
+std::string randomColorString(int minRGB, int maxRGB) {
+    int rgb = randomColor(minRGB, maxRGB);
+    std::ostringstream os;
+    os << std::hex << std::uppercase << "#";
+    os << std::setw(2) << std::setfill('0') << (rgb >> 16 & 0xFF);
+    os << std::setw(2) << std::setfill('0') << (rgb >> 8 & 0xFF);
+    os << std::setw(2) << std::setfill('0') << (rgb & 0xFF);
     return os.str();
 }
 

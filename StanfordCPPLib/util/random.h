@@ -3,6 +3,8 @@
  * --------------
  * This file exports functions for generating pseudorandom numbers.
  * 
+ * @version 2019/05/16
+ * - added randomColor that takes min/max RGB
  * @version 2018/09/25
  * - added doc comments for new documentation generation
  * @version 2017/10/05
@@ -47,10 +49,26 @@ bool randomChance(double p);
 int randomColor();
 
 /**
+ * Returns a random RGB color as an integer, with the value of the RGB components
+ * bounded between the given minimum and maximum.
+ * @throw ErrorException if min or max is not in [0..255] or min > max
+ * See also: gwindow.h convertRGBToColor()
+ */
+int randomColor(int minRGB, int maxRGB);
+
+/**
  * Returns a random RGB color as a hex string like "#ff00ff" for magenta.
  * See also: gwindow.h convertColorToRGB()
  */
 std::string randomColorString();
+
+/**
+ * Returns a random RGB color as a hex string like "#ff00ff" for magenta,
+ * with the value of the RGB components bounded between the given minimum and maximum.
+ * @throw ErrorException if min or max is not in [0..255] or min > max
+ * See also: gwindow.h convertColorToRGB()
+ */
+std::string randomColorString(int minRGB, int maxRGB);
 
 /**
  * Returns a random integer in the range <code>low</code> to

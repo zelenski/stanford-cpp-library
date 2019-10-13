@@ -3,6 +3,8 @@
  * A LinkedIntList is a sequential collection of integers stored with 0-based integer
  * indexes and internally represented as a list of linked node structures.
  *
+ * @version 2019/05/17
+ * - added AssassinNode
  * @version 2018/03/19
  * - changed nullptr output to {}
  * @version 2016/11/11
@@ -151,6 +153,7 @@ typedef ListNodeGen<int> ListNode;
 typedef ListNodeGen<int> ListNodeInt;
 typedef ListNodeGen<double> ListNodeDouble;
 typedef ListNodeGen<std::string> ListNodeString;
+typedef ListNodeGen<std::string> AssassinNode;
 
 // end "cpp" section of ListNode
 

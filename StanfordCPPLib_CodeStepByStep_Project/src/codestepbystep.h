@@ -1,4 +1,8 @@
 /*
+ * @version 2019/10/12
+ * - add arrayToString template
+ * @version 2019/05/17
+ * - add AssassinNode support
  * @version 2019/04/24
  * - add setFromFile
  * - remove STL includes
@@ -33,6 +37,8 @@
 //#include <vector>
 
 // Stanford lib stuff
+#define INTERNAL_INCLUDE 1
+#include "collections.h"
 #define INTERNAL_INCLUDE 1
 #include "strlib.h"
 #define INTERNAL_INCLUDE 1
@@ -124,8 +130,25 @@ void __codeStepByStepSignalHandler(int sig);
 void __posixSignalHandler(int sig, siginfo_t* /*siginfo*/, void* /*context*/);
 #endif // !defined(_WIN32)
 
+// function to convert an array to string for printing
+template <typename T>
+std::string arrayToString(T a[], int length) {
+    std::ostringstream out;
+    out << "{";
+    if (length > 0) {
+        writeGenericValue(out, a[0], /* forceQuotes */ true);
+        for (int i = 1; i < length; i++) {
+            out << ", ";
+            writeGenericValue(out, a[i], /* forceQuotes */ true);
+        }
+    }
+    out << "}";
+    return out.str();
+}
+
 // functions to parse various collections from strings
 void ArrayIntList_fromString(ArrayIntList& list, const std::string& str);
+void AssassinNode_fromString(AssassinNode*& ptr, const std::string& str);
 void BasicGraph_fromString(BasicGraph& graph, const std::string& str);
 void BinaryTree_fromString(BinaryTree& tree, const std::string& str);
 void BinaryTreeNode_fromString(BinaryTreeNode*& root, const std::string& str);
