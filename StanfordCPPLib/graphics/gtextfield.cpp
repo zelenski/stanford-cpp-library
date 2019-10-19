@@ -108,7 +108,7 @@ std::string GTextField::getActionEventType() const {
 
 int GTextField::getCharsWide() const {
     QFontMetrics fm(getWidget()->font());
-    int mWidth = fm.width(QString::fromStdString("m"));
+    int mWidth = fm.horizontalAdvance(QString::fromStdString("m"));
     return (int) (getWidth() / mWidth);
 }
 
@@ -283,7 +283,7 @@ void GTextField::setCharsWide(int charsWide) {
     require::nonNegative(charsWide, "GTextField::setCharsWide");
     GThread::runOnQtGuiThread([this, charsWide]() {
         QFontMetrics fm(getWidget()->font());
-        int mWidth = fm.width(QString::fromStdString("m"));
+        int mWidth = fm.horizontalAdvance(QString::fromStdString("m"));
         getWidget()->setFixedWidth(mWidth * charsWide);
         getWidget()->updateGeometry();
     });

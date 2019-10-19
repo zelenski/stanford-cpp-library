@@ -41,9 +41,9 @@
 
 #define INTERNAL_INCLUDE 1
 #include "gwindow.h"
-#include <QDesktopWidget>
 #include <QMenu>
 #include <QMenuBar>
+#include <QScreen>
 #include <QSizePolicy>
 #include <QStatusBar>
 #include <QThread>
@@ -775,7 +775,7 @@ double GWindow::getRegionWidth(const std::string& region) const {
 }
 
 /*static*/ int GWindow::getScreenDpi() {
-    return QtGui::instance()->getApplication()->desktop()->logicalDpiX();
+    return QGuiApplication::primaryScreen()->logicalDotsPerInchX();
 }
 
 /*static*/ double GWindow::getScreenDpiScaleRatio() {
@@ -790,7 +790,7 @@ double GWindow::getRegionWidth(const std::string& region) const {
 /*static*/ GDimension GWindow::getScreenSize() {
     QRect rec;
     GThread::runOnQtGuiThread([&rec]() {
-        rec = QApplication::desktop()->availableGeometry();
+        rec = QGuiApplication::primaryScreen()->availableGeometry();
     });
     return GDimension(rec.width(), rec.height());
 }

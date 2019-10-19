@@ -128,7 +128,7 @@ std::string GTextArea::getPlaceholder() const {
 
 GDimension GTextArea::getRowColumnSize() const {
     QFontMetrics metrics(_iqtextedit->font());
-    return GDimension(metrics.width(QString::fromStdString("mmmmmmmmmm")) / 10.0, metrics.lineSpacing() + 2);
+    return GDimension(metrics.horizontalAdvance(QString::fromStdString("mmmmmmmmmm")) / 10.0, metrics.lineSpacing() + 2);
 }
 
 int GTextArea::getRows() const {

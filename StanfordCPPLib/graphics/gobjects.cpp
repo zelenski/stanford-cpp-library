@@ -1547,9 +1547,10 @@ void GRoundRect::draw(QPainter* painter) {
         return;
     }
     initializeBrushAndPen(painter);
-    painter->drawRoundRect((int) getX(), (int) getY(),
+    // QPainter takes corner as radius, GRoundRect stores as diameter, thus convert
+    painter->drawRoundedRect((int) getX(), (int) getY(),
                            (int) getWidth(), (int) getHeight(),
-                           (int) _corner, (int) _corner);
+                           (int) (_corner/2), (int) (_corner/2));
 }
 
 double GRoundRect::getCorner() const {
@@ -1646,7 +1647,7 @@ std::string GText::toStringExtra() const {
 
 void GText::updateSize() {
     QFontMetrics metrics(GFont::toQFont(_font));
-    _width = metrics.width(QString::fromStdString(_text));
+    _width = metrics.horizontalAdvance(QString::fromStdString(_text));
     _height = metrics.height();
 }
 
