@@ -130,7 +130,7 @@ call_stack::call_stack(const size_t /*num_discard = 0*/) {
 #endif // _WIN64
         } else {
             SymInitialize(GetCurrentProcess(), nullptr, TRUE);
-            STACKFRAME frame = {0};
+            STACKFRAME frame = STACKFRAME(); // zero-fill struct
 #if _WIN64
             frame.AddrPC.Offset    = exceptionInfo->ContextRecord->Rip;
             frame.AddrStack.Offset = exceptionInfo->ContextRecord->Rsp;
