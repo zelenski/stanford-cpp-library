@@ -43,7 +43,7 @@ class GWindow;
 class QSPLApplication : public QApplication {
 public:
     QSPLApplication(int& argc, char *argv[]);
-    bool notify(QObject* receiver, QEvent* e) Q_DECL_OVERRIDE;
+    bool notify(QObject* receiver, QEvent* e) override;
 };
 
 

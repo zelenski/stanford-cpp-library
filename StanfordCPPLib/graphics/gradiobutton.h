@@ -72,13 +72,13 @@ public:
     /**
      * Frees memory allocated internally by the radio button.
      */
-    virtual ~GRadioButton() Q_DECL_OVERRIDE;
+    ~GRadioButton() override;
 
     /* @inherit */
-    virtual std::string getActionCommand() const Q_DECL_OVERRIDE;
+    std::string getActionCommand() const override;
 
     /* @inherit */
-    virtual _Internal_QWidget* getInternalWidget() const Q_DECL_OVERRIDE;
+    _Internal_QWidget* getInternalWidget() const override;
 
     /**
      * Returns the text next to the radio button.
@@ -86,10 +86,10 @@ public:
     virtual std::string getText() const;
 
     /* @inherit */
-    virtual std::string getType() const Q_DECL_OVERRIDE;
+    std::string getType() const override;
 
     /* @inherit */
-    virtual QWidget* getWidget() const Q_DECL_OVERRIDE;
+    QWidget* getWidget() const override;
 
     /**
      * Returns true if the radio button is currently checked.
@@ -130,7 +130,7 @@ protected:
     /**
      * @private
      */
-    virtual std::string getActionEventType() const Q_DECL_OVERRIDE;
+    std::string getActionEventType() const override;
 
 private:
     Q_DISABLE_COPY(GRadioButton)
@@ -153,10 +153,10 @@ class _Internal_QRadioButton : public QRadioButton, public _Internal_QWidget {
 
 public:
     _Internal_QRadioButton(GRadioButton* gradioButton, bool checked = false, QWidget* parent = nullptr);
-    virtual void detach() Q_DECL_OVERRIDE;
-    virtual void keyPressEvent(QKeyEvent* event) Q_DECL_OVERRIDE;
-    virtual void keyReleaseEvent(QKeyEvent* event) Q_DECL_OVERRIDE;
-    virtual QSize sizeHint() const Q_DECL_OVERRIDE;
+    void detach() override;
+    void keyPressEvent(QKeyEvent* event) override;
+    void keyReleaseEvent(QKeyEvent* event) override;
+    QSize sizeHint() const override;
 
 signals:
     void doubleClicked();
@@ -165,7 +165,7 @@ public slots:
     void handleClick();
 
 protected:
-    void mouseDoubleClickEvent(QMouseEvent* e) Q_DECL_OVERRIDE;
+    void mouseDoubleClickEvent(QMouseEvent* e) override;
 
 private:
     GRadioButton* _gradioButton;

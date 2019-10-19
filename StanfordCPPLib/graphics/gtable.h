@@ -86,7 +86,7 @@ public:
     GTable(int rows = 0, int columns = 0, double width = 0, double height = 0,
             QWidget* parent = nullptr);
 
-    virtual ~GTable() Q_DECL_OVERRIDE;
+    ~GTable() override;
 
     /**
      * Changes widths of all columns to be perfectly large enough
@@ -146,7 +146,7 @@ public:
     virtual double getColumnWidth(int column) const;
 
     /* @inherit */
-    virtual _Internal_QWidget* getInternalWidget() const Q_DECL_OVERRIDE;
+    _Internal_QWidget* getInternalWidget() const override;
 
     /**
      * Returns the height of the given row index in pixels.
@@ -187,10 +187,10 @@ public:
     virtual int getSelectedRow() const;
 
     /* @inherit */
-    virtual std::string getType() const Q_DECL_OVERRIDE;
+    std::string getType() const override;
 
     /* @inherit */
-    virtual QWidget* getWidget() const Q_DECL_OVERRIDE;
+    QWidget* getWidget() const override;
 
     /**
      * Returns true if a cell is currently selected.
@@ -235,7 +235,7 @@ public:
     virtual void removeTableListener();
 
     /* @inherit */
-    virtual void requestFocus() Q_DECL_OVERRIDE;
+    void requestFocus() override;
 
     /**
      * Modifies the table to have the given number of rows and columns.
@@ -269,13 +269,13 @@ public:
      * Sets the background color that appears behind each cell.
      * See gcolor.h for more detail about colors.
      */
-    virtual void setBackground(int rgb) Q_DECL_OVERRIDE;
+    void setBackground(int rgb) override;
 
     /**
      * Sets the background color that appears behind each cell.
      * See gcolor.h for more detail about colors.
      */
-    virtual void setBackground(const std::string& color) Q_DECL_OVERRIDE;
+    void setBackground(const std::string& color) override;
 
     /**
      * Sets the horizontal alignment of the given cell.
@@ -329,14 +329,14 @@ public:
      * Equivalent to setForeground.
      * See gcolor.h for more detail about colors.
      */
-    virtual void setColor(int rgb) Q_DECL_OVERRIDE;
+    void setColor(int rgb) override;
 
     /**
      * Sets the color used for the text of each cell.
      * Equivalent to setForeground.
      * See gcolor.h for more detail about colors.
      */
-    virtual void setColor(const std::string& color) Q_DECL_OVERRIDE;
+    void setColor(const std::string& color) override;
 
     /**
      * Sets the horizontal alignment of the given column.
@@ -415,27 +415,27 @@ public:
     /**
      * Sets the font used to display each cell's text.
      */
-    virtual void setFont(const QFont& font) Q_DECL_OVERRIDE;
+    void setFont(const QFont& font) override;
 
     /**
      * Sets the font used to display each cell's text.
      * See gfont.h for more detail about fonts.
      */
-    virtual void setFont(const std::string& font) Q_DECL_OVERRIDE;
+    void setFont(const std::string& font) override;
 
     /**
      * Sets the color used for the text of each cell.
      * Equivalent to setColor.
      * See gcolor.h for more detail about colors.
      */
-    virtual void setForeground(int rgb) Q_DECL_OVERRIDE;
+    void setForeground(int rgb) override;
 
     /**
      * Sets the color used for the text of each cell.
      * Equivalent to setColor.
      * See gcolor.h for more detail about colors.
      */
-    virtual void setForeground(const std::string& color) Q_DECL_OVERRIDE;
+    void setForeground(const std::string& color) override;
 
     /**
      * Sets the horizontal alignment of the text in all cells in the table.
@@ -654,14 +654,14 @@ class _Internal_QTableWidget : public QTableWidget, public _Internal_QWidget {
 
 public:
     _Internal_QTableWidget(GTable* gtable, int rows, int columns, QWidget* parent = nullptr);
-    virtual void detach() Q_DECL_OVERRIDE;
-    virtual bool edit(const QModelIndex& index, QAbstractItemView::EditTrigger trigger, QEvent* event) Q_DECL_OVERRIDE;
+    void detach() override;
+    bool edit(const QModelIndex& index, QAbstractItemView::EditTrigger trigger, QEvent* event) override;
     virtual QWidget* getEditor() const;
     virtual _Internal_QItemDelegate* getItemDelegate() const;
     virtual bool isEditing() const;
-    virtual void closeEditor(QWidget* editor, QAbstractItemDelegate::EndEditHint hint) Q_DECL_OVERRIDE;
-    virtual void keyPressEvent(QKeyEvent* event) Q_DECL_OVERRIDE;
-    virtual QSize sizeHint() const Q_DECL_OVERRIDE;
+    void closeEditor(QWidget* editor, QAbstractItemDelegate::EndEditHint hint) override;
+    void keyPressEvent(QKeyEvent* event) override;
+    QSize sizeHint() const override;
 
 public slots:
     void handleCellChange(int row, int column);

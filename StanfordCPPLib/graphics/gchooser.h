@@ -65,7 +65,7 @@ public:
     /**
      * Frees memory allocated internally by the chooser.
      */
-    virtual ~GChooser() Q_DECL_OVERRIDE;
+    ~GChooser() override;
 
     /**
      * Adds a new item consisting of the specified string to the end of the list.
@@ -88,10 +88,10 @@ public:
     virtual void clearItems();
 
     /* @inherit */
-    virtual std::string getActionCommand() const Q_DECL_OVERRIDE;
+    std::string getActionCommand() const override;
 
     /* @inherit */
-    virtual _Internal_QWidget* getInternalWidget() const Q_DECL_OVERRIDE;
+    _Internal_QWidget* getInternalWidget() const override;
 
     /**
      * Returns the item in the chooser at the given 0-based index.
@@ -118,10 +118,10 @@ public:
     virtual std::string getSelectedItem() const;
 
     /* @inherit */
-    virtual std::string getType() const Q_DECL_OVERRIDE;
+    std::string getType() const override;
 
     /* @inherit */
-    virtual QWidget* getWidget() const Q_DECL_OVERRIDE;
+    QWidget* getWidget() const override;
 
     /**
      * Returns true if the chooser has an editable area for typing new items.
@@ -167,7 +167,7 @@ protected:
     /**
      * @private
      */
-    virtual std::string getActionEventType() const Q_DECL_OVERRIDE;
+    std::string getActionEventType() const override;
 
 private:
     Q_DISABLE_COPY(GChooser)
@@ -188,10 +188,10 @@ class _Internal_QComboBox : public QComboBox, public _Internal_QWidget {
 
 public:
     _Internal_QComboBox(GChooser* gchooser, QWidget* parent = nullptr);
-    virtual void detach() Q_DECL_OVERRIDE;
-    virtual void keyPressEvent(QKeyEvent* event) Q_DECL_OVERRIDE;
-    virtual void keyReleaseEvent(QKeyEvent* event) Q_DECL_OVERRIDE;
-    virtual QSize sizeHint() const Q_DECL_OVERRIDE;
+    void detach() override;
+    void keyPressEvent(QKeyEvent* event) override;
+    void keyReleaseEvent(QKeyEvent* event) override;
+    QSize sizeHint() const override;
 
 public slots:
     void handleChange();

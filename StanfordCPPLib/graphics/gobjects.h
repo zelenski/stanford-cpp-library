@@ -693,16 +693,16 @@ public:
     GArc(double x, double y, double width, double height, double start, double sweep);
 
     /* @inherit */
-    virtual bool contains(double x, double y) const Q_DECL_OVERRIDE;
+    bool contains(double x, double y) const override;
 
     /**
      * Draws this arc on screen using the given Qt painter.
      * @private
      */
-    virtual void draw(QPainter* painter);
+    void draw(QPainter* painter) override;
 
     /* @inherit */
-    virtual GRectangle getBounds() const Q_DECL_OVERRIDE;
+    GRectangle getBounds() const override;
 
     /**
      * Returns the point at which the arc ends.
@@ -730,7 +730,7 @@ public:
     virtual double getSweepAngle() const;
 
     /* @inherit */
-    virtual std::string getType() const Q_DECL_OVERRIDE;
+    std::string getType() const override;
 
     /**
      * Changes the boundaries of the rectangle used to frame the arc.
@@ -753,7 +753,7 @@ public:
     virtual void setSweepAngle(double start);
 
     /* @inherit */
-    virtual std::string toStringExtra() const Q_DECL_OVERRIDE;
+    std::string toStringExtra() const override;
 
 private:
     virtual bool containsAngle(double theta) const;
@@ -832,16 +832,16 @@ public:
     virtual void conditionalRepaintRegion(const GRectangle& bounds);
 
     /* @inherit */
-    virtual bool contains(double x, double y) const Q_DECL_OVERRIDE;
+   bool contains(double x, double y) const override;
 
     /**
      * Draws all objects stored in this compound using the given painter pen.
      * @private
      */
-    virtual void draw(QPainter* painter);
+    void draw(QPainter* painter) override;
 
     /* @inherit */
-    virtual GRectangle getBounds() const Q_DECL_OVERRIDE;
+    GRectangle getBounds() const override;
 
     /**
      * Returns a pointer to the graphical object at the specified index,
@@ -862,7 +862,7 @@ public:
     virtual int getElementCount() const;
 
     /* @inherit */
-    virtual std::string getType() const Q_DECL_OVERRIDE;
+    std::string getType() const override;
 
     /**
      * Returns the Qt widget associated with this compound, or a null pointer
@@ -905,7 +905,7 @@ public:
     /**
      * Instructs the compound to redraw all of its graphical objects.
      */
-    virtual void repaint();
+    void repaint() override;
 
     /**
      * Instructs the compound to redraw the given rectangular region within itself,
@@ -936,7 +936,7 @@ public:
     virtual void setWidget(QWidget* widget);
 
     /* @inherit */
-    virtual std::string toString() const Q_DECL_OVERRIDE;
+    std::string toString() const override;
 
 private:
     // methods to move an object in the z-ordering
@@ -997,7 +997,7 @@ public:
      * Draws this image on screen using the given Qt painter.
      * @private
      */
-    virtual void draw(QPainter* painter) Q_DECL_OVERRIDE;
+    void draw(QPainter* painter) override;
 
     /**
      * Returns the file name used to load the image,
@@ -1012,7 +1012,7 @@ public:
     virtual int getPixel(int x, int y) const;
 
     /* @inherit */
-    virtual std::string getType() const Q_DECL_OVERRIDE;
+    std::string getType() const override;
 
     /**
      * Sets the pixel at the given x/y location to the given color,
@@ -1022,7 +1022,7 @@ public:
     virtual void setPixel(int x, int y, int rgb);
 
     /* @inherit */
-    virtual std::string toStringExtra() const Q_DECL_OVERRIDE;
+    std::string toStringExtra() const override;
 
 protected:
     /**
@@ -1077,16 +1077,16 @@ public:
     GLine(const GPoint& p0, const GPoint& p1);
 
     /* @inherit */
-    virtual bool contains(double x, double y) const Q_DECL_OVERRIDE;
+    bool contains(double x, double y) const override;
 
     /**
      * Draws this line on screen using the given Qt painter.
      * @private
      */
-    virtual void draw(QPainter* painter) Q_DECL_OVERRIDE;
+    void draw(QPainter* painter) override;
 
     /* @inherit */
-    virtual GRectangle getBounds() const Q_DECL_OVERRIDE;
+    GRectangle getBounds() const override;
 
     /**
      * Returns the point at which the line ends.
@@ -1104,7 +1104,7 @@ public:
     virtual double getEndY() const;
 
     /* @inherit */
-    virtual double getHeight() const Q_DECL_OVERRIDE;
+    double getHeight() const override;
 
     /**
      * Returns the point at which the line starts.
@@ -1125,10 +1125,10 @@ public:
     virtual double getStartY() const;
 
     /* @inherit */
-    virtual std::string getType() const Q_DECL_OVERRIDE;
+    std::string getType() const override;
 
     /* @inherit */
-    virtual double getWidth() const Q_DECL_OVERRIDE;
+    double getWidth() const override;
 
     /**
      * Sets the end point in the line to (<code>x1</code>,&nbsp;<code>y1</code>),
@@ -1175,7 +1175,7 @@ public:
     virtual void setStartPoint(const GPoint& p);
 
     /* @inherit */
-    virtual std::string toStringExtra() const Q_DECL_OVERRIDE;
+    std::string toStringExtra() const override;
 
 protected:
     /* Instance variables */
@@ -1197,16 +1197,16 @@ public:
     GOval(double x = 0, double y = 0, double width = 0, double height = 0);
 
     /* @inherit */
-    virtual bool contains(double x, double y) const Q_DECL_OVERRIDE;
+   bool contains(double x, double y) const override;
 
     /**
      * Draws this oval on screen using the given Qt painter.
      * @private
      */
-    virtual void draw(QPainter* painter) Q_DECL_OVERRIDE;
+    void draw(QPainter* painter) override;
 
     /* @inherit */
-    virtual std::string getType() const Q_DECL_OVERRIDE;
+    std::string getType() const override;
 };
 
 /**
@@ -1293,22 +1293,22 @@ public:
     virtual void clear();
 
     /* @inherit */
-    virtual bool contains(double x, double y) const;
+    bool contains(double x, double y) const override;
 
     /**
      * Draws this polygon on screen using the given Qt painter.
      * @private
      */
-    virtual void draw(QPainter* painter) Q_DECL_OVERRIDE;
+    void draw(QPainter* painter) override;
 
     /* @inherit */
-    virtual GRectangle getBounds() const;
+    GRectangle getBounds() const override;
 
     /* @inherit */
-    virtual double getHeight() const;
+    double getHeight() const override;
 
     /* @inherit */
-    virtual std::string getType() const;
+    std::string getType() const override;
 
     /**
      * Returns the vertex at the given 0-based index in this polygon.
@@ -1327,7 +1327,7 @@ public:
     virtual Vector<GPoint> getVertices() const;
 
     /* @inherit */
-    virtual double getWidth() const;
+    double getWidth() const override;
 
     /**
      * Sets the vertex at the given 0-based index in this polygon to the
@@ -1337,7 +1337,7 @@ public:
     virtual void setVertex(int i, GPoint point);
 
     /* @inherit */
-    virtual std::string toStringExtra() const;
+    std::string toStringExtra() const override;
 
 private:
     /* Instance variables */
@@ -1363,10 +1363,10 @@ public:
      * Draws this rectangle on screen using the given Qt painter.
      * @private
      */
-    virtual void draw(QPainter* painter) Q_DECL_OVERRIDE;
+    void draw(QPainter* painter) override;
 
     /* @inherit */
-    virtual std::string getType() const Q_DECL_OVERRIDE;
+    std::string getType() const override;
 };
 
 /**
@@ -1398,13 +1398,13 @@ public:
     /**
      * Returns <code>true</code> if the specified point is inside the object.
      */
-    virtual bool contains(double x, double y) const;
+    bool contains(double x, double y) const override;
 
     /**
      * Draws this rectangle on screen using the given Qt painter.
      * @private
      */
-    virtual void draw(QPainter* painter) Q_DECL_OVERRIDE;
+    void draw(QPainter* painter) override;
 
     /**
      * Returns the diameter of the arc forming the corner of this rounded
@@ -1413,7 +1413,7 @@ public:
     virtual double getCorner() const;
 
     /* @inherit */
-    virtual std::string getType() const Q_DECL_OVERRIDE;
+    std::string getType() const override;
 
     /**
      * Sets the diameter of the arc forming the corner of this rounded
@@ -1422,7 +1422,7 @@ public:
     virtual void setCorner(double corner);
 
     /* @inherit */
-    virtual std::string toStringExtra() const Q_DECL_OVERRIDE;
+    std::string toStringExtra() const override;
 
 protected:
     double _corner;
@@ -1466,10 +1466,10 @@ public:
      * Draws this text label on screen using the given Qt painter.
      * @private
      */
-    virtual void draw(QPainter* painter);
+    void draw(QPainter* painter) override;
 
     /* @inherit */
-    virtual GRectangle getBounds() const Q_DECL_OVERRIDE;
+    GRectangle getBounds() const override;
 
     /**
      * Returns the current font for the label.
@@ -1501,13 +1501,13 @@ public:
     virtual std::string getText() const;
 
     /* @inherit */
-    virtual std::string getType() const Q_DECL_OVERRIDE;
+    std::string getType() const override;
 
     /* @inherit */
-    virtual void setFont(const QFont& font) Q_DECL_OVERRIDE;
+    void setFont(const QFont& font) override;
 
     /* @inherit */
-    virtual void setFont(const std::string& font) Q_DECL_OVERRIDE;
+    void setFont(const std::string& font) override;
 
     /**
      * Changes the string stored within the text label, so that
@@ -1524,7 +1524,7 @@ public:
     virtual void setText(const std::string& str);
 
     /* @inherit */
-    virtual std::string toStringExtra() const Q_DECL_OVERRIDE;
+    std::string toStringExtra() const override;
 
 private:
     /* Instance variables */

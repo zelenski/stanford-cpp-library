@@ -64,7 +64,7 @@ public:
     /**
      * Frees memory allocated internally by the browser pane.
      */
-    virtual ~GBrowserPane() Q_DECL_OVERRIDE;
+    ~GBrowserPane() override;
 
     /**
      * Deselects any text that is currently selected in the pane.
@@ -91,7 +91,7 @@ public:
     virtual int getCursorPosition() const;
 
     /* @inherit */
-    virtual _Internal_QWidget* getInternalWidget() const Q_DECL_OVERRIDE;
+    _Internal_QWidget* getInternalWidget() const override;
 
     /**
      * Returns the URL of the web page or file name being currently viewed.
@@ -133,10 +133,10 @@ public:
     virtual std::string getText() const;
 
     /* @inherit */
-    virtual std::string getType() const Q_DECL_OVERRIDE;
+    std::string getType() const override;
 
     /* @inherit */
-    virtual QWidget* getWidget() const Q_DECL_OVERRIDE;
+    QWidget* getWidget() const override;
 
     /**
      * Returns whether the text pane allows the user to modify its text.
@@ -272,14 +272,14 @@ public:
      * when the user moves or clicks the mouse.
      * Any existing mouse listener will be replaced.
      */
-    virtual void setMouseListener(GEventListener func) Q_DECL_OVERRIDE;
+    void setMouseListener(GEventListener func) override;
 
     /**
      * Sets a mouse listener on this text pane so that it will be called
      * when the user moves or clicks the mouse.
      * Any existing mouse listener will be replaced.
      */
-    virtual void setMouseListener(GEventListenerVoid func) Q_DECL_OVERRIDE;
+    void setMouseListener(GEventListenerVoid func) override;
 
     /**
      * Sets the pane to display to the given contents using its current content type.
@@ -339,11 +339,11 @@ class _Internal_QTextBrowser : public QTextBrowser, public _Internal_QWidget {
 
 public:
     _Internal_QTextBrowser(GBrowserPane* gbrowserpane, QWidget* parent = nullptr);
-    virtual void detach() Q_DECL_OVERRIDE;
-    QVariant loadResource(int type, const QUrl &url) Q_DECL_OVERRIDE;
-    virtual void mousePressEvent(QMouseEvent* event) Q_DECL_OVERRIDE;
-    virtual void mouseReleaseEvent(QMouseEvent* event) Q_DECL_OVERRIDE;
-    virtual QSize sizeHint() const Q_DECL_OVERRIDE;
+    void detach() override;
+    QVariant loadResource(int type, const QUrl &url) override;
+    void mousePressEvent(QMouseEvent* event) override;
+    void mouseReleaseEvent(QMouseEvent* event) override;
+    QSize sizeHint() const override;
 
 private:
     GBrowserPane* _gbrowserpane;

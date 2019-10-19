@@ -62,7 +62,7 @@ public:
     /**
      * Frees memory allocated internally by the scroll bar.
      */
-    virtual ~GScrollBar() Q_DECL_OVERRIDE;
+    ~GScrollBar() override;
 
     /**
      * Returns the scroll bar's extent, meaning the amount of its range that is
@@ -71,7 +71,7 @@ public:
     virtual int getExtent() const;
 
     /* @inherit */
-    virtual _Internal_QWidget* getInternalWidget() const Q_DECL_OVERRIDE;
+    _Internal_QWidget* getInternalWidget() const override;
 
     /**
      * Returns the maximum allowed value of the scroll bar.
@@ -89,7 +89,7 @@ public:
     virtual Orientation getOrientation() const;
 
     /* @inherit */
-    virtual std::string getType() const Q_DECL_OVERRIDE;
+    std::string getType() const override;
 
     /**
      * Returns the current value of the scroll bar.
@@ -97,7 +97,7 @@ public:
     virtual int getValue() const;
 
     /* @inherit */
-    virtual QWidget* getWidget() const Q_DECL_OVERRIDE;
+    QWidget* getWidget() const override;
 
     /**
      * Sets the scroll bar's extent, meaning the amount of its range that is
@@ -133,7 +133,7 @@ protected:
     /**
      * @private
      */
-    virtual std::string getActionEventType() const Q_DECL_OVERRIDE;
+    std::string getActionEventType() const override;
 
 private:
     Q_DISABLE_COPY(GScrollBar)
@@ -154,8 +154,8 @@ class _Internal_QScrollBar : public QScrollBar, public _Internal_QWidget {
 
 public:
     _Internal_QScrollBar(GScrollBar* qgscrollbar, Qt::Orientation orientation, QWidget* parent = nullptr);
-    virtual void detach() Q_DECL_OVERRIDE;
-    virtual QSize sizeHint() const Q_DECL_OVERRIDE;
+    void detach() override;
+    QSize sizeHint() const override;
 
 public slots:
     void handleValueChange(int value);

@@ -78,10 +78,10 @@ public:
     /**
      * Frees memory allocated internally by the label.
      */
-    virtual ~GLabel() Q_DECL_OVERRIDE;
+    ~GLabel() override;
 
     /* @inherit */
-    virtual _Internal_QWidget* getInternalWidget() const Q_DECL_OVERRIDE;
+    _Internal_QWidget* getInternalWidget() const override;
 
     /**
      * Returns the string displayed by the label.
@@ -103,10 +103,10 @@ public:
     virtual GInteractor::TextPosition getTextPosition() const;
 
     /* @inherit */
-    virtual std::string getType() const Q_DECL_OVERRIDE;
+    std::string getType() const override;
 
     /* @inherit */
-    virtual QWidget* getWidget() const Q_DECL_OVERRIDE;
+    QWidget* getWidget() const override;
 
     /**
      * Returns whether the label should wrap if its text is too long.
@@ -115,40 +115,40 @@ public:
     virtual bool isWordWrap() const;
 
     /* @inherit */
-    virtual void setBounds(double x, double y, double width, double height) Q_DECL_OVERRIDE;
+    void setBounds(double x, double y, double width, double height) override;
 
     /* @inherit */
-    virtual void setBounds(const GRectangle& size) Q_DECL_OVERRIDE;
+    void setBounds(const GRectangle& size) override;
 
     /* @inherit */
-    virtual void setColor(int rgb) Q_DECL_OVERRIDE;
+    void setColor(int rgb) override;
 
     /* @inherit */
-    virtual void setColor(const std::string& color) Q_DECL_OVERRIDE;
+    void setColor(const std::string& color) override;
 
     /* @inherit */
-    virtual void setFont(const QFont& font) Q_DECL_OVERRIDE;
+    void setFont(const QFont& font) override;
 
     /* @inherit */
-    virtual void setFont(const std::string& font) Q_DECL_OVERRIDE;
+    void setFont(const std::string& font) override;
 
     /* @inherit */
-    virtual void setForeground(int rgb) Q_DECL_OVERRIDE;
+    void setForeground(int rgb) override;
 
     /* @inherit */
-    virtual void setForeground(const std::string& color) Q_DECL_OVERRIDE;
+    void setForeground(const std::string& color) override;
 
     /* @inherit */
-    virtual void setHeight(double height) Q_DECL_OVERRIDE;
+    void setHeight(double height) override;
 
     /* @inherit */
-    virtual void setIcon(const QIcon& icon) Q_DECL_OVERRIDE;
+    void setIcon(const QIcon& icon) override;
 
     /* @inherit */
-    virtual void setIcon(const QPixmap& icon) Q_DECL_OVERRIDE;
+    void setIcon(const QPixmap& icon) override;
 
     /* @inherit */
-    virtual void setIcon(const std::string& filename, bool retainIconSize = true) Q_DECL_OVERRIDE;
+    void setIcon(const std::string& filename, bool retainIconSize = true) override;
 
     /**
      * Sets the text on the label to be the given text.
@@ -157,13 +157,13 @@ public:
     virtual void setLabel(const std::string& text);
 
     /* @inherit */
-    virtual void setLocation(double x, double y) Q_DECL_OVERRIDE;
+    void setLocation(double x, double y) override;
 
     /* @inherit */
-    virtual void setSize(double width, double height) Q_DECL_OVERRIDE;
+    void setSize(double width, double height) override;
 
     /* @inherit */
-    virtual void setSize(const GDimension& size) Q_DECL_OVERRIDE;
+    void setSize(const GDimension& size) override;
 
     /**
      * Sets the text on the label to be the given text.
@@ -178,10 +178,10 @@ public:
     virtual void setTextPosition(GInteractor::TextPosition position);
 
     /* @inherit */
-    virtual void setVisible(bool visible) Q_DECL_OVERRIDE;
+    void setVisible(bool visible) override;
 
     /* @inherit */
-    virtual void setWidth(double width) Q_DECL_OVERRIDE;
+    void setWidth(double width) override;
 
     /**
      * Sets whether the label should wrap if its text is too long.
@@ -190,10 +190,10 @@ public:
     virtual void setWordWrap(bool wrap);
 
     /* @inherit */
-    virtual void setX(double x) Q_DECL_OVERRIDE;
+    void setX(double x) override;
 
     /* @inherit */
-    virtual void setY(double y) Q_DECL_OVERRIDE;
+    void setY(double y) override;
 
 private:
     Q_DISABLE_COPY(GLabel)
@@ -221,16 +221,16 @@ class _Internal_QLabel : public QLabel, public _Internal_QWidget {
 
 public:
     _Internal_QLabel(GLabel* glabel, QWidget* parent = nullptr);
-    virtual void detach() Q_DECL_OVERRIDE;
-    virtual QSize sizeHint() const Q_DECL_OVERRIDE;
+    void detach() override;
+    QSize sizeHint() const override;
 
 signals:
     void clicked();
     void doubleClicked();
 
 protected:
-    void mouseDoubleClickEvent(QMouseEvent* e) Q_DECL_OVERRIDE;
-    void mousePressEvent(QMouseEvent* event) Q_DECL_OVERRIDE;
+    void mouseDoubleClickEvent(QMouseEvent* e) override;
+    void mousePressEvent(QMouseEvent* event) override;
 
 private:
     GLabel* _glabel;

@@ -79,10 +79,10 @@ public:
     /**
      * Frees memory allocated internally by the slider.
      */
-    virtual ~GSlider() Q_DECL_OVERRIDE;
+    ~GSlider() override;
 
     /* @inherit */
-    virtual _Internal_QWidget* getInternalWidget() const Q_DECL_OVERRIDE;
+    _Internal_QWidget* getInternalWidget() const override;
 
     /**
      * Returns the number of pixels of spacing between ticks on the slider.
@@ -132,7 +132,7 @@ public:
     virtual bool getSnapToTicks() const;
 
     /* @inherit */
-    virtual std::string getType() const Q_DECL_OVERRIDE;
+    std::string getType() const override;
 
     /**
      * Returns the slider's current value.
@@ -140,7 +140,7 @@ public:
     virtual int getValue() const;
 
     /* @inherit */
-    virtual QWidget* getWidget() const Q_DECL_OVERRIDE;
+    QWidget* getWidget() const override;
 
     /**
      * Sets the number of pixels of spacing between ticks on the slider.
@@ -208,7 +208,7 @@ protected:
     /**
      * @private
      */
-    virtual std::string getActionEventType() const Q_DECL_OVERRIDE;
+    std::string getActionEventType() const override;
 
 private:
     Q_DISABLE_COPY(GSlider)
@@ -227,10 +227,10 @@ class _Internal_QSlider : public QSlider, public _Internal_QWidget {
 
 public:
     _Internal_QSlider(GSlider* qgslider, Qt::Orientation orientation = Qt::Horizontal, QWidget* parent = nullptr);
-    virtual void detach() Q_DECL_OVERRIDE;
-    virtual void keyPressEvent(QKeyEvent* event) Q_DECL_OVERRIDE;
-    virtual void keyReleaseEvent(QKeyEvent* event) Q_DECL_OVERRIDE;
-    virtual QSize sizeHint() const Q_DECL_OVERRIDE;
+    void detach() override;
+    void keyPressEvent(QKeyEvent* event) override;
+    void keyReleaseEvent(QKeyEvent* event) override;
+    QSize sizeHint() const override;
 
 public slots:
     void handleChange(int value);

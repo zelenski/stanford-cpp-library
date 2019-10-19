@@ -782,36 +782,36 @@ protected:
  */
 class GForwardDrawingSurface : public virtual GDrawingSurface {
 public:
-    virtual void clear() Q_DECL_OVERRIDE;
-    virtual void draw(GObject* gobj) Q_DECL_OVERRIDE;
-    virtual void draw(GObject* gobj, double x, double y) Q_DECL_OVERRIDE;
-    virtual void draw(GObject& gobj) Q_DECL_OVERRIDE;
-    virtual void draw(GObject& gobj, double x, double y) Q_DECL_OVERRIDE;
-    virtual void draw(QPainter* painter) Q_DECL_OVERRIDE;
-    virtual int getPixel(double x, double y) const Q_DECL_OVERRIDE;
-    virtual int getPixelARGB(double x, double y) const Q_DECL_OVERRIDE;
-    virtual Grid<int> getPixels() const Q_DECL_OVERRIDE;
-    virtual Grid<int> getPixelsARGB() const Q_DECL_OVERRIDE;
-    virtual bool isAutoRepaint() const Q_DECL_OVERRIDE;
-    virtual void repaint() Q_DECL_OVERRIDE;
-    virtual void repaintRegion(int x, int y, int width, int height) Q_DECL_OVERRIDE;
-    virtual void setAutoRepaint(bool autoRepaint) Q_DECL_OVERRIDE;
-    virtual void setBackground(int color) Q_DECL_OVERRIDE;
-    virtual void setBackground(const std::string& color) Q_DECL_OVERRIDE;
-    virtual void setColor(int color) Q_DECL_OVERRIDE;
-    virtual void setColor(const std::string& color) Q_DECL_OVERRIDE;
-    virtual void setFillColor(int color) Q_DECL_OVERRIDE;
-    virtual void setFillColor(const std::string& color) Q_DECL_OVERRIDE;
-    virtual void setFont(const QFont& font) Q_DECL_OVERRIDE;
-    virtual void setFont(const std::string& font) Q_DECL_OVERRIDE;
-    virtual void setLineWidth(double lineWidth) Q_DECL_OVERRIDE;
-    virtual void setPixel(double x, double y, int rgb) Q_DECL_OVERRIDE;
-    virtual void setPixel(double x, double y, int r, int g, int b) Q_DECL_OVERRIDE;
-    virtual void setPixelARGB(double x, double y, int argb) Q_DECL_OVERRIDE;
-    virtual void setPixelARGB(double x, double y, int a, int r, int g, int b) Q_DECL_OVERRIDE;
-    virtual void setPixels(const Grid<int>& pixels) Q_DECL_OVERRIDE;
-    virtual void setPixelsARGB(const Grid<int>& pixelsARGB) Q_DECL_OVERRIDE;
-    virtual void setRepaintImmediately(bool repaintImmediately) Q_DECL_OVERRIDE;
+    void clear() override;
+    void draw(GObject* gobj) override;
+    void draw(GObject* gobj, double x, double y) override;
+    void draw(GObject& gobj) override;
+    void draw(GObject& gobj, double x, double y) override;
+    void draw(QPainter* painter) override;
+    int getPixel(double x, double y) const override;
+    int getPixelARGB(double x, double y) const override;
+    Grid<int> getPixels() const override;
+    Grid<int> getPixelsARGB() const override;
+    bool isAutoRepaint() const override;
+    void repaint() override;
+    void repaintRegion(int x, int y, int width, int height) override;
+    void setAutoRepaint(bool autoRepaint) override;
+    void setBackground(int color) override;
+    void setBackground(const std::string& color) override;
+    void setColor(int color) override;
+    void setColor(const std::string& color) override;
+    void setFillColor(int color) override;
+    void setFillColor(const std::string& color) override;
+    void setFont(const QFont& font) override;
+    void setFont(const std::string& font) override;
+    void setLineWidth(double lineWidth) override;
+    void setPixel(double x, double y, int rgb) override;
+    void setPixel(double x, double y, int r, int g, int b) override;
+    void setPixelARGB(double x, double y, int argb) override;
+    void setPixelARGB(double x, double y, int a, int r, int g, int b) override;
+    void setPixels(const Grid<int>& pixels) override;
+    void setPixelsARGB(const Grid<int>& pixelsARGB) override;
+    void setRepaintImmediately(bool repaintImmediately) override;
 
 protected:
     virtual void ensureForwardTarget() = 0;

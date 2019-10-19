@@ -57,7 +57,7 @@ public:
     /**
      * Frees memory allocated internally by the scroll pane.
      */
-    virtual ~GScrollPane() Q_DECL_OVERRIDE;
+    ~GScrollPane() override;
 
     /**
      * Returns a constant indicating whether the horizontal scroll bar will be shown.
@@ -75,13 +75,13 @@ public:
     virtual GInteractor* getInteractor() const;
 
     /* @inherit */
-    virtual _Internal_QWidget* getInternalWidget() const Q_DECL_OVERRIDE;
+    _Internal_QWidget* getInternalWidget() const override;
 
     /* @inherit */
-    virtual std::string getType() const Q_DECL_OVERRIDE;
+    std::string getType() const override;
 
     /* @inherit */
-    virtual QWidget* getWidget() const Q_DECL_OVERRIDE;
+    QWidget* getWidget() const override;
 
     /**
      * Returns true if the inner interactor should stretch itself to its
@@ -132,7 +132,7 @@ class _Internal_QScrollArea : public QScrollArea, public _Internal_QWidget {
 
 public:
     _Internal_QScrollArea(GScrollPane* gscrollpane, QWidget* parent = nullptr);
-    virtual QSize sizeHint() const Q_DECL_OVERRIDE;
+    QSize sizeHint() const override;
 
 // private:
     // GScrollPane* _gscrollpane;

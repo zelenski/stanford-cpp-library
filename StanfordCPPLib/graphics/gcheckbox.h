@@ -65,13 +65,13 @@ public:
     /**
      * Frees memory allocated internally by the checkbox.
      */
-    virtual ~GCheckBox() Q_DECL_OVERRIDE;
+    ~GCheckBox() override;
 
     /* @inherit */
-    virtual std::string getActionCommand() const Q_DECL_OVERRIDE;
+    std::string getActionCommand() const override;
 
     /* @inherit */
-    virtual _Internal_QWidget* getInternalWidget() const Q_DECL_OVERRIDE;
+    _Internal_QWidget* getInternalWidget() const override;
 
     /**
      * Returns the text next to the checkbox.
@@ -79,10 +79,10 @@ public:
     virtual std::string getText() const;
 
     /* @inherit */
-    virtual std::string getType() const Q_DECL_OVERRIDE;
+    std::string getType() const override;
 
     /* @inherit */
-    virtual QWidget* getWidget() const Q_DECL_OVERRIDE;
+    QWidget* getWidget() const override;
 
     /**
      * Returns true if the checkbox is currently checked.
@@ -123,7 +123,7 @@ protected:
     /**
      * @private
      */
-    virtual std::string getActionEventType() const Q_DECL_OVERRIDE;
+    std::string getActionEventType() const override;
 
 private:
     Q_DISABLE_COPY(GCheckBox)
@@ -142,10 +142,10 @@ class _Internal_QCheckBox : public QCheckBox, public _Internal_QWidget {
 
 public:
     _Internal_QCheckBox(GCheckBox* gcheckBox, bool checked = false, QWidget* parent = nullptr);
-    virtual void detach() Q_DECL_OVERRIDE;
-    virtual void keyPressEvent(QKeyEvent* event) Q_DECL_OVERRIDE;
-    virtual void keyReleaseEvent(QKeyEvent* event) Q_DECL_OVERRIDE;
-    virtual QSize sizeHint() const Q_DECL_OVERRIDE;
+    void detach() override;
+    void keyPressEvent(QKeyEvent* event) override;
+    void keyReleaseEvent(QKeyEvent* event) override;
+    QSize sizeHint() const override;
 
 signals:
     void doubleClicked();
@@ -154,7 +154,7 @@ public slots:
     void handleStateChange(int);
 
 protected:
-    void mouseDoubleClickEvent(QMouseEvent* e) Q_DECL_OVERRIDE;
+    void mouseDoubleClickEvent(QMouseEvent* e) override;
 
 private:
     GCheckBox* _gcheckBox;

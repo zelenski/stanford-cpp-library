@@ -122,7 +122,7 @@ public:
     /**
      * Frees memory allocated internally by the container.
      */
-    virtual ~GContainer() Q_DECL_OVERRIDE;
+    ~GContainer() override;
 
     /**
      * Adds the given interactor to the end of the list of interactors in this container.
@@ -274,7 +274,7 @@ public:
     virtual int getInteractorCountByRegion(const std::string& region = "Center") const;
 
     /* @inherit */
-    virtual _Internal_QWidget* getInternalWidget() const Q_DECL_OVERRIDE;
+    _Internal_QWidget* getInternalWidget() const override;
 
     /**
      * Returns the type of layout used by this container.
@@ -312,7 +312,7 @@ public:
     virtual double getPaddingTop() const;
 
     /* @inherit */
-    virtual GDimension getPreferredSize() const Q_DECL_OVERRIDE;
+    GDimension getPreferredSize() const override;
 
     /**
      * Returns the height in pixels of the given region of this container,
@@ -362,10 +362,10 @@ public:
     virtual double getSpacing() const;
 
     /* @inherit */
-    virtual std::string getType() const Q_DECL_OVERRIDE;
+    std::string getType() const override;
 
     /* @inherit */
-    virtual QWidget* getWidget() const Q_DECL_OVERRIDE;
+    QWidget* getWidget() const override;
 
     /**
      * Adds the given interactor to this container just before the given index.
@@ -659,7 +659,7 @@ class _Internal_QContainer : public QWidget, public _Internal_QWidget {
 public:
     _Internal_QContainer(GContainer* gcontainer, GContainer::Layout layoutType, QWidget* parent = nullptr);
     _Internal_QContainer(GContainer* gcontainer, int rows, int cols, QWidget* parent = nullptr);
-    virtual QSize sizeHint() const Q_DECL_OVERRIDE;
+    QSize sizeHint() const override;
 
 private:
     GContainer* _gcontainer;
@@ -705,14 +705,14 @@ private:
     virtual void clear();
     virtual void clearRegion(GContainer::Region region);
     virtual bool contains(QWidget* widget) const;
-    virtual void detach() Q_DECL_OVERRIDE;
+    void detach() override;
     virtual void fixAlignment(QWidget* widget, GContainer::Region region = GContainer::REGION_CENTER);
     virtual void fixMargin(QLayout* layout, bool hasStretch = false);
     virtual HorizontalAlignment getHorizontalAlignment() const;
     virtual VerticalAlignment getVerticalAlignment() const;
     virtual GContainer::Layout getLayoutType() const;
     virtual int getMargin() const;
-    virtual QSize getPreferredSize() const Q_DECL_OVERRIDE;
+    QSize getPreferredSize() const override;
     virtual QLayout* getQLayout() const;
     virtual int getSpacing() const;
     virtual void insert(int i, QWidget* widget);

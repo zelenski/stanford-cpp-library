@@ -91,7 +91,7 @@ public:
     /**
      * Frees memory allocated internally by the text field.
      */
-    virtual ~GTextField() Q_DECL_OVERRIDE;
+    ~GTextField() override;
 
     /**
      * Returns the number of characters that can fit in the visible area of
@@ -108,7 +108,7 @@ public:
     virtual InputType getInputType() const;
 
     /* @inherit */
-    virtual _Internal_QWidget* getInternalWidget() const Q_DECL_OVERRIDE;
+    _Internal_QWidget* getInternalWidget() const override;
 
     /**
      * Returns the maximum length of string allowed in the text field.
@@ -130,7 +130,7 @@ public:
     virtual std::string getText() const;
 
     /* @inherit */
-    virtual std::string getType() const Q_DECL_OVERRIDE;
+    std::string getType() const override;
 
     /**
      * Returns the text field's current text.
@@ -184,7 +184,7 @@ public:
     virtual int getValueAsInteger() const;
 
     /* @inherit */
-    virtual QWidget* getWidget() const Q_DECL_OVERRIDE;
+    QWidget* getWidget() const override;
 
     /**
      * Returns true if this text field has an autocompletion list of options
@@ -359,7 +359,7 @@ protected:
     /**
      * @private
      */
-    virtual std::string getActionEventType() const Q_DECL_OVERRIDE;
+    std::string getActionEventType() const override;
 
 private:
     Q_DISABLE_COPY(GTextField)
@@ -388,10 +388,10 @@ class _Internal_QLineEdit : public QLineEdit, public _Internal_QWidget {
 
 public:
     _Internal_QLineEdit(GTextField* gtextField, QWidget* parent = nullptr);
-    virtual void detach() Q_DECL_OVERRIDE;
-    virtual void keyPressEvent(QKeyEvent* event) Q_DECL_OVERRIDE;
-    virtual void keyReleaseEvent(QKeyEvent* event) Q_DECL_OVERRIDE;
-    virtual QSize sizeHint() const Q_DECL_OVERRIDE;
+    void detach() override;
+    void keyPressEvent(QKeyEvent* event) override;
+    void keyReleaseEvent(QKeyEvent* event) override;
+    QSize sizeHint() const override;
 
 public slots:
     void handleTextChange(const QString&);
@@ -411,11 +411,11 @@ class _Internal_QSpinBox : public QSpinBox, public _Internal_QWidget {
 
 public:
     _Internal_QSpinBox(GTextField* qgtextField, int min, int max, int step = 1, QWidget* parent = nullptr);
-    virtual void detach() Q_DECL_OVERRIDE;
-    virtual void keyPressEvent(QKeyEvent* event) Q_DECL_OVERRIDE;
-    virtual void keyReleaseEvent(QKeyEvent* event) Q_DECL_OVERRIDE;
+    void detach() override;
+    void keyPressEvent(QKeyEvent* event) override;
+    void keyReleaseEvent(QKeyEvent* event) override;
     virtual QLineEdit* lineEdit() const;
-    virtual QSize sizeHint() const Q_DECL_OVERRIDE;
+    QSize sizeHint() const override;
 
 public slots:
     void handleTextChange(const QString&);
@@ -435,11 +435,11 @@ class _Internal_QDoubleSpinBox : public QDoubleSpinBox, public _Internal_QWidget
 
 public:
     _Internal_QDoubleSpinBox(GTextField* qgtextField, double min, double max, double step = 0.1, QWidget* parent = nullptr);
-    virtual void detach() Q_DECL_OVERRIDE;
-    virtual void keyPressEvent(QKeyEvent* event) Q_DECL_OVERRIDE;
-    virtual void keyReleaseEvent(QKeyEvent* event) Q_DECL_OVERRIDE;
+    void detach() override;
+    void keyPressEvent(QKeyEvent* event) override;
+    void keyReleaseEvent(QKeyEvent* event) override;
     virtual QLineEdit* lineEdit() const;
-    virtual QSize sizeHint() const Q_DECL_OVERRIDE;
+    QSize sizeHint() const override;
 
 public slots:
     void handleTextChange(const QString&);

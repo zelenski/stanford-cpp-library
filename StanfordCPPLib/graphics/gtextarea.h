@@ -58,7 +58,7 @@ public:
     /**
      * Frees memory allocated internally by the text area.
      */
-    virtual ~GTextArea() Q_DECL_OVERRIDE;
+    ~GTextArea() override;
 
     /**
      * Adds formatted text to the end of the text area.
@@ -104,7 +104,7 @@ public:
     virtual std::string getHtml() const;
 
     /* @inherit */
-    virtual _Internal_QWidget* getInternalWidget() const Q_DECL_OVERRIDE;
+    _Internal_QWidget* getInternalWidget() const override;
 
     /**
      * Returns the text area's placeholder text, which is usually displayed
@@ -153,10 +153,10 @@ public:
     virtual std::string getText() const;
 
     /* @inherit */
-    virtual std::string getType() const Q_DECL_OVERRIDE;
+    std::string getType() const override;
 
     /* @inherit */
-    virtual QWidget* getWidget() const Q_DECL_OVERRIDE;
+    QWidget* getWidget() const override;
 
     /**
      * Returns true if a context menu will pop up when the user right-clicks the
@@ -266,14 +266,14 @@ public:
      * when the user moves or clicks the mouse.
      * Any existing mouse listener will be replaced.
      */
-    virtual void setMouseListener(GEventListener func) Q_DECL_OVERRIDE;
+    void setMouseListener(GEventListener func) override;
 
     /**
      * Sets a mouse listener on this text area so that it will be called
      * when the user moves or clicks the mouse.
      * Any existing mouse listener will be replaced.
      */
-    virtual void setMouseListener(GEventListenerVoid func) Q_DECL_OVERRIDE;
+    void setMouseListener(GEventListenerVoid func) override;
 
     /**
      * Sets the text area's placeholder text, which is usually displayed
@@ -356,13 +356,13 @@ class _Internal_QTextEdit : public QTextEdit, public _Internal_QWidget {
 
 public:
     _Internal_QTextEdit(GTextArea* gtextArea, QWidget* parent = nullptr);
-    virtual void contextMenuEvent(QContextMenuEvent* event) Q_DECL_OVERRIDE;
-    virtual void detach() Q_DECL_OVERRIDE;
-    virtual void keyPressEvent(QKeyEvent* event) Q_DECL_OVERRIDE;
-    virtual void keyReleaseEvent(QKeyEvent* event) Q_DECL_OVERRIDE;
-    virtual void mousePressEvent(QMouseEvent* event) Q_DECL_OVERRIDE;
-    virtual void mouseReleaseEvent(QMouseEvent* event) Q_DECL_OVERRIDE;
-    virtual QSize sizeHint() const Q_DECL_OVERRIDE;
+    void contextMenuEvent(QContextMenuEvent* event) override;
+    void detach() override;
+    void keyPressEvent(QKeyEvent* event) override;
+    void keyReleaseEvent(QKeyEvent* event) override;
+    void mousePressEvent(QMouseEvent* event) override;
+    void mouseReleaseEvent(QMouseEvent* event) override;
+    QSize sizeHint() const override;
 
 public slots:
     void handleScroll(int value);

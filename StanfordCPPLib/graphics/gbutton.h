@@ -68,16 +68,16 @@ public:
     /**
      * Frees memory allocated internally by the button.
      */
-    virtual ~GButton() Q_DECL_OVERRIDE;
+    ~GButton() override;
 
     /* @inherit */
-    virtual std::string getAccelerator() const Q_DECL_OVERRIDE;
+    std::string getAccelerator() const override;
 
     /* @inherit */
-    virtual std::string getActionCommand() const Q_DECL_OVERRIDE;
+    std::string getActionCommand() const override;
 
     /* @inherit */
-    virtual _Internal_QWidget* getInternalWidget() const Q_DECL_OVERRIDE;
+    _Internal_QWidget* getInternalWidget() const override;
 
     /**
      * Returns the button's text.
@@ -93,22 +93,22 @@ public:
     virtual GInteractor::TextPosition getTextPosition() const;
 
     /* @inherit */
-    virtual std::string getType() const Q_DECL_OVERRIDE;
+    std::string getType() const override;
 
     /* @inherit */
-    virtual QWidget* getWidget() const Q_DECL_OVERRIDE;
+    QWidget* getWidget() const override;
 
     /* @inherit */
-    virtual void setAccelerator(const std::string& accelerator) Q_DECL_OVERRIDE;
+    void setAccelerator(const std::string& accelerator) override;
 
     /* @inherit */
-    virtual void setIcon(const QIcon& icon) Q_DECL_OVERRIDE;
+    void setIcon(const QIcon& icon) override;
 
     /* @inherit */
-    virtual void setIcon(const QPixmap& icon) Q_DECL_OVERRIDE;
+    void setIcon(const QPixmap& icon) override;
 
     /* @inherit */
-    virtual void setIcon(const std::string& filename, bool retainIconSize = true) Q_DECL_OVERRIDE;
+    void setIcon(const std::string& filename, bool retainIconSize = true) override;
 
     /**
      * Sets the text on the button to be the given text.
@@ -145,8 +145,8 @@ class _Internal_QPushButton : public QToolButton, public _Internal_QWidget {
 
 public:
     _Internal_QPushButton(GButton* button, QWidget* parent = nullptr);
-    virtual void detach() Q_DECL_OVERRIDE;
-    virtual QSize sizeHint() const Q_DECL_OVERRIDE;
+    void detach() override;
+    QSize sizeHint() const override;
 
 signals:
     void doubleClicked();
@@ -155,7 +155,7 @@ public slots:
     void handleClick();
 
 protected:
-    void mouseDoubleClickEvent(QMouseEvent* e) Q_DECL_OVERRIDE;
+    void mouseDoubleClickEvent(QMouseEvent* e) override;
 
 private:
     GButton* _gbutton;

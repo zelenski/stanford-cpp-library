@@ -185,7 +185,7 @@ public:
     /**
      * Frees memory allocated internally by the window.
      */
-    virtual ~GWindow() Q_DECL_OVERRIDE;
+    ~GWindow() override;
 
     /**
      * Adds the given interactor to the center region of the window.
@@ -407,7 +407,7 @@ public:
     /**
      * Removes all interactors from all regionss of the window.
      */
-    virtual void clear() Q_DECL_OVERRIDE;
+    void clear() override;
 
     /**
      * Removes all graphical objects from the graphical canvas in this window
@@ -494,7 +494,7 @@ public:
      * This will be true if the window has been initialized and is visible.
      * @private
      */
-    virtual bool eventsEnabled() const Q_DECL_OVERRIDE;
+    bool eventsEnabled() const override;
 
     /**
      * Returns a direct pointer to the window's internal graphical canvas
@@ -671,7 +671,7 @@ public:
     virtual std::string getTitle() const;
 
     /* @inherit */
-    virtual std::string getType() const Q_DECL_OVERRIDE;
+    std::string getType() const override;
 
     /**
      * Returns an internal Qt widget representing the window.
@@ -764,7 +764,7 @@ public:
     virtual bool isOpen() const;
 
     /* @inherit */
-    virtual bool isRepaintImmediately() const Q_DECL_OVERRIDE;
+    bool isRepaintImmediately() const override;
 
     /**
      * Returns true if the window allows itself to be resized.
@@ -934,10 +934,10 @@ public:
     virtual void saveCanvasPixels(const std::string& filename);
 
     /* @inherit */
-    virtual void setBackground(int color) Q_DECL_OVERRIDE;
+    void setBackground(int color) override;
 
     /* @inherit */
-    virtual void setBackground(const std::string& color) Q_DECL_OVERRIDE;
+    void setBackground(const std::string& color) override;
 
     /**
      * Resizes the window so that its central canvas region will occupy exactly
@@ -1267,7 +1267,7 @@ private:
 
     static _Internal_QMainWindow* _lastWindow;
 
-    virtual void ensureForwardTarget() Q_DECL_OVERRIDE;
+    void ensureForwardTarget() override;
     void _init(double width, double height, bool visible);
     static Region stringToRegion(const std::string& regionStr);
 
@@ -1347,11 +1347,11 @@ class _Internal_QMainWindow : public QMainWindow {
 public:
     _Internal_QMainWindow(GWindow* gwindow, QWidget* parent = nullptr);
 
-    virtual void changeEvent(QEvent* event) Q_DECL_OVERRIDE;
-    virtual void closeEvent(QCloseEvent* event) Q_DECL_OVERRIDE;
-    virtual void keyPressEvent(QKeyEvent* event) Q_DECL_OVERRIDE;
-    virtual void resizeEvent(QResizeEvent* event) Q_DECL_OVERRIDE;
-    virtual void timerEvent(QTimerEvent* event) Q_DECL_OVERRIDE;
+    void changeEvent(QEvent* event) override;
+    void closeEvent(QCloseEvent* event) override;
+    void keyPressEvent(QKeyEvent* event) override;
+    void resizeEvent(QResizeEvent* event) override;
+    void timerEvent(QTimerEvent* event) override;
     virtual bool timerExists(int id = -1);
     virtual int timerStart(double ms);
     virtual void timerStop(int id = -1);

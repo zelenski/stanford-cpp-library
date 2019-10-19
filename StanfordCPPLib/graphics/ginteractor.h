@@ -96,7 +96,7 @@ public:
      * Initially true.
      * An interactor must be visible and added to an onscreen window to receive events.
      */
-    virtual bool eventsEnabled() const Q_DECL_OVERRIDE;
+    bool eventsEnabled() const override;
 
     /**
      * Returns a string representing a hotkey for this interactor,
@@ -275,7 +275,7 @@ public:
      * All subclasses of GInteractor must implement this method.
      * @return a string such as "GCheckBox"
      */
-    virtual std::string getType() const = 0;
+    std::string getType() const override = 0;
 
     /**
      * Returns a direct pointer to the internal Qt widget being wrapped by this
@@ -832,16 +832,16 @@ public:
         _iqwidget = new _Internal_QWidget();   // dummy
     }
 
-    virtual _Internal_QWidget* getInternalWidget() const Q_DECL_OVERRIDE {
+    _Internal_QWidget* getInternalWidget() const override {
         return _iqwidget;
     }
 
-    virtual std::string getType() const Q_DECL_OVERRIDE {
+    std::string getType() const override {
         std::string typeName = typeid(T).name();
         return std::string("GGenericInteractor<") + typeName + ">";
     }
 
-    virtual QWidget* getWidget() const Q_DECL_OVERRIDE {
+    QWidget* getWidget() const override {
         return _widget;
     }
 

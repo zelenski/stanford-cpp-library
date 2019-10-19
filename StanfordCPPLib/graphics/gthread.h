@@ -391,44 +391,44 @@ public:
     virtual ~GThreadQt();
 
     /* @inherit */
-    virtual int getResult() const Q_DECL_OVERRIDE;
+    int getResult() const override;
 
     /* @inherit */
-    virtual bool isRunning() const Q_DECL_OVERRIDE;
+    bool isRunning() const override;
 
     /* @inherit */
-    virtual void join() Q_DECL_OVERRIDE;
+    void join() override;
 
     /* @inherit */
-    virtual bool join(long ms) Q_DECL_OVERRIDE;
+    bool join(long ms) override;
 
     /* @inherit */
-    virtual std::string name() const Q_DECL_OVERRIDE;
+    std::string name() const override;
 
     /* @inherit */
-    virtual int priority() const Q_DECL_OVERRIDE;
+    int priority() const override;
 
     /* @inherit */
-    virtual void setName(const std::string& name) Q_DECL_OVERRIDE;
+    void setName(const std::string& name) override;
 
     /* @inherit */
-    virtual void setPriority(int priority) Q_DECL_OVERRIDE;
+    void setPriority(int priority) override;
 
     /* @inherit */
-    virtual void sleep(double ms) Q_DECL_OVERRIDE;
+    void sleep(double ms) override;
 
     /* @inherit */
-    virtual void start() Q_DECL_OVERRIDE;
+    void start() override;
 
     /* @inherit */
-    virtual void stop() Q_DECL_OVERRIDE;
+    void stop() override;
 
     /* @inherit */
-    virtual void yield() Q_DECL_OVERRIDE;
+    void yield() override;
 
 protected:
     /* @inherit */
-    virtual void run() Q_DECL_OVERRIDE;
+    void run() override;
 
 private:
     Q_DISABLE_COPY(GThreadQt)
@@ -473,44 +473,44 @@ public:
     virtual ~GThreadStd();
 
     /* @inherit */
-    virtual int getResult() const Q_DECL_OVERRIDE;
+    int getResult() const override;
 
     /* @inherit */
-    virtual bool isRunning() const Q_DECL_OVERRIDE;
+    bool isRunning() const override;
 
     /* @inherit */
-    virtual void join() Q_DECL_OVERRIDE;
+    void join() override;
 
     /* @inherit */
-    virtual bool join(long ms) Q_DECL_OVERRIDE;
+    bool join(long ms) override;
 
     /* @inherit */
-    virtual std::string name() const Q_DECL_OVERRIDE;
+    std::string name() const override;
 
     /* @inherit */
-    virtual int priority() const Q_DECL_OVERRIDE;
+    int priority() const override;
 
     /* @inherit */
-    virtual void setName(const std::string& name) Q_DECL_OVERRIDE;
+    void setName(const std::string& name) override;
 
     /* @inherit */
-    virtual void setPriority(int priority) Q_DECL_OVERRIDE;
+    void setPriority(int priority) override;
 
     /* @inherit */
-    virtual void sleep(double ms) Q_DECL_OVERRIDE;
+    void sleep(double ms) override;
 
     /* @inherit */
-    virtual void start() Q_DECL_OVERRIDE;
+    void start() override;
 
     /* @inherit */
-    virtual void stop() Q_DECL_OVERRIDE;
+    void stop() override;
 
     /* @inherit */
-    virtual void yield() Q_DECL_OVERRIDE;
+    void yield() override;
 
 protected:
     /* @inherit */
-    virtual void run() Q_DECL_OVERRIDE;
+    void run() override;
 
 private:
     Q_DISABLE_COPY(GThreadStd)

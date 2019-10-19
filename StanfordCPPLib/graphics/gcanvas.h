@@ -177,7 +177,7 @@ public:
     /**
      * Frees memory allocated internally by the canvas.
      */
-    virtual ~GCanvas() Q_DECL_OVERRIDE;
+    ~GCanvas() override;
 
     /**
      * Adds the given interactor to canvas.
@@ -207,7 +207,7 @@ public:
      * Removes all graphical objects from the canvas foreground layer
      * and wipes the background layer to show the current background color.
      */
-    virtual void clear() Q_DECL_OVERRIDE;
+    void clear() override;
 
     /**
      * Removes all graphical objects from the foreground layer of the canvas.
@@ -298,13 +298,13 @@ public:
      * the foreground layer using add().
      * @throw ErrorException if the object passed is null
      */
-    virtual void draw(GObject* gobj) Q_DECL_OVERRIDE;
+    void draw(GObject* gobj) override;
 
     /**
      * @inherit
      * @private
      */
-    virtual void draw(QPainter* painter) Q_DECL_OVERRIDE;
+    void draw(QPainter* painter) override;
 
     /**
      * Returns true if the two given canvases contain exactly the same pixel data.
@@ -363,10 +363,10 @@ public:
     virtual void fromGrid(const Grid<int>& grid);
 
     /* @inherit */
-    virtual std::string getBackground() const Q_DECL_OVERRIDE;
+    std::string getBackground() const override;
 
     /* @inherit */
-    virtual int getBackgroundInt() const Q_DECL_OVERRIDE;
+    int getBackgroundInt() const override;
 
     /**
      * Returns a pointer to the graphical object in the foreground layer of
@@ -397,10 +397,10 @@ public:
     virtual std::string getFilename() const;
 
     /* @inherit */
-    virtual std::string getFont() const Q_DECL_OVERRIDE;
+    std::string getFont() const override;
 
     /* @inherit */
-    virtual _Internal_QWidget* getInternalWidget() const Q_DECL_OVERRIDE;
+    _Internal_QWidget* getInternalWidget() const override;
 
     /**
      * Returns the color of the pixel at the given x/y coordinates of the
@@ -413,7 +413,7 @@ public:
      *
      * @throw ErrorException if the given x/y values are out of bounds.
      */
-    virtual int getPixel(double x, double y) const Q_DECL_OVERRIDE;
+    int getPixel(double x, double y) const override;
 
     /**
      * Returns the color of the pixel at the given x/y coordinates of the
@@ -429,7 +429,7 @@ public:
      *
      * @throw ErrorException if the given x/y values are out of bounds.
      */
-    virtual int getPixelARGB(double x, double y) const Q_DECL_OVERRIDE;
+    int getPixelARGB(double x, double y) const override;
 
     /**
      * Returns all pixels of the background layer of the canvas as a Grid,
@@ -437,7 +437,7 @@ public:
      * So for example, grid[y][x] returns the RGB int value at that pixel.
      * Equivalent to toGrid.
      */
-    virtual Grid<int> getPixels() const Q_DECL_OVERRIDE;
+    Grid<int> getPixels() const override;
 
     /**
      * Returns all pixels of the background layer of the canvas as a Grid,
@@ -446,16 +446,16 @@ public:
      * the alpha channel of each pixel in the top 8 bits, allowing for
      * transparency effects.
      */
-    virtual Grid<int> getPixelsARGB() const Q_DECL_OVERRIDE;
+    Grid<int> getPixelsARGB() const override;
 
     /* @inherit */
-    virtual std::string getType() const Q_DECL_OVERRIDE;
+    std::string getType() const override;
 
     /* @inherit */
-    virtual QWidget* getWidget() const Q_DECL_OVERRIDE;
+    QWidget* getWidget() const override;
 
     /* @inherit */
-    virtual bool isAutoRepaint() const Q_DECL_OVERRIDE;
+    bool isAutoRepaint() const override;
 
     /**
      * Reads the canvas's pixel contents from the given image file.
@@ -496,13 +496,13 @@ public:
      * to see any changes. This can be desirable if you plan to make a large batch
      * of changes and want to repaint only after all of them are done.
      */
-    virtual void repaint() Q_DECL_OVERRIDE;
+    void repaint() override;
 
     /**
      * Instructs the canvas to redraw the given region of pixels within both
      * of its layers.
      */
-    virtual void repaintRegion(int x, int y, int width, int height) Q_DECL_OVERRIDE;
+    void repaintRegion(int x, int y, int width, int height) override;
 
     /**
      * Changes this image's bounds to be the given size.
@@ -514,7 +514,7 @@ public:
      * Any existing pixel contents are discarded and revert to defaults.
      * @throw ErrorException if the given width/height ranges are negative
      */
-    virtual void resize(double width, double height, bool retain = true);
+    void resize(double width, double height, bool retain = true);
 
     /**
      * Saves the canvas's contents to the given image file.
@@ -530,45 +530,45 @@ public:
      * to see any changes. This can be desirable if you plan to make a large batch
      * of changes and want to repaint only after all of them are done.
      */
-    virtual void setAutoRepaint(bool autoRepaint) Q_DECL_OVERRIDE;
+    void setAutoRepaint(bool autoRepaint) override;
 
     /* @inherit */
-    virtual void setBackground(int color) Q_DECL_OVERRIDE;
+    void setBackground(int color) override;
 
     /* @inherit */
-    virtual void setBackground(const std::string& color) Q_DECL_OVERRIDE;
+    void setBackground(const std::string& color) override;
 
     /* @inherit */
-    virtual void setColor(int color) Q_DECL_OVERRIDE;
+    void setColor(int color) override;
 
     /* @inherit */
-    virtual void setColor(const std::string& color) Q_DECL_OVERRIDE;
+    void setColor(const std::string& color) override;
 
     /* @inherit */
-    virtual void setFont(const QFont& font) Q_DECL_OVERRIDE;
+    void setFont(const QFont& font) override;
 
     /* @inherit */
-    virtual void setFont(const std::string& font) Q_DECL_OVERRIDE;
+    void setFont(const std::string& font) override;
 
     /* @inherit */
-    virtual void setForeground(int rgb) Q_DECL_OVERRIDE;
+    void setForeground(int rgb) override;
 
     /* @inherit */
-    virtual void setForeground(const std::string& color) Q_DECL_OVERRIDE;
+    void setForeground(const std::string& color) override;
 
     /**
      * Sets a key listener on this canvas so that it will be called
      * when any key is pressed or released on the canvas.
      * Any existing key listener will be replaced.
      */
-    virtual void setKeyListener(GEventListener func) Q_DECL_OVERRIDE;
+    void setKeyListener(GEventListener func) override;
 
     /**
      * Sets a key listener on this canvas so that it will be called
      * when any key is pressed or released on the canvas.
      * Any existing key listener will be replaced.
      */
-    virtual void setKeyListener(GEventListenerVoid func) Q_DECL_OVERRIDE;
+    void setKeyListener(GEventListenerVoid func) override;
 
     /**
      * Sets the color of the given x/y pixel in the background layer of the
@@ -581,7 +581,7 @@ public:
      *
      * @throw ErrorException if x/y is out of range or rgb is an invalid color
      */
-    virtual void setPixel(double x, double y, int rgb) Q_DECL_OVERRIDE;
+    void setPixel(double x, double y, int rgb) override;
 
     /**
      * Sets the color of the given x/y pixel in the background layer of the
@@ -594,7 +594,7 @@ public:
      *
      * @throw ErrorException if x/y is out of range or r,g,b are not between 0-255
      */
-    virtual void setPixel(double x, double y, int r, int g, int b) Q_DECL_OVERRIDE;
+    void setPixel(double x, double y, int r, int g, int b) override;
 
     /**
      * Sets the color of the given x/y pixel in the background layer of the
@@ -607,7 +607,7 @@ public:
      *
      * @throw ErrorException if x/y is out of range or argb is an invalid color
      */
-    virtual void setPixelARGB(double x, double y, int argb) Q_DECL_OVERRIDE;
+    void setPixelARGB(double x, double y, int argb) override;
 
     /**
      * Sets the color of the given x/y pixel in the background layer of the
@@ -620,7 +620,7 @@ public:
      *
      * @throw ErrorException if x/y is out of range or a,r,g,b are not between 0-255
      */
-    virtual void setPixelARGB(double x, double y, int a, int r, int g, int b) Q_DECL_OVERRIDE;
+    void setPixelARGB(double x, double y, int a, int r, int g, int b) override;
 
     /**
      * Sets the color of the all pixels in the background layer of the
@@ -630,7 +630,7 @@ public:
      * be resized to match the grid.
      * Equivalent to fromGrid.
      */
-    virtual void setPixels(const Grid<int>& pixels) Q_DECL_OVERRIDE;
+    void setPixels(const Grid<int>& pixels) override;
 
     /**
      * Sets the color of the all pixels in the background layer of the
@@ -639,7 +639,7 @@ public:
      * If the given grid is not the same size as this canvas, the canvas will
      * be resized to match the grid.
      */
-    virtual void setPixelsARGB(const Grid<int>& pixelsARGB) Q_DECL_OVERRIDE;
+    void setPixelsARGB(const Grid<int>& pixelsARGB) override;
 
     /**
      * Converts the pixels of the canvas into a GImage object.
@@ -701,25 +701,25 @@ class _Internal_QCanvas : public QWidget, public _Internal_QWidget {
 
 public:
     _Internal_QCanvas(GCanvas* gcanvas, QWidget* parent = nullptr);
-    virtual void detach() Q_DECL_OVERRIDE;
-    virtual void enterEvent(QEvent* event) Q_DECL_OVERRIDE;
-    virtual void keyPressEvent(QKeyEvent* event) Q_DECL_OVERRIDE;
-    virtual void keyReleaseEvent(QKeyEvent* event) Q_DECL_OVERRIDE;
-    virtual void leaveEvent(QEvent* event) Q_DECL_OVERRIDE;
-    virtual void mouseMoveEvent(QMouseEvent* event) Q_DECL_OVERRIDE;
-    virtual void mousePressEvent(QMouseEvent* event) Q_DECL_OVERRIDE;
-    virtual void mouseReleaseEvent(QMouseEvent* event) Q_DECL_OVERRIDE;
-    virtual void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
-    virtual void resizeEvent(QResizeEvent* event) Q_DECL_OVERRIDE;
+    void detach() override;
+    void enterEvent(QEvent* event) override;
+    void keyPressEvent(QKeyEvent* event) override;
+    void keyReleaseEvent(QKeyEvent* event) override;
+    void leaveEvent(QEvent* event) override;
+    void mouseMoveEvent(QMouseEvent* event) override;
+    void mousePressEvent(QMouseEvent* event) override;
+    void mouseReleaseEvent(QMouseEvent* event) override;
+    void paintEvent(QPaintEvent *event) override;
+    void resizeEvent(QResizeEvent* event) override;
     virtual void setCanvasSize(double width, double height);
-    virtual QSize sizeHint() const Q_DECL_OVERRIDE;
-    virtual void wheelEvent(QWheelEvent* event) Q_DECL_OVERRIDE;
+    QSize sizeHint() const override;
+    void wheelEvent(QWheelEvent* event) override;
 
 signals:
     void doubleClicked();
 
 protected:
-    void mouseDoubleClickEvent(QMouseEvent* e) Q_DECL_OVERRIDE;
+    void mouseDoubleClickEvent(QMouseEvent* e) override;
 
 private:
     GCanvas* _gcanvas;

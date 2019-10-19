@@ -38,16 +38,16 @@ public:
     /**
      * Frees memory allocated internally by the scroll pane.
      */
-    virtual ~GSpacer() Q_DECL_OVERRIDE;
+    ~GSpacer() override;
 
     /* @inherit */
-    virtual _Internal_QWidget* getInternalWidget() const Q_DECL_OVERRIDE;
+    _Internal_QWidget* getInternalWidget() const override;
 
     /* @inherit */
-    virtual std::string getType() const Q_DECL_OVERRIDE;
+    std::string getType() const override;
 
     /* @inherit */
-    virtual QWidget* getWidget() const Q_DECL_OVERRIDE;
+    QWidget* getWidget() const override;
 
 private:
     Q_DISABLE_COPY(GSpacer)
@@ -67,7 +67,7 @@ class _Internal_QSpacer : public QWidget, public _Internal_QWidget {
 
 public:
     _Internal_QSpacer(GSpacer* gspacer, double width, double height, QWidget* parent = nullptr);
-    virtual QSize sizeHint() const Q_DECL_OVERRIDE;
+    QSize sizeHint() const override;
 
 // private:
     // GSpacer* _gspacer;
