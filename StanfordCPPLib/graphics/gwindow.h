@@ -34,7 +34,6 @@
 #define _gwindow_h
 
 #include <string>
-#include <QWindow>
 #include <QCloseEvent>
 #include <QEvent>
 #include <QLayout>

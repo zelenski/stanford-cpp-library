@@ -33,10 +33,7 @@
 #define SPL_QT_GUI_IN_USE 1
 #endif // INTERNAL_INCLUDE
 
-#include <functional>
 #include <string>
-#include <QWindow>
-#include <QEvent>
 #include <QCheckBox>
 #include <QMouseEvent>
 #include <QSize>

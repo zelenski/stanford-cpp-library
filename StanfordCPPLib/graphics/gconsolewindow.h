@@ -35,7 +35,6 @@
 #include <string>
 #include <Qt>
 #include <QMutex>
-#include <QWindow>
 #include <QKeyEvent>
 #include <QPixmap>
 #include <QReadWriteLock>

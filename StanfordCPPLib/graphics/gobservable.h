@@ -26,7 +26,6 @@
 #include <string>
 #include <QObject>
 #include <QWidget>
-#include <QWindow>
 #include <QEvent>
 #include <QCloseEvent>
 #include <QKeyEvent>

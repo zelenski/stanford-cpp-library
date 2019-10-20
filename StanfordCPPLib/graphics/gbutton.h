@@ -29,8 +29,6 @@
 #define _gbutton_h
 
 #include <string>
-#include <QWindow>
-#include <QEvent>
 #include <QMouseEvent>
 #include <QPushButton>
 #include <QSize>

@@ -33,8 +33,6 @@
 #define _glabel_h
 
 #include <string>
-#include <QWindow>
-#include <QEvent>
 #include <QLabel>
 #include <QMouseEvent>
 #include <QSize>

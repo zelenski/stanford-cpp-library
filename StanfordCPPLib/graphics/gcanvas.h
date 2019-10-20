@@ -30,7 +30,6 @@
 #define _gcanvas_h
 
 #include <string>
-#include <QWindow>
 #include <QEvent>
 #include <QKeyEvent>
 #include <QMouseEvent>

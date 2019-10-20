@@ -38,8 +38,6 @@
 #ifndef _console_h
 #define _console_h
 
-#include <iostream>
-#include <sstream>
 #include <string>
 
 #ifndef SPL_HEADLESS_MODE

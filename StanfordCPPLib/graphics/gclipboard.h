@@ -22,8 +22,6 @@
 #ifndef _gclipboard_h
 #define _gclipboard_h
 
-#include <QWindow>   // needed for QEvent
-#include <QEvent>
 #include <QKeyEvent>
 #include <string>
 

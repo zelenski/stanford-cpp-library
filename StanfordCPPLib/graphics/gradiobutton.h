@@ -31,8 +31,6 @@
 #define _gradiobutton_h
 
 #include <string>
-#include <QWindow>
-#include <QEvent>
 #include <QButtonGroup>
 #include <QMouseEvent>
 #include <QRadioButton>

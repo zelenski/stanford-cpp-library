@@ -32,7 +32,6 @@
 #ifndef _ginteractor_h
 #define _ginteractor_h
 
-#include <functional>
 #include <string>
 #include <QIcon>
 #include <QObject>

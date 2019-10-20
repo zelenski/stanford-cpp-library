@@ -36,12 +36,8 @@
 #define _gdownloader_h
 
 #include <string>
-#include <QtCore>
-#include <QtNetwork>
 #include <QNetworkAccessManager>
-#include <QNetworkRequest>
 #include <QNetworkReply>
-#include <QUrl>
 
 #define INTERNAL_INCLUDE 1
 #include "map.h"
