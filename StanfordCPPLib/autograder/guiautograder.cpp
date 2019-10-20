@@ -614,7 +614,8 @@ bool GuiAutograder::isStyleCheck() const {
 
 int GuiAutograder::mainFunc() {
     // TODO: don't really need this?
-    _window->setTitle(_flags.assignmentName + " Autograder");
+    std::string studentName = QtGui::instance()->getApplicationDisplayName();
+    _window->setTitle(studentName.empty()? _flags.assignmentName + " Autograder " : studentName);
     _window->_autograder_setIsAutograderWindow(true);
     _window->rememberPosition();
     _window->setVisible(true);

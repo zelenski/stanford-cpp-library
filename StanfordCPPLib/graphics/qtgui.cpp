@@ -83,6 +83,10 @@ QSPLApplication* QtGui::getApplication() {
     return _app;
 }
 
+std::string QtGui::getApplicationDisplayName() const {
+    return (_app ? _app->applicationDisplayName().toStdString() : "");
+}
+
 int QtGui::getArgc() const {
     return _argc;
 }
@@ -184,6 +188,8 @@ void QtGui::startEventLoop(bool exitAfter) {
         exitGraphics(exitCode);
     }
 }
+
+
 
 namespace stanfordcpplib {
 void endOfLibraryStudentThread() {

@@ -63,6 +63,14 @@ public:
      */
     void exitGraphics(int exitCode = 0);
 
+
+    /**
+     * Returns the display name of the application (used as
+     * title for window and menu). If name not (yet) available,
+     * returns empty string.
+     */    
+    std::string getApplicationDisplayName() const;
+
     /**
      * Returns the count of arguments passed to the main() function.
      * The string arguments themselves can be examined using getArgv.
@@ -108,6 +116,7 @@ public:
      */
     void startBackgroundEventLoopVoid(GThunk mainFunc, bool exitAfter = true);
     void startEventLoop(bool exitAfter = true);
+
 
 public slots:
     /**
