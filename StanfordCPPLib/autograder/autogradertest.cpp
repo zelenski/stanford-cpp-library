@@ -109,7 +109,7 @@ void AutograderTest::TestBody() {
     // empty; override me
 }
 
-void AutograderTest::TestRealBody() throw (ErrorException) {
+void AutograderTest::TestRealBody() {
     // empty; override me
 }
 
