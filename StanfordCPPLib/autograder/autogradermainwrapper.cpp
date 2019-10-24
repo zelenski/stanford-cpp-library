@@ -33,7 +33,7 @@ int qMain(int argc, char** argv);
 // (keep in sync with init.h/cpp)
 namespace stanfordcpplib {
 extern void initializeLibrary(int argc, char** argv);
-extern void runMainInThread(int (* mainFunc)(void));
+extern void runMainInThread(int (* mainFunc)());
 extern void shutdownLibrary();
 }
 
@@ -68,8 +68,8 @@ int qMain(int argc, char** argv) {
     
     // tell the GUI the names of all tests so that it can display them
     stanfordcpplib::autograder::Autograder* autograder = stanfordcpplib::autograder::Autograder::instance();
-    for (std::string category : stanfordcpplib::autograder::AutograderTest::getAllCategories()) {
-        for (std::string test : stanfordcpplib::autograder::AutograderTest::getAllTests(category)) {
+    for (const std::string& category : stanfordcpplib::autograder::AutograderTest::getAllCategories()) {
+        for (const std::string& test : stanfordcpplib::autograder::AutograderTest::getAllTests(category)) {
             autograder->addTest(test, category);
         }
     }

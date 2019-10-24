@@ -77,7 +77,7 @@ public:
     virtual void SetUp();
     virtual void TearDown();
     virtual void TestBody();   // override me
-    virtual void TestRealBody();
+    virtual void TestRealBody() throw (ErrorException);
 
 protected:
     std::string name;       // test's name

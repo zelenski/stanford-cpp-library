@@ -28,7 +28,7 @@
 
 #include <cstdlib>
 #include <functional>
-#include <stdio.h>
+#include <cstdio>
 
 namespace stanfordcpplib {
 
@@ -57,7 +57,7 @@ void initializeLibraryStudentThread();
  * Runs the student's main function in its own thread, creating that thread
  * as an object of type GThread.
  */
-void runMainInThread(int (* mainFunc)(void));
+void runMainInThread(int (* mainFunc)());
 
 /**
  * Runs the student's main function in its own thread, creating that thread
@@ -69,7 +69,7 @@ void runMainInThread(std::function<int()> mainFunc);
  * Runs the student's main function in its own thread, creating that thread
  * as an object of type GThread.
  */
-void runMainInThreadVoid(void (* mainFuncVoid)(void));
+void runMainInThreadVoid(void (* mainFuncVoid)());
 
 /**
  * Runs the student's main function in its own thread, creating that thread
