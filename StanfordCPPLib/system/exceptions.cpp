@@ -48,24 +48,17 @@
  * @since 2014/11/05
  */
 
-#define INTERNAL_INCLUDE 1
 #include "exceptions.h"
 #include <csignal>
 #include <cstdlib>
 #include <iomanip>
 #include <iostream>
 #include <string>
-#define INTERNAL_INCLUDE 1
 #include "call_stack.h"
-#define INTERNAL_INCLUDE 1
 #include "error.h"
-#define INTERNAL_INCLUDE 1
 #include "filelib.h"
-#define INTERNAL_INCLUDE 1
 #include "strlib.h"
-#define INTERNAL_INCLUDE 1
 #include "vector.h"
-#define INTERNAL_INCLUDE 1
 #include "private/static.h"
 #ifdef _WIN32
 #include <windows.h>
@@ -74,7 +67,6 @@
 #  undef MOUSE_MOVED
 #  undef HELP_KEY
 #endif
-#undef INTERNAL_INCLUDE
 
 // uncomment the definition below to use an alternative 'signal stack'
 // which helps in handling stack overflow errors

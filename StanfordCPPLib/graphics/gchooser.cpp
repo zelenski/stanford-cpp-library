@@ -13,17 +13,11 @@
  * - initial version
  */
 
-#define INTERNAL_INCLUDE 1
 #include "gchooser.h"
-#define INTERNAL_INCLUDE 1
 #include "error.h"
-#define INTERNAL_INCLUDE 1
 #include "gthread.h"
-#define INTERNAL_INCLUDE 1
 #include "gwindow.h"
-#define INTERNAL_INCLUDE 1
 #include "require.h"
-#undef INTERNAL_INCLUDE
 
 GChooser::GChooser(QWidget* parent) {
     GThread::runOnQtGuiThread([this, parent]() {
@@ -238,7 +232,5 @@ QSize _Internal_QComboBox::sizeHint() const {
 }
 
 #ifdef SPL_PRECOMPILE_QT_MOC_FILES
-#define INTERNAL_INCLUDE 1
 #include "moc_gchooser.cpp"   // speeds up compilation of auto-generated Qt files
-#undef INTERNAL_INCLUDE
 #endif // SPL_PRECOMPILE_QT_MOC_FILES

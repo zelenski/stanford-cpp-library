@@ -18,21 +18,13 @@
  * - initial version
  */
 
-#define INTERNAL_INCLUDE 1
 #include "gcontainer.h"
-#define INTERNAL_INCLUDE 1
 #include "error.h"
-#define INTERNAL_INCLUDE 1
 #include "glabel.h"
-#define INTERNAL_INCLUDE 1
 #include "glayout.h"
-#define INTERNAL_INCLUDE 1
 #include "gthread.h"
-#define INTERNAL_INCLUDE 1
 #include "require.h"
-#define INTERNAL_INCLUDE 1
 #include "strlib.h"
-#undef INTERNAL_INCLUDE
 
 // margin  - around container, but outside of its background color area (like CSS)
 // padding - around container, but within its background color area (like CSS)
@@ -1381,7 +1373,5 @@ QSize _Internal_QContainer::sizeHint() const {
 }
 
 #ifdef SPL_PRECOMPILE_QT_MOC_FILES
-#define INTERNAL_INCLUDE 1
 #include "moc_gcontainer.cpp"   // speeds up compilation of auto-generated Qt files
-#undef INTERNAL_INCLUDE
 #endif // SPL_PRECOMPILE_QT_MOC_FILES

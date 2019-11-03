@@ -24,25 +24,15 @@
  * @since 2014/10/29
  */
 
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
-
-#ifndef INTERNAL_INCLUDE
-#include "private/initstudent.h"   // insert necessary included code by student
-#endif // INTERNAL_INCLUDE
-
 #ifndef _deque_h
 #define _deque_h
 
 #include <deque>
 #include <initializer_list>
 
-#define INTERNAL_INCLUDE 1
 #include "collections.h"
-#define INTERNAL_INCLUDE 1
 #include "error.h"
-#define INTERNAL_INCLUDE 1
 #include "hashcode.h"
-#undef INTERNAL_INCLUDE
 
 /*
  * Class: Deque<ValueType>

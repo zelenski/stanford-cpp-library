@@ -41,11 +41,6 @@
  * - added comparison operators ==, !=
  */
 
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
-
-#ifndef INTERNAL_INCLUDE
-#include "private/initstudent.h"   // insert necessary included code by student
-#endif // INTERNAL_INCLUDE
 
 #ifndef _hashmap_h
 #define _hashmap_h
@@ -57,15 +52,10 @@
 #include <unordered_map>
 #include <functional>
 
-#define INTERNAL_INCLUDE 1
 #include "collections.h"
-#define INTERNAL_INCLUDE 1
 #include "error.h"
-#define INTERNAL_INCLUDE 1
 #include "hashcode.h"
-#define INTERNAL_INCLUDE 1
 #include "vector.h"
-#undef INTERNAL_INCLUDE
 
 /*
  * Class: HashMap<KeyType,ValueType>

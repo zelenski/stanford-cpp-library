@@ -13,9 +13,7 @@
  * - using global hashing functions rather than global variables
  */
 
-#define INTERNAL_INCLUDE 1
 #include "hashcode.h"
-#undef INTERNAL_INCLUDE
 #include <cstddef>       // For size_t
 #include <cstdint>       // For uintptr_t
 #include <cstring>       // For strlen

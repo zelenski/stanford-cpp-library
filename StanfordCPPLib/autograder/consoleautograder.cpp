@@ -5,42 +5,24 @@
  * - initial version, refactored from autograder.h/cpp
  */
 
-#define INTERNAL_INCLUDE 1
 #include "consoleautograder.h"
 #include <cstdio>
-#define INTERNAL_INCLUDE 1
 #include "consoletext.h"
-#define INTERNAL_INCLUDE 1
 #include "error.h"
-#define INTERNAL_INCLUDE 1
 #include "exceptions.h"
-#define INTERNAL_INCLUDE 1
 #include "filelib.h"
-#define INTERNAL_INCLUDE 1
 #include "gconsolewindow.h"
-#define INTERNAL_INCLUDE 1
 #include "gwindow.h"
-#define INTERNAL_INCLUDE 1
 #include "map.h"
-#define INTERNAL_INCLUDE 1
 #include "simpio.h"
-#define INTERNAL_INCLUDE 1
 #include "private/static.h"
-#define INTERNAL_INCLUDE 1
 #include "date.h"
-#define INTERNAL_INCLUDE 1
 #include "gtest-marty.h"
-#define INTERNAL_INCLUDE 1
 #include "ioutils.h"
-#define INTERNAL_INCLUDE 1
 #include "qtgui.h"
-#define INTERNAL_INCLUDE 1
 #include "stringutils.h"
-#define INTERNAL_INCLUDE 1
 #include "stylecheck.h"
-#define INTERNAL_INCLUDE 1
 #include "testresultprinter.h"
-#undef INTERNAL_INCLUDE
 
 // to be written by TA/instructor for each assignment
 extern void autograderMain();

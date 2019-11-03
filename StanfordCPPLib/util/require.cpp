@@ -7,12 +7,9 @@
  * - initial version
  */
 
-#define INTERNAL_INCLUDE 1
 #include "require.h"
 #include <string>
-#define INTERNAL_INCLUDE 1
 #include "error.h"
-#undef INTERNAL_INCLUDE
 
 namespace require {
 

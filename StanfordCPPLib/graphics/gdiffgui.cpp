@@ -15,18 +15,13 @@
  * - initial version
  */
 
-#define INTERNAL_INCLUDE 1
 #include "gdiffgui.h"
 #include <iostream>
 #include <QScrollBar>
 #include <string>
-#define INTERNAL_INCLUDE 1
 #include "bitstream.h"
-#define INTERNAL_INCLUDE 1
 #include "consoletext.h"
-#define INTERNAL_INCLUDE 1
 #include "gthread.h"
-#undef INTERNAL_INCLUDE
 
 /*static*/ const std::string GDiffGui::COLOR_EXPECTED = "#009900";
 /*static*/ const std::string GDiffGui::COLOR_EXPECTED_DARK_MODE = "#55ff44";

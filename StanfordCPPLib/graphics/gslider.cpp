@@ -13,15 +13,10 @@
  * - initial version
  */
 
-#define INTERNAL_INCLUDE 1
 #include "gslider.h"
-#define INTERNAL_INCLUDE 1
 #include "gthread.h"
-#define INTERNAL_INCLUDE 1
 #include "require.h"
-#define INTERNAL_INCLUDE 1
 #include "gwindow.h"
-#undef INTERNAL_INCLUDE
 
 const int GSlider::DEFAULT_MIN_VALUE = 0;
 const int GSlider::DEFAULT_MAX_VALUE = 100;
@@ -240,7 +235,5 @@ QSize _Internal_QSlider::sizeHint() const {
 }
 
 #ifdef SPL_PRECOMPILE_QT_MOC_FILES
-#define INTERNAL_INCLUDE 1
 #include "moc_gslider.cpp"   // speeds up compilation of auto-generated Qt files
-#undef INTERNAL_INCLUDE
 #endif // SPL_PRECOMPILE_QT_MOC_FILES

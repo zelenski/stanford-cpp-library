@@ -22,11 +22,6 @@
  * @since 2014/10/08
  */
 
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
-
-#ifndef INTERNAL_INCLUDE
-#include "private/initstudent.h"   // insert necessary included code by student
-#endif // INTERNAL_INCLUDE
 
 #ifndef _urlstream_h
 #define _urlstream_h
@@ -36,9 +31,7 @@
 #include <sstream>
 #include <string>
 
-#define INTERNAL_INCLUDE 1
 #include "map.h"
-#undef INTERNAL_INCLUDE
 
 /**
  * An <code>iurlstream</code> is an input stream for reading data from URLs.

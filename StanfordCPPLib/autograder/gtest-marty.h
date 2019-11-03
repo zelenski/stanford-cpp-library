@@ -21,15 +21,10 @@
 #define _gtest_marty_h
 
 #include <string>
-#define INTERNAL_INCLUDE 1
 #include "assertions.h"
-//#define INTERNAL_INCLUDE 1
 //#include "autograder.h"
-//#define INTERNAL_INCLUDE 1
 //#include "autogradertest.h"
-#define INTERNAL_INCLUDE 1
 #include "gtest.h"
-#undef INTERNAL_INCLUDE
 
 class ErrorException;
 

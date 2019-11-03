@@ -10,12 +10,9 @@
  * - initial version
  */
 
-#define INTERNAL_INCLUDE 1
 #include "intrange.h"
 #include <sstream>
-#define INTERNAL_INCLUDE 1
 #include "hashcode.h"
-#undef INTERNAL_INCLUDE
 
 IntRange::IntRange(int length)
     : _min(0),

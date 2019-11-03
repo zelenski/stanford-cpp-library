@@ -9,21 +9,14 @@
  * - initial version
  */
 
-#define INTERNAL_INCLUDE 1
 #include "private/multimain.h"
 #include <iomanip>
 #include <iostream>
-#define INTERNAL_INCLUDE 1
 #include "private/static.h"
-#define INTERNAL_INCLUDE 1
 #include "filelib.h"
-#define INTERNAL_INCLUDE 1
 #include "goptionpane.h"
-#define INTERNAL_INCLUDE 1
 #include "map.h"
-#define INTERNAL_INCLUDE 1
 #include "simpio.h"
-#undef INTERNAL_INCLUDE
 
 // helper to store [name => main func pointer]
 STATIC_VARIABLE_DECLARE_MAP_EMPTY(Map, std::string, GThunkInt, funcMap);

@@ -19,7 +19,6 @@
  * @since 2018/07/17
  */
 
-#define INTERNAL_INCLUDE 1
 #include "gtable.h"
 #include <cstring>
 #include <iostream>
@@ -29,19 +28,12 @@
 #include <QHeaderView>
 #include <QLineEdit>
 #include <sstream>
-#define INTERNAL_INCLUDE 1
 #include "gclipboard.h"
-#define INTERNAL_INCLUDE 1
 #include "gcolor.h"
-#define INTERNAL_INCLUDE 1
 #include "gevent.h"
-#define INTERNAL_INCLUDE 1
 #include "gfont.h"
-#define INTERNAL_INCLUDE 1
 #include "gthread.h"
-#define INTERNAL_INCLUDE 1
 #include "require.h"
-#undef INTERNAL_INCLUDE
 
 GTable::TableStyle GTable::_defaultCellStyle = GTable::TableStyle::unset();
 
@@ -1020,7 +1012,5 @@ QSize _Internal_QTableWidget::sizeHint() const {
 }
 
 #ifdef SPL_PRECOMPILE_QT_MOC_FILES
-#define INTERNAL_INCLUDE 1
 #include "moc_gtable.cpp"   // speeds up compilation of auto-generated Qt files
-#undef INTERNAL_INCLUDE
 #endif // SPL_PRECOMPILE_QT_MOC_FILES

@@ -16,11 +16,8 @@
 #define _unittestdetails_h
 
 #include <string>
-#define INTERNAL_INCLUDE 1
 #include "gtest.h"
-#define INTERNAL_INCLUDE 1
 #include "strlib.h"
-#undef INTERNAL_INCLUDE
 
 namespace stanfordcpplib {
 namespace autograder {

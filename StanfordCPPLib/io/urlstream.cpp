@@ -21,19 +21,13 @@
  * @since 2014/10/08
  */
 
-#define INTERNAL_INCLUDE 1
 #include "urlstream.h"
 #include <sstream>
 #include <string>
-#define INTERNAL_INCLUDE 1
 #include "error.h"
-#define INTERNAL_INCLUDE 1
 #include "filelib.h"
-#define INTERNAL_INCLUDE 1
 #include "gdownloader.h"
-#define INTERNAL_INCLUDE 1
 #include "strlib.h"
-#undef INTERNAL_INCLUDE
 
 namespace {
     /*

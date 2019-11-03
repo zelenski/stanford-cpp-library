@@ -13,21 +13,14 @@
  * - initial version
  */
 
-#define INTERNAL_INCLUDE 1
 #include "gtextarea.h"
 #include <QScrollBar>
 #include <QTextCursor>
-#define INTERNAL_INCLUDE 1
 #include "gcolor.h"
-#define INTERNAL_INCLUDE 1
 #include "gfont.h"
-#define INTERNAL_INCLUDE 1
 #include "gthread.h"
-#define INTERNAL_INCLUDE 1
 #include "gwindow.h"
-#define INTERNAL_INCLUDE 1
 #include "require.h"
-#undef INTERNAL_INCLUDE
 
 GTextArea::GTextArea(int rows, int columns, QWidget* parent)
         : _contextMenuEnabled(true) {
@@ -455,7 +448,5 @@ QSize _Internal_QTextEdit::sizeHint() const {
 }
 
 #ifdef SPL_PRECOMPILE_QT_MOC_FILES
-#define INTERNAL_INCLUDE 1
 #include "moc_gtextarea.cpp"   // speeds up compilation of auto-generated Qt files
-#undef INTERNAL_INCLUDE
 #endif // SPL_PRECOMPILE_QT_MOC_FILES

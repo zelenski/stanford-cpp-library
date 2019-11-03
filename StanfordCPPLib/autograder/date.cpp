@@ -7,11 +7,8 @@
  * - fixed year-wrap bug in nextDay
  */
 
-#define INTERNAL_INCLUDE 1
 #include "date.h"
-#define INTERNAL_INCLUDE 1
 #include "strlib.h"
-#undef INTERNAL_INCLUDE
 
 const int Date::DAYS_PER_WEEK = 7;
 const int Date::MONTHS_PER_YEAR = 12;

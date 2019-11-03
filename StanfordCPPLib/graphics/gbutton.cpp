@@ -17,18 +17,12 @@
  * - initial version
  */
 
-#define INTERNAL_INCLUDE 1
 #include "gbutton.h"
 #include <QKeySequence>
-#define INTERNAL_INCLUDE 1
 #include "filelib.h"
-#define INTERNAL_INCLUDE 1
 #include "gthread.h"
-#define INTERNAL_INCLUDE 1
 #include "gwindow.h"
-#define INTERNAL_INCLUDE 1
 #include "require.h"
-#undef INTERNAL_INCLUDE
 
 GButton::GButton(const std::string& text, const std::string& iconFileName, QWidget* parent) {
     GThread::runOnQtGuiThread([this, parent]() {
@@ -236,7 +230,5 @@ QSize _Internal_QPushButton::sizeHint() const {
 }
 
 #ifdef SPL_PRECOMPILE_QT_MOC_FILES
-#define INTERNAL_INCLUDE 1
 #include "moc_gbutton.cpp"   // speeds up compilation of auto-generated Qt files
-#undef INTERNAL_INCLUDE
 #endif // SPL_PRECOMPILE_QT_MOC_FILES

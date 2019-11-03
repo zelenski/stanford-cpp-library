@@ -28,30 +28,18 @@
  * @since 2014/10/14
  */
 
-#define INTERNAL_INCLUDE 1
 #include "stylecheck.h"
 #include <cstring>
-#define INTERNAL_INCLUDE 1
 #include "autograder.h"
-#define INTERNAL_INCLUDE 1
 #include "filelib.h"
-#define INTERNAL_INCLUDE 1
 #include "gtest-marty.h"
-#define INTERNAL_INCLUDE 1
 #include "rapidxml.h"
-#define INTERNAL_INCLUDE 1
 #include "regexpr.h"
-#define INTERNAL_INCLUDE 1
 #include "stringutils.h"
-#define INTERNAL_INCLUDE 1
 #include "strlib.h"
-#define INTERNAL_INCLUDE 1
 #include "unittestdetails.h"
-#define INTERNAL_INCLUDE 1
 #include "xmlutils.h"
-#define INTERNAL_INCLUDE 1
 #include "private/static.h"
-#undef INTERNAL_INCLUDE
 
 namespace stylecheck {
 

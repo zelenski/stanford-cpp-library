@@ -9,13 +9,6 @@
  * - initial version
  */
 
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
-
-#ifndef INTERNAL_INCLUDE
-// signal that GUI system is in use (so it will be initialized)
-#define SPL_QT_GUI_IN_USE 1
-#include "private/initstudent.h"   // insert necessary included code by student
-#endif // INTERNAL_INCLUDE
 
 #ifndef _gscrollpane_h
 #define _gscrollpane_h
@@ -23,9 +16,7 @@
 #include <QScrollArea>
 #include <QWidget>
 
-#define INTERNAL_INCLUDE 1
 #include "ginteractor.h"
-#undef INTERNAL_INCLUDE
 
 class _Internal_QScrollArea;
 

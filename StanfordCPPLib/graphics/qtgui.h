@@ -11,14 +11,6 @@
  * - initial version
  */
 
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
-
-#ifndef INTERNAL_INCLUDE
-// signal that GUI system is in use (so it will be initialized)
-#define SPL_QT_GUI_IN_USE 1
-#include "private/initstudent.h"   // insert necessary included code by student
-#endif // INTERNAL_INCLUDE
-
 #ifndef _qtgui_h
 #define _qtgui_h
 
@@ -28,15 +20,9 @@
 #include <QObject>
 #include <QReadWriteLock>
 
-#define INTERNAL_INCLUDE 1
-#include "geventqueue.h"
-#define INTERNAL_INCLUDE 1
 #include "gthread.h"
-#define INTERNAL_INCLUDE 1
 #include "gtypes.h"
-#define INTERNAL_INCLUDE 1
 #include "queue.h"
-#undef INTERNAL_INCLUDE
 
 class GWindow;
 

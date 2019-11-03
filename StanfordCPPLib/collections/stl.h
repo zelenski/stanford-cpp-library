@@ -14,11 +14,6 @@
  * @since 2016/09/22
  */
 
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
-
-#ifndef INTERNAL_INCLUDE
-#include "private/initstudent.h"   // insert necessary included code by student
-#endif // INTERNAL_INCLUDE
 
 #ifndef _stl_h
 #define _stl_h
@@ -34,25 +29,15 @@
 #include <stack>
 #include <vector>
 
-#define INTERNAL_INCLUDE 1
 #include "collections.h"
-#define INTERNAL_INCLUDE 1
 #include "dawglexicon.h"
-#define INTERNAL_INCLUDE 1
 #include "lexicon.h"
-#define INTERNAL_INCLUDE 1
 #include "linkedlist.h"
-#define INTERNAL_INCLUDE 1
 #include "map.h"
-#define INTERNAL_INCLUDE 1
 #include "queue.h"
-#define INTERNAL_INCLUDE 1
 #include "set.h"
-#define INTERNAL_INCLUDE 1
 #include "stack.h"
-#define INTERNAL_INCLUDE 1
 #include "vector.h"
-#undef INTERNAL_INCLUDE
 
 // STL containers:
 // array, vector, deque, forward_list, ist, stack, queue, priority_queue,

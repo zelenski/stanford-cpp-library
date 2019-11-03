@@ -9,14 +9,11 @@
  * - initial version
  */
 
-#define INTERNAL_INCLUDE 1
 #include "gclipboard.h"
 #include <QApplication>
 #include <QClipboard>
 #include <QString>
-#define INTERNAL_INCLUDE 1
 #include "require.h"
-#undef INTERNAL_INCLUDE
 
 GClipboard::GClipboard() {
     // empty

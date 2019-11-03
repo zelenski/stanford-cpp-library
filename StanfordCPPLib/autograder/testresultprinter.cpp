@@ -21,15 +21,10 @@
  * @since 2014/11/24
  */
 
-#define INTERNAL_INCLUDE 1
 #include "testresultprinter.h"
-#define INTERNAL_INCLUDE 1
 #include "autograder.h"
-#define INTERNAL_INCLUDE 1
 #include "stringutils.h"
-#define INTERNAL_INCLUDE 1
 #include "private/static.h"
-#undef INTERNAL_INCLUDE
 
 namespace stanfordcpplib {
 namespace autograder {

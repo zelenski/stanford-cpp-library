@@ -21,26 +21,17 @@
  * - initial version
  */
 
-#define INTERNAL_INCLUDE 1
 #include "goptionpane.h"
 #include <QInputDialog>
 #include <QMessageBox>
 #include <QWidget>
-#define INTERNAL_INCLUDE 1
 #include "error.h"
-#define INTERNAL_INCLUDE 1
 #include "gbutton.h"
-#define INTERNAL_INCLUDE 1
 #include "gtextarea.h"
-#define INTERNAL_INCLUDE 1
 #include "gthread.h"
-#define INTERNAL_INCLUDE 1
 #include "gwindow.h"
-#define INTERNAL_INCLUDE 1
 #include "set.h"
-#define INTERNAL_INCLUDE 1
 #include "strlib.h"
-#undef INTERNAL_INCLUDE
 
 GOptionPane::GOptionPane() {
     // empty
@@ -204,7 +195,7 @@ std::string GOptionPane::showOptionDialog(QWidget* parent,
             box.setParent(parent);
         }
         box.setText(QString::fromStdString(message));
-        box.setWindowTitle(QString::fromStdString(titleToUse));
+        box.setWindowTitle(QString::fromStdString(titleToUse)); // FYI: title for alert ignored on MacOS (per docs)
         box.setAttribute(Qt::WA_QuitOnClose, false);
 
         for (std::string option : options) {

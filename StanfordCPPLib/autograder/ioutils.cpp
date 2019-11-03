@@ -14,22 +14,15 @@
  * @since 2014/03/01
  */
 
-#define INTERNAL_INCLUDE 1
 #include "ioutils.h"
 #include <fstream>
 #include <iostream>
 #include <sstream>
-#define INTERNAL_INCLUDE 1
 #include "consoletext.h"
-#define INTERNAL_INCLUDE 1
 #include "error.h"
-#define INTERNAL_INCLUDE 1
 #include "private/echoinputstreambuf.h"
-#define INTERNAL_INCLUDE 1
 #include "private/limitoutputstreambuf.h"
-#define INTERNAL_INCLUDE 1
 #include "private/static.h"
-#undef INTERNAL_INCLUDE
 
 namespace ioutils {
 STATIC_VARIABLE_DECLARE_BLANK(std::stringstream, bufferOut)

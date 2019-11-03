@@ -45,12 +45,9 @@
 
 // This line ensures that gtest.h can be compiled on its own, even
 // when it's fused.
-#define INTERNAL_INCLUDE 1
 #include "gtest.h"
 #include <iostream>
-#define INTERNAL_INCLUDE 1
 #include "autogradertest.h"
-#undef INTERNAL_INCLUDE
 
 // The following lines pull in the real gtest *.cc files.
 // Copyright 2005, Google Inc.

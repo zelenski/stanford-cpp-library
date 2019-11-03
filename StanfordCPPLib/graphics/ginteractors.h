@@ -12,17 +12,10 @@
  * - initial version
  */
 
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
-
-#ifndef INTERNAL_INCLUDE
-#include "private/initstudent.h"   // insert necessary included code by student
-#endif // INTERNAL_INCLUDE
 
 #ifndef _ginteractors_h
 #define _ginteractors_h
 
-// not wrapped with INTERNAL_INCLUDE since it would lose signal of student
-// including this file in their code; no internal lib files include this header
 #include "gbrowserpane.h"
 #include "gbufferedimage.h"
 #include "gbutton.h"
@@ -46,6 +39,5 @@
 #include "gtextfield.h"
 #include "gwindow.h"
 
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
 #endif // _ginteractors_h

@@ -31,11 +31,6 @@
  * - removed foreach patch
  */
 
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
-
-#ifndef INTERNAL_INCLUDE
-#include "private/initstudent.h"   // insert necessary included code by student
-#endif // INTERNAL_INCLUDE
 
 #ifndef _hashset_h
 #define _hashset_h
@@ -43,11 +38,8 @@
 #include <initializer_list>
 #include <iostream>
 
-#define INTERNAL_INCLUDE 1
 #include "collections.h"
-#define INTERNAL_INCLUDE 1
 #include "hashmap.h"
-#undef INTERNAL_INCLUDE
 
 /* Traits type for the HashSet, which wraps an underlying HashMap. */
 namespace stanfordcpplib {

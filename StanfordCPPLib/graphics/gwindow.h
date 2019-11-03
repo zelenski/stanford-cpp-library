@@ -22,13 +22,6 @@
  * - initial version
  */
 
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
-
-#ifndef INTERNAL_INCLUDE
-// signal that GUI system is in use (so it will be initialized)
-#define SPL_QT_GUI_IN_USE 1
-#include "private/initstudent.h"   // insert necessary included code by student
-#endif // INTERNAL_INCLUDE
 
 #ifndef _gwindow_h
 #define _gwindow_h
@@ -40,27 +33,16 @@
 #include <QMainWindow>
 #include <QRect>
 
-#define INTERNAL_INCLUDE 1
 #include "gcanvas.h"
-#define INTERNAL_INCLUDE 1
 #include "gcontainer.h"
-#define INTERNAL_INCLUDE 1
 #include "gdrawingsurface.h"
-#define INTERNAL_INCLUDE 1
 #include "geventqueue.h"
-#define INTERNAL_INCLUDE 1
 #include "ginteractor.h"
-#define INTERNAL_INCLUDE 1
 #include "grid.h"
-#define INTERNAL_INCLUDE 1
 #include "gtypes.h"
-#define INTERNAL_INCLUDE 1
 #include "map.h"
-#define INTERNAL_INCLUDE 1
 #include "point.h"
-#define INTERNAL_INCLUDE 1
 #include "set.h"
-#undef INTERNAL_INCLUDE
 
 class _Internal_QMainWindow;
 

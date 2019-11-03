@@ -13,15 +13,11 @@
  * - initial version
  */
 
-#define INTERNAL_INCLUDE 1
 #include "gcolor.h"
 #include <iomanip>
 #include <iostream>
-#define INTERNAL_INCLUDE 1
 #include "error.h"
-#define INTERNAL_INCLUDE 1
 #include "strlib.h"
-#undef INTERNAL_INCLUDE
 
 Map<std::string, int> GColor::_colorTable;
 Map<std::string, std::string> GColor::_colorNameTable;

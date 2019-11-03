@@ -21,13 +21,6 @@
  * - initial version
  */
 
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
-
-#ifndef INTERNAL_INCLUDE
-// signal that GUI system is in use (so it will be initialized)
-#define SPL_QT_GUI_IN_USE 1
-#include "private/initstudent.h"   // insert necessary included code by student
-#endif // INTERNAL_INCLUDE
 
 #ifndef _glabel_h
 #define _glabel_h
@@ -38,11 +31,8 @@
 #include <QSize>
 #include <QWidget>
 
-#define INTERNAL_INCLUDE 1
 #include "ginteractor.h"
-#define INTERNAL_INCLUDE 1
 #include "gobjects.h"
-#undef INTERNAL_INCLUDE
 
 // forward declaration
 class _Internal_QLabel;

@@ -11,9 +11,7 @@
 #ifndef _consoleautograder_h
 #define _consoleautograder_h
 
-#define INTERNAL_INCLUDE 1
 #include "autograder.h"
-#undef INTERNAL_INCLUDE
 
 namespace stanfordcpplib {
 namespace autograder {

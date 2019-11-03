@@ -39,7 +39,6 @@
  * - initial version
  */
 
-#define INTERNAL_INCLUDE 1
 #include "gwindow.h"
 #include <QMenu>
 #include <QMenuBar>
@@ -49,29 +48,17 @@
 #include <QThread>
 #include <QTimer>
 #include <QToolBar>
-#define INTERNAL_INCLUDE 1
 #include "filelib.h"
-#define INTERNAL_INCLUDE 1
 #include "gcolor.h"
-#define INTERNAL_INCLUDE 1
 #include "gdiffgui.h"
-#define INTERNAL_INCLUDE 1
 #include "gdiffimage.h"
-#define INTERNAL_INCLUDE 1
 #include "glabel.h"
-#define INTERNAL_INCLUDE 1
 #include "glayout.h"
-#define INTERNAL_INCLUDE 1
 #include "gtextfield.h"
-#define INTERNAL_INCLUDE 1
 #include "gthread.h"
-#define INTERNAL_INCLUDE 1
 #include "qtgui.h"
-#define INTERNAL_INCLUDE 1
 #include "require.h"
-#define INTERNAL_INCLUDE 1
 #include "strlib.h"
-#undef INTERNAL_INCLUDE
 
 _Internal_QMainWindow* GWindow::_lastWindow = nullptr;
 /*static*/ const int GWindow::DEFAULT_WIDTH = 500;
@@ -1509,7 +1496,5 @@ void _Internal_QMainWindow::timerStop(int id) {
 }
 
 #ifdef SPL_PRECOMPILE_QT_MOC_FILES
-#define INTERNAL_INCLUDE 1
 #include "moc_gwindow.cpp"   // speeds up compilation of auto-generated Qt files
-#undef INTERNAL_INCLUDE
 #endif // SPL_PRECOMPILE_QT_MOC_FILES

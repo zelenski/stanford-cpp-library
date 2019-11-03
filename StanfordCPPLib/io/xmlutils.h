@@ -11,22 +11,14 @@
  * @since 2014/03/01
  */
 
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
-
-#ifndef INTERNAL_INCLUDE
-#include "private/initstudent.h"   // insert necessary included code by student
-#endif // INTERNAL_INCLUDE
 
 #ifndef _xmlutils_h
 #define _xmlutils_h
 
 #include <string>
 
-#define INTERNAL_INCLUDE 1
 #include "rapidxml.h"
-#define INTERNAL_INCLUDE 1
 #include "vector.h"
-#undef INTERNAL_INCLUDE
 
 /**
  * @private

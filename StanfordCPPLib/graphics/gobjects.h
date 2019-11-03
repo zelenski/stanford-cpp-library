@@ -23,13 +23,6 @@
  * - initial version
  */
 
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
-
-#ifndef INTERNAL_INCLUDE
-// signal that GUI system is in use (so it will be initialized)
-#define SPL_QT_GUI_IN_USE 1
-#include "private/initstudent.h"   // insert necessary included code by student
-#endif // INTERNAL_INCLUDE
 
 #ifndef _gobjects_h
 #define _gobjects_h
@@ -42,11 +35,8 @@
 #include <QPen>
 #include <QWidget>
 
-#define INTERNAL_INCLUDE 1
 #include "gtypes.h"
-#define INTERNAL_INCLUDE 1
 #include "vector.h"
-#undef INTERNAL_INCLUDE
 
 class GCanvas;
 class GCompound;

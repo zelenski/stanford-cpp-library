@@ -13,23 +13,15 @@
 
 // TODO: free memory
 
-#define INTERNAL_INCLUDE 1
 #include "gdiffimage.h"
 #include <iostream>
 #include <string>
-#define INTERNAL_INCLUDE 1
 #include "gcolor.h"
-#define INTERNAL_INCLUDE 1
 #include "gcolorchooser.h"
-#define INTERNAL_INCLUDE 1
 #include "gfont.h"
-#define INTERNAL_INCLUDE 1
 #include "gspacer.h"
-#define INTERNAL_INCLUDE 1
 #include "gthread.h"
-#define INTERNAL_INCLUDE 1
 #include "require.h"
-#undef INTERNAL_INCLUDE
 
 /*static*/ const std::string GDiffImage::HIGHLIGHT_COLOR_DEFAULT = "#e000e0";   // 224, 0, 224
 

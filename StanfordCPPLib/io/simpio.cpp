@@ -15,20 +15,15 @@
  * - removed 'using namespace' statement
  */
 
-#define INTERNAL_INCLUDE 1
 #include "simpio.h"
 #include <cctype>
 #include <fstream>
 #include <iostream>
 #include <sstream>
 #include <string>
-#define INTERNAL_INCLUDE 1
 #include "error.h"
-#define INTERNAL_INCLUDE 1
 #include "strlib.h"
-#define INTERNAL_INCLUDE 1
 #include "private/static.h"
-#undef INTERNAL_INCLUDE
 
 STATIC_CONST_VARIABLE_DECLARE(std::string, GETCHAR_DEFAULT_PROMPT, "Enter a character: ")
 STATIC_CONST_VARIABLE_DECLARE(std::string, GETCHAR_DEFAULT_REPROMPT, "You must type a single character. Try again.")

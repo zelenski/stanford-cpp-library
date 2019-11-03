@@ -7,9 +7,7 @@
  * - initial version (code moved from autograder.cpp)
  */
 
-#define INTERNAL_INCLUDE 1
 #include "assertions.h"
-#undef INTERNAL_INCLUDE
 
 void assertEqualsImage(const std::string& msg,
                        GBufferedImage& image1,

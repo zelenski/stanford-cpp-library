@@ -33,11 +33,6 @@
  * - removed use of __foreach macro
  */
 
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
-
-#ifndef INTERNAL_INCLUDE
-#include "private/initstudent.h"   // insert necessary included code by student
-#endif // INTERNAL_INCLUDE
 
 #ifndef _set_h
 #define _set_h
@@ -48,11 +43,8 @@
 #include <functional>
 #include <type_traits>
 
-#define INTERNAL_INCLUDE 1
 #include "collections.h"
-#define INTERNAL_INCLUDE 1
 #include "map.h"
-#undef INTERNAL_INCLUDE
 
 /* Traits type for the Set, which wraps an underlying Map. */
 namespace stanfordcpplib {

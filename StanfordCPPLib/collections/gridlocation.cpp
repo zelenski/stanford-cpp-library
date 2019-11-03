@@ -9,12 +9,9 @@
  * - initial version
  */
 
-#define INTERNAL_INCLUDE 1
 #include "gridlocation.h"
 #include <sstream>
-#define INTERNAL_INCLUDE 1
 #include "hashcode.h"
-#undef INTERNAL_INCLUDE
 
 GridLocation::GridLocation(int row, int col) {
     this->row = row;

@@ -10,16 +10,11 @@
  * - removed unused include statements
  */
 
-#define INTERNAL_INCLUDE 1
 #include "sound.h"
 #include <QUrl>
-#define INTERNAL_INCLUDE 1
 #include "filelib.h"
-#define INTERNAL_INCLUDE 1
 #include "gthread.h"
-#define INTERNAL_INCLUDE 1
 #include "require.h"
-#undef INTERNAL_INCLUDE
 
 /*static*/ QMediaPlayer* Sound::_qmediaPlayer = nullptr;
 

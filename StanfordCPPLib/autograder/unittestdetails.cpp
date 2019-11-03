@@ -13,9 +13,7 @@
  * @since 2014/11/24
  */
 
-#define INTERNAL_INCLUDE 1
 #include "unittestdetails.h"
-#undef INTERNAL_INCLUDE
 
 static std::string UNIT_TEST_TYPE_NAMES[14] = {
     "ASSERT_EQUALS",

@@ -34,46 +34,27 @@
  * - initial version, separated out from console.cpp
  */
 
-#define INTERNAL_INCLUDE 1
 #include "gconsolewindow.h"
 #include <cstdio>
 #include <QAction>
 #include <QTextDocumentFragment>
-#define INTERNAL_INCLUDE 1
 #include "error.h"
-#define INTERNAL_INCLUDE 1
 #include "exceptions.h"
-#define INTERNAL_INCLUDE 1
 #include "filelib.h"
-#define INTERNAL_INCLUDE 1
 #include "gclipboard.h"
-#define INTERNAL_INCLUDE 1
 #include "gcolor.h"
-#define INTERNAL_INCLUDE 1
 #include "gcolorchooser.h"
-#define INTERNAL_INCLUDE 1
 #include "gdiffgui.h"
-#define INTERNAL_INCLUDE 1
 #include "gdownloader.h"
-#define INTERNAL_INCLUDE 1
 #include "gfilechooser.h"
-#define INTERNAL_INCLUDE 1
 #include "gfont.h"
-#define INTERNAL_INCLUDE 1
 #include "gfontchooser.h"
-#define INTERNAL_INCLUDE 1
 #include "goptionpane.h"
-#define INTERNAL_INCLUDE 1
 #include "gthread.h"
-#define INTERNAL_INCLUDE 1
 #include "os.h"
-#define INTERNAL_INCLUDE 1
 #include "qtgui.h"
-#define INTERNAL_INCLUDE 1
 #include "private/static.h"
-#define INTERNAL_INCLUDE 1
 #include "private/version.h"
-#undef INTERNAL_INCLUDE
 
 void setConsolePropertiesQt();
 

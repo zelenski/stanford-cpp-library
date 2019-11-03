@@ -9,23 +9,12 @@
  * - added doc comments for new documentation generation
  */
 
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
-
-#ifndef INTERNAL_INCLUDE
-#include "private/initstudent.h"   // insert necessary included code by student
-#endif // INTERNAL_INCLUDE
 
 #ifndef _sound_h
 #define _sound_h
 
 #include <string>
 #include <QMediaPlayer>
-#include <QMediaPlaylist>
-#include <QSound>
-
-#define INTERNAL_INCLUDE 1
-#include "map.h"
-#undef INTERNAL_INCLUDE
 
 /**
  * This class encapsulates a sound file.  The sound file is specified in the

@@ -28,7 +28,6 @@
    License: BSD licence (http://www.opensource.org/licenses/bsd-license.php)
    Based on: http://stupefydeveloper.blogspot.com/2008/10/cc-call-stack.html */
 
-#define INTERNAL_INCLUDE 1
 #ifdef __GNUC__
 #include <stdio.h>
 #include <cxxabi.h>
@@ -54,21 +53,13 @@
 #include <iostream>
 #include <sstream>
 #include <stdlib.h>
-#define INTERNAL_INCLUDE 1
 #include "call_stack.h"
-#define INTERNAL_INCLUDE 1
 #include "exceptions.h"
-#define INTERNAL_INCLUDE 1
 #include "filelib.h"
-#define INTERNAL_INCLUDE 1
 #include "gthread.h"
-#define INTERNAL_INCLUDE 1
 #include "strlib.h"
-#define INTERNAL_INCLUDE 1
 #include "vector.h"
-#define INTERNAL_INCLUDE 1
 #include "private/static.h"
-#undef INTERNAL_INCLUDE
 
 namespace platform {
 std::string os_getLastError() {

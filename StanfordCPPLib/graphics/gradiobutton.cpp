@@ -17,15 +17,10 @@
  * - initial version
  */
 
-#define INTERNAL_INCLUDE 1
 #include "gradiobutton.h"
-#define INTERNAL_INCLUDE 1
 #include "gthread.h"
-#define INTERNAL_INCLUDE 1
 #include "gwindow.h"
-#define INTERNAL_INCLUDE 1
 #include "require.h"
-#undef INTERNAL_INCLUDE
 
 Map<std::string, QButtonGroup*> GRadioButton::_buttonGroups;
 
@@ -195,7 +190,5 @@ QSize _Internal_QRadioButton::sizeHint() const {
 }
 
 #ifdef SPL_PRECOMPILE_QT_MOC_FILES
-#define INTERNAL_INCLUDE 1
 #include "moc_gradiobutton.cpp"   // speeds up compilation of auto-generated Qt files
-#undef INTERNAL_INCLUDE
 #endif // SPL_PRECOMPILE_QT_MOC_FILES

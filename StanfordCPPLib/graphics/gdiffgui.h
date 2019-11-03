@@ -13,13 +13,6 @@
  * - initial version
  */
 
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
-
-#ifndef INTERNAL_INCLUDE
-// signal that GUI system is in use (so it will be initialized)
-#define SPL_QT_GUI_IN_USE 1
-#include "private/initstudent.h"   // insert necessary included code by student
-#endif // INTERNAL_INCLUDE
 
 #ifndef _gdiffgui_h
 #define _gdiffgui_h
@@ -28,15 +21,10 @@
 #include <QWidget>
 #include <QSplitter>
 
-#define INTERNAL_INCLUDE 1
 #include "diff.h"
-#define INTERNAL_INCLUDE 1
 #include "ginteractor.h"
-#define INTERNAL_INCLUDE 1
 #include "gtextarea.h"
-#define INTERNAL_INCLUDE 1
 #include "gwindow.h"
-#undef INTERNAL_INCLUDE
 
 /**
  * A GDiffGui is a graphical window that displays differences between two

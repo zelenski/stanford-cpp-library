@@ -15,22 +15,14 @@
  * @since 2014/10/14
  */
 
-#define INTERNAL_INCLUDE 1
 #include "diff.h"
 #include <algorithm>
-#define INTERNAL_INCLUDE 1
 #include "map.h"
-#define INTERNAL_INCLUDE 1
 #include "regexpr.h"
-#define INTERNAL_INCLUDE 1
 #include "set.h"
-#define INTERNAL_INCLUDE 1
 #include "stringutils.h"
-#define INTERNAL_INCLUDE 1
 #include "strlib.h"
-#define INTERNAL_INCLUDE 1
 #include "vector.h"
-#undef INTERNAL_INCLUDE
 
 namespace diff {
 std::string diff(std::string s1, std::string s2, int flags) {

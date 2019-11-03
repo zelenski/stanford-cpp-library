@@ -25,23 +25,14 @@
 #define _guiautograder_h
 
 #include <string>
-#define INTERNAL_INCLUDE 1
 #include "autograder.h"
-#define INTERNAL_INCLUDE 1
 #include "gbutton.h"
-#define INTERNAL_INCLUDE 1
 #include "gcheckbox.h"
-#define INTERNAL_INCLUDE 1
 #include "gcontainer.h"
-#define INTERNAL_INCLUDE 1
 #include "glabel.h"
-#define INTERNAL_INCLUDE 1
 #include "gwindow.h"
-#define INTERNAL_INCLUDE 1
 #include "map.h"
-#define INTERNAL_INCLUDE 1
 #include "unittestdetails.h"
-#undef INTERNAL_INCLUDE
 
 namespace stanfordcpplib {
 namespace autograder {

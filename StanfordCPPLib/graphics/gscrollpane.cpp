@@ -7,15 +7,10 @@
  * - initial version
  */
 
-#define INTERNAL_INCLUDE 1
 #include "gscrollpane.h"
-#define INTERNAL_INCLUDE 1
 #include "glayout.h"
-#define INTERNAL_INCLUDE 1
 #include "gthread.h"
-#define INTERNAL_INCLUDE 1
 #include "require.h"
-#undef INTERNAL_INCLUDE
 
 GScrollPane::GScrollPane(GInteractor* interactor, QWidget* parent)
         : _iqscrollarea(nullptr),
@@ -120,7 +115,5 @@ QSize _Internal_QScrollArea::sizeHint() const {
 }
 
 #ifdef SPL_PRECOMPILE_QT_MOC_FILES
-#define INTERNAL_INCLUDE 1
 #include "moc_gscrollpane.cpp"   // speeds up compilation of auto-generated Qt files
-#undef INTERNAL_INCLUDE
 #endif // SPL_PRECOMPILE_QT_MOC_FILES

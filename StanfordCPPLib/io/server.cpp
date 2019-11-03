@@ -10,17 +10,11 @@
  * - initial version
  */
 
-#define INTERNAL_INCLUDE 1
 #include "server.h"
-#define INTERNAL_INCLUDE 1
 #include "filelib.h"
-#define INTERNAL_INCLUDE 1
 #include "map.h"
-#define INTERNAL_INCLUDE 1
 #include "strlib.h"
-#define INTERNAL_INCLUDE 1
 #include "private/static.h"
-#undef INTERNAL_INCLUDE
 
 namespace HttpServer {
 STATIC_CONST_VARIABLE_DECLARE(std::string, CONTENT_TYPE_DEFAULT, "text/html")

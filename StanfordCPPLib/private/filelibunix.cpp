@@ -8,7 +8,6 @@
  * - added getAbsolutePath
  */
 
-#define INTERNAL_INCLUDE 1
 #include "filelib.h"
 
 // define all of the following only on non-Windows OS
@@ -30,11 +29,8 @@
 #include <iostream>
 #include <ios>
 #include <string>
-#define INTERNAL_INCLUDE 1
 #include "error.h"
-#define INTERNAL_INCLUDE 1
 #include "strlib.h"
-#undef INTERNAL_INCLUDE
 
 namespace platform {
 

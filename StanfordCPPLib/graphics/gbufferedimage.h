@@ -24,6 +24,4 @@ typedef GCanvas GBufferedImage;
 // default color used to highlight pixels that do not match between two images
 #define GBUFFEREDIMAGE_DEFAULT_DIFF_PIXEL_COLOR 0xdd00dd
 
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
-
 #endif // _gbufferedimage_h

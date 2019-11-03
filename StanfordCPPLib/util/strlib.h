@@ -35,11 +35,6 @@
  * - removed dependency on 'using namespace' statement
  */
 
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
-
-#ifndef INTERNAL_INCLUDE
-#include "private/initstudent.h"   // insert necessary included code by student
-#endif // INTERNAL_INCLUDE
 
 #ifndef _strlib_h
 #define _strlib_h
@@ -48,9 +43,7 @@
 #include <sstream>
 #include <string>
 
-#define INTERNAL_INCLUDE 1
 #include "vector.h"
-#undef INTERNAL_INCLUDE
 
 /**
  * Returns the string "true" if b is true, or "false" if b is false.

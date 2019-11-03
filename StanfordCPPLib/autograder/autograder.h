@@ -24,20 +24,13 @@
 #include <iomanip>
 #include <iostream>
 #include <string>
-#define INTERNAL_INCLUDE 1
 #include "map.h"
-#define INTERNAL_INCLUDE 1
 #include "set.h"
-#define INTERNAL_INCLUDE 1
 #include "vector.h"
 
-#define INTERNAL_INCLUDE 1
 #include "autogradertest.h"
-#define INTERNAL_INCLUDE 1
 #include "gtest-marty.h"
-#define INTERNAL_INCLUDE 1
 #include "unittestdetails.h"
-#undef INTERNAL_INCLUDE
 
 #define AUTOGRADER_DEFAULT_ABOUT_TEXT (std::string("CS 106 B/X Autograder Framework\nDeveloped by Marty Stepp (stepp@cs.stanford.edu)"))
 #define EXCEPTION_ERROR_MESSAGE (std::string("test threw an exception!"))
@@ -353,8 +346,6 @@ protected:
 } // namespace stanfordcpplib
 
 // for older programs
-#define INTERNAL_INCLUDE 1
 #include "autogradercompat.h"
-#undef INTERNAL_INCLUDE
 
 #endif // _autograder_h

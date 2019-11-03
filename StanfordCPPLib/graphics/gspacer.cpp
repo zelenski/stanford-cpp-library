@@ -7,13 +7,9 @@
  * - initial version
  */
 
-#define INTERNAL_INCLUDE 1
 #include "gspacer.h"
-#define INTERNAL_INCLUDE 1
 #include "gthread.h"
-#define INTERNAL_INCLUDE 1
 #include "require.h"
-#undef INTERNAL_INCLUDE
 
 GSpacer::GSpacer(double width, double height, QWidget* parent)
         : _iqspacer(nullptr) {
@@ -59,7 +55,5 @@ QSize _Internal_QSpacer::sizeHint() const {
 }
 
 #ifdef SPL_PRECOMPILE_QT_MOC_FILES
-#define INTERNAL_INCLUDE 1
 #include "moc_gspacer.cpp"   // speeds up compilation of auto-generated Qt files
-#undef INTERNAL_INCLUDE
 #endif // SPL_PRECOMPILE_QT_MOC_FILES

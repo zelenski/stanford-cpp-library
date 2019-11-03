@@ -21,13 +21,6 @@
  * - initial version
  */
 
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
-
-#ifndef INTERNAL_INCLUDE
-// signal that GUI system is in use (so it will be initialized)
-#define SPL_QT_GUI_IN_USE 1
-#include "private/initstudent.h"   // insert necessary included code by student
-#endif // INTERNAL_INCLUDE
 
 #ifndef _ginteractor_h
 #define _ginteractor_h
@@ -39,15 +32,10 @@
 #include <QReadWriteLock>
 #include <QWidget>
 
-#define INTERNAL_INCLUDE 1
 #include "map.h"
-#define INTERNAL_INCLUDE 1
 #include "gevent.h"
-#define INTERNAL_INCLUDE 1
 #include "gobservable.h"
-#define INTERNAL_INCLUDE 1
 #include "gtypes.h"
-#undef INTERNAL_INCLUDE
 
 class GContainer;
 class GDiffGui;

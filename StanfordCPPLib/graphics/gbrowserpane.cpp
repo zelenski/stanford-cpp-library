@@ -17,21 +17,15 @@
  * - initial version
  */
 
-#define INTERNAL_INCLUDE 1
 #include "gbrowserpane.h"
 #include <QScrollBar>
 #include <QTextCursor>
 #include <fstream>
 #include <iostream>
-#define INTERNAL_INCLUDE 1
 #include "filelib.h"
-#define INTERNAL_INCLUDE 1
 #include "gthread.h"
-#define INTERNAL_INCLUDE 1
 #include "require.h"
-#define INTERNAL_INCLUDE 1
 #include "server.h"
-#undef INTERNAL_INCLUDE
 
 GBrowserPane::GBrowserPane(const std::string& url, QWidget* parent) {
     GThread::runOnQtGuiThread([this, url, parent]() {
@@ -368,7 +362,5 @@ QSize _Internal_QTextBrowser::sizeHint() const {
 }
 
 #ifdef SPL_PRECOMPILE_QT_MOC_FILES
-#define INTERNAL_INCLUDE 1
 #include "moc_gbrowserpane.cpp"   // speeds up compilation of auto-generated Qt files
-#undef INTERNAL_INCLUDE
 #endif // SPL_PRECOMPILE_QT_MOC_FILES

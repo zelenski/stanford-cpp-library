@@ -16,11 +16,6 @@
  * - added floatingPointEqual method for comparing floats and doubles
  */
 
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
-
-#ifndef INTERNAL_INCLUDE
-#include "private/initstudent.h"   // insert necessary included code by student
-#endif // INTERNAL_INCLUDE
 
 #ifndef _gmath_h
 #define _gmath_h
@@ -29,13 +24,10 @@
 #include <limits>
 
 #ifndef SPL_HEADLESS_MODE
-#define INTERNAL_INCLUDE 1
 #include "gtypes.h"
 #endif // SPL_HEADLESS_MODE
 
-#define INTERNAL_INCLUDE 1
 #include "point.h"
-#undef INTERNAL_INCLUDE
 
 /**
  * The mathematical constant pi, which is the ratio of the circumference

@@ -8,11 +8,6 @@
  * @since 2014/02/01
  */
 
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
-
-#ifndef INTERNAL_INCLUDE
-#include "private/initstudent.h"   // insert necessary included code by student
-#endif // INTERNAL_INCLUDE
 
 #ifndef _shuffle_h
 #define _shuffle_h
@@ -20,9 +15,7 @@
 #include <string>
 #include <algorithm>
 
-#define INTERNAL_INCLUDE 1
 #include "random.h"
-#undef INTERNAL_INCLUDE
 
 /*
  * Randomly rearranges the elements of the given array up to the given length.

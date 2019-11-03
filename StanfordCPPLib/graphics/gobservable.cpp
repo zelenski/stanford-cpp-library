@@ -9,19 +9,13 @@
  * - initial version
  */
 
-#define INTERNAL_INCLUDE 1
 #include "gobservable.h"
 #include <iostream>
 #include <sstream>
-#define INTERNAL_INCLUDE 1
 #include "geventqueue.h"
-#define INTERNAL_INCLUDE 1
 #include "gthread.h"
-#define INTERNAL_INCLUDE 1
 #include "require.h"
-#define INTERNAL_INCLUDE 1
 #include "strlib.h"
-#undef INTERNAL_INCLUDE
 
 GObservable::GObservable()
         : _eventsEnabled(true) {

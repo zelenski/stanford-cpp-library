@@ -7,9 +7,7 @@
  * @version 2016/12/01
  */
 
-#define INTERNAL_INCLUDE 1
 #include "basicgraph.h"
-#undef INTERNAL_INCLUDE
 
 int hashCode(const BasicGraph& graph) {
     int code = hashSeed();

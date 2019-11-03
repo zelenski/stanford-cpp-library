@@ -11,13 +11,9 @@
  * - initial version
  */
 
-#define INTERNAL_INCLUDE 1
 #include "gscrollbar.h"
-#define INTERNAL_INCLUDE 1
 #include "gthread.h"
-#define INTERNAL_INCLUDE 1
 #include "require.h"
-#undef INTERNAL_INCLUDE
 
 GScrollBar::GScrollBar(GScrollBar::Orientation orientation,
                          int value,
@@ -163,7 +159,5 @@ QSize _Internal_QScrollBar::sizeHint() const {
 }
 
 #ifdef SPL_PRECOMPILE_QT_MOC_FILES
-#define INTERNAL_INCLUDE 1
 #include "moc_gscrollbar.cpp"   // speeds up compilation of auto-generated Qt files
-#undef INTERNAL_INCLUDE
 #endif // SPL_PRECOMPILE_QT_MOC_FILES

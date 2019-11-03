@@ -13,19 +13,12 @@
  * - initial version
  */
 
-#define INTERNAL_INCLUDE 1
 #include "private/init.h"
-#define INTERNAL_INCLUDE 1
 #include "consoletext.h"
-#define INTERNAL_INCLUDE 1
 #include "exceptions.h"
-#define INTERNAL_INCLUDE 1
 #include "qtgui.h"
-#define INTERNAL_INCLUDE 1
 #include "strlib.h"
-#define INTERNAL_INCLUDE 1
 #include "private/static.h"
-#undef INTERNAL_INCLUDE
 
 #ifdef _WIN32
 #  include <direct.h>   // for chdir
@@ -161,10 +154,6 @@ void shutdownLibrary() {
 #else
     shutdownConsole();
 #endif // SPL_HEADLESS_MODE
-}
-
-void staticInitializeLibrary() {
-    // empty
 }
 
 } // namespace stanfordcpplib

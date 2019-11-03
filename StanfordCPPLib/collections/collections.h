@@ -30,12 +30,6 @@
  * @since 2014/10/10
  */
 
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
-
-#ifndef INTERNAL_INCLUDE
-#include "private/initstudent.h"   // insert necessary included code by student
-#endif // INTERNAL_INCLUDE
-
 #ifndef _collections_h
 #define _collections_h
 
@@ -43,15 +37,10 @@
 #include <sstream>
 #include <type_traits>
 
-#define INTERNAL_INCLUDE 1
 #include "error.h"
-#define INTERNAL_INCLUDE 1
 #include "gmath.h"
-#define INTERNAL_INCLUDE 1
 #include "hashcode.h"
-#define INTERNAL_INCLUDE 1
 #include "random.h"
-#undef INTERNAL_INCLUDE
 
 // macro to get the length of a stack-allocated array
 #define ARRAY_LENGTH(a) (sizeof(a) / sizeof((a)[0]))

@@ -29,11 +29,6 @@
  * - initial version, based on io/console.h
  */
 
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
-
-#ifndef INTERNAL_INCLUDE
-#include "private/initstudent.h"   // insert necessary included code by student
-#endif // INTERNAL_INCLUDE
 
 #ifndef _console_h
 #define _console_h
@@ -339,6 +334,3 @@ static QtConsoleInitializer_private __qt_console_init;
 
 #endif // __DONT_ENABLE_QT_GRAPHICAL_CONSOLE
 
-#ifndef INTERNAL_INCLUDE
-#include "private/initstudent.h"   // insert necessary included code by student
-#endif // INTERNAL_INCLUDE

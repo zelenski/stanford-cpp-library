@@ -13,13 +13,6 @@
  * - initial version
  */
 
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
-
-#ifndef INTERNAL_INCLUDE
-// signal that GUI system is in use (so it will be initialized)
-#define SPL_QT_GUI_IN_USE 1
-#include "private/initstudent.h"   // insert necessary included code by student
-#endif // INTERNAL_INCLUDE
 
 #ifndef _gevent_h
 #define _gevent_h
@@ -29,9 +22,7 @@
 #include <string>
 #include <QEvent>
 
-#define INTERNAL_INCLUDE 1
 #include "gtypes.h"
-#undef INTERNAL_INCLUDE
 
 class GEvent;
 class GInteractor;

@@ -21,20 +21,13 @@
  * - initial version
  */
 
-#define INTERNAL_INCLUDE 1
 #include "glabel.h"
 #include <iostream>
-#define INTERNAL_INCLUDE 1
 #include "filelib.h"
-#define INTERNAL_INCLUDE 1
 #include "glayout.h"
-#define INTERNAL_INCLUDE 1
 #include "gthread.h"
-#define INTERNAL_INCLUDE 1
 #include "gwindow.h"
-#define INTERNAL_INCLUDE 1
 #include "require.h"
-#undef INTERNAL_INCLUDE
 
 GLabel::GLabel(const std::string& text, const std::string& iconFileName, QWidget* parent)
         : _gtext(nullptr) {
@@ -395,7 +388,5 @@ QSize _Internal_QLabel::sizeHint() const {
 }
 
 #ifdef SPL_PRECOMPILE_QT_MOC_FILES
-#define INTERNAL_INCLUDE 1
 #include "moc_glabel.cpp"   // speeds up compilation of auto-generated Qt files
-#undef INTERNAL_INCLUDE
 #endif // SPL_PRECOMPILE_QT_MOC_FILES

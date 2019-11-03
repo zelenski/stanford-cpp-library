@@ -4,13 +4,9 @@
  * This file implements the recursion.h interface.
  */
 
-#define INTERNAL_INCLUDE 1
 #include "recursion.h"
-#define INTERNAL_INCLUDE 1
 #include "exceptions.h"
-#define INTERNAL_INCLUDE 1
 #include "call_stack.h"
-#undef INTERNAL_INCLUDE
 
 int getRecursionIndentLevel() {
     // constructing the following object jumps into fancy code in call_stack_gcc/windows.cpp

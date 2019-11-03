@@ -11,10 +11,8 @@
  * - initial version
  */
 
-#define INTERNAL_INCLUDE 1
 #include "memory.h"
 #include <cstddef>
-#undef INTERNAL_INCLUDE
 
 namespace stanfordcpplib {
 namespace memory {

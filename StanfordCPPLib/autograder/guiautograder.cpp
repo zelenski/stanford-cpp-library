@@ -28,53 +28,29 @@
  * @since 2018/08/27
  */
 
-#define INTERNAL_INCLUDE 1
 #include "guiautograder.h"
-#define INTERNAL_INCLUDE 1
 #include "autogradertest.h"
-#define INTERNAL_INCLUDE 1
 #include "bitstream.h"
-#define INTERNAL_INCLUDE 1
 #include "consoletext.h"
-#define INTERNAL_INCLUDE 1
 #include "filelib.h"
-#define INTERNAL_INCLUDE 1
 #include "gconsolewindow.h"
-#define INTERNAL_INCLUDE 1
 #include "gdiffgui.h"
-#define INTERNAL_INCLUDE 1
 #include "gdiffimage.h"
-#define INTERNAL_INCLUDE 1
 #include "gfont.h"
-#define INTERNAL_INCLUDE 1
 #include "ginputpanel.h"
-#define INTERNAL_INCLUDE 1
 #include "glayout.h"
-#define INTERNAL_INCLUDE 1
 #include "goptionpane.h"
-#define INTERNAL_INCLUDE 1
 #include "gscrollpane.h"
-#define INTERNAL_INCLUDE 1
 #include "gspacer.h"
-#define INTERNAL_INCLUDE 1
 #include "gthread.h"
-#define INTERNAL_INCLUDE 1
 #include "ioutils.h"
-#define INTERNAL_INCLUDE 1
 #include "qtgui.h"
-#define INTERNAL_INCLUDE 1
 #include "regexpr.h"
-#define INTERNAL_INCLUDE 1
 #include "stringutils.h"
-#define INTERNAL_INCLUDE 1
 #include "strlib.h"
-#define INTERNAL_INCLUDE 1
 #include "stylecheck.h"
-#define INTERNAL_INCLUDE 1
 #include "testresultprinter.h"
-#define INTERNAL_INCLUDE 1
 #include "unittestdetails.h"
-#undef INTERNAL_INCLUDE
 #include <sstream>
 
 // student's main function

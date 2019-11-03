@@ -14,13 +14,11 @@
  * @since 2014/03/01
  */
 
-#define INTERNAL_INCLUDE 1
 #include "stringutils.h"
 #include <algorithm>
 #include <cctype>
 #include <cmath>
 #include <sstream>
-#undef INTERNAL_INCLUDE
 
 namespace stringutils {
 int charsDifferent(const std::string& s1, const std::string& s2) {

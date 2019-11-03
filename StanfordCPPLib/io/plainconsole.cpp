@@ -14,14 +14,11 @@
  * @since 2015/10/21
  */
 
-#define INTERNAL_INCLUDE 1
 #include "plainconsole.h"
 #include <csignal>
 #include <iostream>
 #include <string>
-#define INTERNAL_INCLUDE 1
 #include "error.h"
-#undef INTERNAL_INCLUDE
 
 namespace plainconsole {
 /*

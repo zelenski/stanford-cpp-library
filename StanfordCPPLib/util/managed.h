@@ -23,17 +23,11 @@
 
 #include <cstddef>
 #include <typeinfo>
-#define INTERNAL_INCLUDE 1
 #include "error.h"
-#define INTERNAL_INCLUDE 1
 #include "map.h"
-#define INTERNAL_INCLUDE 1
 #include "memory.h"
-#define INTERNAL_INCLUDE 1
 #include "set.h"
-#define INTERNAL_INCLUDE 1
 #include "strlib.h"
-#undef INTERNAL_INCLUDE
 
 /**
  * The Managed template class can be used to define classes that perform checks

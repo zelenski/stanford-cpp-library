@@ -17,24 +17,15 @@
  * - initial version, based on io/console .cpp
  */
 
-#define INTERNAL_INCLUDE 1
 #include "consoletext.h"
 #include <cstdio>
-#define INTERNAL_INCLUDE 1
 #include "error.h"
-#define INTERNAL_INCLUDE 1
 #include "exceptions.h"
-#define INTERNAL_INCLUDE 1
 #include "filelib.h"
-#define INTERNAL_INCLUDE 1
 #include "gconsolewindow.h"
-#define INTERNAL_INCLUDE 1
 #include "gthread.h"
-#define INTERNAL_INCLUDE 1
 #include "private/static.h"
-#define INTERNAL_INCLUDE 1
 #include "private/version.h"
-#undef INTERNAL_INCLUDE
 
 #ifdef SPL_HEADLESS_MODE
 

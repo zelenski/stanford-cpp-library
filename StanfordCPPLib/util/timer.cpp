@@ -4,12 +4,9 @@
  * Implementation of the Timer class as declared in timer.h.
  */
 
-#define INTERNAL_INCLUDE 1
 #include "timer.h"
 #include <sys/time.h>
-#define INTERNAL_INCLUDE 1
 #include "error.h"
-#undef INTERNAL_INCLUDE
 
 Timer::Timer(bool autostart) {
     _startMS = 0;

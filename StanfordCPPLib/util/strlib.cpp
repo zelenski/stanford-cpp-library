@@ -39,18 +39,14 @@
  * - removed 'using namespace' statement
  */
 
-#define INTERNAL_INCLUDE 1
 #include "strlib.h"
 #include <cctype>
 #include <iomanip>
 #include <iostream>
 #include <sstream>
 
-#define INTERNAL_INCLUDE 1
 #include "error.h"
-#define INTERNAL_INCLUDE 1
 #include "vector.h"
-#undef INTERNAL_INCLUDE
 
 /* Function prototypes */
 

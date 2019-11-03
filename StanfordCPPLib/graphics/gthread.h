@@ -25,14 +25,7 @@
  * - initial version
  */
 
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
-
-#ifndef INTERNAL_INCLUDE
-// signal that GUI system is in use (so it will be initialized)
-#define SPL_QT_GUI_IN_USE 1
-#include "private/initstudent.h"   // insert necessary included code by student
-#endif // INTERNAL_INCLUDE
-
+#include "private/init.h"
 #ifndef _gthread_h
 #define _gthread_h
 
@@ -40,11 +33,8 @@
 #include <atomic>
 #include <thread>
 
-#define INTERNAL_INCLUDE 1
 #include "gtypes.h"
-#define INTERNAL_INCLUDE 1
 #include "map.h"
-#undef INTERNAL_INCLUDE
 
 class QtGui;
 

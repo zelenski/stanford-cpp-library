@@ -15,21 +15,15 @@
  * - initial version
  */
 
-#define INTERNAL_INCLUDE 1
 #include "gfont.h"
 #include <algorithm>
 #include <iomanip>
 #include <iostream>
 #include <QtGlobal>
-#define INTERNAL_INCLUDE 1
 #include "error.h"
-#define INTERNAL_INCLUDE 1
 #include "require.h"
-#define INTERNAL_INCLUDE 1
 #include "strlib.h"
-#define INTERNAL_INCLUDE 1
 #include "vector.h"
-#undef INTERNAL_INCLUDE
 
 GFont::GFont() {
     // empty

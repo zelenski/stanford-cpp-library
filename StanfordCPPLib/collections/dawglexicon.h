@@ -31,12 +31,6 @@
  * - fixed inclusion of foreach macro to avoid errors
  */
 
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
-
-#ifndef INTERNAL_INCLUDE
-#include "private/initstudent.h"   // insert necessary included code by student
-#endif // INTERNAL_INCLUDE
-
 #ifndef _dawglexicon_h
 #define _dawglexicon_h
 
@@ -44,12 +38,8 @@
 #include <set>
 #include <string>
 
-#define INTERNAL_INCLUDE 1
 #include "set.h"
-#undef INTERNAL_INCLUDE
-#define INTERNAL_INCLUDE 1
 #include "stack.h"
-#undef INTERNAL_INCLUDE
 
 /**
  * This class is used to represent a <b><i>lexicon,</i></b> or word list.

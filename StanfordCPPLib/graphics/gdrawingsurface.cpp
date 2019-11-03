@@ -9,16 +9,11 @@
  * - initial version
  */
 
-#define INTERNAL_INCLUDE 1
 #include "gdrawingsurface.h"
 #include <QPainter>
-#define INTERNAL_INCLUDE 1
 #include "gcolor.h"
-#define INTERNAL_INCLUDE 1
 #include "gfont.h"
-#define INTERNAL_INCLUDE 1
 #include "require.h"
-#undef INTERNAL_INCLUDE
 
 GDrawingSurface::GDrawingSurface()
         : _forwardTarget(nullptr),

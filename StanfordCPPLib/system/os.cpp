@@ -12,15 +12,12 @@
  * - initial version
  */
 
-#define INTERNAL_INCLUDE 1
 #include "os.h"
 #ifndef SPL_HEADLESS_MODE
 #include <QString>
 #include <QSysInfo>
 #endif // SPL_HEADLESS_MODE
-#define INTERNAL_INCLUDE 1
 #include "strlib.h"
-#undef INTERNAL_INCLUDE
 
 #if !defined(SPL_HEADLESS_MODE) && QT_VERSION >= QT_VERSION_CHECK(5, 9, 0)
 /*static*/ std::string OS::getName() {

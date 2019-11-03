@@ -30,11 +30,6 @@
  * @since 2015/10/26
  */
 
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
-
-#ifndef INTERNAL_INCLUDE
-#include "private/initstudent.h"   // insert necessary included code by student
-#endif // INTERNAL_INCLUDE
 
 #ifndef _linkedhashmap_h
 #define _linkedhashmap_h
@@ -44,17 +39,11 @@
 #include <string>
 #include <functional>
 
-#define INTERNAL_INCLUDE 1
 #include "collections.h"
-#define INTERNAL_INCLUDE 1
 #include "error.h"
-#define INTERNAL_INCLUDE 1
 #include "hashcode.h"
-#define INTERNAL_INCLUDE 1
 #include "hashmap.h"
-#define INTERNAL_INCLUDE 1
 #include "vector.h"
-#undef INTERNAL_INCLUDE
 
 /*
  * Class: LinkedHashMap<KeyType,ValueType>

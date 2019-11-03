@@ -18,16 +18,12 @@
  * @since 2014/03/01
  */
 
-#define INTERNAL_INCLUDE 1
 #include "regexpr.h"
 #ifndef SPL_HEADLESS_MODE
 #include <QtGlobal>
 #endif // SPL_HEADLESS_MODE
-#define INTERNAL_INCLUDE 1
 #include "error.h"
-#define INTERNAL_INCLUDE 1
 #include "stringutils.h"
-#undef INTERNAL_INCLUDE
 
 #if defined(SPL_CODESTEPBYSTEP) || QT_VERSION < QT_VERSION_CHECK(5, 9, 0)
 bool regexMatch(const std::string& /*s*/, const std::string& /*regexp*/) {

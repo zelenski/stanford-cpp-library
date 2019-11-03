@@ -15,9 +15,7 @@
  * @since 2014/10/31
  */
 
-#define INTERNAL_INCLUDE 1
 #include "private/version.h"
-#undef INTERNAL_INCLUDE
 #include <cstdio>
 #include <iomanip>
 #include <iostream>

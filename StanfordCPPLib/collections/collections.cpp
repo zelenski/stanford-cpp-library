@@ -9,11 +9,8 @@
  * - initial version
  */
 
-#define INTERNAL_INCLUDE 1
 #include "collections.h"
-#define INTERNAL_INCLUDE 1
 #include "private/static.h"
-#undef INTERNAL_INCLUDE
 #include <iomanip>
 #include <iostream>
 

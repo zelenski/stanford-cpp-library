@@ -1,17 +1,11 @@
 /*
  * File: init.h
  * ------------
- * This file contains code to check whether the Stanford C++ library has been
- * initialized, and if not, to initialize it.
- * This file must be included by every student-facing header in the Stanford
- * C++ library to make sure that the library is initialized before it is used.
+ * These functions setup/teardown the Stanford C++ library.
  *
- * There used to be a group of files such as private/main.h, main.cpp, and
- * startup.cpp that contained various initialization code.  These were removed
- * and replaced with this style of initialization for the following reasons:
- *
- * - simplicity/consolidation
- * - allow student to NOT include console.h and use plain text console
+ * Originally, necessary setup was initiated via a static initializer. This required
+ * careful arrangement include+guard, this is no longer used as pre/post work is
+ * is inserted into the wrapper "main" function which surrounds student main.
  *
  * @version 2018/08/28
  * - refactor to use stanfordcpplib namespace and init.cpp
@@ -26,9 +20,8 @@
 #ifndef _init_h
 #define _init_h
 
-#include <cstdlib>
+#include <string>
 #include <functional>
-#include <cstdio>
 
 namespace stanfordcpplib {
 
@@ -89,33 +82,6 @@ void setExitEnabled(bool enabled);
  */
 void shutdownLibrary();
 
-/**
- * Performs any initialization needed by the library during static-init phase,
- * which occurs before main() is launched.
- * The StanfordCppLibraryInitializer class below helps us do this properly.
- */
-void staticInitializeLibrary();
-
-#ifndef StanfordCppLibraryInitializer_created
-#define StanfordCppLibraryInitializer_created
-class StanfordCppLibraryInitializer {
-public:
-    /*
-     * Code to initialize the library.
-     * Implemented as a class constructor so that it will run before the
-     * student's main function.
-     * Here we put anything that we need to initialize during the static
-     * phase before main() runs.
-     * Presently there is nothing that requires such initialization,
-     * so this is blank.
-     */
-    StanfordCppLibraryInitializer() {
-        staticInitializeLibrary();
-    }
-};
-static StanfordCppLibraryInitializer __stanfordcpplib_init;
-#endif // __StanfordCppLibraryInitializer_created
-
 } // namespace stanfordcpplib
 
 // bypass std::exit function
@@ -129,9 +95,5 @@ void __stanfordcpplib__exitLibrary(int status);
 #ifdef SPL_HEADLESS_MODE
 #include "headless.h"
 #endif // SPL_HEADLESS_MODE
-
-#ifdef SPL_OVERLOAD_PROBLEMATIC_POINTER_ARITHMETIC
-#include "pointers.h"
-#endif // SPL_OVERLOAD_PROBLEMATIC_POINTER_ARITHMETIC
 
 #endif // _init_h

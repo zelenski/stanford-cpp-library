@@ -19,14 +19,10 @@
  * Previously last modified on Mon May 21 19:50:00 PST 2012 by Keith Schwarz
  */
 
-#define INTERNAL_INCLUDE 1
 #include "bitstream.h"
 #include <iostream>
-#define INTERNAL_INCLUDE 1
 #include "error.h"
-#define INTERNAL_INCLUDE 1
 #include "strlib.h"
-#undef INTERNAL_INCLUDE
 
 static const int NUM_BITS_IN_BYTE = 8;
 

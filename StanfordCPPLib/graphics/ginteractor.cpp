@@ -23,23 +23,15 @@
  * - initial version
  */
 
-#define INTERNAL_INCLUDE 1
 #include "ginteractor.h"
 #include <iostream>
 #include <sstream>
-#define INTERNAL_INCLUDE 1
 #include "gcolor.h"
-#define INTERNAL_INCLUDE 1
 #include "gfont.h"
-#define INTERNAL_INCLUDE 1
 #include "gthread.h"
-#define INTERNAL_INCLUDE 1
 #include "gwindow.h"
-#define INTERNAL_INCLUDE 1
 #include "qtgui.h"
-#define INTERNAL_INCLUDE 1
 #include "require.h"
-#undef INTERNAL_INCLUDE
 
 int GInteractor::_interactorCount = 0;
 

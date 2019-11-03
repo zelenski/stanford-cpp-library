@@ -20,7 +20,6 @@
  * - initial version
  */
 
-#define INTERNAL_INCLUDE 1
 #include "gobjects.h"
 #include <algorithm>
 #include <cmath>
@@ -33,23 +32,14 @@
 #include <QVector>
 #include <sstream>
 #include <string>
-#define INTERNAL_INCLUDE 1
 #include "filelib.h"
-#define INTERNAL_INCLUDE 1
 #include "gmath.h"
-#define INTERNAL_INCLUDE 1
 #include "gcolor.h"
-#define INTERNAL_INCLUDE 1
 #include "gfont.h"
-#define INTERNAL_INCLUDE 1
 #include "gthread.h"
-#define INTERNAL_INCLUDE 1
 #include "require.h"
-#define INTERNAL_INCLUDE 1
 #include "strlib.h"
-#define INTERNAL_INCLUDE 1
 #include "private/static.h"
-#undef INTERNAL_INCLUDE
 
 const double GRoundRect::DEFAULT_CORNER = 10.0;
 const std::string GText::DEFAULT_FONT = "Dialog-13";

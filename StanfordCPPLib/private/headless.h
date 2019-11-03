@@ -7,7 +7,6 @@
  * - initial version
  */
 
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
 
 #ifndef _headless_h
 #define _headless_h

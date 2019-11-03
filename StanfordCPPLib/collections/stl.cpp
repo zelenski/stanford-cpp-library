@@ -8,9 +8,7 @@
  * - initial version
  */
 
-#define INTERNAL_INCLUDE 1
 #include "stl.h"
-#undef INTERNAL_INCLUDE
 
 std::set<std::string> toStlSet(const DawgLexicon& lex) {
     std::set<std::string> result;

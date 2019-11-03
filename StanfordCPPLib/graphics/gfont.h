@@ -13,13 +13,6 @@
  * - initial version
  */
 
-#include "private/init.h"   // ensure that Stanford C++ lib is initialized
-
-#ifndef INTERNAL_INCLUDE
-// signal that GUI system is in use (so it will be initialized)
-#define SPL_QT_GUI_IN_USE 1
-#include "private/initstudent.h"   // insert necessary included code by student
-#endif // INTERNAL_INCLUDE
 
 #ifndef _gfont_h
 #define _gfont_h
@@ -27,11 +20,8 @@
 #include <string>
 #include <QFont>
 
-#define INTERNAL_INCLUDE 1
 #include "ginteractor.h"
-#define INTERNAL_INCLUDE 1
 #include "gobjects.h"
-#undef INTERNAL_INCLUDE
 
 /**
  * This class contains static methods for dealing with fonts in our GUI system.

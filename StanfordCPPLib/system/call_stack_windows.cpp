@@ -22,7 +22,6 @@
  */
 
 #ifdef _WIN32
-#define INTERNAL_INCLUDE 1
 #include "call_stack.h"
 #include <windows.h>
 #  undef MOUSE_EVENT
@@ -46,18 +45,12 @@
 #define _NO_CVCONST_H
 #include <dbghelp.h>
 #include <imagehlp.h>
-#define INTERNAL_INCLUDE 1
 #include "error.h"
-#define INTERNAL_INCLUDE 1
 #include "exceptions.h"
-#define INTERNAL_INCLUDE 1
 #include "strlib.h"
-#define INTERNAL_INCLUDE 1
 #include "vector.h"
 #include <cxxabi.h>
-#define INTERNAL_INCLUDE 1
 #include "private/static.h"
-#undef INTERNAL_INCLUDE
 
 namespace stacktrace {
 STATIC_CONST_VARIABLE_DECLARE(int, STACK_FRAMES_TO_SKIP, 0)
