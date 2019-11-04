@@ -104,43 +104,6 @@ static void parseArgsQt(int argc, char** argv) {
     }
 }
 
-// called automatically by real main() function;
-// call to this is inserted by library init.h
-// to be run in Qt main thread
-#ifdef SPL_HEADLESS_MODE
-void runMainInThread(int (* mainFunc)(void)) {
-    mainFunc();
-}
-
-void runMainInThread(std::function<int()> mainFunc) {
-    mainFunc();
-}
-
-void runMainInThreadVoid(void (* mainFuncVoid)(void)) {
-    mainFuncVoid();
-}
-
-void runMainInThreadVoid(std::function<void()> mainFuncVoid) {
-    mainFuncVoid();
-}
-#else // SPL_HEADLESS_MODE
-void runMainInThread(int (* mainFunc)(void)) {
-    QtGui::instance()->startBackgroundEventLoop(mainFunc);
-}
-
-void runMainInThread(std::function<int()> mainFunc) {
-    QtGui::instance()->startBackgroundEventLoop(mainFunc);
-}
-
-void runMainInThreadVoid(void (* mainFuncVoid)(void)) {
-    QtGui::instance()->startBackgroundEventLoopVoid(mainFuncVoid);
-}
-
-void runMainInThreadVoid(std::function<void()> mainFuncVoid) {
-    QtGui::instance()->startBackgroundEventLoopVoid(mainFuncVoid);
-}
-#endif // SPL_HEADLESS_MODE
-
 void setExitEnabled(bool enabled) {
     STATIC_VARIABLE(isExitEnabled) = enabled;
     // TODO: notify GConsoleWindow?

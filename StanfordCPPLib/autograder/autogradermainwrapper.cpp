@@ -9,44 +9,26 @@
  * @version 2018/10/07
  * - initial version; refactored from autograder.cpp
  */
-
+#include "private/init.h"
 #include "autograder.h"
 #include "consoleautograder.h"
 #include "guiautograder.h"
 #include "qtgui.h"
 #include <string>
 
-#ifdef SPL_AUTOGRADER_MODE
-// to be written by TA/instructor for each assignment
+// JDZ: yucky hack, here until I work out something better
+// The library supplies two main() functions (autograder and regular)
+// Each main is in separate module; program need to selectively link with
+// the desired one. Extra symbol autograder_active defined only in this
+// module. Autograder program has undefined ref to that symbol to force
+// this module to be linked.
+bool autograder_active;
+
 extern void autograderMain();
 
-int qMain(int argc, char** argv);
-
-// function prototype declarations;
-// I declare these rather than including init.h to avoid
-// triggering library initialization if lib is not used
-// (keep in sync with init.h/cpp)
-namespace stanfordcpplib {
-extern void initializeLibrary(int argc, char** argv);
-extern void runMainInThread(int (* mainFunc)());
-extern void shutdownLibrary();
-}
-
-#ifndef QT_NEEDS_QMAIN
-#undef main
-int main(int argc, char** argv) {
-    return qMain(argc, argv);
-}
-// keep in sync with definition in .pro file
-#ifdef SPL_REPLACE_MAIN_FUNCTION
-#define main qMain
-#endif // SPL_REPLACE_MAIN_FUNCTION
-#endif // QT_NEEDS_QMAIN
 
 // initializes the Qt GUI library subsystems and Qt graphical console as needed
-// (autograders will insert their own main wrapper)
-int qMain(int argc, char** argv) {
-    extern int main();
+int main(int argc, char** argv) {
 
     // initialize Stanford libraries and graphical console
     stanfordcpplib::initializeLibrary(argc, argv);
@@ -79,4 +61,3 @@ int qMain(int argc, char** argv) {
     stanfordcpplib::shutdownLibrary();
     return 0;
 }
-#endif // SPL_AUTOGRADER_MODE

@@ -47,30 +47,6 @@ void initializeLibrary(int argc, char** argv);
 void initializeLibraryStudentThread();
 
 /**
- * Runs the student's main function in its own thread, creating that thread
- * as an object of type GThread.
- */
-void runMainInThread(int (* mainFunc)());
-
-/**
- * Runs the student's main function in its own thread, creating that thread
- * as an object of type GThread.
- */
-void runMainInThread(std::function<int()> mainFunc);
-
-/**
- * Runs the student's main function in its own thread, creating that thread
- * as an object of type GThread.
- */
-void runMainInThreadVoid(void (* mainFuncVoid)());
-
-/**
- * Runs the student's main function in its own thread, creating that thread
- * as an object of type GThread.
- */
-void runMainInThreadVoid(std::function<void()> mainFuncVoid);
-
-/**
  * Sets whether the std::exit function will be enabled or not.
  * If disabled, an error() will be thrown if student tries to exit().
  */
@@ -81,6 +57,7 @@ void setExitEnabled(bool enabled);
  * A call to this function is inserted after the student's main().
  */
 void shutdownLibrary();
+
 
 } // namespace stanfordcpplib
 

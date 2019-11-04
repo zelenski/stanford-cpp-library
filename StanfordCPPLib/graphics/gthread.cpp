@@ -154,13 +154,6 @@ GThread::GThread() {
     }
 }
 
-/*static*/ void GThread::startStudentThreadVoid(GThunk mainFunc) {
-    if (!_studentThread) {
-        _studentThread = new GThreadQt(mainFunc);
-        _studentThread->start();
-    }
-}
-
 /*static*/ bool GThread::studentThreadExists() {
     return _studentThread != nullptr;
 }

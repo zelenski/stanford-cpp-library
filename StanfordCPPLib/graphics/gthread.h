@@ -293,12 +293,6 @@ public:
     static void startStudentThread(GThunkInt mainFunc);
 
     /**
-     * Starts the student's thread, telling it to run the given function,
-     * which accepts no arguments and returns void.
-     */
-    static void startStudentThreadVoid(GThunk mainFunc);
-
-    /**
      * Returns true if the student's thread has already been created.
      */
     static bool studentThreadExists();

@@ -76,12 +76,6 @@
 #include "stylecheck.h"
 #include "testresultprinter.h"
 
-// to be written by TA/instructor for each assignment
-extern void autograderMain();
-
-// student's main function
-extern int main();
-
 namespace stanfordcpplib {
 namespace autograder {
 

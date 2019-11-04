@@ -148,21 +148,6 @@ void QtGui::startBackgroundEventLoop(GThunkInt mainFunc, bool exitAfter) {
 }
 
 // this should be called by the Qt main thread
-void QtGui::startBackgroundEventLoopVoid(GThunk mainFunc, bool exitAfter) {
-    GThread::ensureThatThisIsTheQtGuiThread("QtGui::startBackgroundEventLoop");
-
-    // start student's main function in its own second thread
-    if (!GThread::studentThreadExists()) {
-        GThread::startStudentThreadVoid([&]() {
-            stanfordcpplib::initializeLibraryStudentThread();
-            mainFunc();
-            stanfordcpplib::endOfLibraryStudentThread();
-        });
-        startEventLoop(exitAfter);   // begin Qt event loop on main thread
-    }
-}
-
-// this should be called by the Qt main thread
 void QtGui::startEventLoop(bool exitAfter) {
     GThread::ensureThatThisIsTheQtGuiThread("QtGui::startEventLoop");
     if (!_app) {

@@ -1,43 +1,44 @@
 ###############################################################################
+# Project file for CS106B/X Library 
+#
 # @author Julie Zelenski
-# @version 2019/10/21
-#   first attempt at building 106 code into static library
-#   make install will publish lib in QT plugins dir and can be used by student
-#   application without having to rebuild entire library within each project
-#   only operates in autograder mode for now
+# @version 2019/11/02
+# This version still in development
 ###############################################################################
-
-DEFINES += SPL_PROJECT_VERSION=20191021   # kludgy YYYYMMDD constant used by lib to know its version
 
 # Versioning
 # ----------
 QUARTER_ID = 19-1
 REQUIRES_QT_VERSION = 5.11
+VERSION = 19.1
+# JDZ: above version gives auto access to qmake major/minor/patch and requires()
+
+#CONFIG += develop_mode
+
 
 # Top-level configuration
 # -----------------------
-# This project manages source/headers for CS106B/X library
-# It builds into a static library (libcs106.a)
-# which is installed into directory qt_plugins/cs106
+# CS106B/X library project
+# Builds static library libcs106.a to be installed in fixed location
+# along with library headers and shared resources (icons, binaries, etc.)
+# Student client program accesses library+resources from fixed location
+
 TARGET = cs106
 TEMPLATE = lib
 CONFIG += staticlib
-INSTALL_PATH = $$[QT_INSTALL_PLUGINS]/$${TARGET}
-
-# Below we include one-line into makefile to set
-#     .DEFAULT_GOAL := install
-# this means make will install by default
-# (yes, this is a cheezy hack, is there a cleaner way?)
-QMAKE_EXTRA_INCLUDES += $$relative_path($$PWD/default-goal-install.mk, $$OUT_PWD)
-
+CONFIG -= depend_includepath
 CONFIG += c++11
-CONFIG += develop_mode
-CONFIG += autograder
-#CONFIG += silent
 
 
-LIB_SUBDIRS = collections graphics io system util
-autograder: LIB_SUBDIRS += autograder
+# Could install into QT_INSTALL_PLUGINS but probably not writable on cluster
+# install in their home directory, same place that wizard will go
+win32|win64 {
+    INSTALL_PATH = $$absolute_path(%APPDATA%\QtProject\qtcreator\cs106)
+} else {
+    INSTALL_PATH = $$absolute_path($$(HOME)/.config/QtProject/qtcreator/cs106)
+}
+
+LIB_SUBDIRS = autograder collections graphics io system util
 
 # Glob source and header files
 # (track public/private headers separately for install)
@@ -49,9 +50,11 @@ SOURCES *= $$files(private/*cpp)
 HEADERS *= $$PUBLIC_HEADERS $$PRIVATE_HEADERS
 
 # Glob other files from resources
-OTHER_FILES *= $$files(resources/*)
+RES_FILES = $$files(resources/*)
+BIN_FILES = $$files(bin/*)
+OTHER_FILES *= $$RES_FILES $$BIN_FILES
 
-# set include path for all library folders, also QT headers
+# Set include path for all library folders, also QT headers
 INCLUDEPATH *= $$LIB_SUBDIRS
 QT += core gui widgets network multimedia
 
@@ -72,17 +75,7 @@ develop_mode {
 #JDZ to try on Windows
 #QMAKE_CXXFLAGS += -O2 -finline
 
-# JDZ: current always builds library in autograder mode, needs rework!
-autograder {
-    DEFINES += SPL_AUTOGRADER_MODE
-    DEFINES += SPL_GRAPHICAL_AUTOGRADER
-}
-
-# wrapper name for 'main' function (needed so student can write 'int main'
-# but our library can grab the actual main function to initialize itself)
-DEFINES += SPL_REPLACE_MAIN_FUNCTION=1
-DEFINES += main=qMain
-
+DEFINES += SPL_INSTALL_DIR=$${INSTALL_PATH} QUARTER_ID=$${QUARTER_ID}
 
 # x/y location and w/h of the graphical console window; set to -1 to center
 DEFINES += SPL_CONSOLE_X=-1
@@ -119,27 +112,32 @@ DEFINES += SPL_THROW_ON_INVALID_ITERATOR
 DEFINES += SPL_PRECOMPILE_QT_MOC_FILES
 
 
-# make install target
-# -------------------
-# install target will install files as QT plug-ins
-# files copied are static library (libcs106.a) and
-# public headers (flattened), private headers (in subdir)
-target.path = $${INSTALL_PATH}
-private_headers.path = $${target.path}/private
-public_headers.path = $$target.path
-public_headers.files = $$PUBLIC_HEADERS
-private_headers.files = $$PRIVATE_HEADERS
-INSTALLS += target public_headers private_headers
-
-
-
 # Requirements
 # ------------
 # Error if installed version of QT is insufficient
 
-requirements = $$split(REQUIRES_QT_VERSION, ".")
-lessThan(QT_MAJOR_VERSION, $$member(requirements, 0)) | equals(QT_MAJOR_VERSION, $$member(requirements, 0)):lessThan(QT_MINOR_VERSION, $$member(requirements, 1)) {
-    error("The CS106 library for quarter $$QUARTER_ID requires Qt $$REQUIRES_QT_VERSION or newer; Qt $$[QT_VERSION] was detected. Please upgrade/re-instal.l")
+!versionAtLeast(QT_VERSION, $$REQUIRES_QT_VERSION) {
+    error("The CS106 library for quarter $$QUARTER_ID requires Qt $$REQUIRES_QT_VERSION or newer; Qt $$[QT_VERSION] was detected. Please upgrade/re-install.")
 } else {
-    message("The CS106 library for quarter $$QUARTER_ID requires Qt $$REQUIRES_QT_VERSION or newer; Qt $$[QT_VERSION] was detected. Thumbs up!")
+    !buildpass:log("Thumbs up! Qt $$[QT_VERSION] installed (meets quarter $$QUARTER_ID requirement of Qt $$REQUIRES_QT_VERSION or newer)")
 }
+
+# JDZ: standard make install target always copies, no check if installed already up-to-date
+# so, do it manually, sigh 
+# (refer mkspecs/features/file_copies for custom compiler definition to piggyback on)
+
+CONFIG += file_copies
+COPIES += resources binaries headers
+resources.files = $$RES_FILES
+resources.path = $${INSTALL_PATH}/res
+binaries.files = $$BIN_FILES
+binaries.path = $${INSTALL_PATH}/bin
+headers.files = $$PUBLIC_HEADERS
+headers.path = $${INSTALL_PATH}/include
+
+# JDZ: kind of cheezy
+QMAKE_POST_LINK += $$QMAKE_QMAKE -install qinstall libcs106.a $${INSTALL_PATH}/lib/libcs106.a
+# JDZ: this doesn't work correctly on MacOS, flag lost by qmake
+QMAKE_RANLIB +=  -no_warning_for_no_symbols
+
+

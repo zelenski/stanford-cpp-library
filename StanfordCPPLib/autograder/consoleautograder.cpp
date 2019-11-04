@@ -24,11 +24,9 @@
 #include "stylecheck.h"
 #include "testresultprinter.h"
 
-// to be written by TA/instructor for each assignment
-extern void autograderMain();
 
 // student's main function
-extern int main();
+extern int studentMain();
 
 namespace stanfordcpplib {
 namespace autograder {
@@ -270,7 +268,7 @@ int ConsoleAutograder::mainFunc() {
     if (manualGrade) {
         GWindow::_autograder_setExitGraphicsEnabled(false);
         while (manualGrade) {
-            main();   // run student's main function
+            studentMain();   // run student's main function
             std::cout << AUTOGRADER_OUTPUT_SEPARATOR << std::endl;
             manualGrade = autograderYesOrNo("Run program again (y/N)? ", "", "n");
         }

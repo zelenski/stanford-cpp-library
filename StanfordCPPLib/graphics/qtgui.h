@@ -11,6 +11,7 @@
  * - initial version
  */
 
+
 #ifndef _qtgui_h
 #define _qtgui_h
 
@@ -20,6 +21,7 @@
 #include <QObject>
 #include <QReadWriteLock>
 
+#include "geventqueue.h"
 #include "gthread.h"
 #include "gtypes.h"
 #include "queue.h"
@@ -94,13 +96,6 @@ public:
      */
     void startBackgroundEventLoop(GThunkInt mainFunc, bool exitAfter = true);
 
-    /**
-     * Runs an event loop that calls the given function that returns void.
-     * The event loop will block until the graphical program is done running.
-     * If the exitAfter argument is true, calls exitGraphics after the event
-     * loop is finished.
-     */
-    void startBackgroundEventLoopVoid(GThunk mainFunc, bool exitAfter = true);
     void startEventLoop(bool exitAfter = true);
 
 

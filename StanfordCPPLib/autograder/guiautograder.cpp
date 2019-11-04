@@ -54,7 +54,7 @@
 #include <sstream>
 
 // student's main function
-extern int main();
+extern int studentMain();
 
 namespace stanfordcpplib {
 namespace autograder {
@@ -692,7 +692,7 @@ void GuiAutograder::onClick_runManually() {
     stanfordcpplib::setExitEnabled(false);   // block exit() call
 
     GThread::runInNewThreadAsync([]() {
-        main();   // run student's main function
+        studentMain();   // run student's main function
     }, "Main (student)");
 }
 

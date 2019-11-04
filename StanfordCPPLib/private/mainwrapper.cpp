@@ -1,15 +1,10 @@
 /*
  * File: mainwrapper.cpp
  * ---------------------
- * This file contains a 'main' function definition that renames the student's
- * main function to 'qMain' and wraps it with a real 'main' function that
- * initializes the Stanford C++ library, then runs the student's main function
+ * This file contains a 'main' function definition that initializes the 
+ * Stanford C++ library, then runs the student's main function
  * in its own thread.  This is necessary for the Qt version of the library to
  * function properly.
- *
- * If you receive compiler errors that direct you to this file, you may need to
- * include a .h header from the Stanford C++ library in the file of your project
- * that contains the 'main' function.
  *
  * @version 2018/10/18
  * - multi-main initial implementation
@@ -22,39 +17,22 @@
  */
 
 #include "private/init.h"
+#include "qtgui.h"
 
-#ifndef SPL_AUTOGRADER_MODE
-int qMain(int argc, char** argv);
-
-// function prototype declarations;
-// I declare these rather than including init.h to avoid
-// triggering library initialization if lib is not used
-// (keep in sync with init.h/cpp)
-namespace stanfordcpplib {
-extern void initializeLibrary(int argc, char** argv);
-extern void runMainInThread(int (* mainFunc)(void));
-extern int selectMainFunction();
-extern void shutdownLibrary();
-}
-
-#ifndef QT_NEEDS_QMAIN
-#undef main
-int main(int argc, char** argv) {
-    return qMain(argc, argv);
-}
-// keep in sync with definition in .pro file
-#ifdef SPL_REPLACE_MAIN_FUNCTION
-#define main qMain
-#endif // SPL_REPLACE_MAIN_FUNCTION
-#endif // QT_NEEDS_QMAIN
+// student implements what looks like ordinary main() function, but
+// it is renamed to studentMain() during build
+int studentMain();
 
 // initializes the Qt GUI library subsystems and Qt graphical console as needed
-// (autograders will insert their own main wrapper)
-int qMain(int argc, char** argv) {
-    extern int main();
+// before calling the student's main
+int main(int argc, char** argv) 
+{
     stanfordcpplib::initializeLibrary(argc, argv);
-    int result = stanfordcpplib::selectMainFunction();
+#ifdef SPL_HEADLESS_MODE
+    studentMain(); 
+#else
+    QtGui::instance()->startBackgroundEventLoop(studentMain);
+#endif
     stanfordcpplib::shutdownLibrary();
-    return result;
+    return 0;
 }
-#endif // SPL_AUTOGRADER_MODE
