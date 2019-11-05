@@ -430,24 +430,9 @@ void printStackTrace(std::ostream& out) {
             continue;
         }
         
-        // show Main() as main() to hide hidden case-change by Stanford C++ lib internals
-        if (startsWith(entry.function, "Main(")) {
-            entry.function.replace(0, 5, "main(");
-        }
-
         // for some reason, some functions don't show () parens after; add them
         if (!entry.function.empty() && !stringContains(entry.function, "(")) {
             entry.function += "()";
-        }
-
-        // fix main to hide int/char**
-        if (entry.function == "main(int, char**)") {
-            entry.function = "main()";
-        }
-
-        // fix qMain => main to hide Qt main renaming
-        if (entry.function == "qMain()") {
-            entry.function = "main()";
         }
 
         std::string lineStr = "";
@@ -479,8 +464,8 @@ void printStackTrace(std::ostream& out) {
         if (entry.function == "main"
                 || entry.function == "main()"
                 || entry.function == "main(int, char**)"
-                || entry.function == "qMain"
-                || entry.function == "qMain()") {
+                || entry.function == "studentMain"
+                || entry.function == "studentMain()") {
             break;
         }
     }

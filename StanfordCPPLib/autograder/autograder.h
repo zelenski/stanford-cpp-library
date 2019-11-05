@@ -56,6 +56,10 @@
  */
 #define MAX_STUDENT_OUTPUT 262144
 
+// JDZ: to document
+int autograderMain(int argc, char** argv, bool useGraphicalAutograder, void (*setupfn)() = nullptr);
+
+
 namespace stanfordcpplib {
 namespace autograder {
 
@@ -99,12 +103,6 @@ public:
     
     AutograderFlags();
 };
-
-/*
- * The main function called by the autograder to run the program.
- * Your autograder file should call this to initiate the grading process.
- */
-int autograderMain(int argc = 0, char** argv = nullptr);
 
 /*
  * e.g. date = "13/Oct/2014 10:31:15"

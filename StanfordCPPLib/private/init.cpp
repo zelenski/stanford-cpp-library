@@ -19,6 +19,11 @@
 #include "qtgui.h"
 #include "strlib.h"
 #include "private/static.h"
+#include <QStandardPaths>
+#include "private/version.h"
+// JDZ:
+bool fileExists(const std::string&);
+
 
 #ifdef _WIN32
 #  include <direct.h>   // for chdir
@@ -43,7 +48,6 @@ bool exitEnabled() {
 }
 
 // called automatically by real main() function;
-// call to this is inserted by library init.h
 // to be run in Qt GUI main thread
 void initializeLibrary(int argc, char** argv) {
     // ensure that library is initialized only once
@@ -85,7 +89,7 @@ static void parseArgsQt(int argc, char** argv) {
     // programName() = getRoot(getTail(arg0));
 
 #ifndef _WIN32
-    // on Mac only, may need to change folder because of app's nested dir structure
+    // on Mac only, may need to change wd because of app's nested dir structure
     size_t ax = arg0.find(".app/Contents/");
     if (ax != std::string::npos) {
         while (ax > 0 && arg0[ax] != '/') {
@@ -93,7 +97,7 @@ static void parseArgsQt(int argc, char** argv) {
         }
         if (ax > 0) {
             std::string cwd = arg0.substr(0, ax);
-            chdir(cwd.c_str());
+            chdir(cwd.c_str()); // wd is folder containing .app
         }
     }
 #endif // _WIN32
@@ -118,6 +122,16 @@ void shutdownLibrary() {
     shutdownConsole();
 #endif // SPL_HEADLESS_MODE
 }
+
+std::string pathForExecutable(const std::string& executableName)
+{
+    // Use QT search function to find executable within user's path/environment
+    // This will find the addr2line installed with mingw rather than having to ship our
+    // own and deal with possible versionitis
+    QString found = QStandardPaths::findExecutable(QString::fromStdString(executableName));
+    return found.toStdString();
+}
+
 
 } // namespace stanfordcpplib
 

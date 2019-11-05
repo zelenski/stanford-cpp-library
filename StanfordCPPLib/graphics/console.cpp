@@ -25,7 +25,11 @@
 #include "gconsolewindow.h"
 #include "gthread.h"
 #include "private/static.h"
-#include "private/version.h"
+
+// Default can be overridden with explicit call to setConsoleBlah
+static const int DEFAULT_X = -1, DEFAULT_Y = -1; // will center
+static const int DEFAULT_WIDTH = 900, DEFAULT_HEIGHT = 500;
+static const bool DEFAULT_ECHO = true, DEFAULT_EXIT_ON_CLOSE = true, DEFAULT_PRINT_EXCEPTIONS = true;
 
 #ifdef SPL_HEADLESS_MODE
 
@@ -318,7 +322,7 @@ void shutdownConsole() {
 
 /*
  * Sets up console settings like window size, location, exit-on-close, etc.
- * based on compiler options set in the .pro file.
+ * to default values
  */
 void setConsolePropertiesQt() {
 #if defined(SPL_CONSOLE_FONTSIZE)
@@ -326,33 +330,14 @@ void setConsolePropertiesQt() {
     setConsoleFont(fontStr);
 #endif
 
-#if defined(SPL_CONSOLE_WIDTH) && defined(SPL_CONSOLE_HEIGHT)
-    setConsoleSize(SPL_CONSOLE_WIDTH, SPL_CONSOLE_HEIGHT);
-#endif
-
-#if defined(SPL_CONSOLE_X) && defined(SPL_CONSOLE_Y)
-    setConsoleLocation(SPL_CONSOLE_X, SPL_CONSOLE_Y);
-#endif
-
-#if defined(SPL_CONSOLE_ECHO)
-    setConsoleEcho(true);
-#endif
-
-#if defined(SPL_CONSOLE_EXIT_ON_CLOSE)
-    setConsoleExitProgramOnClose(true);
-#endif
-
-#if defined(SPL_CONSOLE_LOCATION_SAVED)
+    setConsoleSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+    setConsoleLocation(DEFAULT_X, DEFAULT_Y);
+ #if defined(SPL_CONSOLE_LOCATION_SAVED)
     setConsoleLocationSaved(true);
-#endif
-
-#if defined(SPL_CONSOLE_PRINT_EXCEPTIONS)
-    setConsolePrintExceptions(true);
-#endif
-
-#if defined(SPL_VERIFY_PROJECT_VERSION)
-    version::ensureProjectVersion();
-#endif
+ #endif
+    setConsoleEcho(DEFAULT_ECHO);
+    setConsoleExitProgramOnClose(DEFAULT_EXIT_ON_CLOSE);
+    setConsolePrintExceptions(DEFAULT_PRINT_EXCEPTIONS);
 }
 
 void initializeQtGraphicalConsole() {

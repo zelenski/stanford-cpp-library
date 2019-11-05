@@ -46,6 +46,9 @@ void initializeLibrary(int argc, char** argv);
  */
 void initializeLibraryStudentThread();
 
+// JDZ: where do these functions belong?
+std::string pathForExecutable(const std::string& executableName);
+
 /**
  * Sets whether the std::exit function will be enabled or not.
  * If disabled, an error() will be thrown if student tries to exit().
@@ -57,6 +60,7 @@ void setExitEnabled(bool enabled);
  * A call to this function is inserted after the student's main().
  */
 void shutdownLibrary();
+
 
 
 } // namespace stanfordcpplib

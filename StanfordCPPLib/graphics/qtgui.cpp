@@ -21,12 +21,6 @@
 #include "strlib.h"
 #include "private/static.h"
 
-#ifdef _WIN32
-#  include <direct.h>   // for chdir
-#else // _WIN32
-#  include <unistd.h>   // for chdir
-#endif // _WIN32
-
 // QSPLApplication members
 QSPLApplication::QSPLApplication(int& argc, char *argv[])
         : QApplication(argc, argv) {

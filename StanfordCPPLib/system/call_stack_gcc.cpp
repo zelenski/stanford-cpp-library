@@ -256,39 +256,35 @@ int addr2line_all(void** addrs, int length, std::string& output) {
         out << " " << std::hex << std::setfill('0') << addrs[i];
     }
     std::string addrsStr = out.str();
-    out.str("");
+    std::ostringstream command;
+    std::string toolpath;
 
     // have addr2line map the address to the relevant line in the code
-#if defined(__APPLE__)
-    // Mac OS X
-    // JL : change "atos" to "xcrun atos"?
+#if defined(__APPLE__) // Mac OS X
+    toolpath = stanfordcpplib::pathForExecutable("atos");
     void *base = (void *) _dyld_get_image_header(0);
     if (base) {
-        out << "atos -l " << base << " -o " << exceptions::getProgramNameForStackTrace() << addrsStr;
+        command << toolpath << " -l " << base << " -o " << exceptions::getProgramNameForStackTrace() << addrsStr;
     } else {
-        out << "atos -o " << exceptions::getProgramNameForStackTrace() << addrsStr;
+        command << toolpath << " -o " << exceptions::getProgramNameForStackTrace() << addrsStr;
     }
-#elif defined(_WIN64)
-    // Windows
-    if (fileExists("addr2line64.exe")) {
-        out << "addr2line64.exe -f -i -C -s -p -e \"" << exceptions::getProgramNameForStackTrace() << "\"" << addrsStr;
-    } else {
-        out << "(addr2line64.exe unavailable; no stack trace produced)";
-    }
+#else // else not Mac
+#if defined(_WIN64)
+    std::string toolName = "addr2line64.exe";
 #elif defined(_WIN32)
-    // Windows
-    if (fileExists("addr2line.exe")) {
-        out << "addr2line.exe -f -i -C -s -p -e \"" << exceptions::getProgramNameForStackTrace() << "\"" << addrsStr;
-    } else {
-        out << "(addr2line.exe unavailable; no stack trace produced)";
-    }
-#else
-    // Linux
-    out << "addr2line -f -i -C -s -p -e " << exceptions::getProgramNameForStackTrace() << addrsStr;
+    std::string toolName = "addr2line.exe";
+#else    // Linux
+    std::string toolName = "addr2line";
 #endif
-    std::string command = out.str();
-    int result = execAndCapture(command, output);
-    return result;
+    toolpath = stanfordcpplib::pathForExecutable(toolName);
+    command << toolpath << "-f -i -C -s -p -e \"" << exceptions::getProgramNameForStackTrace() << "\"" << addrsStr;
+#endif
+
+    if (toolpath.empty()) {
+        std::cerr << "Backtrace unable to identify function names, no tool executable found." << std::endl;
+    } else {
+        return execAndCapture(command.str(), output);
+    }
 }
 
 /*

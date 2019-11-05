@@ -30,13 +30,17 @@ CONFIG -= depend_includepath
 CONFIG += c++11
 
 
-# Could install into QT_INSTALL_PLUGINS but probably not writable on cluster
-# install in their home directory, same place that wizard will go
+# Install in user's home directory, along with wizard. This will be
+# writable even on cluster computer
+# Note strategy is to specify all paths using forward-slash as separator
 win32|win64 {
-    INSTALL_PATH = $$absolute_path(%APPDATA%\QtProject\qtcreator\cs106)
+    USER_STORAGE = $$(APPDATA)
+    USER_STORAGE = $$replace(USER_STORAGE, \\\\, /)
 } else {
-    INSTALL_PATH = $$absolute_path($$(HOME)/.config/QtProject/qtcreator/cs106)
+    USER_STORAGE = $$(HOME)/.config
 }
+INSTALL_PATH = $${USER_STORAGE}/QtProject/qtcreator/cs106
+
 
 LIB_SUBDIRS = autograder collections graphics io system util
 
@@ -51,8 +55,7 @@ HEADERS *= $$PUBLIC_HEADERS $$PRIVATE_HEADERS
 
 # Glob other files from resources
 RES_FILES = $$files(resources/*)
-BIN_FILES = $$files(bin/*)
-OTHER_FILES *= $$RES_FILES $$BIN_FILES
+OTHER_FILES *= $$RES_FILES
 
 # Set include path for all library folders, also QT headers
 INCLUDEPATH *= $$LIB_SUBDIRS
@@ -69,28 +72,13 @@ develop_mode {
 } else {
     CONFIG += warn_off
     CONFIG += sdk_no_version_check
-    CONFIG += silent
+    #CONFIG += silent
 } 
 
 #JDZ to try on Windows
 #QMAKE_CXXFLAGS += -O2 -finline
 
-DEFINES += SPL_INSTALL_DIR=$${INSTALL_PATH} QUARTER_ID=$${QUARTER_ID}
-
-# x/y location and w/h of the graphical console window; set to -1 to center
-DEFINES += SPL_CONSOLE_X=-1
-DEFINES += SPL_CONSOLE_Y=-1
-DEFINES += SPL_CONSOLE_WIDTH=900
-DEFINES += SPL_CONSOLE_HEIGHT=550
-
-# echo graphical console onto the plain text console as well?
-DEFINES += SPL_CONSOLE_ECHO
-
-# quit the C++ program when the graphical console is closed?
-DEFINES += SPL_CONSOLE_EXIT_ON_CLOSE
-
-# print details about uncaught exceptions with red error text / stack trace
-DEFINES += SPL_CONSOLE_PRINT_EXCEPTIONS
+DEFINES += SPL_INSTALL_DIR=\\\"$${INSTALL_PATH}\\\" QUARTER_ID=\\\"$${QUARTER_ID}\\\"
 
 # crash if the .pro is older than the minimum specified in version.h? (SPL_PROJECT_VERSION)
 DEFINES += SPL_VERIFY_PROJECT_VERSION
@@ -127,17 +115,17 @@ DEFINES += SPL_PRECOMPILE_QT_MOC_FILES
 # (refer mkspecs/features/file_copies for custom compiler definition to piggyback on)
 
 CONFIG += file_copies
-COPIES += resources binaries headers
+COPIES += resources headers
 resources.files = $$RES_FILES
 resources.path = $${INSTALL_PATH}/res
-binaries.files = $$BIN_FILES
-binaries.path = $${INSTALL_PATH}/bin
 headers.files = $$PUBLIC_HEADERS
 headers.path = $${INSTALL_PATH}/include
 
-# JDZ: kind of cheezy
-QMAKE_POST_LINK += $$QMAKE_QMAKE -install qinstall libcs106.a $${INSTALL_PATH}/lib/libcs106.a
+# JDZ: kind of cheezy, why is windows output in different path?
+win32 {
+    QMAKE_POST_LINK += $$QMAKE_QMAKE -install qinstall debug/libcs106.a $${INSTALL_PATH}/lib/libcs106.a
+} else {
+    QMAKE_POST_LINK += $$QMAKE_QMAKE -install qinstall libcs106.a $${INSTALL_PATH}/lib/libcs106.a
+}
 # JDZ: this doesn't work correctly on MacOS, flag lost by qmake
 QMAKE_RANLIB +=  -no_warning_for_no_symbols
-
-
