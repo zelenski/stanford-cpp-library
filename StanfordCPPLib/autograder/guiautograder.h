@@ -139,23 +139,6 @@ private:
     static const std::string COLOR_ZEBRA_STRIPE_2;
     static const std::string COLOR_ZEBRA_STRIPE_2_DARK_MODE;
 
-    static const std::string ICON_FOLDER;
-    static const std::string ICON_ABOUT_FILENAME;
-    static const std::string ICON_AUTOGRADE_FILENAME;
-    static const std::string ICON_DESELECT_ALL_FILENAME;
-    static const std::string ICON_EXIT_FILENAME;
-    static const std::string ICON_FAIL_FILENAME;
-    static const std::string ICON_LATE_DAYS_FILENAME;
-    static const std::string ICON_MANUAL_FILENAME;
-    static const std::string ICON_MINIMIZE_FILENAME;
-    static const std::string ICON_PASS_FILENAME;
-    static const std::string ICON_PROGRESS_FILENAME;
-    static const std::string ICON_RUNNING_FILENAME;
-    static const std::string ICON_SELECT_ALL_FILENAME;
-    static const std::string ICON_STYLE_CHECK_FILENAME;
-    static const std::string ICON_UNKNOWN_FILENAME;
-    static const std::string ICON_WARNING_FILENAME;
-
     GWindow* _window;
     GButton* _autogradeButton;
     GButton* _manualButton;

@@ -142,179 +142,101 @@ GConsoleWindow::GConsoleWindow()
     loadConfiguration();
 }
 
-/*static*/ Map<std::string, QPixmap> GConsoleWindow::unpackImageStrip(
-        const std::string& imageStripFileName,
-        const Vector<std::string>& imageFiles,
-        int imageSize) {
-    // all images are the same size
-    Vector<GDimension> imageSizes;
-    for (int i = 0; i < imageFiles.size(); i++) {
-        imageSizes.add(GDimension(imageSize, imageSize));
-    }
-    return unpackImageStrip(imageStripFileName, imageFiles, imageSizes);
-}
-
-/*static*/ Map<std::string, QPixmap> GConsoleWindow::unpackImageStrip(
-        const std::string& imageStripFileName,
-        const Vector<std::string>& imageFiles,
-        const Vector<GDimension>& imageSizes) {
-    int iconOffsetX = 0;
-    Map<std::string, QPixmap> imageMap;
-    if (fileExists(imageStripFileName)) {
-        QPixmap pixmap(QString::fromStdString(imageStripFileName));
-        for (int i = 0; i < imageFiles.size(); i++) {
-            std::string imageFile = imageFiles[i];
-            GDimension imageSize = imageSizes[i];
-            QPixmap pixcopy = pixmap.copy(iconOffsetX, 0, static_cast<int>(imageSize.getWidth()), static_cast<int>(imageSize.getHeight()));
-            imageMap[imageFile] = pixcopy;
-            iconOffsetX += static_cast<int>(imageSize.getWidth());
-        }
-    }
-    return imageMap;
-}
-
 void GConsoleWindow::_initMenuBar() {
     addToolbar();
 
-    const std::string ICON_STRIP_FILE = "iconstrip.png";
-    const int ICON_SIZE = 16;
-    Vector<std::string> IMAGES {
-        "save.gif",
-        "save_as.gif",
-        "print.gif",
-        "script.gif",
-        "compare_output.gif",
-        "quit.gif",
-        "cut.gif",
-        "copy.gif",
-        "paste.gif",
-        "select_all.gif",
-        "clear_console.gif",
-        "font.gif",
-        "background_color.gif",
-        "text_color.gif",
-        "about.gif",
-        "check_for_updates.gif"
-    };
-    Map<std::string, QPixmap> imageMap = unpackImageStrip(ICON_STRIP_FILE, IMAGES, ICON_SIZE);
-
     // File menu
     addMenu("&File");
-    addMenuItem("File", "&Save", imageMap["save.gif"],
+    addMenuItem("File", "&Save", QPixmap(":/save"),
                 [this]() { this->save(); })
                 ->setShortcut(QKeySequence::Save);
 
-    addMenuItem("File", "Save &As...", imageMap["save_as.gif"],
+    addMenuItem("File", "Save &As...", QPixmap(":/save_as"),
                 [this]() { this->saveAs(); })
                 ->setShortcut(QKeySequence::SaveAs);
     addMenuSeparator("File");
 
-    addMenuItem("File", "&Print", imageMap["print.gif"],
+    addMenuItem("File", "&Print", QPixmap(":/print"),
                 [this]() { this->showPrintDialog(); })
                 ->setShortcut(QKeySequence::Print);
     setMenuItemEnabled("File", "Print", false);
     addMenuSeparator("File");
 
-    addMenuItem("File", "&Load Input Script...", imageMap["script.gif"],
+    addMenuItem("File", "&Load Input Script...", QPixmap(":/load_input_script"),
                 [this]() { this->showInputScriptDialog(); });
-    if (!imageMap.isEmpty()) {
-        addToolbarItem("Load Input Script...", imageMap["script.gif"],
+    addToolbarItem("Load Input Script...", QPixmap(":/load_input_script"),
                        [this]() { this->showInputScriptDialog(); });
-    }
 
-    addMenuItem("File", "&Compare Output...", imageMap["compare_output.gif"],
+    addMenuItem("File", "&Compare Output...",  QPixmap(":/compare_output"),
                 [this]() { this->showCompareOutputDialog(); });
-    if (!imageMap.isEmpty()) {
-        addToolbarItem("Compare Output...", imageMap["compare_output.gif"],
+    addToolbarItem("Compare Output...", QPixmap(":/compare_output"),
                        [this]() { this->showCompareOutputDialog(); });
-    }
 
-    addMenuItem("File", "&Quit", imageMap["quit.gif"],
+    addMenuItem("File", "&Quit", QPixmap(":/quit"),
                 [this]() { this->close(); /* TODO: exit app */ })
                 ->setShortcut(QKeySequence::Quit);
-    if (!imageMap.isEmpty()) {
-        addToolbarSeparator();
-    }
+    addToolbarSeparator();
 
     // Edit menu
     addMenu("&Edit");
-    addMenuItem("Edit", "Cu&t", imageMap["cut.gif"],
+    addMenuItem("Edit", "Cu&t", QPixmap(":/cut"),
                 [this]() { this->clipboardCut(); })
                 ->setShortcut(QKeySequence::Cut);
-//    if (!imageMap.isEmpty()) {
-//        addToolbarItem("Cut", imageMap["cut.gif"],
-//                       [this]() { this->clipboardCut(); });
-//    }
+    //   no cut operation available for Console, do not add to toolbar
 
-    addMenuItem("Edit", "&Copy", imageMap["copy.gif"],
+    addMenuItem("Edit", "&Copy", QPixmap(":/copy"),
                 [this]() { this->clipboardCopy(); })
                 ->setShortcut(QKeySequence::Copy);
-    if (!imageMap.isEmpty()) {
-        addToolbarItem("Copy", imageMap["copy.gif"],
+    addToolbarItem("Copy", QPixmap(":/copy"),
                        [this]() { this->clipboardCopy(); });
-    }
 
-    addMenuItem("Edit", "&Paste", imageMap["paste.gif"],
+    addMenuItem("Edit", "&Paste", QPixmap(":/paste"),
                 [this]() { this->clipboardPaste(); })
                 ->setShortcut(QKeySequence::Paste);
-    if (!imageMap.isEmpty()) {
-        addToolbarItem("Paste", imageMap["paste.gif"],
+    addToolbarItem("Paste", QPixmap(":/paste"),
                        [this]() { this->clipboardPaste(); });
-    }
 
-    addMenuItem("Edit", "Select &All", imageMap["select_all.gif"],
+    addMenuItem("Edit", "Select &All", QPixmap(":/select_all"),
                 [this]() { this->selectAll(); })
                 ->setShortcut(QKeySequence::SelectAll);
 
-    addMenuItem("Edit", "C&lear Console", imageMap["clear_console.gif"],
+    addMenuItem("Edit", "C&lear Console", QPixmap(":/clear_console"),
                 [this]() { this->clearConsole(); })
                 ->setShortcut(QKeySequence(QString::fromStdString("Ctrl+L")));
-    if (!imageMap.isEmpty()) {
-        addToolbarItem("Clear Console", imageMap["clear_console.gif"],
+    addToolbarItem("Clear Console", QPixmap(":/clear_console"),
                        [this]() { this->clearConsole(); });
-        addToolbarSeparator();
-    }
+    addToolbarSeparator();
 
     // Options menu
     addMenu("&Options");
-    addMenuItem("Options", "&Font...", imageMap["font.gif"],
+    addMenuItem("Options", "&Font...", QPixmap(":/font"),
                 [this]() { this->showFontDialog(); });
-    if (!imageMap.isEmpty()) {
-        addToolbarItem("Font...", imageMap["font.gif"],
+    addToolbarItem("Font...", QPixmap(":/font"),
                        [this]() { this->showFontDialog(); });
-    }
 
-    addMenuItem("Options", "&Background Color...", imageMap["background_color.gif"],
+    addMenuItem("Options", "&Background Color...", QPixmap(":/background_color"),
                 [this]() { this->showColorDialog(/* background */ true); });
-    if (!imageMap.isEmpty()) {
-        addToolbarItem("Background Color...", imageMap["background_color.gif"],
+    addToolbarItem("Background Color...", QPixmap(":/background_color"),
                        [this]() { this->showColorDialog(/* background */ true); });
-    }
 
-    addMenuItem("Options", "&Text Color...", imageMap["text_color.gif"],
+    addMenuItem("Options", "&Text Color...", QPixmap(":/text_color"),
                 [this]() { this->showColorDialog(/* background */ false); });
-    if (!imageMap.isEmpty()) {
-        addToolbarItem("Text Color...", imageMap["text_color.gif"],
+    addToolbarItem("Text Color...", QPixmap(":/text_color"),
                        [this]() { this->showColorDialog(/* background */ false); });
-        addToolbarSeparator();
-    }
+    addToolbarSeparator();
 
     // Help menu
     addMenu("&Help");
-    addMenuItem("Help", "&About...", imageMap["about.gif"],
+    addMenuItem("Help", "&About...", QPixmap(":/about"),
                 [this]() { this->showAboutDialog(); })
                 ->setShortcut(QKeySequence::HelpContents);
-    if (!imageMap.isEmpty()) {
-        addToolbarItem("About...", imageMap["about.gif"],
+    addToolbarItem("About...", QPixmap(":/about"),
                        [this]() { this->showAboutDialog(); });
-    }
 
-    addMenuItem("Help", "&Check for Updates", imageMap["check_for_updates.gif"],
+    addMenuItem("Help", "&Check for Updates", QPixmap(":/check_for_updates"),
                 [this]() { this->checkForUpdates(); });
-    if (!imageMap.isEmpty()) {
-        addToolbarItem("Check for Updates", imageMap["check_for_updates.gif"],
+    addToolbarItem("Check for Updates", QPixmap(":/check_for_updates"),
                        [this]() { this->checkForUpdates(); });
-    }
 }
 
 void GConsoleWindow::_initStreams() {

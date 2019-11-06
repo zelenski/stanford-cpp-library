@@ -52,6 +52,7 @@
 #include "testresultprinter.h"
 #include "unittestdetails.h"
 #include <sstream>
+#include "QPixmap.h"
 
 // student's main function
 extern int studentMain();
@@ -76,22 +77,6 @@ namespace autograder {
 /*static*/ const std::string GuiAutograder::COLOR_ZEBRA_STRIPE_1_DARK_MODE = "#1e1e1e";
 /*static*/ const std::string GuiAutograder::COLOR_ZEBRA_STRIPE_2           = "#ebebeb";
 /*static*/ const std::string GuiAutograder::COLOR_ZEBRA_STRIPE_2_DARK_MODE = "#2d2d2d";
-/*static*/ const std::string GuiAutograder::ICON_FOLDER = "";
-/*static*/ const std::string GuiAutograder::ICON_ABOUT_FILENAME        = GuiAutograder::ICON_FOLDER + "helpbig.gif";
-/*static*/ const std::string GuiAutograder::ICON_AUTOGRADE_FILENAME    = GuiAutograder::ICON_FOLDER + "check.gif";
-/*static*/ const std::string GuiAutograder::ICON_DESELECT_ALL_FILENAME = GuiAutograder::ICON_FOLDER + "checkbox-unchecked.gif";
-/*static*/ const std::string GuiAutograder::ICON_EXIT_FILENAME         = GuiAutograder::ICON_FOLDER + "stop.gif";
-/*static*/ const std::string GuiAutograder::ICON_FAIL_FILENAME         = GuiAutograder::ICON_FOLDER + "fail.gif";
-/*static*/ const std::string GuiAutograder::ICON_LATE_DAYS_FILENAME    = GuiAutograder::ICON_FOLDER + "calendar.gif";
-/*static*/ const std::string GuiAutograder::ICON_MANUAL_FILENAME       = GuiAutograder::ICON_FOLDER + "play.gif";
-/*static*/ const std::string GuiAutograder::ICON_MINIMIZE_FILENAME     = GuiAutograder::ICON_FOLDER + "minus.gif";
-/*static*/ const std::string GuiAutograder::ICON_PASS_FILENAME         = GuiAutograder::ICON_FOLDER + "pass.gif";
-/*static*/ const std::string GuiAutograder::ICON_PROGRESS_FILENAME     = GuiAutograder::ICON_FOLDER + "progress.gif";
-/*static*/ const std::string GuiAutograder::ICON_RUNNING_FILENAME      = GuiAutograder::ICON_FOLDER + "running.gif";
-/*static*/ const std::string GuiAutograder::ICON_SELECT_ALL_FILENAME   = GuiAutograder::ICON_FOLDER + "checkbox-checked.gif";
-/*static*/ const std::string GuiAutograder::ICON_STYLE_CHECK_FILENAME  = GuiAutograder::ICON_FOLDER + "magnifier.gif";
-/*static*/ const std::string GuiAutograder::ICON_UNKNOWN_FILENAME      = GuiAutograder::ICON_FOLDER + "unknown.gif";
-/*static*/ const std::string GuiAutograder::ICON_WARNING_FILENAME      = GuiAutograder::ICON_FOLDER + "warn.gif";
 
 GuiAutograder* GuiAutograder::instance() {
     if (!_instance) {
@@ -133,53 +118,6 @@ GuiAutograder::GuiAutograder()
             MAX_WINDOW_HEIGHT = static_cast<int>(GWindow::getScreenHeight() - 80);
         }
 
-        // read and unpack autograder icon image strip
-        const std::string ICON_STRIP_FILE = "iconstrip-autograder.png";
-        const Vector<std::string> IMAGES {
-            "calendar.gif",
-            "check.gif",
-            "helpbig.gif",
-            "magnifier.gif",
-            "play.gif",
-            "pause.gif",
-            "stop.gif",
-            "textfile.gif",
-
-            "fail.gif",
-            "help.gif",
-            "pass.gif",
-            "running.gif",
-            "warn.gif",
-            "checkbox-checked.gif",
-            "checkbox-unchecked.gif",
-            "minus.gif"
-        };
-        const GDimension LARGE_SIZE(32, 32);
-        const GDimension SMALL_SIZE(16, 16);
-        Vector<GDimension> IMAGE_SIZES = {
-            LARGE_SIZE,
-            LARGE_SIZE,
-            LARGE_SIZE,
-            LARGE_SIZE,
-            LARGE_SIZE,
-            LARGE_SIZE,
-            LARGE_SIZE,
-            LARGE_SIZE,
-
-            SMALL_SIZE,
-            SMALL_SIZE,
-            SMALL_SIZE,
-            SMALL_SIZE,
-            SMALL_SIZE,
-            SMALL_SIZE,
-            SMALL_SIZE,
-            SMALL_SIZE
-        };
-        _iconStrip = GConsoleWindow::unpackImageStrip(ICON_STRIP_FILE, IMAGES, IMAGE_SIZES);
-        if (_iconStrip.isEmpty()) {
-            error("GuiAutograder::constructor: could not find autograder image strip file " + ICON_STRIP_FILE);
-        }
-
         _catchErrorsBox = new GCheckBox("&Catch exceptions in tests", /* checked */ true);
         _catchErrorsBox->setActionListener([this]() {
             setCatchExceptions(_catchErrorsBox->isChecked());
@@ -189,7 +127,7 @@ GuiAutograder::GuiAutograder()
         // _startLabel->setWidth(DEFAULT_WINDOW_WIDTH - 20);
         _startLabel->setWordWrap(true);
 
-        _southLabel = new GLabel(" ", _iconStrip[ICON_PROGRESS_FILENAME]);
+        _southLabel = new GLabel(" ", QPixmap(":/autograder/progress"));
         _southLabel->setTextPosition(GInteractor::TEXT_BESIDE_ICON);
         _window->addToRegion(_southLabel, GWindow::REGION_SOUTH);
         // _southLabel->getWidget()->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
@@ -198,19 +136,19 @@ GuiAutograder::GuiAutograder()
         // container of big buttons to click to run the autograder
         _bigButtons = new GContainer();
 
-        _autogradeButton = new GButton("Automated\ntests", _iconStrip[ICON_AUTOGRADE_FILENAME]);
+        _autogradeButton = new GButton("Automated\ntests", QPixmap(":/autograder/play"));
         _autogradeButton->setActionListener([this]() {
             onClick_autograde();
         });
         _bigButtons->add(_autogradeButton);
 
-        _manualButton = new GButton("Run\nmanually", _iconStrip[ICON_MANUAL_FILENAME]);
+        _manualButton = new GButton("Run\nmanually", QPixmap(":/autograder/play"));
         _manualButton->setActionListener([this]() {
             onClick_runManually();
         });
         _bigButtons->add(_manualButton);
 
-        _styleCheckButton = new GButton("Style\nchecker", _iconStrip[ICON_STYLE_CHECK_FILENAME]);
+        _styleCheckButton = new GButton("Style\nchecker", QPixmap(":/autograder/magnifier"));
         _styleCheckButton->setActionListener([this]() {
             runStyleChecker();
         });
@@ -224,20 +162,20 @@ GuiAutograder::GuiAutograder()
             _bigButtons->add(callbackButton);
         }
 
-        _lateDayButton = new GButton("Late days\ninfo", _iconStrip[ICON_LATE_DAYS_FILENAME]);
+        _lateDayButton = new GButton("Late days\ninfo", QPixmap(":/autograder/calendar"));
         _lateDayButton->setActionListener([this]() {
             showLateDays();
         });
         _bigButtons->add(_lateDayButton);
 
-        _aboutButton = new GButton("About\nGrader", _iconStrip[ICON_ABOUT_FILENAME]);
+        _aboutButton = new GButton("About\nGrader", QPixmap(":/autograder/helpbig"));
         _aboutButton->setActionListener([this]() {
             GOptionPane::showMessageDialog(_flags.aboutText, "About Autograder",
                                    GOptionPane::MessageType::MESSAGE_INFORMATION);
         });
         _bigButtons->add(_aboutButton);
 
-        _exitButton = new GButton("Exit\nGrader", _iconStrip[ICON_EXIT_FILENAME]);
+        _exitButton = new GButton("Exit\nGrader", QPixmap(":/autograder/stop"));
         _exitButton->setActionListener([this]() {
             stanfordcpplib::setExitEnabled(true);   // don't block exit() call
 
@@ -286,12 +224,7 @@ GuiAutograder::~GuiAutograder() {
 void GuiAutograder::addCallbackButton(void (* func)(),
                        const std::string& text,
                        const std::string& icon) {
-    GButton* button = new GButton(text);
-    if (_iconStrip.containsKey(getTail(icon))) {
-        button->setIcon(_iconStrip[getTail(icon)]);
-    } else {
-        button->setIcon(icon);
-    }
+    GButton* button = new GButton(text, QPixmap(QString::fromStdString(":/autograder/" + icon)));
     button->setActionListener(func);
     _bigButtons->add(button);
 }
@@ -314,7 +247,7 @@ void GuiAutograder::addCategory(const std::string& categoryName, const std::stri
         GContainer* top = new GContainer(GContainer::LAYOUT_FLOW_HORIZONTAL);
         top->setHorizontalAlignment(ALIGN_LEFT);
 
-        GButton* selectAllButton = new GButton("All", _iconStrip[ICON_SELECT_ALL_FILENAME]);
+        GButton* selectAllButton = new GButton("All", QPixmap(":/autograder/checkbox-checked"));
         selectAllButton->setTextPosition(GInteractor::TEXT_BESIDE_ICON);
         GFont::changeFontSize(selectAllButton, -2);
         selectAllButton->setTooltip("Double-click to select all tests from all categories.");
@@ -325,7 +258,7 @@ void GuiAutograder::addCategory(const std::string& categoryName, const std::stri
             selectAll(_center, /* selected */ true);
         });
 
-        GButton* deselectAllButton = new GButton("None", _iconStrip[ICON_DESELECT_ALL_FILENAME]);
+        GButton* deselectAllButton = new GButton("None", QPixmap(":/autograder/checkbox-unchecked"));
         deselectAllButton->setTextPosition(GInteractor::TEXT_BESIDE_ICON);
         GFont::changeFontSize(deselectAllButton, -2);
         deselectAllButton->setTooltip("Double-click to deselect all tests from all categories.");
@@ -336,7 +269,7 @@ void GuiAutograder::addCategory(const std::string& categoryName, const std::stri
             selectAll(_center, /* selected */ false);
         });
 
-        GButton* minimizeButton = new GButton("Hide", _iconStrip[ICON_MINIMIZE_FILENAME]);
+        GButton* minimizeButton = new GButton("Hide", QPixmap(":/autograder/minus"));
         minimizeButton->setTextPosition(GInteractor::TEXT_BESIDE_ICON);
         GFont::changeFontSize(minimizeButton, -2);
         minimizeButton->setTooltip("Double-click to minimize all categories.");
@@ -441,7 +374,7 @@ void GuiAutograder::addTest(const std::string& testName, const std::string& cate
     testInfo->runtimeLabel->setTooltip("Click to see detailed results from this test.");
     testInfo->runtimeLabel->setActionListener(showDetailsFunc);
     testInfo->resultIconLabel = new GLabel;
-    testInfo->resultIconLabel->setIcon(_iconStrip[ICON_RUNNING_FILENAME]);
+    testInfo->resultIconLabel->setIcon(QPixmap(":/autograder/running"));
     testInfo->resultIconLabel->setTooltip("Click to see detailed results from this test.");
     testInfo->resultIconLabel->setActionListener(showDetailsFunc);
 
@@ -491,7 +424,7 @@ void GuiAutograder::clearTestResults() {
         testInfo->completed = false;   // JDZ: must reset! if not, default/empty result treated as valid
         testInfo->descriptionLabel->setForeground(GWindow::getDefaultInteractorTextColorInt());
         testInfo->resultIconLabel->setText("");
-        testInfo->resultIconLabel->setIcon(_iconStrip[ICON_RUNNING_FILENAME]);
+        testInfo->resultIconLabel->setIcon(QPixmap(":/autograder/running"));
     }
     updateSouthText();
 }
@@ -901,29 +834,29 @@ bool GuiAutograder::setTestResult(const std::string& testFullName, TestResult re
         testInfo->completed = true;
     }
 
-    std::string iconFile;
+    const char *iconName;
     std::string labelForegroundColor;
     switch (result) {
     case TEST_RESULT_FAIL:
-        iconFile = ICON_FAIL_FILENAME;
+        iconName = ":/autograder/fail";
         labelForegroundColor = GWindow::chooseLightDarkModeColor(COLOR_FAIL, COLOR_FAIL_DARK_MODE);
         break;
     case TEST_RESULT_PASS:
-        iconFile = ICON_PASS_FILENAME;
+        iconName = ":/autograder/pass";
         labelForegroundColor = GWindow::chooseLightDarkModeColor(COLOR_PASS, COLOR_PASS_DARK_MODE);
         _passCount++;
         break;
     case TEST_RESULT_WARN:
-        iconFile = ICON_WARNING_FILENAME;
+        iconName = ":/autograder/warn";
         labelForegroundColor = GWindow::chooseLightDarkModeColor(COLOR_WARN, COLOR_WARN_DARK_MODE);
         break;
     case TEST_RESULT_UNKNOWN:
-        iconFile = ICON_UNKNOWN_FILENAME;
+        iconName = ":/autograder/unknown";
         labelForegroundColor = GWindow::getDefaultInteractorTextColor();
         break;
     }
 
-    testInfo->resultIconLabel->setIcon(_iconStrip[iconFile]);
+    testInfo->resultIconLabel->setIcon(QPixmap(iconName));
     testInfo->descriptionLabel->setForeground(labelForegroundColor);
     updateSouthText();
     return true;
@@ -1183,7 +1116,7 @@ void GuiAutograder::updateSouthText() {
     if (_testingIsInProgress) {
         text += " (running ...)";
         if (_southLabel->getIcon() == "") {
-            _southLabel->setIcon(_iconStrip[ICON_PROGRESS_FILENAME]);
+            _southLabel->setIcon(QPixmap(":/autograder/progress"));
         }
     } else {
         text += " (complete)";

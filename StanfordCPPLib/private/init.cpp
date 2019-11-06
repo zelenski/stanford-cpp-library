@@ -31,6 +31,8 @@ bool fileExists(const std::string&);
 #  include <unistd.h>   // for chdir
 #endif // _WIN32
 
+inline void initResourcesOutsideNamespace() { Q_INIT_RESOURCE(images); }
+
 
 namespace stanfordcpplib {
 
@@ -67,6 +69,7 @@ void initializeLibrary(int argc, char** argv) {
     // initialize the main Qt graphics subsystem
     QtGui::instance()->setArgs(argc, argv);
     QtGui::instance()->initializeQt();
+    initResourcesOutsideNamespace();
 
     // initialize Qt graphical console (if student #included it)
     initializeQtGraphicalConsole();
