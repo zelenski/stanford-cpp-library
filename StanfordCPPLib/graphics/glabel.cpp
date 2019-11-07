@@ -387,6 +387,4 @@ QSize _Internal_QLabel::sizeHint() const {
     }
 }
 
-#ifdef SPL_PRECOMPILE_QT_MOC_FILES
-#include "moc_glabel.cpp"   // speeds up compilation of auto-generated Qt files
-#endif // SPL_PRECOMPILE_QT_MOC_FILES
+

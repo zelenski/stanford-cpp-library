@@ -234,6 +234,4 @@ QSize _Internal_QSlider::sizeHint() const {
     }
 }
 
-#ifdef SPL_PRECOMPILE_QT_MOC_FILES
-#include "moc_gslider.cpp"   // speeds up compilation of auto-generated Qt files
-#endif // SPL_PRECOMPILE_QT_MOC_FILES
+

@@ -173,6 +173,4 @@ QSize _Internal_QCheckBox::sizeHint() const {
     }
 }
 
-#ifdef SPL_PRECOMPILE_QT_MOC_FILES
-#include "moc_gcheckbox.cpp"   // speeds up compilation of auto-generated Qt files
-#endif // SPL_PRECOMPILE_QT_MOC_FILES
+
