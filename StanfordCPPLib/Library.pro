@@ -32,7 +32,7 @@ CONFIG -= depend_includepath
 # Glob source and header files from known set of subdirs
 # Configure include path for headers + Qt
 
-MY_SUBDIRS = autograder collections graphics io system util
+MY_SUBDIRS = autograder collections console graphics io system util
 
 for(dir, MY_SUBDIRS): PUBLIC_HEADERS *= $$files($${dir}/*.h)
 PRIVATE_HEADERS *= $$files(private/*.h)

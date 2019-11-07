@@ -20,8 +20,8 @@
 #include <sstream>
 #include "consoletext.h"
 #include "error.h"
-#include "private/echoinputstreambuf.h"
-#include "private/limitoutputstreambuf.h"
+#include "echoinputstreambuf.h"
+#include "limitoutputstreambuf.h"
 #include "private/static.h"
 
 namespace ioutils {

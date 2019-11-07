@@ -41,8 +41,7 @@
 #include "gwindow.h"
 #include "queue.h"
 #include "vector.h"
-#include "private/consolestreambuf.h"
-#include "private/forwardingstreambuf.h"
+#include "consolestreambuf.h"
 
 /**
  * A GConsoleWindow represents the system console.

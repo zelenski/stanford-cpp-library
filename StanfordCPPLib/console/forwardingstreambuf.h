@@ -17,7 +17,7 @@
 #include <locale>
 #include <streambuf>
 
-#include "private/consolestreambuf.h"
+#include "consolestreambuf.h"
 
 namespace stanfordcpplib {
 /*
