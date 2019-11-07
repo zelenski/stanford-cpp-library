@@ -20,7 +20,7 @@
     <file alias="text_color">resources/text_color.gif</file>
 </qresource>
 
-<qresource prefix="/autograder">
+<qresource prefix="/autograder/">
     <file alias="calendar">resources/autograder/calendar.gif</file>
     <file alias="check">resources/autograder/check.gif</file>
     <file alias="checkbox-checked">resources/autograder/checkbox-checked.gif</file>

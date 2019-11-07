@@ -136,7 +136,7 @@ GuiAutograder::GuiAutograder()
         // container of big buttons to click to run the autograder
         _bigButtons = new GContainer();
 
-        _autogradeButton = new GButton("Automated\ntests", QPixmap(":/autograder/play"));
+        _autogradeButton = new GButton("Automated\ntests", QPixmap(":/autograder/check"));
         _autogradeButton->setActionListener([this]() {
             onClick_autograde();
         });
