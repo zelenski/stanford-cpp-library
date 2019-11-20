@@ -18,9 +18,7 @@
 #define _gslider_h
 
 #include <string>
-#include <QSize>
 #include <QSlider>
-#include <QWidget>
 
 #include "ginteractor.h"
 

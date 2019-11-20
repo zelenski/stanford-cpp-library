@@ -165,6 +165,32 @@ std::string toPrintable(int ch) {
     }
 }
 
+std::string toPrintable(const std::string& s) {
+    std::ostringstream out;
+    for (char ch : s) {
+        if (ch == '\n') {
+            out << "\\n";
+        } else if (ch == '\t') {
+            out << "\\t";
+        } else if (ch == '\r') {
+            out << "\\r";
+        } else if (ch == '\f') {
+            out << "\\f";
+        } else if (ch == '\b') {
+            out << "\\b";
+        } else if (ch == '\0') {
+            out << "\\0";
+        } else if (ch == ' ') {
+            out << ' ';
+        } else if (isgraph(ch)) {
+            out << ch;
+        } else {
+            out << '\\';
+            out << (static_cast<int>(ch & 0xff));
+        }
+    }
+    return out.str();
+}
 std::string trimR(const std::string& s) {
     std::string trimmed = s;
     while (!trimmed.empty() && isspace(trimmed[trimmed.length() - 1])) {
@@ -237,4 +263,8 @@ int width(const std::string& s) {
     }
     return width;
 }
+
+
+
+
 } // namespace stringutils

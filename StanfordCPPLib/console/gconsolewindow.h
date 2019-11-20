@@ -28,10 +28,7 @@
 #include <string>
 #include <Qt>
 #include <QMutex>
-#include <QKeyEvent>
-#include <QPixmap>
 #include <QReadWriteLock>
-#include <QTextEdit>
 #include <QTextFrame>
 
 #include "gevent.h"

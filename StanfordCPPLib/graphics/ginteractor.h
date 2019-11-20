@@ -26,16 +26,14 @@
 #define _ginteractor_h
 
 #include <string>
-#include <QIcon>
-#include <QObject>
-#include <QPixmap>
 #include <QReadWriteLock>
 #include <QWidget>
 
-#include "map.h"
 #include "gevent.h"
 #include "gobservable.h"
-#include "gtypes.h"
+
+class QPixmap;
+class QIcon;
 
 class GContainer;
 class GDiffGui;

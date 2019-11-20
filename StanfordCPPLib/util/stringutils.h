@@ -45,8 +45,25 @@ std::string trimToSize(const std::string& s, int width, int height, const std::s
 std::string trimToWidth(const std::string& s, int width, const std::string& suffix = " ...");
 std::string stripWhitespace(const std::string& s);
 std::string truncate(const std::string& s, int length, const std::string& suffix = " ...");
-std::string toPrintable(int ch);
 int width(const std::string& s);
+
+/**
+ * Returns a printable string for the given character.
+ * @example toPrintable('c') returns "c"
+ * @example toPrintable('\n') returns "\\n"
+ */
+std::string toPrintable(int ch);
+
+/**
+ * Returns a string with each non-printable character in the given string
+ * replaced by one that is printable.
+ * Certain common escape characters are replaced by a backslash representation,
+ * and non-printable ASCII characters are replaced by a backslash and their
+ * ASCII numeric representation, such as \255.
+ * @example toPrintable("hi \0 there\n') returns "hi \\0 there\\n"
+ */
+std::string toPrintable(const std::string& s);
+
 } // namespace stringutils
 
 #endif // _stringutils_h

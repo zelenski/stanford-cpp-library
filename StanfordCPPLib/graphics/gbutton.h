@@ -22,11 +22,7 @@
 #define _gbutton_h
 
 #include <string>
-#include <QMouseEvent>
-#include <QPushButton>
-#include <QSize>
 #include <QToolButton>
-#include <QWidget>
 
 #include "ginteractor.h"
 

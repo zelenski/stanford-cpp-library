@@ -17,7 +17,6 @@
 #define _ginteractors_h
 
 #include "gbrowserpane.h"
-#include "gbufferedimage.h"
 #include "gbutton.h"
 #include "gcanvas.h"
 #include "gcheckbox.h"

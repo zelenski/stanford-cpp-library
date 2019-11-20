@@ -6,7 +6,7 @@
  * but with more JUnit-like syntax.
  * These macros also alert our graphical unit test runner UI so that it
  * can show the results in the GUI for the user.
- * 
+ *
  * @author Marty Stepp
  * @version 2018/11/14
  * - added assertEqualsPointer
@@ -28,10 +28,10 @@
 #ifndef _assertions_h
 #define _assertions_h
 
-#include "gtest.h"
 #include "autograder.h"
 #include "diff.h"
-#include "gbufferedimage.h"
+#include "gcanvas.h"
+#include "gtest.h"
 
 #define TEST_FAIL_PREFIX std::string("Test case failed: ")
 #define FAIL_PREFIX      std::string("Assertion failed: ")
@@ -55,7 +55,7 @@
 #define assertDiffPass(msg, a, b) \
     stanfordcpplib::autograder::Autograder::instance()->setFailDetails(stanfordcpplib::autograder::UnitTestDetails( \
         stanfordcpplib::autograder::UnitTestType::TEST_ASSERT_DIFF, \
-        (msg), (a), (b), "diff", true));
+        (msg), (a), (b), "diff", true))
 
 // general assertEquals macro (better to use assertEqualsFoo for various types)
 #define assertEquals(msg, a, b) \
@@ -248,16 +248,16 @@
     EXPECT_TRUE(didThrow)
 
 void assertEqualsImage(const std::string& msg,
-                       GBufferedImage& imagefile1,
-                       GBufferedImage& imagefile2);
+                       GCanvas& imagefile1,
+                       GCanvas& imagefile2);
 
 void assertEqualsImage(const std::string& msg,
                        const std::string& imagefile1,
                        const std::string& imagefile2);
 
 void assertSimilarImage(const std::string& msg,
-                        GBufferedImage& image1,
-                        GBufferedImage& image2,
+                        GCanvas& image1,
+                        GCanvas& image2,
                         int diffPixelTolerance = 0,
                         int xmin = -1, int ymin = -1,
                         int xmax = -1, int ymax = -1);

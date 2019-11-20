@@ -16,7 +16,6 @@
 #include "map.h"
 #include "simpio.h"
 #include "private/static.h"
-#include "date.h"
 #include "gtest-marty.h"
 #include "ioutils.h"
 #include "qtgui.h"

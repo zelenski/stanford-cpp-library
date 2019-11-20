@@ -15,16 +15,12 @@
 #ifndef _qtgui_h
 #define _qtgui_h
 
-#include <functional>
 #include <string>
 #include <QApplication>
 #include <QObject>
-#include <QReadWriteLock>
 
-#include "geventqueue.h"
 #include "gthread.h"
 #include "gtypes.h"
-#include "queue.h"
 
 class GWindow;
 

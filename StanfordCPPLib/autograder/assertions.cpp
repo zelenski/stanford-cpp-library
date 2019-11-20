@@ -1,7 +1,7 @@
 /*
  * File: assertions.cpp
  * --------------------
- * 
+ *
  * @author Marty Stepp
  * @version 2018/10/04
  * - initial version (code moved from autograder.cpp)
@@ -10,8 +10,8 @@
 #include "assertions.h"
 
 void assertEqualsImage(const std::string& msg,
-                       GBufferedImage& image1,
-                       GBufferedImage& image2) {
+                       GCanvas& image1,
+                       GCanvas& image2) {
     bool imagesAreEqual = image1.equals(image2);
 
     stanfordcpplib::autograder::Autograder* autograder = stanfordcpplib::autograder::Autograder::instance();
@@ -28,14 +28,14 @@ void assertEqualsImage(const std::string& msg,
 void assertEqualsImage(const std::string& msg,
                        const std::string& imagefile1,
                        const std::string& imagefile2) {
-    GBufferedImage image1(imagefile1);
-    GBufferedImage image2(imagefile2);
+    GCanvas image1(imagefile1);
+    GCanvas image2(imagefile2);
     assertEqualsImage(msg, image1, image2);
 }
 
 void assertSimilarImage(const std::string& msg,
-                        GBufferedImage& image1,
-                        GBufferedImage& image2,
+                        GCanvas& image1,
+                        GCanvas& image2,
                         int diffPixelTolerance,
                         int xmin, int ymin,
                         int xmax, int ymax) {
@@ -64,7 +64,7 @@ void assertSimilarImage(const std::string& msg,
                         int diffPixelTolerance,
                         int xmin, int ymin,
                         int xmax, int ymax) {
-    GBufferedImage image1(imagefile1);
-    GBufferedImage image2(imagefile2);
+    GCanvas image1(imagefile1);
+    GCanvas image2(imagefile2);
     assertSimilarImage(msg, image1, image2, diffPixelTolerance, xmin, ymin, xmax, ymax);
 }

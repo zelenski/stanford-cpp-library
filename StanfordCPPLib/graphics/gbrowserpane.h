@@ -23,11 +23,8 @@
 #define _gbrowserpane_h
 
 #include <string>
-#include <QSize>
 #include <QTextBrowser>
-#include <QWidget>
 
-#include "gevent.h"
 #include "ginteractor.h"
 
 class _Internal_QTextBrowser;

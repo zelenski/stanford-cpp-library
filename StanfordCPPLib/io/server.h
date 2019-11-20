@@ -12,10 +12,9 @@
 #ifndef _server_h
 #define _server_h
 
-#include <iostream>
 #include <string>
 
-#include "gevents.h"
+#include "gevent.h"
 
 namespace HttpServer {
 const int DEFAULT_PORT = 8080;

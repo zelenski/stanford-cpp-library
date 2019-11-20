@@ -20,7 +20,7 @@
 #define _ginputpanel_h
 
 #include <string>
-#include <QObject>
+#include <QObject>   // q disable copy
 
 /**
  * TODO: document

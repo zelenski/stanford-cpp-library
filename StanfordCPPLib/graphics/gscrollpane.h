@@ -13,8 +13,8 @@
 #ifndef _gscrollpane_h
 #define _gscrollpane_h
 
+#include <string>
 #include <QScrollArea>
-#include <QWidget>
 
 #include "ginteractor.h"
 

@@ -22,11 +22,9 @@
 #include <initializer_list>
 #include <string>
 #include <QLineEdit>
-#include <QSize>
 #include <QSpinBox>
 #include <QDoubleSpinBox>
 #include <QString>
-#include <QWidget>
 
 #include "ginteractor.h"
 #include "vector.h"
