@@ -1,5 +1,0 @@
-var searchData=
-[
-  ['iterator',['iterator',['../classstanfordcpplib_1_1collections_1_1GenericSet.html#ab3d10e70baaeac78e76b7abae7e2cf76',1,'stanfordcpplib::collections::GenericSet::iterator()'],['../classDeque.html#af87a5290666b1bb4bf3e44cafc305ad5',1,'Deque::iterator()'],['../classGrid.html#afc815b8f7acde11a959911c7f7222116',1,'Grid::iterator()'],['../classHashMap.html#ab3d10e70baaeac78e76b7abae7e2cf76',1,'HashMap::iterator()'],['../classLinkedHashMap.html#ab3d10e70baaeac78e76b7abae7e2cf76',1,'LinkedHashMap::iterator()'],['../classLinkedList.html#a50754c96f45bbb0f50e145fd70de6615',1,'LinkedList::iterator()'],['../classMap.html#ab3d10e70baaeac78e76b7abae7e2cf76',1,'Map::iterator()'],['../classVector.html#aa8cbadd6807ea71ae7465ef4793a6866',1,'Vector::iterator()']]],
-  ['iterator_5fcategory',['iterator_category',['../classstanfordcpplib_1_1collections_1_1CheckedIterator.html#ae6c7f7fefb373dec05bf6640b3abb38d',1,'stanfordcpplib::collections::CheckedIterator::iterator_category()'],['../classstanfordcpplib_1_1collections_1_1ProjectingIterator.html#ae6c7f7fefb373dec05bf6640b3abb38d',1,'stanfordcpplib::collections::ProjectingIterator::iterator_category()']]]
-];

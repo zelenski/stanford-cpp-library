@@ -1,5 +1,0 @@
-var searchData=
-[
-  ['value_5ftype',['value_type',['../classstanfordcpplib_1_1collections_1_1CheckedIterator.html#ae7f303a443fbf651b13f8289d05ef498',1,'stanfordcpplib::collections::CheckedIterator::value_type()'],['../classstanfordcpplib_1_1collections_1_1ProjectingIterator.html#aec6efe17fc77cbe65b6427ab7b2a1b34',1,'stanfordcpplib::collections::ProjectingIterator::value_type()'],['../classstanfordcpplib_1_1collections_1_1GenericSet.html#a669c81f158766925e7293f97c0099b28',1,'stanfordcpplib::collections::GenericSet::value_type()']]],
-  ['valuetype',['ValueType',['../structstanfordcpplib_1_1collections_1_1HashSetTraits.html#aecaeabaa9da616ae42bb20787878260d',1,'stanfordcpplib::collections::HashSetTraits::ValueType()'],['../structstanfordcpplib_1_1collections_1_1LinkedHashSetTraits.html#aecaeabaa9da616ae42bb20787878260d',1,'stanfordcpplib::collections::LinkedHashSetTraits::ValueType()'],['../structstanfordcpplib_1_1collections_1_1SetTraits.html#aecaeabaa9da616ae42bb20787878260d',1,'stanfordcpplib::collections::SetTraits::ValueType()']]]
-];
