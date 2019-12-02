@@ -17,16 +17,7 @@
 
 #include <functional>
 #include <string>
-#include <QObject>
-#include <QWidget>
-#include <QEvent>
-#include <QCloseEvent>
-#include <QKeyEvent>
-#include <QMouseEvent>
-#include <QResizeEvent>
-#include <QTimerEvent>
-#include <QWheelEvent>
-#include <QWindowStateChangeEvent>
+#include <QtEvents>
 
 #include "gevent.h"
 #include "map.h"

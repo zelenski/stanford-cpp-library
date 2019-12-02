@@ -34,8 +34,6 @@
 #include "require.h"
 #include "strlib.h"
 
-#define CHAR_TO_HEX(ch) ((ch >= '0' && ch <= '9') ? (ch - '0') : (ch - 'a' + 10))
-
 const int GCanvas::WIDTH_HEIGHT_MAX = 65535;
 
 int GCanvas::createArgbPixel(int alpha, int red, int green, int blue) {

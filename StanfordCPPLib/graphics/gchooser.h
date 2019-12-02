@@ -22,8 +22,6 @@
 #include <initializer_list>
 #include <string>
 #include <QComboBox>
-#include <QSize>
-#include <QWidget>
 
 #include "ginteractor.h"
 #include "vector.h"

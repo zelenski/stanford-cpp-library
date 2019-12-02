@@ -22,16 +22,12 @@
 #ifndef _gcanvas_h
 #define _gcanvas_h
 
+// JDZ temp hack
+#undef QT_NEEDS_QMAIN
+
 #include <string>
-#include <QEvent>
-#include <QKeyEvent>
-#include <QMouseEvent>
+#include <QtEvents>
 #include <QPainter>
-#include <QPaintEvent>
-#include <QResizeEvent>
-#include <QSize>
-#include <QWheelEvent>
-#include <QWidget>
 
 #include "gdrawingsurface.h"
 #include "gevent.h"

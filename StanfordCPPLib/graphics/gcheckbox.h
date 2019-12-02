@@ -25,9 +25,6 @@
 
 #include <string>
 #include <QCheckBox>
-#include <QMouseEvent>
-#include <QSize>
-#include <QWidget>
 
 #include "ginteractor.h"
 

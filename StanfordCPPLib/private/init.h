@@ -21,7 +21,6 @@
 #define _init_h
 
 #include <string>
-#include <functional>
 
 namespace stanfordcpplib {
 

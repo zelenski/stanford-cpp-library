@@ -19,9 +19,9 @@
 #include <iostream>
 #include <QScrollBar>
 #include <string>
-#include "bitstream.h"
 #include "consoletext.h"
 #include "gthread.h"
+#include "stringutils.h"
 
 /*static*/ const std::string GDiffGui::COLOR_EXPECTED = "#009900";
 /*static*/ const std::string GDiffGui::COLOR_EXPECTED_DARK_MODE = "#55ff44";
@@ -140,7 +140,7 @@ void GDiffGui::setupDiffText(const std::string& diffs) {
         }
 
         // BUGFIX: display special characters with extra printable character info
-        line = toPrintable(line);
+        line = stringutils::toPrintable(line);
 
         _textAreaBottom->appendFormattedText(line + "\n", color);
     }
@@ -163,7 +163,7 @@ void GDiffGui::setupLeftRightText(GTextArea* textArea, const std::string& text) 
         std::string lineNumberString =
                 padLeft(i == 0 ? std::string("") : std::to_string(i), digits) + "  ";
         textArea->appendFormattedText(lineNumberString, GWindow::chooseLightDarkModeColor(COLOR_LINE_NUMBERS, COLOR_LINE_NUMBERS_DARK_MODE));
-        textArea->appendFormattedText(toPrintable(line) + "\n", COLOR_NORMAL);
+        textArea->appendFormattedText(stringutils::toPrintable(line) + "\n", COLOR_NORMAL);
     }
 }
 

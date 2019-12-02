@@ -20,10 +20,10 @@
 #include <functional>
 #include <iostream>
 #include <string>
-#include <QEvent>
 
 #include "gtypes.h"
 
+class QEvent;
 class GEvent;
 class GInteractor;
 class GObservable;

@@ -26,8 +26,6 @@
 #ifndef _urlstream_h
 #define _urlstream_h
 
-#include <fstream>
-#include <iostream>
 #include <sstream>
 #include <string>
 

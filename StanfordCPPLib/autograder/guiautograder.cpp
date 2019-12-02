@@ -30,7 +30,6 @@
 
 #include "guiautograder.h"
 #include "autogradertest.h"
-#include "bitstream.h"
 #include "consoletext.h"
 #include "filelib.h"
 #include "gconsolewindow.h"
@@ -989,8 +988,8 @@ void GuiAutograder::showTestDetails(const std::string& testFullName, bool force)
             expected = "'" + expected + "'";
             student  = "'" + student + "'";
         }
-        expected = toPrintable(expected);
-        student  = toPrintable(student);
+        expected = stringutils::toPrintable(expected);
+        student  = stringutils::toPrintable(student);
 
         // insert "expected"/"student" messages for some assert types for clarity
         switch (deets.testType) {

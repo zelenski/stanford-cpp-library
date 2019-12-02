@@ -17,8 +17,6 @@
 
 #include <string>
 #include <QScrollBar>
-#include <QSize>
-#include <QWidget>
 
 #include "ginteractor.h"
 

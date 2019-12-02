@@ -18,9 +18,7 @@
 #define _gtextarea_h
 
 #include <string>
-#include <QSize>
 #include <QTextEdit>
-#include <QWidget>
 
 #include "ginteractor.h"
 

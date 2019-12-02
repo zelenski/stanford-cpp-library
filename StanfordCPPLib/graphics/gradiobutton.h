@@ -25,10 +25,7 @@
 
 #include <string>
 #include <QButtonGroup>
-#include <QMouseEvent>
 #include <QRadioButton>
-#include <QSize>
-#include <QWidget>
 
 #include "ginteractor.h"
 #include "map.h"

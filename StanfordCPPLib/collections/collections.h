@@ -680,7 +680,7 @@ class VersionTracker {
 public:
     /* Assigning a VersionTracker increments the underlying version number. */
     VersionTracker& operator= (VersionTracker) {
-        ++mVersion;
+        ++_version;
         return *this;
     }
 
@@ -688,7 +688,7 @@ public:
      * object being moved.
      */
     VersionTracker(VersionTracker&& rhs) {
-        rhs.mVersion++;
+        rhs._version++;
     }
 
     /* Use default constructor and default copy constructor. */
@@ -697,16 +697,16 @@ public:
 
     /* Marks that the version must be updated. */
     void update() {
-        ++mVersion;
+        ++_version;
     }
 
     /* Returns the version number. */
     unsigned int version() const {
-        return mVersion;
+        return _version;
     }
 
 private:
-    unsigned int mVersion = 0;
+    unsigned int _version = 0;
 };
 
 /*
@@ -731,7 +731,7 @@ public:
     /* Constructs an iterator given information about the underlying container. */
     template <typename Container>
     CheckedIterator(const VersionTracker* owner, Iterator iter, Container& c)
-        : mVersion(owner->version()), mOwner(owner), mIter(iter), mBegin(c.begin()), mEnd(c.end()) {
+        : _version(owner->version()), _owner(owner), _iter(iter), _begin(c.begin()), _end(c.end()) {
 
     }
 
@@ -743,29 +743,29 @@ public:
 
     /* Conversion constructor, when permitted. */
     template <typename OtherItr> CheckedIterator(const CheckedIterator<OtherItr>& rhs)
-        : mVersion(rhs.mVersion),
-          mOwner(rhs.mOwner),
-          mIter(rhs.mIter),
-          mBegin(rhs.mBegin),
-          mEnd(rhs.mEnd) {
+        : _version(rhs._version),
+          _owner(rhs._owner),
+          _iter(rhs._iter),
+          _begin(rhs._begin),
+          _end(rhs._end) {
 
     }
 
     template <typename OtherItr> operator CheckedIterator<OtherItr>() const {
-        return CheckedIterator<OtherItr>{mVersion, mOwner, mIter, mBegin, mEnd};
+        return CheckedIterator<OtherItr>{_version, _owner, _iter, _begin, _end};
     }
 
     /* All possible iterator functions. */
 
     /* Comparison operators. */
     template <typename OtherItr> bool operator ==(const CheckedIterator<OtherItr>& rhs) const {
-        if (!mOwner || !rhs.mOwner) {
+        if (!_owner || !rhs._owner) {
             error("Cannot compare an uninitialized iterator.");
         }
-        if ( mOwner !=  rhs.mOwner) {
+        if ( _owner !=  rhs._owner) {
             error("Cannot compare iterators from two different containers.");
         }
-        return mIter == rhs.mIter;
+        return _iter == rhs._iter;
     }
     template <typename OtherItr> bool operator !=(const CheckedIterator<OtherItr>& rhs) const {
         return !(*this == rhs);
@@ -776,13 +776,13 @@ public:
      * the behavior is undefined.
      */
     template <typename OtherItr> bool operator <(const CheckedIterator<OtherItr>& rhs) const {
-        if (!mOwner || !rhs.mOwner) {
+        if (!_owner || !rhs._owner) {
             error("Cannot compare an uninitialized iterator.");
         }
-        if (mOwner != rhs.mOwner) {
+        if (_owner != rhs._owner) {
             error("Cannot compare iterators from different containers.");
         }
-        return mIter < rhs.mIter;
+        return _iter < rhs._iter;
     }
     template <typename OtherItr> bool operator >(const CheckedIterator<OtherItr>& rhs) const {
         return rhs < *this;
@@ -796,24 +796,24 @@ public:
 
     /* Random access. */
     reference operator [](difference_type index) const {
-        if (!mOwner) {
+        if (!_owner) {
             error("Cannot access elements through an uninitialized iterator.");
         }
-        ::stanfordcpplib::collections::checkVersion(*mOwner, *this);
-        if (index >= 0 &&  index >= mEnd - mIter) {
+        ::stanfordcpplib::collections::checkVersion(*_owner, *this);
+        if (index >= 0 &&  index >= _end - _iter) {
             error("Out of bounds.");
         }
-        if (index <  0 && -index >  mIter - mBegin) {
+        if (index <  0 && -index >  _iter - _begin) {
             error("Out of bounds.");
         }
 
-        return mIter[index];
+        return _iter[index];
     }
 
     CheckedIterator& operator +=(difference_type index) {
-        if (!mOwner) error("Cannot advance uninitialized iterators.");
-        ::stanfordcpplib::collections::checkVersion(*mOwner, *this);
-        mIter += index;
+        if (!_owner) error("Cannot advance uninitialized iterators.");
+        ::stanfordcpplib::collections::checkVersion(*_owner, *this);
+        _iter += index;
         return *this;
     }
     CheckedIterator& operator -=(difference_type index) {
@@ -830,29 +830,29 @@ public:
 
     template <typename OtherItr>
     difference_type operator -(const CheckedIterator<OtherItr>& rhs) const {
-        if (!mOwner || !rhs.mOwner) {
+        if (!_owner || !rhs._owner) {
             error("Cannot subtract uninitialized iterators.");
         }
 
-        ::stanfordcpplib::collections::checkVersion(*mOwner, *this);
-        if (mOwner != rhs.mOwner) {
+        ::stanfordcpplib::collections::checkVersion(*_owner, *this);
+        if (_owner != rhs._owner) {
             error("Cannot subtract iterators from two different containers.");
         }
 
-        return mIter - rhs.mIter;
+        return _iter - rhs._iter;
     }
 
     /* Forwards and backwards. */
     CheckedIterator& operator ++() {
-        if (!mOwner) {
+        if (!_owner) {
             error("Cannot advance an uninitialized iterator.");
         }
 
-        ::stanfordcpplib::collections::checkVersion(*mOwner, *this);
-        if (mIter == mEnd) {
+        ::stanfordcpplib::collections::checkVersion(*_owner, *this);
+        if (_iter == _end) {
             error("Cannot advance an iterator past end of range.");
         }
-        ++mIter;
+        ++_iter;
         return *this;
     }
     CheckedIterator operator ++(int) {
@@ -862,16 +862,16 @@ public:
     }
 
     CheckedIterator& operator --() {
-        if (!mOwner) {
+        if (!_owner) {
             error("Cannot back up an uninitialized iterator.");
         }
 
-        ::stanfordcpplib::collections::checkVersion(*mOwner, *this);
-        if (mIter == mBegin) {
+        ::stanfordcpplib::collections::checkVersion(*_owner, *this);
+        if (_iter == _begin) {
             error("Cannot back up an iteartor before start of range.");
         }
 
-        --mIter;
+        --_iter;
         return *this;
     }
     CheckedIterator operator --(int) {
@@ -882,15 +882,15 @@ public:
 
     /* Dereferencing. */
     reference operator *() const {
-        if (!mOwner) {
+        if (!_owner) {
             error("Cannot dereference an uninitialized iterator.");
         }
-        ::stanfordcpplib::collections::checkVersion(*mOwner, *this);
+        ::stanfordcpplib::collections::checkVersion(*_owner, *this);
 
-        if (mIter == mEnd) {
+        if (_iter == _end) {
             error("Iterator out of range.");
         }
-        return *mIter;
+        return *_iter;
     }
     pointer operator ->() const {
         return &**this;
@@ -898,17 +898,17 @@ public:
 
     /* Direct version access. */
     unsigned int version() const {
-        if (!mOwner) {
+        if (!_owner) {
             error("Cannot get version from an uninitialized iterator.");
         }
-        return mVersion;
+        return _version;
     }
 
 private:
-    unsigned int mVersion = 0;
-    const VersionTracker* mOwner = nullptr;
-    Iterator mIter;
-    Iterator mBegin, mEnd;
+    unsigned int _version = 0;
+    const VersionTracker* _owner = nullptr;
+    Iterator _iter;
+    Iterator _begin, _end;
 };
 
 /*
@@ -936,7 +936,7 @@ public:
     ProjectingIterator() = default;
 
     /* Wraps an existing iterator. */
-    explicit ProjectingIterator(Iterator iter) : mIter(iter) {
+    explicit ProjectingIterator(Iterator iter) : _iter(iter) {
         // Empty
     }
 
@@ -948,26 +948,26 @@ public:
 
     /* Conversion constructor, when permitted. */
     template <typename OtherItr> ProjectingIterator(const ProjectingIterator<OtherItr>& rhs)
-        : mIter(rhs.mIter) {
+        : _iter(rhs._iter) {
         // Empty
     }
 
     template <typename OtherItr> operator ProjectingIterator<OtherItr>() const {
-        return ProjectingIterator<OtherItr>(mIter);
+        return ProjectingIterator<OtherItr>(_iter);
     }
 
     /* All possible iterator functions. */
 
     /* Comparison operators. */
     template <typename OtherItr> bool operator ==(const ProjectingIterator<OtherItr>& rhs) {
-        return mIter == rhs.mIter;
+        return _iter == rhs._iter;
     }
     template <typename OtherItr> bool operator !=(const ProjectingIterator<OtherItr>& rhs) {
         return !(*this == rhs);
     }
 
     template <typename OtherItr> bool operator <(const ProjectingIterator<OtherItr>& rhs) {
-        return mIter < rhs.mIter;
+        return _iter < rhs._iter;
     }
     template <typename OtherItr> bool operator >(const ProjectingIterator<OtherItr>& rhs) {
         return rhs < *this;
@@ -981,10 +981,10 @@ public:
 
     /* Random access. */
     reference operator [](difference_type index) const {
-        return mIter[index];
+        return _iter[index];
     }
     ProjectingIterator& operator +=(difference_type index) {
-        mIter += index;
+        _iter += index;
         return *this;
     }
     ProjectingIterator& operator -=(difference_type index) {
@@ -999,12 +999,12 @@ public:
     }
     template <typename OtherItr>
     difference_type operator -(const ProjectingIterator<OtherItr>& rhs) const {
-        return mIter - rhs.mIter;
+        return _iter - rhs._iter;
     }
 
     /* Forwards and backwards. */
     ProjectingIterator& operator ++() {
-        ++mIter;
+        ++_iter;
         return *this;
     }
     ProjectingIterator operator ++(int) {
@@ -1014,7 +1014,7 @@ public:
     }
 
     ProjectingIterator& operator --() {
-        --mIter;
+        --_iter;
         return *this;
     }
     ProjectingIterator operator --(int) {
@@ -1025,14 +1025,14 @@ public:
 
     /* Dereferencing. */
     reference operator *() const {
-        return mIter->first;
+        return _iter->first;
     }
     pointer operator ->() const {
         return &**this;
     }
 
 private:
-    Iterator mIter;
+    Iterator _iter;
 };
 
 /**
@@ -1514,8 +1514,8 @@ public:
     /**********************************************************************/
 
 private:
-    typename SetTraits::MapType map = SetTraits::construct();  /* Map used to store the elements    */
-    bool removeFlag = false;                                   /* Flag to differentiate += and -=   */
+    typename SetTraits::MapType _map = SetTraits::construct();  /* Map used to store the elements    */
+    bool _removeFlag = false;                                   /* Flag to differentiate += and -=   */
 
 public:
     /*
@@ -1528,7 +1528,7 @@ public:
      * that interface more difficult to understand for the average client.
      */
     GenericSet& operator ,(const value_type& value) {
-        if (this->removeFlag) {
+        if (this->_removeFlag) {
             this->remove(value);
         } else {
             this->add(value);
@@ -1540,21 +1540,21 @@ public:
     using iterator = const_iterator;
 
     iterator begin() const {
-        return map.begin();
+        return _map.begin();
     }
 
     iterator end() const {
-        return map.end();
+        return _map.end();
     }
 
     friend int hashCode(const GenericSet& set) {
-        return hashCode(set.map);
+        return hashCode(set._map);
     }
 };
 
 template <typename SetTraits>
 GenericSet<SetTraits>::GenericSet(std::initializer_list<value_type> list)
-    : map(SetTraits::construct()) {
+    : _map(SetTraits::construct()) {
     /* Can't do addAll because that would recursively try constructing a GenericSet.
      * Instead, directly add everything here. This becomes the focal point for
      * all initializer_list conversions.
@@ -1573,7 +1573,7 @@ GenericSet<SetTraits>::GenericSet(Args... args) : GenericSet({}, std::move(args)
 template <typename SetTraits>
 template <typename... Args>
 GenericSet<SetTraits>::GenericSet(std::initializer_list<value_type> list, Args... args)
-    : map(SetTraits::construct(std::move(args)...)) {
+    : _map(SetTraits::construct(std::move(args)...)) {
 
     /* Can't do addAll because that would recursively try constructing a GenericSet.
      * Instead, directly add everything here. This becomes the focal point for
@@ -1586,7 +1586,7 @@ GenericSet<SetTraits>::GenericSet(std::initializer_list<value_type> list, Args..
 
 template <typename SetTraits>
 void GenericSet<SetTraits>::add(const value_type& value) {
-    map.put(value, true);
+    _map.put(value, true);
 }
 
 template <typename SetTraits>
@@ -1603,17 +1603,17 @@ GenericSet<SetTraits>::back() const {
     if (isEmpty()) {
         error(SetTraits::name() + "::back: set is empty");
     }
-    return map.back();
+    return _map.back();
 }
 
 template <typename SetTraits>
 void GenericSet<SetTraits>::clear() {
-    map.clear();
+    _map.clear();
 }
 
 template <typename SetTraits>
 bool GenericSet<SetTraits>::contains(const value_type& value) const {
-    return map.containsKey(value);
+    return _map.containsKey(value);
 }
 
 template <typename SetTraits>
@@ -1662,12 +1662,12 @@ GenericSet<SetTraits>::front() const {
     if (isEmpty()) {
         error(SetTraits::name() + "::front: set is empty");
     }
-    return map.front();
+    return _map.front();
 }
 
 template <typename SetTraits>
 void GenericSet<SetTraits>::insert(const value_type& value) {
-    map.put(value, true);
+    _map.put(value, true);
 }
 
 template <typename SetTraits>
@@ -1677,7 +1677,7 @@ GenericSet<SetTraits>& GenericSet<SetTraits>::intersect(const GenericSet<SetTrai
 
 template <typename SetTraits>
 bool GenericSet<SetTraits>::isEmpty() const {
-    return map.isEmpty();
+    return _map.isEmpty();
 }
 
 template <typename SetTraits>
@@ -1697,31 +1697,31 @@ bool GenericSet<SetTraits>::isSupersetOf(const GenericSet& set2) const {
 
 template <typename SetTraits>
 void GenericSet<SetTraits>::mapAll(std::function<void (const value_type &)> fn) const {
-    map.mapAll([&](const value_type& elem, bool) {
+    _map.mapAll([&](const value_type& elem, bool) {
         fn(elem);
     });
 }
 
 template <typename SetTraits>
 void GenericSet<SetTraits>::remove(const value_type& value) {
-    map.remove(value);
+    _map.remove(value);
 }
 
 template <typename SetTraits>
 GenericSet<SetTraits>& GenericSet<SetTraits>::removeAll(const GenericSet& set2) {
-    map.removeAll(set2.map);
+    _map.removeAll(set2._map);
     return *this;
 }
 
 template <typename SetTraits>
 GenericSet<SetTraits>& GenericSet<SetTraits>::retainAll(const GenericSet& set2) {
-    map.retainAll(set2.map);
+    _map.retainAll(set2._map);
     return *this;
 }
 
 template <typename SetTraits>
 int GenericSet<SetTraits>::size() const {
-    return map.size();
+    return _map.size();
 }
 
 template <typename SetTraits>
@@ -1755,22 +1755,22 @@ bool GenericSet<SetTraits>::operator !=(const GenericSet& set2) const {
 
 template <typename SetTraits>
 bool operator <(const GenericSet<SetTraits>& set1, const GenericSet<SetTraits>& set2) {
-    return set1.map < set2.map;
+    return set1._map < set2._map;
 }
 
 template <typename SetTraits>
 bool operator <=(const GenericSet<SetTraits>& set1, const GenericSet<SetTraits>& set2) {
-    return set1.map <= set2.map;
+    return set1._map <= set2._map;
 }
 
 template <typename SetTraits>
 bool operator >(const GenericSet<SetTraits>& set1, const GenericSet<SetTraits>& set2) {
-    return set1.map > set2.map;
+    return set1._map > set2._map;
 }
 
 template <typename SetTraits>
 bool operator >=(const GenericSet<SetTraits>& set1, const GenericSet<SetTraits>& set2) {
-    return set1.map >= set2.map;
+    return set1._map >= set2._map;
 }
 
 template <typename SetTraits>
@@ -1804,14 +1804,14 @@ GenericSet<SetTraits> GenericSet<SetTraits>::operator -(const value_type& elemen
 
 template <typename SetTraits>
 GenericSet<SetTraits>& GenericSet<SetTraits>::operator +=(const GenericSet& set2) {
-    removeFlag = false;
+    _removeFlag = false;
     return addAll(set2);
 }
 
 template <typename SetTraits>
 GenericSet<SetTraits>& GenericSet<SetTraits>::operator +=(const value_type& value) {
     add(value);
-    removeFlag = false;
+    _removeFlag = false;
     return *this;
 }
 
@@ -1822,14 +1822,14 @@ GenericSet<SetTraits>& GenericSet<SetTraits>::operator *=(const GenericSet& set2
 
 template <typename SetTraits>
 GenericSet<SetTraits>& GenericSet<SetTraits>::operator -=(const GenericSet& set2) {
-    removeFlag = true;
+    _removeFlag = true;
     return removeAll(set2);
 }
 
 template <typename SetTraits>
 GenericSet<SetTraits>& GenericSet<SetTraits>::operator -=(const value_type& value) {
     remove(value);
-    removeFlag = true;
+    _removeFlag = true;
     return *this;
 }
 

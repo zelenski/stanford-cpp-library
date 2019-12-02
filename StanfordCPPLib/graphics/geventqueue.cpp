@@ -13,17 +13,12 @@
 
 #include "qtgui.h"
 #include <QEvent>
-#include <QThread>
 #include "error.h"
 #include "exceptions.h"
 #include "gwindow.h"
+#include "gthread.h"
+#include "gtypes.h"
 #include "strlib.h"
-
-#ifdef _WIN32
-#  include <direct.h>   // for chdir
-#else // _WIN32
-#  include <unistd.h>   // for chdir
-#endif // _WIN32
 
 GEventQueue* GEventQueue::_instance = nullptr;
 

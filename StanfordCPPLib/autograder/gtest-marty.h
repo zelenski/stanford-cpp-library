@@ -21,9 +21,8 @@
 #define _gtest_marty_h
 
 #include <string>
+
 #include "assertions.h"
-//#include "autograder.h"
-//#include "autogradertest.h"
 #include "gtest.h"
 
 class ErrorException;

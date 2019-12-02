@@ -21,7 +21,6 @@
 #include <QFont>
 #include <QItemSelection>
 #include <QStyledItemDelegate>
-#include <QWidget>
 #include <QTableWidget>
 
 #include "grid.h"

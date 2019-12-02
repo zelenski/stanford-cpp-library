@@ -27,9 +27,6 @@
 
 #include <string>
 #include <QLabel>
-#include <QMouseEvent>
-#include <QSize>
-#include <QWidget>
 
 #include "ginteractor.h"
 #include "gobjects.h"

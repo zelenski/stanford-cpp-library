@@ -24,7 +24,6 @@
 
 // forward declaration
 class GWindow;
-class GOptionPane;
 
 /**
  * This class provides static methods that pop up graphical input/output dialog

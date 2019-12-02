@@ -13,12 +13,11 @@
 #ifndef _gspacer_h
 #define _gspacer_h
 
-#include <QWidget>
+#include <string>
 
 #include "ginteractor.h"
 
 class _Internal_QSpacer;
-
 /**
  * A GSpacer is just an empty blob of space that helps you pad layouts.
  */
