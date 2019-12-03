@@ -5,6 +5,8 @@
  * See the .h file for the declarations of each member and comments.
  *
  * @author Marty Stepp
+ * @version 2018/10/12
+ * - added default to switch to address warnings
  * @version 2018/09/23
  * - added macro checks to improve compatibility with old Qt versions
  * @version 2018/09/18
@@ -186,6 +188,7 @@ std::string GDownloader::qtNetworkErrorToString(QNetworkReply::NetworkError nerr
     case QNetworkReply::UnknownServerError: return "unknown server error";
     case QNetworkReply::NoError:
         break;
+    default: return "";
     }
     return "";
 }
