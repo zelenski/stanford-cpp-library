@@ -27,6 +27,26 @@ PROVIDED_TEST("Conversions between string and integer") {
     }
 }
 
+PROVIDED_TEST("Conversions between uppercase and lowercase") {
+    /* Note: Non-ASCII characters such as "ñ" and "σ" will not be converted to "Ñ" and "Σ" respectively,
+     * and vice versa. Calling the functions toLowerCase(str) and toLowerCase(str) on strings containing
+     * these characters will return them as is. */
+
+    Vector<string> inA = {"a", "A", "scRAMbleD", ".?#@!$%&*^()[]{}-=+", "137", " \t\n"};
+    Vector<string> outA = {"A", "A", "SCRAMBLED",".?#@!$%&*^()[]{}-=+", "137", " \t\n"};
+
+    for (int i = 0; i < inA.size(); i++) {
+        EXPECT_EQUAL(toUpperCase(inA[i]), outA[i]);
+    }
+
+    Vector<string> inB = {"a", "A", "scRAMbleD", ".?#@!$%&*^()[]{}-=+", "137", " \t\n"};
+    Vector<string> outB = {"a", "a", "scrambled",".?#@!$%&*^()[]{}-=+", "137", " \t\n"};
+
+    for (int i = 0; i < inB.size(); i++) {
+        EXPECT_EQUAL(toLowerCase(inB[i]), outB[i]);
+    }
+}
+
 PROVIDED_TEST("Trimming whitespace characters") {
     /* Trim from beginning and end */
     EXPECT_EQUAL(trim(""), "");
