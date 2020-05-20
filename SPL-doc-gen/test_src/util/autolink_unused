@@ -1,0 +1,85 @@
+/*! \file autolink.cpp
+  Testing automatic link generation.
+  
+  A link to a member of the Autolink_Test class: Autolink_Test::member, 
+  
+  More specific links to the each of the overloaded members:
+  Autolink_Test::member(int) and Autolink_Test#member(int,int)
+ 
+  A link to a protected member variable of Autolink_Test: Autolink_Test#var, 
+ 
+ 
+  A link to the define #ABS(x).
+  
+  A link to the destructor of the Autolink_Test class: Autolink_Test::~Autolink_Test, 
+  
+  A link to the typedef ::B.
+ 
+  
+*/
+ 
+/*!
+  Since this documentation block belongs to the class Autolink_Test no link to 
+  Autolink_Test is generated.
+ 
+  Two ways to link to a constructor are: #Autolink_Test and Autolink_Test().
+ 
+  Links to the destructor are: #~Autolink_Test and ~Autolink_Test().
+  
+  A link to a member in this class: member().
+ 
+  More specific links to the each of the overloaded members: 
+  member(int) and member(int,int). 
+  
+  A link to the variable #var.
+ 
+  A link to the global typedef ::B.
+ 
+  
+  A link to the define ABS(x).
+  
+  A link to a variable \link #var using another text\endlink as a link.
+  
+
+  And last but not least a link to a file: autolink.cpp.
+  
+  \sa Inside a see also section any word is checked, so EType, 
+      Val1, GVal1, ~Autolink_Test and member will be replaced by links in HTML.
+
+      \sa MyVector, Apple, orchard.h
+*/
+ 
+class Autolink_Test
+{
+  public:
+    Autolink_Test();               //!< constructor 
+   ~Autolink_Test();               //!< destructor 
+    void member(int);     /**< A member function. Details. */
+    void member(int,int); /**< An overloaded member function. Details */
+           
+ 
+  protected:
+    int var;              /**< A member variable */
+};
+ 
+/*! details for ctor go here. */
+Autolink_Test::Autolink_Test() { }
+ 
+/*! details for dtor go here. */
+Autolink_Test::~Autolink_Test() { }
+ 
+/*! details for this global variable. */
+int globVar;
+ 
+
+ 
+/*!
+ *  Details for this macro definition.
+ */ 
+#define ABS(x) (((x)>0)?(x):-(x))
+ 
+typedef Autolink_Test B;
+ 
+/*! \fn typedef Autolink_Test B
+ *  A type definition. 
+ */
