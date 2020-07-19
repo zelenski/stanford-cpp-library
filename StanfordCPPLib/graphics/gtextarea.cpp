@@ -384,6 +384,16 @@ void _Internal_QTextEdit::handleTextChange() {
                     /* source */ _gtextarea);
         textChangeEvent.setActionCommand(_gtextarea->getActionCommand());
         _gtextarea->fireEvent(textChangeEvent);
+        
+        // BUGFIX: for backward compatibility, also fire a CHANGE_EVENT
+        // (emits only to the old-style waitForEvent function)
+        GEvent changeEvent(
+                    /* class  */ CHANGE_EVENT,
+                    /* type   */ STATE_CHANGED,
+                    /* name   */ "statechange",
+                    /* source */ _gtextarea);
+        changeEvent.setActionCommand(_gtextarea->getActionCommand());
+        _gtextarea->fireEvent(changeEvent);
     }
 }
 
