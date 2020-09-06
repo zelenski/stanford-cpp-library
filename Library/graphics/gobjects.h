@@ -406,7 +406,7 @@ public:
      *
      * Equivalent to setForeground.
      *
-     * @color a color string such as "#7700ff" or "purple"
+     * @param color color string such as "#7700ff" or "purple"
      */
     virtual void setColor(const std::string& color);
 
@@ -437,7 +437,7 @@ public:
      * See gcolor.h for more detail about how to specify colors.
      * If an empty string is passed, sets filled to false.
      *
-     * @color a color string such as "#7700ff" or "purple"
+     * @param color color string such as "#7700ff" or "purple"
      */
     virtual void setFillColor(const std::string& color);
 
@@ -497,7 +497,7 @@ public:
      *
      * Equivalent to setColor.
      *
-     * @color a color string such as "#7700ff" or "purple"
+     * @param color color string such as "#7700ff" or "purple"
      */
     virtual void setForeground(const std::string& color);
 

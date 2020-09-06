@@ -116,7 +116,7 @@ public:
      * Frees any heap storage associated with this grid.
      */
     virtual ~Grid() = default;
-    
+
     /*
      * Method: back
      * Usage: ValueType value = grid.back();
@@ -145,7 +145,7 @@ public:
      * Identical in behavior to the == operator.
      */
     bool equals(const Grid<ValueType>& grid2) const;
-    
+
     /*
      * Method: fill
      * Usage: grid.fill(value);
@@ -185,7 +185,7 @@ public:
      * Returns the grid's height, that is, the number of rows in the grid.
      */
     int height() const;
-    
+
     /*
      * Method: inBounds
      * Usage: if (grid.inBounds(row, col)) ...
@@ -352,7 +352,7 @@ public:
      *
      * The iteration forms process the grid in row-major order.
      */
-    
+
     /*
      * Operator: ==
      * Usage: if (grid1 == grid2) ...
@@ -368,7 +368,7 @@ public:
      * Compares two grids for inequality.
      */
     bool operator !=(const Grid& grid2) const;
-    
+
     /*
      * Operators: <, >, <=, >=
      * Usage: if (grid1 < grid2) ...
@@ -573,7 +573,6 @@ bool Grid<ValueType>::equals(const Grid<ValueType>& grid2) const {
     if (this == &grid2) {
         return true;
     }
-    
     if (_rowCount != grid2._rowCount || _columnCount != grid2._columnCount) {
         return false;
     }
@@ -699,17 +698,15 @@ void Grid<ValueType>::resize(int numRows, int numCols, bool retain) {
         _elements.updateVersion();
         return;
     }
-    
+
     // save backup of old array/size
     Vector<ValueType> oldElements = std::move(_elements);
     int oldnRows = this->_rowCount;
     int oldnCols = this->_columnCount;
-    
     // create new empty array and set new size
     this->_rowCount = numRows;
     this->_columnCount = numCols;
     this->_elements = Vector<ValueType>(numRows * numCols, ValueType());
-    
     // possibly retain old contents
     if (retain) {
         int minRows = oldnRows < numRows ? oldnRows : numRows;

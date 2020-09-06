@@ -20,6 +20,7 @@
 #include "gthread.h"
 #include "strlib.h"
 #include "private/static.h"
+#include "private/init.h"
 
 // QSPLApplication members
 QSPLApplication::QSPLApplication(int& argc, char *argv[])

@@ -30,6 +30,8 @@
 #include <cstdio>
 #include "simpio.h"
 #include "strlib.h"
+#include "private/filelibunix.cpp"
+#include "private/filelibwindows.cpp"
 
 /* Prototypes */
 

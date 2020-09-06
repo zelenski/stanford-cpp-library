@@ -58,7 +58,7 @@
 
 void setConsolePropertiesQt();
 
-/*static*/ const bool GConsoleWindow::GConsoleWindow::ALLOW_RICH_INPUT_EDITING = true;
+/*static*/ const bool GConsoleWindow::ALLOW_RICH_INPUT_EDITING = true;
 /*static*/ const double GConsoleWindow::DEFAULT_WIDTH = 900;
 /*static*/ const double GConsoleWindow::DEFAULT_HEIGHT = 550;
 /*static*/ const double GConsoleWindow::DEFAULT_X = 10;

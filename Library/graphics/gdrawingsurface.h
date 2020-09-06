@@ -230,6 +230,13 @@ public:
     virtual void fillPolygon(std::initializer_list<double> coords);
 
     /**
+     * Draws a filled polygon containing the given points onto the background
+     * pixel layer of this interactor in the current color and fill color.
+     * See gobjects.h for explanation of GPolygon parameters.
+     */
+    virtual void fillPolygon(std::initializer_list<GPoint> coords);
+
+    /**
      * Draws a filled rectangle of the given dimensions onto the background
      * pixel layer of this interactor in the current color and fill color.
      * See gobjects.h for explanation of GRect parameters.

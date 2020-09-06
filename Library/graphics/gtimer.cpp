@@ -63,15 +63,14 @@ void GTimer::start() {
 }
 
 void GTimer::stop() {
-    if (isStarted()) {
-        _Internal_QMainWindow* lastWindow = static_cast<_Internal_QMainWindow*>(GWindow::getLastWindow());
-        if (!lastWindow) {
-            error("GTimer::constructor: You must create at least one GWindow before stopping a GTimer.");
-            return;
-        }
-        GThread::runOnQtGuiThreadAsync([this, lastWindow]() {
-            lastWindow->timerStop(_id);
-            _id = -1;
-        });
+
+    _Internal_QMainWindow* lastWindow = static_cast<_Internal_QMainWindow*>(GWindow::getLastWindow());
+    if (!lastWindow) {
+        error("GTimer::constructor: You must create at least one GWindow before stopping a GTimer.");
+        return;
     }
+    GThread::runOnQtGuiThreadAsync([this, lastWindow]() {
+        lastWindow->timerStop(_id);
+        _id = -1;
+    });
 }

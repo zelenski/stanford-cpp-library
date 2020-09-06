@@ -1,8 +1,8 @@
 ###############################################################################
-# Project file for CS106B/X Library 
+# Project file for CS106B/X Library
 #
 # @author Julie Zelenski
-# @version 2019/11/05
+# @version 2020/04/02
 # This version still in development
 ###############################################################################
 
@@ -32,7 +32,7 @@ CONFIG -= depend_includepath
 # Glob source and header files from known set of subdirs
 # Configure include path for headers + Qt
 
-MY_SUBDIRS = autograder collections console graphics io system util
+MY_SUBDIRS = collections console graphics io system util
 
 for(dir, MY_SUBDIRS): PUBLIC_HEADERS *= $$files($${dir}/*.h)
 PRIVATE_HEADERS *= $$files(private/*.h)
@@ -108,6 +108,13 @@ for(h, PUBLIC_HEADERS): TO_COPY *= $$relative_path($$PWD, $$OUT_PWD)/$$h
 QMAKE_POST_LINK = @echo "Installing into "$${INSTALL_PATH} && $(COPY_FILE) $$TO_COPY $${INSTALL_PATH}/include
 
 # JDZ: kind of cheezy, why is output path different on windows?
+=======
+HEADER_DEST = $${INSTALL_PATH}/include
+
+for(h, PUBLIC_HEADERS): ALL_HEADER *= $$system_path($$relative_path($$PWD, $$OUT_PWD)/$$h)
+QMAKE_POST_LINK = echo "Copy headers into "$${HEADER_DEST}" $(MKDIR) $$quote($${HEADER_DEST})" && $(MKDIR) $${HEADER_DEST} && $(COPY_FILE) $$ALL_HEADER $$quote($${HEADER_DEST})
+
+# JDZ: ugh, why is output path different on windows? no se
 win32|win64: PREFIX = debug/
 QMAKE_POST_LINK += && $$QMAKE_QMAKE -install qinstall $${PREFIX}$(TARGET) $${INSTALL_PATH}/lib/$(TARGET)
 
@@ -116,5 +123,5 @@ QMAKE_POST_LINK += && $$QMAKE_QMAKE -install qinstall $${PREFIX}$(TARGET) $${INS
 # Error if installed version of QT is insufficient
 
 !versionAtLeast(QT_VERSION, $$REQUIRES_QT_VERSION) {
-    error(The CS106 library for quarter $$QUARTER_ID requires Qt $$REQUIRES_QT_VERSION or newer; Qt $$[QT_VERSION] was detected. Please upgrade/re-install.)
+    error(The CS106 library for quarter $$QUARTER_ID requires Qt $$REQUIRES_QT_VERSION or newer; Qt $$[QT_VERSION] was detected on your computer. Please upgrade/re-install.)
 }

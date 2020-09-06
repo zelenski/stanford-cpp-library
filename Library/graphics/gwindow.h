@@ -1216,27 +1216,6 @@ public:
      */
     virtual void toFront();
 
-    /**
-     * An internal function that disables the exitGraphics function so that
-     * students cannot exit their programs during autograding.
-     * This function is effectively private and should not be called by students.
-     */
-    static void _autograder_setExitGraphicsEnabled(bool enabled);
-
-    /**
-     * An internal function that disables the pause function so that
-     * students cannot pausetheir programs during autograding.
-     * This function is effectively private and should not be called by students.
-     */
-    static void _autograder_setPauseEnabled(bool enabled);
-
-    /**
-     * An internal function that sets whether the current window is part of an
-     * autograder program.
-     * This function is effectively private and should not be called by students.
-     */
-    virtual void _autograder_setIsAutograderWindow(bool isAutograderWindow);
-
 protected:
     /**
      * @private

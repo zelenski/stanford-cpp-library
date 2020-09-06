@@ -11,6 +11,7 @@ Student writes a main() function that appears to them to be the entry point for 
     5. shutdown at end of studentMain and/or close console window
 - Threads
     A lot of the QT application/graphics interaction has to run on the qtgui thread, see GThread::runOnQtGuiThread for that dispatch
+
 - Autograder main
     An autograder should directly supply its own main(), it can simply call the autograderMain from library if appropriate.
 

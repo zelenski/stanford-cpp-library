@@ -198,6 +198,12 @@ void GDrawingSurface::fillPolygon(std::initializer_list<double> coords) {
     draw(polygon);
 }
 
+void GDrawingSurface::fillPolygon(std::initializer_list<GPoint> points) {
+    GPolygon polygon(points);
+    initializeGObject(polygon, /* fllled */ true);
+    draw(polygon);
+}
+
 void GDrawingSurface::fillRect(const GRectangle& bounds) {
     fillRect(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
 }

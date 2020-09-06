@@ -1224,11 +1224,6 @@ void GLine::setEndPoint(const GPoint& p) {
 }
 
 void GLine::setPoints(double x0, double y0, double x1, double y1) {
-    if (x1 < x0 || (floatingPointEqual(x1, x0) && y1 < y0)) {
-        // points are out of order; swap
-        std::swap(x0, x1);
-        std::swap(y0, y1);
-    }
     _x = x0;
     _y = y0;
     _dx = x1 - x0;

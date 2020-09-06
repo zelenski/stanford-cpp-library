@@ -364,7 +364,6 @@ call_stack::call_stack(const size_t /*num_discard = 0*/) {
 //            std::cout << "demangled name " << i << ": NULL" << " (status " << status << ")" << std::endl;
 //        }
 //        std::cout << std::endl;
-        
         // store entry to stack
         if (dlinfo.dli_fname) {
             entry e;

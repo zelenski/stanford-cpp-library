@@ -1,23 +1,30 @@
-# Packs a set of individual gif files into icon strip for ease of distribution
+# Quick and dirty Makefile to generate qrc file from set of image files
+# for use as library resource package
+#
+# @author Julie Zelenski
+# @version 2019/11/05
 
-PACKED_STRIP = iconstrip.png iconstrip-autograder.png
-PRODUCTS = $(PACKED_STRIP)
+QRC_FILE = generated.qrc
+PRODUCTS = $(QRC_FILE)
 
 all:: $(PRODUCTS)
 
-ICONS = save.gif save_as.gif print.gif script.gif compare_output.gif \
-	quit.gif cut.gif copy.gif paste.gif select_all.gif clear_console.gif \
-	font.gif background_color.gif text_color.gif about.gif check_for_updates.gif
+glob_img = $(wildcard $(1)/*.gif) $(wildcard $(1)/*.png)
 
-AG_ICONS = calendar.gif check.gif helpbig.gif magnifier.gif play.gif \
-	pause.gif stop.gif textfile.gif fail.gif help.gif pass.gif running.gif \
-	warn.gif checkbox-checked.gif checkbox-unchecked.gif minus.gif
+# argument is output, prefix, directory of files, path
+define jz
+	@echo '<qresource prefix="$2">' >>$1
+	@$(foreach f, $(call glob_img,$3), echo '<file alias="$(notdir $(basename $f))">$4$(notdir $f)</file>' >>$1;)
+	@echo "</qresource>"  >>$1
+endef
 
-iconstrip.png: $(ICONS)
-iconstrip-autograder.png: $(AG_ICONS)
-
-$(PACKED_STRIP):
-	convert $^ +append $@
+$(QRC_FILE):
+		@rm -f $@
+		@echo "<!DOCTYPE RCC><RCC version=\"1.0\">" >> $@
+		$(call jz,$@,/,.,images/)
+		@echo "</RCC>" >> $@
+		@echo "Wrote resource file" $@
+		cat $@
 
 clean::
 	rm -rf $(PRODUCTS)

@@ -133,18 +133,6 @@ GWindow::~GWindow() {
     }
 }
 
-void GWindow::_autograder_setIsAutograderWindow(bool /*isAutograderWindow*/) {
-    // TODO
-}
-
-void GWindow::_autograder_setExitGraphicsEnabled(bool /*enabled*/) {
-    // TODO
-}
-
-void GWindow::_autograder_setPauseEnabled(bool /*enabled*/) {
-    // TODO
-}
-
 void GWindow::add(GInteractor* interactor) {
     require::nonNull(interactor, "GWindow::add");
     addToRegion(interactor, REGION_CENTER);

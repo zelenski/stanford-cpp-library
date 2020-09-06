@@ -4,7 +4,6 @@
 
     <file alias="about">resources/about.gif</file>
     <file alias="background_color">resources/background_color.gif</file>
-    <file alias="check_for_updates">resources/check_for_updates.gif</file>
     <file alias="clear_console">resources/clear_console.gif</file>
     <file alias="compare_output">resources/compare_output.gif</file>
     <file alias="copy">resources/copy.gif</file>
@@ -18,26 +17,6 @@
     <file alias="save_as">resources/save_as.gif</file>
     <file alias="select_all">resources/select_all.gif</file>
     <file alias="text_color">resources/text_color.gif</file>
-</qresource>
-
-<qresource prefix="/autograder/">
-    <file alias="calendar">resources/autograder/calendar.gif</file>
-    <file alias="check">resources/autograder/check.gif</file>
-    <file alias="checkbox-checked">resources/autograder/checkbox-checked.gif</file>
-    <file alias="checkbox-unchecked">resources/autograder/checkbox-unchecked.gif</file>
-    <file alias="fail">resources/autograder/fail.gif</file>
-    <file alias="help">resources/autograder/help.gif</file>
-    <file alias="helpbig">resources/autograder/helpbig.gif</file>
-    <file alias="magnifier">resources/autograder/magnifier.gif</file>
-    <file alias="minus">resources/autograder/minus.gif</file>
-    <file alias="pass">resources/autograder/pass.gif</file>
-    <file alias="pause">resources/autograder/pause.gif</file>
-    <file alias="play">resources/autograder/play.gif</file>
-    <file alias="progress">resources/autograder/progress.gif</file>
-    <file alias="running">resources/autograder/running.gif</file>
-    <file alias="stop">resources/autograder/stop.gif</file>
-    <file alias="textfile">resources/autograder/textfile.gif</file>
-    <file alias="warn">resources/autograder/warn.gif</file>
 </qresource>
 
 </RCC>
