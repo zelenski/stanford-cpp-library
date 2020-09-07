@@ -1,46 +1,48 @@
 ###############################################################################
+# Project file for CS106B/X student program
+#
 # @version 2020/04/02
 # @author Julie Zelenski
-#   beta of client project that builds on installed library
+#   beta version that builds on installed library
 ###############################################################################
 
-QUARTER_ID = 20-1
+SPL_VERSION = 2020.1
 
 TEMPLATE  = app
 QT += core gui widgets multimedia network
 CONFIG   += silent
 CONFIG   -= console
+# don't depend on library headers, they are not changing
+CONFIG -= depend_includepath
 
 ###############################################################################
-# Section 1:  Confirm libcs106.a installed locally                            #
+#       Find/use installed version of cs106 lib and headers                   #
 ###############################################################################
 
-# Library installed in user's home directory. This will be
-# writable even on cluster computer
-# Strategy is to specify all paths using forward-slash as separator.
-# qmake will rewrite
+# Library installed into per-user location. (writable even on shared/cluster)
+# Specify all paths using forward-slash as separator, let qmake rewrite as needed
 win32|win64 {
     USER_STORAGE = $$(APPDATA)
-    USER_STORAGE = $$replace(USER_STORAGE, \\\\, /)
 } else {
     USER_STORAGE = $$(HOME)/.config
 }
-SPL_PATH = $${USER_STORAGE}/QtProject/qtcreator/cs106
+SPL_DIR = $${USER_STORAGE}/QtProject/qtcreator/cs106
 
-# Library as target, attempt to generate if missing will raise error
-library.target = $${SPL_PATH}/lib/libcs106.a
-library.commands = $(error CS106 library not installed. See http://cs106b.stanford.edu/qt/library for install instructions)
-QMAKE_EXTRA_TARGETS += library
-PRE_TARGETDEPS += $${library.target}
+# Extra target used as prereq for build, confirm presence of lib and
+# error if not found
+error_no_lib.target = $${SPL_DIR}/lib/libcs106.a
+error_no_lib.commands = $(error CS106 library not installed. See http://cs106b.stanford.edu/qt for install instructions)
+QMAKE_EXTRA_TARGETS += error_no_lib
+PRE_TARGETDEPS += $${error_no_lib.target}
 
-# JDZ not a good way to do it.
-# Verify cs106 library installed.  JDZ: ideally this should check version too
-#!exists($${SPL_PATH}/lib/libcs106.a) {
-#    message("[Building "$$TARGET"] No cs106 library installed. See http://cs106b.stanford.edu/qt/library for install instructions.")
-#}
+# link project against cs106, add library headers to search path
+LIBS += -lcs106
+QMAKE_LFLAGS = -L$${SPL_DIR}/lib
+# put PWD first in search list to allow local copy to shadow if needed
+INCLUDEPATH += $$PWD $${SPL_DIR}/include
 
 ###############################################################################
-# Section 2:  Configure project to link with libcs106                         #
+#       Configure project with custom settings                                #
 ###############################################################################
 
 # remove spaces from target executable for better Windows compatibility
@@ -49,18 +51,13 @@ TARGET = $$replace(TARGET, " ", _)
 # set DESTDIR to project root dir, this is where executable/app will deploy and run
 DESTDIR = $$PWD
 
-# link against cs106, add library headers to search path
-LIBS += -lcs106
-QMAKE_LFLAGS = -L$${SPL_PATH}/lib
-INCLUDEPATH *= $${SPL_PATH}/include
-
 # student writes ordinary main() function, but it must be called within a
 # wrapper main() that handles library setup/teardown. Rename student's
 # to distinguish between the two main() functions and avoid symbol clash
 DEFINES += main=studentMain
 
 ###############################################################################
-# Section 3:   Gather other files to list in Qt Creator project browser       #
+#       Gather files to list in Qt Creator project browser                    #
 ###############################################################################
 
 # honeypot to trick Qt Creator into glob while also allowing add files within IDE;
@@ -70,27 +67,23 @@ DEFINES += main=studentMain
 SOURCES *= ""
 HEADERS *= ""
 
-# use a recursive search to pick up any .cpp or .h files within the
-# project folder (student code, library code, assignment code)
+# Pick up any .cpp or .h files within the project folder (student/starter code).
+# Second argument true makes search recursive
 SOURCES *= $$files(*.cpp, true)
 HEADERS *= $$files(*.h, true)
-INCLUDEPATH *= $$PWD/ src/
-# JDZ cwd is later removed with no_include so check this
 
-# Gather resource files (image/sound/etc), list under "Other files"
-OTHER_SUBDIRS = res input output
-for(dir, OTHER_SUBDIRS): OTHER_FILES *= $$files($${dir}/*, true)
-# Also grab text files from root dir
+# Gather resource files (image/sound/etc) from res dir, list under "Other files"
+OTHER_FILES *= $$files(res/*, true)
+# Allow text files from root dir
 OTHER_FILES *= $$files(*.txt, true)
 
 ###############################################################################
-#  Section 4:   Configure compile/link flags, use of system libraries         #
+#       Configure compile/link flags, use of system libraries         #
 ###############################################################################
 
 # Configure flags for the C++ compiler
 # (In general, many warnings/errors are enabled to tighten compile-time checking.
 # A few overly pedantic/confusing errors are turned off for simplicity.)
-CONFIG += no_include_pwd         # make sure we do not accidentally #include files placed in 'resources'
 CONFIG += sdk_no_version_check   # removes spurious warnings on Mac OS X
 
 # MinGW compiler lags, be conservative and use C++11 on all platforms
@@ -166,7 +159,7 @@ CONFIG(debug, debug|release) {
 
 
 ###############################################################################
-#  Section 5:   Detect/report errors in project structure                     #
+#       Detect/report errors in project structure                             #
 ###############################################################################
 
 # error if project was opened from within a ZIP archive (common mistake on Windows)
