@@ -3,7 +3,7 @@
 #
 # @author Julie Zelenski
 # @version 2020/04/02
-# This version still in development
+#   beta version to build and install static lib
 ###############################################################################
 
 # Versioning
@@ -23,31 +23,39 @@ VERSION = 19.1
 
 TARGET = cs106
 TEMPLATE = lib
+TARGET = cs106
 CONFIG += staticlib
-CONFIG += c++11
-CONFIG -= depend_includepath
 
-# Gather project inputs
-# ----------------------
-# Glob source and header files from known set of subdirs
-# Configure include path for headers + Qt
+REQUIRES_QT_VERSION = 5.11
+SPL_VERSION = 2020.1
 
-MY_SUBDIRS = collections console graphics io system util
+###############################################################################
+#       Gather files                                                          #
+###############################################################################
 
-for(dir, MY_SUBDIRS): PUBLIC_HEADERS *= $$files($${dir}/*.h)
+LIB_SUBDIRS = collections console graphics io system util
+
+for(dir, LIB_SUBDIRS): PUBLIC_HEADERS *= $$files($${dir}/*.h)
 PRIVATE_HEADERS *= $$files(private/*.h)
 HEADERS *= $$PUBLIC_HEADERS $$PRIVATE_HEADERS
 
-for(dir, MY_SUBDIRS): SOURCES *= $$files($${dir}/*.cpp)
+for(dir, LIB_SUBDIRS): SOURCES *= $$files($${dir}/*.cpp)
 SOURCES *= $$files(private/*.cpp)
 
 RESOURCES = images.qrc
 
-INCLUDEPATH *= $$MY_SUBDIRS
+INCLUDEPATH += $$LIB_SUBDIRS
 QT += core gui widgets network multimedia
 
-# Build settings
-# --------------
+###############################################################################
+#       Build settings                                                        #
+###############################################################################
+
+# MinGW compiler lags, be conservative and use C++11 on all platforms
+# rather than special case
+CONFIG += c++11
+
+# CONFIG += develop_mode
 # When in develop_mode, enable warnings, deprecated, nit-picks, all of it.
 # Pay attention and fix! Published version should trigger no warnings.
 # Future update may foil our best-laid plans, so suppress
@@ -61,22 +69,9 @@ develop_mode {
     CONFIG += warn_off
     CONFIG += sdk_no_version_check
     CONFIG += silent
-} 
+}
 
-DEFINES += SPL_INSTALL_DIR=\\\"$${INSTALL_PATH}\\\" QUARTER_ID=\\\"$${QUARTER_ID}\\\"
-
-# JDZ: below are previous defines, not yet sorted out what to do with
-
-# allow clients to access the internal data inside the heap of PriorityQueue?
-# (used for some practice exam exercises/demos)
-DEFINES += SPL_PQUEUE_ALLOW_HEAP_ACCESS
-
-# should toString / << of a PriorityQueue display the elements in sorted order,
-# or in heap internal order? the former is more expected by client; the latter
-# is faster and avoids a deep-copy
-DEFINES += SPL_PQUEUE_PRINT_IN_HEAP_ORDER
-
-# flag to throw exceptions when a collection iterator is used after it has
+# JDZ to throw exceptions when a collection iterator is used after it has
 # been invalidated (e.g. if you remove from a Map while iterating over it)
 DEFINES += SPL_THROW_ON_INVALID_ITERATOR
 
@@ -95,10 +90,20 @@ DEFINES += SPL_PRECOMPILE_QT_MOC_FILES
 # for wizard). This should be writable even on cluster computer.
 # Note strategy is to specify all paths using forward-slash separator
 # which requires goopy rework of APPDATA environment variable
+QMAKE_SUBSTITUTES = private/build.h.in
 
+###############################################################################
+#       Make install                                                          #
+###############################################################################
+>>>>>>> 248b5ffc... Version info written to library, shown in info panel
+
+# Use makefile include to set default goal to install target
+QMAKE_EXTRA_INCLUDES += $${PWD}/assume_install.mk
+
+# Library installed into per-user location. (writable even on shared/cluster)
+# Specify all paths using forward-slash as separator, let qmake rewrite as needed
 win32|win64 {
     USER_STORAGE = $$(APPDATA)
-    USER_STORAGE = $$replace(USER_STORAGE, \\\\, /)
 } else {
     USER_STORAGE = $$(HOME)/.config
 }
@@ -107,21 +112,22 @@ INSTALL_PATH = $${USER_STORAGE}/QtProject/qtcreator/cs106
 for(h, PUBLIC_HEADERS): TO_COPY *= $$relative_path($$PWD, $$OUT_PWD)/$$h
 QMAKE_POST_LINK = @echo "Installing into "$${INSTALL_PATH} && $(COPY_FILE) $$TO_COPY $${INSTALL_PATH}/include
 
-# JDZ: kind of cheezy, why is output path different on windows?
-=======
 HEADER_DEST = $${INSTALL_PATH}/include
+# provide string for info panel without any funky/unescaped chars
+INSTALLED_LOCATION = "QtProject/qtcreator/cs106 of user's home config"
 
-for(h, PUBLIC_HEADERS): ALL_HEADER *= $$system_path($$relative_path($$PWD, $$OUT_PWD)/$$h)
-QMAKE_POST_LINK = echo "Copy headers into "$${HEADER_DEST}" $(MKDIR) $$quote($${HEADER_DEST})" && $(MKDIR) $${HEADER_DEST} && $(COPY_FILE) $$ALL_HEADER $$quote($${HEADER_DEST})
+target.path += $${INSTALL_PATH}/lib
 
-# JDZ: ugh, why is output path different on windows? no se
-win32|win64: PREFIX = debug/
-QMAKE_POST_LINK += && $$QMAKE_QMAKE -install qinstall $${PREFIX}$(TARGET) $${INSTALL_PATH}/lib/$(TARGET)
+headers.files = $$PUBLIC_HEADERS
+headers.path = $${INSTALL_PATH}/include
 
-# Requirements
-# ------------
-# Error if installed version of QT is insufficient
+
+INSTALLS += target headers
+
+###############################################################################
+#       Requirements                                                          #
+###############################################################################
 
 !versionAtLeast(QT_VERSION, $$REQUIRES_QT_VERSION) {
-    error(The CS106 library for quarter $$QUARTER_ID requires Qt $$REQUIRES_QT_VERSION or newer; Qt $$[QT_VERSION] was detected on your computer. Please upgrade/re-install.)
+    error(The CS106 library for $$SPL_VERSION requires Qt $$REQUIRES_QT_VERSION or newer; Qt $$[QT_VERSION] was detected on your computer. Please upgrade/re-install.)
 }

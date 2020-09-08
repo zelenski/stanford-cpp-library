@@ -5,7 +5,7 @@
  * represent the graphical console.
  * The class is implemented as a singleton which can be accessed using the
  * static method GConsoleWindow::instance().
- * 
+ *
  * @author Marty Stepp
  * @version 2019/04/25
  * - added hasInputScript
@@ -146,7 +146,6 @@ private:
     void _initMenuBar();
     void _initWidgets();
     void _initStreams();
-    virtual void checkForUpdates();
     QTextFragment getUserInputFragment() const;
     int getUserInputStart() const;
     int getUserInputEnd() const;

@@ -233,10 +233,6 @@ void GConsoleWindow::_initMenuBar() {
     addToolbarItem("About...", QPixmap(":/about"),
                        [this]() { this->showAboutDialog(); });
 
-    addMenuItem("Help", "&Check for Updates", QPixmap(":/check_for_updates"),
-                [this]() { this->checkForUpdates(); });
-    addToolbarItem("Check for Updates", QPixmap(":/check_for_updates"),
-                       [this]() { this->checkForUpdates(); });
 }
 
 void GConsoleWindow::_initStreams() {
@@ -308,38 +304,6 @@ GConsoleWindow::~GConsoleWindow() {
     _cerr_old_buf = nullptr;
 }
 
-void GConsoleWindow::checkForUpdates() {
-    GThread::runInNewThreadAsync([this]() {
-        static const std::string CPP_ZIP_VERSION_URL = version::getCppLibraryDocsUrl() + "CURRENTVERSION_CPPLIB.txt";
-        std::string currentVersion = version::getCppLibraryVersion();
-
-        GDownloader downloader;
-        std::string latestVersion = trim(downloader.downloadAsString(CPP_ZIP_VERSION_URL));
-
-        if (latestVersion.empty()) {
-            GOptionPane::showMessageDialog(
-                    /* parent  */ getWidget(),
-                    /* message */ "Unable to look up latest library version from web.",
-                    /* title   */ "Network error",
-                    /* type    */ GOptionPane::MESSAGE_ERROR);
-            return;
-        }
-
-        std::string message;
-        if (currentVersion >= latestVersion) {
-                message = "This project already has the latest version \nof the Stanford libraries (" + currentVersion + ").";
-        } else {
-                message = "<html>There is an updated version of the Stanford libraries available.\n\n"
-                   "This project's library version: " + currentVersion + "\n"
-                   "Current newest library version: " + latestVersion + "\n\n"
-                   "Go to <a href=\"" + version::getCppLibraryDocsUrl() + "\">"
-                   + version::getCppLibraryDocsUrl() + "</a> to get the new version.</html>";
-        }
-        GOptionPane::showMessageDialog(
-                    /* parent  */ getWidget(),
-                    /* message */ message);
-    }, "Check for Updates");
-}
 
 void GConsoleWindow::clearConsole() {
     std::string msg = "==================== (console cleared) ====================";
@@ -1372,16 +1336,7 @@ void GConsoleWindow::setUserInputColor(const std::string& userInputColor) {
 
 void GConsoleWindow::showAboutDialog() {
     // this text roughly matches that from old spl.jar message
-    static const std::string ABOUT_MESSAGE =
-            "<html><p>"
-            "Stanford C++ Library version <b>" + version::getCppLibraryVersion() + "</b><br>\n"
-            "<br>\n"
-            "Libraries originally written by <b>Eric Roberts</b>,<br>\n"
-            "with assistance from Julie Zelenski, Keith Schwarz, et al.<br>\n"
-            "This version of the library is unofficially maintained by <b>Marty Stepp</b>.<br>\n"
-            "<br>\n"
-            "See <a href=\"" + version::getCppLibraryDocsUrl() + "\">" + version::getCppLibraryDocsUrl() + "</a> for documentation."
-            "</p></html>";
+    static const std::string ABOUT_MESSAGE = version::getLibraryInfoPanelMessage();
     GOptionPane::showMessageDialog(
                 /* parent */   getWidget(),
                 /* message */  ABOUT_MESSAGE,
