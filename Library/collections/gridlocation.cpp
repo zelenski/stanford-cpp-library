@@ -18,9 +18,7 @@ GridLocation::GridLocation(int row, int col) {
     this->col = col;
 }
 
-GridLocationRange GridLocation::neighbors(int range, bool rowMajor) const {
-    return GridLocationRange(row - range, col - range, row + range, col + range, rowMajor);
-}
+GridLocation::GridLocation() : GridLocation(0, 0) {}
 
 std::string GridLocation::toString() const {
     std::ostringstream out;
@@ -63,8 +61,9 @@ std::ostream& operator <<(std::ostream& out, const GridLocation& loc) {
 
 std::istream& operator >>(std::istream& input, GridLocation& loc) {
     // read 'r'
-    input.get();
-    if (!input) {
+    char ch = '\0';
+    input >> ch;
+    if (!input || ch != 'r' ) {
         input.setstate(std::ios_base::failbit);
         return input;
     }
@@ -77,13 +76,13 @@ std::istream& operator >>(std::istream& input, GridLocation& loc) {
     }
 
     // read 'c'
-    input.get();
-    if (!input) {
+    ch = input.get();
+    if (!input || ch != 'c') {
         input.setstate(std::ios_base::failbit);
         return input;
     }
 
-    // read row
+    // read col
     int col;
     if (!(input >> col)) {
         input.setstate(std::ios_base::failbit);

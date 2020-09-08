@@ -33,19 +33,17 @@ class GridLocationRange;   // forward declaration
 
 struct GridLocation {
 public:
-    /*
-     * Constructs a location representing the given row and column (default 0).
-     * Any indexes are allowed, including negatives and out-of-bounds indexes.
-     */
-    GridLocation(int row = 0, int col = 0);
 
     /*
-     * Returns a range of locations that are <= the given range away from this one.
-     * For example, if you pass 1, will return the 9 locations in range (r-1, c-1) thru (r+1, c+1).
-     * The rowMajor parameter indicates whether the range will emit its members
-     * in row-major (default) or column-major order.
+     * Constructs a location representing the given row and column.
+     * Any indexes are allowed, including negatives and out-of-bounds indexes.
      */
-    GridLocationRange neighbors(int range = 1, bool rowMajor = true) const;
+    GridLocation(int row, int col);
+
+    /*
+     * Constructs a default location 0, 0.
+     */
+    GridLocation();
 
     /*
      * Returns a string representation of this location, such as "r2c17".
