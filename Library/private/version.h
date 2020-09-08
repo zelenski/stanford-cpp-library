@@ -39,11 +39,9 @@
 
 
 namespace version {
-void ensureJavaBackEndVersion(std::string minVersion = "") /* deprecated */;
 void ensureProjectVersion(std::string minVersion = "");
 std::string getCppLibraryDocsUrl();
 std::string getCppLibraryVersion();
-std::string getJavaBackEndVersion() /* deprecated */;
 std::string getProjectVersion();
 } // namespace version
 

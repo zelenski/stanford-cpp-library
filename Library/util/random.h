@@ -2,7 +2,7 @@
  * File: random.h
  * --------------
  * This file exports functions for generating pseudorandom numbers.
- * 
+ *
  * @version 2019/05/16
  * - added randomColor that takes min/max RGB
  * @version 2018/09/25
@@ -87,35 +87,5 @@ double randomReal(double low, double high);
  * repeatable during the debugging phase.
  */
 void setRandomSeed(int seed);
-
-/**
- * Extra functions to facilitate creation of autograder programs.
- * @private
- */
-namespace autograder {
-/**
- * Inserts the given boolean value to be returned by the random number
- * generator, rather than truly random choices.
- */
-void randomFeedBool(bool value);
-
-/**
- * Removes any previously 'fed' random integers so that future calls
- * to random functions will return truly random values.
- */
-void randomFeedClear();
-
-/**
- * Inserts the given integer to be returned by the random number generator,
- * rather than truly random numbers.
- */
-void randomFeedInteger(int value);
-
-/**
- * Inserts the given real number to be returned by the random number generator,
- * rather than truly random numbers.
- */
-void randomFeedReal(double value);
-}
 
 #endif // _random_h

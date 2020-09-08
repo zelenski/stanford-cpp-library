@@ -22,9 +22,6 @@
 #ifndef _gcanvas_h
 #define _gcanvas_h
 
-// JDZ temp hack
-#undef QT_NEEDS_QMAIN
-
 #include <string>
 #include <QtEvents>
 #include <QPainter>

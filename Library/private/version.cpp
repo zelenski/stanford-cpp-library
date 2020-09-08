@@ -5,7 +5,7 @@
  * Stanford C++ library, its Java back-end, and the project properties
  * file (.pro).
  *
- * @author Marty Stepp 
+ * @author Marty Stepp
  * @version 2016/09/24
  * - bug fix for std::quick_exit function
  * @version 2015/07/05
@@ -61,13 +61,9 @@ static void ensureProjectVersionHelper(std::string minVersion) {
         fputs("***\n", stderr);
         fputs("\n", stderr);
         fflush(stderr);
-        
+
         std::exit(1);
     }
-}
-
-void ensureJavaBackEndVersion(std::string /*minVersion*/) {
-    // empty
 }
 
 void ensureProjectVersion(std::string minVersion) {
@@ -87,10 +83,6 @@ std::string getCppLibraryDocsUrl() {
 
 std::string getCppLibraryVersion() {
     return STANFORD_CPP_LIB_VERSION;
-}
-
-std::string getJavaBackEndVersion() {
-    return "?";
 }
 
 /*

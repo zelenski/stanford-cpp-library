@@ -2,7 +2,7 @@
  * File: random.cpp
  * ----------------
  * This file implements the random.h interface.
- * 
+ *
  * @version 2019/05/16
  * - added randomColor that takes min/max RGB
  * @version 2017/10/05
@@ -35,32 +35,6 @@
 
 static void initRandomSeed();
 
-/* internal buffer of fixed random numbers to return; used by autograders */
-STATIC_VARIABLE_DECLARE_COLLECTION_EMPTY(std::queue<bool>, fixedBools)
-STATIC_VARIABLE_DECLARE_COLLECTION_EMPTY(std::queue<int>, fixedInts)
-STATIC_VARIABLE_DECLARE_COLLECTION_EMPTY(std::queue<double>, fixedReals)
-
-namespace autograder {
-void randomFeedBool(bool value) {
-    STATIC_VARIABLE(fixedBools).push(value);
-}
-
-void randomFeedClear() {
-    STATIC_VARIABLE(fixedBools) = std::queue<bool>();
-    STATIC_VARIABLE(fixedInts) = std::queue<int>();
-    STATIC_VARIABLE(fixedReals) = std::queue<double>();
-}
-
-void randomFeedInteger(int value) {
-    STATIC_VARIABLE(fixedInts).push(value);
-}
-
-void randomFeedReal(double value) {
-    STATIC_VARIABLE(fixedReals).push(value);
-}
-}
-/* end 'fixed' internal stuff */
-
 bool randomBool() {
     return randomChance(0.5);
 }
@@ -72,29 +46,16 @@ bool randomBool() {
  * whether the result is less than the requested probability.
  */
 bool randomChance(double p) {
-    if (!STATIC_VARIABLE(fixedBools).empty()) {
-        bool top = STATIC_VARIABLE(fixedBools).front();
-        STATIC_VARIABLE(fixedBools).pop();
-        return top;
-    }
     initRandomSeed();
     return randomReal(0, 1) < p;
 }
 
 int randomColor() {
-    if (!STATIC_VARIABLE(fixedInts).empty()) {
-        int top = STATIC_VARIABLE(fixedInts).front();
-        STATIC_VARIABLE(fixedInts).pop();
-        return top & 0x00ffffff;
-    }
     initRandomSeed();
     return rand() & 0x00ffffff;
 }
 
 int randomColor(int minRGB, int maxRGB) {
-    if (!STATIC_VARIABLE(fixedInts).empty()) {
-        return randomColor();
-    }
     if (minRGB < 0 || minRGB > 255 || maxRGB < 0 || maxRGB > 255
             || minRGB > maxRGB) {
         error("randomColor: min/max values out of range");
@@ -148,17 +109,6 @@ std::string randomColorString(int minRGB, int maxRGB) {
  * performed using doubles instead of ints.
  */
 int randomInteger(int low, int high) {
-    if (!STATIC_VARIABLE(fixedInts).empty()) {
-        int top = STATIC_VARIABLE(fixedInts).front();
-        STATIC_VARIABLE(fixedInts).pop();
-        if (top < low || top > high) {
-            // make sure the value is in the given range
-            // (assumes that low/high don't overflow int range)
-            int range = high - low + 1;
-            top = low + std::abs(top) % range;
-        }
-        return top;
-    }
     initRandomSeed();
     double d = rand() / (double(RAND_MAX) + 1);
     double s = d * (double(high) - low + 1);
@@ -172,11 +122,6 @@ int randomInteger(int low, int high) {
  * without the final conversion step.
  */
 double randomReal(double low, double high) {
-    if (!STATIC_VARIABLE(fixedReals).empty()) {
-        double top = STATIC_VARIABLE(fixedReals).front();
-        STATIC_VARIABLE(fixedReals).pop();
-        return top;
-    }
     initRandomSeed();
     double d = rand() / (double(RAND_MAX) + 1);
     double s = d * (high - low);

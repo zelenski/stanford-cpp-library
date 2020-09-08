@@ -3,7 +3,7 @@
  * ---------------------
  * This file exports the <code>PriorityQueue</code> class, a
  * collection in which values are processed in priority order.
- * 
+ *
  * @version 2019/04/09
  * - renamed private members with underscore naming scheme for consistency
  * @version 2016/11/07
@@ -97,7 +97,7 @@ public:
      * Frees any heap storage associated with this priority queue.
      */
     virtual ~PriorityQueue() = default;
-    
+
     /*
      * Method: add
      * Usage: pq.add(value, priority);
@@ -105,7 +105,7 @@ public:
      * A synonym for the enqueue method.
      */
     void add(const ValueType& value, double priority);
-    
+
     /*
      * Method: back
      * Usage: ValueType last = pq.back();
@@ -113,7 +113,7 @@ public:
      * Returns the last value in the queue by reference.
      */
     ValueType& back();
-    
+
     /*
      * Method: changePriority
      * Usage: pq.changePriority(value, newPriority);
@@ -133,7 +133,7 @@ public:
      * Removes all elements from the priority queue.
      */
     void clear();
-    
+
     /*
      * Method: dequeue
      * Usage: ValueType first = pq.dequeue();
@@ -154,7 +154,7 @@ public:
      * priority 2 elements.
      */
     void enqueue(const ValueType& value, double priority);
-    
+
     /*
      * Method: equals
      * Usage: if (pq.equals(pq2)) ...
@@ -165,7 +165,7 @@ public:
      * Identical in behavior to the == operator.
      */
     bool equals(const PriorityQueue<ValueType>& pq2) const;
-    
+
     /*
      * Method: front
      * Usage: ValueType first = pq.front();
@@ -181,7 +181,7 @@ public:
      * Returns <code>true</code> if the priority queue contains no elements.
      */
     bool isEmpty() const;
-    
+
     /*
      * Method: peek
      * Usage: ValueType first = pq.peek();
@@ -223,14 +223,14 @@ public:
      * Converts the queue to a printable string representation.
      */
     std::string toString() const;
-    
+
     /*
      * Operator: <<
      * Prints the priority queue to the given output stream.
      */
     template <typename T>
     friend std::ostream& operator <<(std::ostream& os, const PriorityQueue<T>& pq);
-    
+
     /*
      * Operators: ==, !=
      * Usage: if (pq1 == pq2) ...
@@ -294,10 +294,6 @@ public:
     template <typename Collection>
     friend int stanfordcpplib::collections::compare(const Collection& pq1, const Collection& pq2);
 
-#ifdef SPL_PQUEUE_ALLOW_HEAP_ACCESS
-    const ValueType& __getValueFromHeap(int index) const;
-    double __getPriorityFromHeap(int index) const;
-#endif // SPL_PQUEUE_ALLOW_HEAP_ACCESS
 };
 
 template <typename ValueType>
@@ -475,7 +471,7 @@ int PriorityQueue<ValueType>::pqCompare(const PriorityQueue& pq2) const {
         } else if (backup2.peek() < backup1.peek()) {
             return 1;
         }
-        
+
         double pri1 = backup1.peekPriority();
         double pri2 = backup2.peekPriority();
         if (pri1 < pri2) {
@@ -483,7 +479,7 @@ int PriorityQueue<ValueType>::pqCompare(const PriorityQueue& pq2) const {
         } else if (pri2 < pri1) {
             return 1;
         }
-        
+
         backup1.dequeue();
         backup2.dequeue();
     }
@@ -561,24 +557,11 @@ int hashCode(const PriorityQueue<T>& pq) {
     return int(code & hashMask());
 }
 
-#ifdef SPL_PQUEUE_ALLOW_HEAP_ACCESS
-template <typename ValueType>
-const ValueType& PriorityQueue<ValueType>::__getValueFromHeap(int index) const {
-    return _heap[index].value;
-}
-
-template <typename ValueType>
-double PriorityQueue<ValueType>::__getPriorityFromHeap(int index) const {
-    return _heap[index].priority;
-}
-#endif // SPL_PQUEUE_ALLOW_HEAP_ACCESS
-
 template <typename ValueType>
 std::ostream& operator <<(std::ostream& os,
                           const PriorityQueue<ValueType>& pq) {
     os << "{";
 
-#ifdef SPL_PQUEUE_PRINT_IN_HEAP_ORDER
     // faster implementation: print in heap order
     // (only downside: doesn't print in 'sorted' priority order,
     //  which might confuse student client)
@@ -589,17 +572,6 @@ std::ostream& operator <<(std::ostream& os,
         os << pq._heap[i].priority << ":";
         writeGenericValue(os, pq._heap[i].value, /* forceQuotes */ true);
     }
-#else // SPL_PQUEUE_PRINT_IN_HEAP_ORDER
-    // (default) slow, memory-inefficient implementation: copy pq and print
-    PriorityQueue<ValueType> copy = pq;
-    for (int i = 0, len = pq.size(); i < len; i++) {
-        if (i > 0) {
-            os << ", ";
-        }
-        os << copy.peekPriority() << ":";
-        writeGenericValue(os, copy.dequeue(), /* forceQuotes */ true);
-    }
-#endif // SPL_PQUEUE_PRINT_IN_HEAP_ORDER
     return os << "}";
 }
 

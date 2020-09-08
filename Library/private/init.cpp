@@ -21,8 +21,6 @@
 #include "private/static.h"
 #include <QStandardPaths>
 #include "private/version.h"
-// JDZ:
-bool fileExists(const std::string&);
 
 
 #ifdef _WIN32
@@ -128,7 +126,7 @@ void shutdownLibrary() {
 
 std::string pathForExecutable(const std::string& executableName)
 {
-    // Use QT search function to find executable within user's path/environment
+    // JDZ: Use QT search function to find executable within user's path/environment
     // This will find the addr2line installed with mingw rather than having to ship our
     // own and deal with possible versionitis
     QString found = QStandardPaths::findExecutable(QString::fromStdString(executableName));

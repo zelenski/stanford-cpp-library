@@ -25,7 +25,6 @@
  * - initial version
  */
 
-//#include "private/init.h" JDZ why in .h??
 #ifndef _gthread_h
 #define _gthread_h
 

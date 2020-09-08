@@ -1,4 +1,4 @@
-// JDZ this is an experiment re: moc compilation speed
+// Combine these into one unity file to improve moc compilation speed
 #include "moc_gbrowserpane.cpp"
 #include "moc_gbutton.cpp"
 #include "moc_gcanvas.cpp"
