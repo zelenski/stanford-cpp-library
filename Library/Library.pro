@@ -2,8 +2,8 @@
 # Project file for CS106B/X Library
 #
 # @author Julie Zelenski
-# @version 2020/04/02
-#   beta version to build and install static lib
+# @version Fall Quarter 08/28/2020
+#    build static lib and install into user data
 ###############################################################################
 
 # Versioning
@@ -26,8 +26,8 @@ TEMPLATE = lib
 TARGET = cs106
 CONFIG += staticlib
 
-REQUIRES_QT_VERSION = 5.11
 SPL_VERSION = 2020.1
+REQUIRES_QT_VERSION = 5.15
 
 ###############################################################################
 #       Gather files                                                          #
@@ -43,6 +43,7 @@ for(dir, LIB_SUBDIRS): SOURCES *= $$files($${dir}/*.cpp)
 SOURCES *= $$files(private/*.cpp)
 
 RESOURCES = images.qrc
+OTHER_FILES = personaltypes.py
 
 INCLUDEPATH += $$LIB_SUBDIRS
 QT += core gui widgets network multimedia
@@ -55,11 +56,10 @@ QT += core gui widgets network multimedia
 # rather than special case
 CONFIG += c++11
 
-# CONFIG += develop_mode
-# When in develop_mode, enable warnings, deprecated, nit-picks, all of it.
-# Pay attention and fix! Published version should trigger no warnings.
-# Future update may foil our best-laid plans, so suppress
-# warnings when !develop_mode to shield students from these surprises
+# Set develop_mode to enable warnings, deprecated, nit-picks, all of it.
+# Pay attention and fix! Library should compile cleanly.
+# Disable mode when publish to quiet build for student.
+#CONFIG += develop_mode
 
 develop_mode {
     CONFIG += warn_on
@@ -95,7 +95,6 @@ QMAKE_SUBSTITUTES = private/build.h.in
 ###############################################################################
 #       Make install                                                          #
 ###############################################################################
->>>>>>> 248b5ffc... Version info written to library, shown in info panel
 
 # Use makefile include to set default goal to install target
 QMAKE_EXTRA_INCLUDES += $${PWD}/assume_install.mk
@@ -115,14 +114,23 @@ QMAKE_POST_LINK = @echo "Installing into "$${INSTALL_PATH} && $(COPY_FILE) $$TO_
 HEADER_DEST = $${INSTALL_PATH}/include
 # provide string for info panel without any funky/unescaped chars
 INSTALLED_LOCATION = "QtProject/qtcreator/cs106 of user's home config"
+win32|win64 { QTP_EXE = qtpaths.exe } else { QTP_EXE = qtpaths }
+USER_DATA_DIR = $$system($$[QT_INSTALL_BINS]/$$QTP_EXE --writable-path GenericDataLocation)
+SPL_DIR = $${USER_DATA_DIR}/cs106
 
-target.path += $${INSTALL_PATH}/lib
+target.path = "$${SPL_DIR}/lib"
 
 headers.files = $$PUBLIC_HEADERS
-headers.path = $${INSTALL_PATH}/include
+headers.path = "$${SPL_DIR}/include"
 
+debughelper.files = personaltypes.py
+mac {   # JDZ need reliable way to find these directories
+    debughelper.path = "$$(HOME)/Qt/Qt Creator.app/Contents/Resources/debugger"
+} else {
+    debughelper.path = "C:/Qt/Tools/QtCreator/share/qtcreator/debugger"
+}
 
-INSTALLS += target headers
+INSTALLS += target headers debughelper
 
 ###############################################################################
 #       Requirements                                                          #

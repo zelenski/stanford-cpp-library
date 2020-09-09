@@ -1,45 +1,40 @@
 ###############################################################################
 # Project file for CS106B/X student program
 #
-# @version 2020/04/02
+# @version Fall Quarter 08/28/2020
 # @author Julie Zelenski
-#   beta version that builds on installed library
+#   build client program using installed static library
 ###############################################################################
 
 SPL_VERSION = 2020.1
 
 TEMPLATE  = app
 QT += core gui widgets multimedia network
-CONFIG   += silent
-CONFIG   -= console
-# don't depend on library headers, they are not changing
-CONFIG -= depend_includepath
+#CONFIG  += silent               # quieter progress during build
+CONFIG  -= depend_includepath   # library headers not changing, don't add depend
 
 ###############################################################################
 #       Find/use installed version of cs106 lib and headers                   #
 ###############################################################################
 
-# Library installed into per-user location. (writable even on shared/cluster)
-# Specify all paths using forward-slash as separator, let qmake rewrite as needed
-win32|win64 {
-    USER_STORAGE = $$(APPDATA)
-} else {
-    USER_STORAGE = $$(HOME)/.config
-}
-SPL_DIR = $${USER_STORAGE}/QtProject/qtcreator/cs106
+# Library installed into per-user writable data location from QtStandardPaths
+win32|win64 { QTP_EXE = qtpaths.exe } else { QTP_EXE = qtpaths }
+USER_DATA_DIR = $$system($$[QT_INSTALL_BINS]/$$QTP_EXE --writable-path GenericDataLocation)
 
-# Extra target used as prereq for build, confirm presence of lib and
-# error if not found
-error_no_lib.target = $${SPL_DIR}/lib/libcs106.a
-error_no_lib.commands = $(error CS106 library not installed. See http://cs106b.stanford.edu/qt for install instructions)
+SPL_DIR = $${USER_DATA_DIR}/cs106
+STATIC_LIB = $$system_path($${SPL_DIR}/lib/libcs106.a)
+
+# Extra target used as prereq, confirm presence of lib before build
+error_no_lib.target = "$${STATIC_LIB}"
+error_no_lib.commands = $(error CS106 library not found. See http://cs106b.stanford.edu/qt for library install instructions)
 QMAKE_EXTRA_TARGETS += error_no_lib
 PRE_TARGETDEPS += $${error_no_lib.target}
 
 # link project against cs106, add library headers to search path
 LIBS += -lcs106
-QMAKE_LFLAGS = -L$${SPL_DIR}/lib
+QMAKE_LFLAGS = -L$$shell_quote($${SPL_DIR}/lib)
 # put PWD first in search list to allow local copy to shadow if needed
-INCLUDEPATH += $$PWD $${SPL_DIR}/include
+INCLUDEPATH += $$PWD "$${SPL_DIR}/include"
 
 ###############################################################################
 #       Configure project with custom settings                                #
@@ -54,7 +49,8 @@ DESTDIR = $$PWD
 # student writes ordinary main() function, but it must be called within a
 # wrapper main() that handles library setup/teardown. Rename student's
 # to distinguish between the two main() functions and avoid symbol clash
-DEFINES += main=studentMain
+# Ask Julie if you are curious why main->qMain->studentMain
+DEFINES += main=qMain qMain=studentMain
 
 ###############################################################################
 #       Gather files to list in Qt Creator project browser                    #
@@ -62,19 +58,19 @@ DEFINES += main=studentMain
 
 # honeypot to trick Qt Creator into glob while also allowing add files within IDE;
 # Qt looks for first 'SOURCES *=' line and adds newly added .cpp/h files there.
-# Later in this pro file we glob-add files to SOURCES ourselves but we use
-# operator *=  which will unique entries, so no worries about listing things twice
+# Later in this pro file we glob-add files to SOURCES to extend entries. Note
+# we use operator *=  which uniques entries, so no worries about duplicates
 SOURCES *= ""
 HEADERS *= ""
 
-# Pick up any .cpp or .h files within the project folder (student/starter code).
+# Gather any .cpp or .h files within the project folder (student/starter code).
 # Second argument true makes search recursive
 SOURCES *= $$files(*.cpp, true)
 HEADERS *= $$files(*.h, true)
 
 # Gather resource files (image/sound/etc) from res dir, list under "Other files"
 OTHER_FILES *= $$files(res/*, true)
-# Allow text files from root dir
+# Gather text files from root dir or anywhere recursively
 OTHER_FILES *= $$files(*.txt, true)
 
 ###############################################################################
@@ -128,34 +124,7 @@ QMAKE_CXXFLAGS += -Wno-unused-const-variable
 
 # LIBRARIES
 # thread used on all, other additions per-platform
-# on Windows, Dbghelp needed for crash-backtrace
-# on Mac and linux, -ldl allows dynamic symbol lookup
 LIBS += -lpthread
-win32 : LIBS += -lDbghelp
-macx|linux : LIBS += -ldl
-
-# build-specific options (debug vs release)
-
-# options for the 'debug' target (default):
-# use no optimization, generate debugger symbols,
-# and catch/print to console any uncaught exceptions thrown by the program
-CONFIG(debug, debug|release) {
-    QMAKE_CXXFLAGS += -g3
-    QMAKE_CXXFLAGS += -fno-inline
-    QMAKE_CXXFLAGS += -fno-omit-frame-pointer
-
-    linux-g++ {
-         # on Linux g++, these flags help us gather line numbers for stack traces
-        QMAKE_CXXFLAGS += -export-dynamic
-        QMAKE_CXXFLAGS += -Wl,--export-dynamic
-        QMAKE_LFLAGS += -export-dynamic
-        QMAKE_LFLAGS += -rdynamic
-    }
-    *-clang {
-        QMAKE_LFLAGS += -rdynamic
-        QMAKE_LFLAGS += -Wl,-no_pie
-    }
-}
 
 
 ###############################################################################

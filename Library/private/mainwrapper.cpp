@@ -16,23 +16,18 @@
  * - initial version
  */
 
-#include <cstdio>
-
-
-// This module defines just one function (well, actually two) so that
+// Moved the main wrapper function into module by itself so that
 // linking will pull in this module if and only if final link of
 // executable is missing definition of main/qMain. This will generally
 // happen via some preprocessor sleight-of-hand where what was originally
 // called main() by student will be renamed to studentMain(), thus causing
 // main to be undefined and this version to be linked that will call to
-// libraryMain() which does setup and then calls studentMain .
+// libraryMain() which does setup and then calls studentMain.
 
 int libraryMain(int, char **);
 
-
 int main(int argc, char **argv)
 {
-    fprintf(stderr, "Using %s from library", __FUNCTION__);
     return libraryMain(argc, argv);
 }
 
@@ -40,6 +35,5 @@ int main(int argc, char **argv)
 // supply both, the other is fine unused
 int qMain(int argc, char **argv)
 {
-    fprintf(stderr, "Using %s from library", __FUNCTION__);
     return libraryMain(argc, argv);
 }
