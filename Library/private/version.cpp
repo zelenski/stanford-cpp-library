@@ -21,4 +21,9 @@ namespace version {
             "Updates from Marty Stepp, Keith Schwarz, and Julie Zelenski.<br>"
             "&copy; Stanford University &bull; 2003-2020.";
     }
+
+    std::string getLibraryVersion()
+    {
+        return std::string(SPL_VERSION);
+    }
 }

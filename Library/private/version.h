@@ -13,7 +13,7 @@
 namespace version {
 
     std::string getLibraryInfoPanelMessage();
-
+    std::string getLibraryVersion();
 }
 
 #endif // _version_h
