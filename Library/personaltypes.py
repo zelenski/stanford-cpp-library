@@ -73,10 +73,10 @@ from functools import partial
 # Element Display Functions #
 #############################
 
-# These functions, named `add_<type>_elem`, control how the elements of each 
+# These functions, named `add_<type>_elem`, control how the elements of each
 # class get displayed in the debug window.
-# 
-# You should only adjust these functions if you wish to change the display 
+#
+# You should only adjust these functions if you wish to change the display
 # format. To understand the relevant code, fire up the debugger to view your
 # desired class, and look at the related add element function here; you should
 # be able to see how the code corresponds to what is displayed.
@@ -141,7 +141,7 @@ def add_queue_elem(d, i, size, value):
     d.putSubItem(name, value)
 
 
-# This function takes in an extra `cols` parameter. Look at `qdump__Grid` for 
+# This function takes in an extra `cols` parameter. Look at `qdump__Grid` for
 # an example of how you can add parameters to these functions.
 def add_grid_elem(d, i, size, value, cols):
     """Adds an element of a grid to the debugger display."""
@@ -154,12 +154,12 @@ def add_grid_elem(d, i, size, value, cols):
 # Stanford Library Dumper Functions #
 #####################################
 
-# These functions, named `qdump__<class>`, are called with the underlying data 
+# These functions, named `qdump__<class>`, are called with the underlying data
 # for a variable of the corresponding type.
 #
 # You can change the displayed type with `d.putBetterType('<new_type>')`. See
 # `qdump__stanfordcpplib__collections__GenericSet` for an example of that.
-# All formatting of the elements should be set using the add element functions 
+# All formatting of the elements should be set using the add element functions
 # above.
 
 
@@ -322,12 +322,12 @@ def vector_helper(d, value, elem_fn):
     if d.isExpanded():
         if is_bool:
             if d.isExpanded():
-                with dumper.Children(d, size, maxNumChild=10000, 
+                with dumper.Children(d, size, maxNumChild=10000,
                         childType=inner_type):
                     for i in d.childRange():
                         q = start + int(i / 8)
                         with dumper.SubItem(d, i):
-                            # std::vector<bool> stores elements as special 
+                            # std::vector<bool> stores elements as special
                             # bit-array, so we read each bit and convert from
                             # {0, 1} -> {false, true}
                             val = (int(d.extractPointer(q)) >> (i % 8)) & 1
@@ -367,7 +367,7 @@ def deque_helper_libcpp(d, value, elem_fn):
     d.putItemCount(size)
     if d.isExpanded():
         ptr_size = d.ptrSize()
-        buf_size = (4096 // inner_size) if innerSize < 256 else 16
+        buf_size = (4096 // inner_size) if inner_size < 256 else 16
         with dumper.Children(d, size, maxNumChild=2000, childType=inner_type):
             for i in d.childRange():
                 k, j = divmod(start + i, buf_size)
@@ -385,7 +385,7 @@ def deque_helper_libstd(d, value, elem_fn):
     if inner_size < 512:
         buf_size = 512 // inner_size
 
-    (mptr, msize, start_cur, start_first, start_last, start_node, finish_cur, 
+    (mptr, msize, start_cur, start_first, start_last, start_node, finish_cur,
      finish_first, finish_last, finish_node) = value.split("pppppppppp")
 
     size = buf_size * ((finish_node - start_node) // d.ptrSize() - 1)
@@ -519,7 +519,7 @@ def map_helper_libcpp(d, value, elem_fn):
                 for res in in_order_traversal(left):
                     yield res
 
-            yield pair.split("{%s}@{%s}" % 
+            yield pair.split("{%s}@{%s}" %
                              (key_type.name, value_type.name))[::2]
 
             if right:
@@ -572,4 +572,4 @@ def map_helper_libstd(d, value, elem_fn):
 def is_lib_cpp(value):
     """Returns whether the class is from libc++."""
 
-    return not value.type.name.startswith('std::')
+    return value.type.name.startswith('std::__1')
