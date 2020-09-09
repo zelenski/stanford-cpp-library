@@ -64,24 +64,56 @@ from dumper import Children, SubItem
 # @author Jeremy Barenholtz 2020
 #
 # Debugging helpers for the CS106B classes (Vector, Stack, Set, Map, etc.)
-# Some code adopted from stdtypes.py ditributed with Qt Creator
+# Some code adopted from stdtypes.py distributed with Qt Creator
 # Tweaked some by Julie Zelenski for Fall quarter 2020
 
+from functools import partial
 
-# These utility functions are shared across collection types
+#############################
+# Element Display Functions #
+#############################
+
+# These functions, named `add_<type>_elem`, control how the elements of each 
+# class get displayed in the debug window.
+# 
+# You should only adjust these functions if you wish to change the display 
+# format. To understand the relevant code, fire up the debugger to view your
+# desired class, and look at the related add element function here; you should
+# be able to see how the code corresponds to what is displayed.
+
 
 def add_map_elem(d, i, key, value):
+    """Adds an element of a map to the debugger display."""
+
     d.putPairItem(None, (key, value), 'key', 'value')
 
+
 def add_set_elem(d, i, key, value):
-    # our Sets stored as map of key,val pairs where val is always true
+    """Adds an element of a set to the debugger display."""
+
+    # Our Sets stored as map of key,val pairs where val is always true
     # ignore this value and don't display
     d.putSubItem('-', key)
 
+
+# Currently only used by Vector
 def add_indexed_elem(d, i, size, value):
+    """Adds an element of an indexed container to the debugger display."""
+
     d.putSubItem(i, value)
 
+
+def add_pq_elem(d, i, size, raw):
+    """Adds an element of a priority queue to the debugger display."""
+
+    priority = raw['priority']
+    value = raw['value']
+    d.putPairItem(None, (value, priority), 'value', 'priority')
+
+
 def add_stack_elem(d, i, size, value):
+    """Adds an element of a stack to the debugger display."""
+
     if size == 1:
         name = 'bottom/top'
     elif i == 0:
@@ -90,9 +122,13 @@ def add_stack_elem(d, i, size, value):
         name = 'top'
     else:
         name = '-'
+
     d.putSubItem(name, value)
 
+
 def add_queue_elem(d, i, size, value):
+    """Adds an element of a queue to the debugger display."""
+
     if size == 1:
         name = 'front/back'
     elif i == 0:
@@ -101,21 +137,44 @@ def add_queue_elem(d, i, size, value):
         name = 'back'
     else:
         name = '-'
+
     d.putSubItem(name, value)
+
+
+# This function takes in an extra `cols` parameter. Look at `qdump__Grid` for 
+# an example of how you can add parameters to these functions.
+def add_grid_elem(d, i, size, value, cols):
+    """Adds an element of a grid to the debugger display."""
+
+    name = '[%d, %d]' % (i // cols, i % cols)
+    d.putSubItem(name, value)
+
+
+#####################################
+# Stanford Library Dumper Functions #
+#####################################
+
+# These functions, named `qdump__<class>`, are called with the underlying data 
+# for a variable of the corresponding type.
+#
+# You can change the displayed type with `d.putBetterType('<new_type>')`. See
+# `qdump__stanfordcpplib__collections__GenericSet` for an example of that.
+# All formatting of the elements should be set using the add element functions 
+# above.
 
 
 def qdump__Set(d, value):
     """Display Stanford Set on debugger."""
 
-    # Grab the internal data from the Stanford Set > Stanford MapType > std::map
+    # Grab the internal data from Set > MapType > std::map
     value = value['_map']['_elements']
     map_helper(d, value, elem_fn=add_set_elem)
 
 
 def qdump__stanfordcpplib__collections__GenericSet(d, value):
-    """Display Stanford Set or HashSet when dumped as GenericSet (windows)."""
+    """Display Stanford Set or HashSet when dumped as GenericSet (Windows)."""
 
-    # Grab the internal data from the Stanford Set > Stanford MapType > std::map
+    # Grab the internal data from the Set > MapType > std::map
     # or std::unordered_map for HashSets
 
     value = value['_map']['_elements']
@@ -125,8 +184,9 @@ def qdump__stanfordcpplib__collections__GenericSet(d, value):
     else:
         map_helper(d, value, elem_fn=add_set_elem)
         cls = "Set"
-    innerType = value.type[0].name
-    d.putBetterType('%s<%s>' % (cls, innerType))
+
+    inner_type = value.type[0].name
+    d.putBetterType('%s<%s>' % (cls, inner_type))
 
 
 def qdump__Stack(d, value):
@@ -150,12 +210,6 @@ def qdump__PriorityQueue(d, value):
 
     # Grab the internal data from PriorityQueue > Vector > std::vector
     value = value['_heap']['_elements']
-
-    def add_pq_elem(d, i, size, raw):
-        priority = raw['priority']
-        value = raw['value']
-        d.putPairItem(None, (value, priority), 'value', 'priority')
-
     vector_helper(d, value, elem_fn=add_pq_elem)
 
 
@@ -170,7 +224,7 @@ def qdump__Deque(d, value):
 def qdump__Map(d, value):
     """Display Stanford Map on debugger."""
 
-    # Grab the internal data from the Stanford Map > std::map
+    # Grab the internal data from Map > std::map
     value = value['_elements']
     map_helper(d, value, elem_fn=add_map_elem)
 
@@ -178,7 +232,7 @@ def qdump__Map(d, value):
 def qdump__Vector(d, value):
     """Display Stanford Vector on debugger."""
 
-    # Grab the internal data from the Stanford Vector > std::vector
+    # Grab the internal data from Vector > std::vector
     value = value['_elements']
     vector_or_deque_helper(d, value, elem_fn=add_indexed_elem)
 
@@ -189,20 +243,15 @@ def qdump__Grid(d, value):
     rows = value['_rowCount'].integer()
     cols = value['_columnCount'].integer()
 
-    # Grab the internal data from the Stanford Grid > Stanford Vector > std::vector
+    # Grab the internal data from the Grid > Vector > std::vector
     value = value['_elements']['_elements']
-
-    def add_grid_elem(d, i, size, val):
-        name = '[%d, %d]' % (i // cols, i % cols)
-        d.putSubItem(name, val)
-
-    vector_or_deque_helper(d, value, elem_fn=add_grid_elem)
+    vector_or_deque_helper(d, value, elem_fn=partial(add_grid_elem, cols=cols))
 
 
 def qdump__HashMap(d, value):
     """Display Stanford HashMap on debugger."""
 
-    # Grab the internal map from the Stanford HashMap > std::unordered_map
+    # Grab the internal map from HashMap > std::unordered_map
     value = value['_elements']
     unordered_map_helper(d, value, elem_fn=add_map_elem)
 
@@ -210,15 +259,22 @@ def qdump__HashMap(d, value):
 def qdump__HashSet(d, value):
     """Display Stanford HashSet on debugger."""
 
-    # Grab the internal map from the Stanford HashMap > std::unordered_map
+    # Grab the internal map from HashMap > std::unordered_map
     value = value['_map']['_elements']
     unordered_map_helper(d, value, elem_fn=add_set_elem)
 
 
+####################
+# Helper Functions #
+####################
+
+
 def vector_or_deque_helper(d, value, elem_fn):
+    """Wrapper for dumping vectors or deque in the bool case."""
+
     # If the inner type is bool, container is actually a std::deque, not vector
-    innerType = value.type[0]
-    if innerType.name == 'bool':
+    inner_type = value.type[0]
+    if inner_type.name == 'bool':
         deque_helper(d, value, elem_fn)
     else:
         vector_helper(d, value, elem_fn)
@@ -227,14 +283,14 @@ def vector_or_deque_helper(d, value, elem_fn):
 def vector_helper(d, value, elem_fn):
     """Dumps the internal vector for Vector, Stack, PriorityQueue, and Grid."""
 
-    innerType = value.type[0]
-    isBool = innerType.name == 'bool'
+    inner_type = value.type[0]
+    is_bool = inner_type.name == 'bool'
 
     # Check if compiled with libstdc++ or libc++
-    isLibCpp = not value.type.name.startswith('std::vector')
+    class_is_lib_cpp = is_lib_cpp(value)
 
-    if isBool:
-        if isLibCpp:
+    if is_bool:
+        if class_is_lib_cpp:
             start = value["__begin_"].pointer()
             size = value["__size_"].integer()  # JDZ extract integer value
             alloc = size
@@ -246,7 +302,7 @@ def vector_helper(d, value, elem_fn):
             alloc = value["_M_end_of_storage"].pointer()
             size = (finish - start) * 8 + foffset - soffset  # 8 is CHAR_BIT.
     else:
-        if isLibCpp:
+        if class_is_lib_cpp:
             start = value["__begin_"].pointer()
             finish = value["__end_"].pointer()
             alloc = value["__end_cap_"].pointer()
@@ -254,7 +310,7 @@ def vector_helper(d, value, elem_fn):
             start = value["_M_start"].pointer()
             finish = value["_M_finish"].pointer()
             alloc = value["_M_end_of_storage"].pointer()
-        size = int((finish - start) / innerType.size())
+        size = int((finish - start) / inner_type.size())
         d.check(finish <= alloc)
         if size > 0:
             d.checkPointer(start)
@@ -264,113 +320,123 @@ def vector_helper(d, value, elem_fn):
     d.check(0 <= size and size <= 1000 * 1000 * 1000)
     d.putItemCount(size)
     if d.isExpanded():
-        if isBool:
+        if is_bool:
             if d.isExpanded():
-                with dumper.Children(d, size, maxNumChild=10000, childType=innerType):
+                with dumper.Children(d, size, maxNumChild=10000, 
+                        childType=inner_type):
                     for i in d.childRange():
                         q = start + int(i / 8)
                         with dumper.SubItem(d, i):
-                            # JDZ value is garbage (but this code path unused??)
-                            val = (((int(d.extractPointer(q)) >> (i % 8)) & 1) != 0)
-                            d.putValue(val)
+                            # std::vector<bool> stores elements as special 
+                            # bit-array, so we read each bit and convert from
+                            # {0, 1} -> {false, true}
+                            val = (int(d.extractPointer(q)) >> (i % 8)) & 1
+                            d.putValue(val != 0)
         else:
-            maxNumChild = 1000 * 1000
+            max_num_child = 1000 * 1000
             d.checkIntType(start)
             d.checkIntType(size)
-            addrBase = start
-            innerSize = innerType.size()
+            addr_base = start
+            inner_size = inner_type.size()
             d.putNumChild(size)
-            with dumper.Children(d, size, innerType, None, maxNumChild,
-                      addrBase=addrBase, addrStep=innerSize):
+            with dumper.Children(d, size, inner_type, None, max_num_child,
+                      addrBase=addr_base, addrStep=inner_size):
                 for i in d.childRange():
-                    value = d.createValue(addrBase + i * innerSize, innerType)
+                    value = d.createValue(addr_base + i * inner_size,
+                                          inner_type)
                     elem_fn(d, i, size, value)
 
 
 def deque_helper(d, value, elem_fn):
+    """Wrapper for dumping deques."""
+
     # Check if compiled with libstdc++ or libc++
-    if value.type.name.startswith('std::deque'):
-        deque_helper_libstd(d, value, elem_fn)
-    else:
+    if is_lib_cpp(value):
         deque_helper_libcpp(d, value, elem_fn)
+    else:
+        deque_helper_libstd(d, value, elem_fn)
 
 
 def deque_helper_libcpp(d, value, elem_fn):
-    """Dumps the internal deque for Stack<bool> or Queue."""
+    """Dumps the deque for containers of bools or Queue for libc++."""
 
-    innerType = value.type[0]
-    innerSize = innerType.size()
+    inner_type = value.type[0]
+    inner_size = inner_type.size()
     mptr, mfirst, mbegin, mend, start, size = value.split("pppptt")
     d.check(0 <= size and size <= 1000 * 1000 * 1000)
     d.putItemCount(size)
     if d.isExpanded():
-        ptrSize = d.ptrSize()
-        bufsize = (4096 // innerSize) if innerSize < 256 else 16
-        with dumper.Children(d, size, maxNumChild=2000, childType=innerType):
+        ptr_size = d.ptrSize()
+        buf_size = (4096 // inner_size) if innerSize < 256 else 16
+        with dumper.Children(d, size, maxNumChild=2000, childType=inner_type):
             for i in d.childRange():
-                k, j = divmod(start + i, bufsize)
-                base = d.extractPointer(mfirst + k * ptrSize)
-                value = d.createValue(base + j * innerSize, innerType)
+                k, j = divmod(start + i, buf_size)
+                base = d.extractPointer(mfirst + k * ptr_size)
+                value = d.createValue(base + j * inner_size, inner_type)
                 elem_fn(d, i, size, value)
 
 
 def deque_helper_libstd(d, value, elem_fn):
-    innerType = value.type[0]
-    innerSize = innerType.size()
-    bufsize = 1
-    if innerSize < 512:
-        bufsize = 512 // innerSize
+    """Dumps the deque for containers of bools or Queue for libstdc++."""
 
-    (mapptr, mapsize, startCur, startFirst, startLast, startNode,
-     finishCur, finishFirst, finishLast, finishNode) = value.split("pppppppppp")
+    inner_type = value.type[0]
+    inner_size = inner_type.size()
+    buf_size = 1
+    if inner_size < 512:
+        buf_size = 512 // inner_size
 
-    size = bufsize * ((finishNode - startNode) // d.ptrSize() - 1)
-    size += (finishCur - finishFirst) // innerSize
-    size += (startLast - startCur) // innerSize
+    (mptr, msize, start_cur, start_first, start_last, start_node, finish_cur, 
+     finish_first, finish_last, finish_node) = value.split("pppppppppp")
+
+    size = buf_size * ((finish_node - start_node) // d.ptrSize() - 1)
+    size += (finish_cur - finish_first) // inner_size
+    size += (start_last - start_cur) // inner_size
 
     d.check(0 <= size and size <= 1000 * 1000 * 1000)
     d.putItemCount(size)
     if d.isExpanded():
-        with dumper.Children(d, size, maxNumChild=2000, childType=innerType):
-            pcur = startCur
-            plast = startLast
-            pnode = startNode
+        with dumper.Children(d, size, maxNumChild=2000, childType=inner_type):
+            pcur = start_cur
+            plast = start_last
+            pnode = start_node
             for i in d.childRange():
-                value = d.createValue(pcur, innerType)
+                value = d.createValue(pcur, inner_type)
                 elem_fn(d, i, size, value)
-                pcur += innerSize
+                pcur += inner_size
                 if pcur == plast:
                     newnode = pnode + d.ptrSize()
                     pfirst = d.extractPointer(newnode)
-                    plast = pfirst + bufsize * d.ptrSize()
+                    plast = pfirst + buf_size * d.ptrSize()
                     pcur = pfirst
                     pnode = newnode
 
 
 def unordered_map_helper(d, value, elem_fn):
-    if value.type.name.startswith('std::unordered_map'):
-        unordered_map_helper_libstd(d, value, elem_fn)
-    else:
+    """Wrapper for dumping unordered maps."""
+
+    if is_lib_cpp(value):
         unordered_map_helper_libcpp(d, value, elem_fn)
+    else:
+        unordered_map_helper_libstd(d, value, elem_fn)
 
 
 def unordered_map_helper_libcpp(d, value, elem_fn):
-    """Dumps the internal unordered_map for HashSet and HashMap."""
+    """Dumps the unordered_map for HashSet and HashMap for libc++."""
 
     (size, _) = value["__table_"]["__p2_"].split("pp")
     d.putItemCount(size)
 
-    keyType = value.type[0]
-    valueType = value.type[1]
-    pairType = value.type[4][0]
+    key_type = value.type[0]
+    value_type = value.type[1]
+    pair_type = value.type[4][0]
 
     if d.isExpanded():
         curr = value["__table_"]["__p1_"].split("pp")[0]
 
         def traverse_list(node):
             while node:
-                (next_, _, pad, pair) = d.split("pp@{%s}" % (pairType.name), node)
-                yield pair.split("{%s}@{%s}" % (keyType.name, valueType.name))[::2]
+                (next_, _, pad, pair) = d.split("pp@{%s}" % (pair_type.name), node)
+                yield pair.split("{%s}@{%s}" % (key_type.name, value_type.name))[::2]
                 node = next_
 
         with dumper.Children(d, size, childType=value.type[0], maxNumChild=1000):
@@ -379,6 +445,8 @@ def unordered_map_helper_libcpp(d, value, elem_fn):
 
 
 def unordered_map_helper_libstd(d, value, elem_fn):
+    """Dumps the unordered_map for HashSet and HashMap for libstdc++."""
+
     try:
         # gcc ~= 4.7
         size = value["_M_element_count"].integer()
@@ -405,30 +473,33 @@ def unordered_map_helper_libstd(d, value, elem_fn):
 
     d.putItemCount(size)
     if d.isExpanded():
-        keyType = value.type[0]
-        valueType = value.type[1]
-        typeCode = 'p@{%s}@{%s}' % (keyType.name, valueType.name)
+        key_type = value.type[0]
+        value_type = value.type[1]
+        type_code = 'p@{%s}@{%s}' % (key_type.name, value_type.name)
         p = start.pointer()
         with Children(d, size):
             for i in d.childRange():
-                p, pad, key, pad, val = d.split(typeCode, p)
+                p, pad, key, pad, val = d.split(type_code, p)
                 elem_fn(d, i, key, val)
 
 
 def map_helper(d, value, elem_fn):
-    """Dumps the internal map for Set or Map."""
-    if value.type.name.startswith('std::map'):
-        map_helper_libstd(d, value, elem_fn)
-    else:
+    """Wrapper for dumping maps."""
+
+    if is_lib_cpp(value):
         map_helper_libcpp(d, value, elem_fn)
+    else:
+        map_helper_libstd(d, value, elem_fn)
 
 
 def map_helper_libcpp(d, value, elem_fn):
+    """Dumps the internal map for Set or Map for libc++."""
+
     try:
         (proxy, head, size) = value.split("ppp")
         d.check(0 <= size and size <= 100 * 1000 * 1000)
 
-    # Sometimes there is extra data at the front. Don't know why at the moment.
+    # JEB sometimes there is extra data at the front (?)
     except RuntimeError:
         (junk, proxy, head, size) = value.split("pppp")
         d.check(0 <= size and size <= 100 * 1000 * 1000)
@@ -436,18 +507,20 @@ def map_helper_libcpp(d, value, elem_fn):
     d.putItemCount(size)
 
     if d.isExpanded():
-        keyType = value.type[0]
-        valueType = value.type[1]
-        pairType = value.type[3][0]
+        key_type = value.type[0]
+        value_type = value.type[1]
+        pair_type = value.type[3][0]
 
         def in_order_traversal(node):
-            (left, right, parent, color, pad, pair) = d.split("pppB@{%s}" % (pairType.name), node)
+            (left, right, parent,
+             color, pad, pair) = d.split("pppB@{%s}" % (pair_type.name), node)
 
             if left:
                 for res in in_order_traversal(left):
                     yield res
 
-            yield pair.split("{%s}@{%s}" % (keyType.name, valueType.name))[::2]
+            yield pair.split("{%s}@{%s}" % 
+                             (key_type.name, value_type.name))[::2]
 
             if right:
                 for res in in_order_traversal(right):
@@ -459,21 +532,24 @@ def map_helper_libcpp(d, value, elem_fn):
 
 
 def map_helper_libstd(d, value, elem_fn):
-    # stuff is actually (color, pad) with 'I@', but we can save cycles/
+    """Dumps the internal map for Set or Map for libstdc++."""
+
+    # stuff is actually (color, pad) with 'I@', but we can save cycles
     (compare, stuff, parent, left, right) = value.split('ppppp')
     size = value["_M_t"]["_M_impl"]["_M_node_count"].integer()
     d.check(0 <= size and size <= 100 * 1000 * 1000)
     d.putItemCount(size)
 
     if d.isExpanded():
-        keyType = value.type[0]
-        valueType = value.type[1]
+        key_type = value.type[0]
+        value_type = value.type[1]
         with Children(d, size, maxNumChild=1000):
             node = value["_M_t"]["_M_impl"]["_M_header"]["_M_left"]
-            nodeSize = node.dereference().type.size()
-            typeCode = "@{%s}@{%s}" % (keyType.name, valueType.name)
+            node_size = node.dereference().type.size()
+            type_code = "@{%s}@{%s}" % (key_type.name, value_type.name)
             for i in d.childRange():
-                (pad1, key, pad2, value) = d.split(typeCode, node.pointer() + nodeSize)
+                (pad1, key, pad2, value) = d.split(type_code, node.pointer()
+                                                              + node_size)
                 elem_fn(d, i, key, value)
 
                 if node["_M_right"].pointer() == 0:
@@ -491,3 +567,9 @@ def map_helper_libstd(d, value, elem_fn):
                         if node["_M_left"].pointer() == 0:
                             break
                         node = node["_M_left"]
+
+
+def is_lib_cpp(value):
+    """Returns whether the class is from libc++."""
+
+    return not value.type.name.startswith('std::')
