@@ -119,22 +119,16 @@ std::string GFont::toFontString(const QFont& font) {
     switch (font.weight()) {
         case QFont::DemiBold:
         case QFont::Bold:
-#if QT_VERSION >= QT_VERSION_CHECK(5, 9, 0)
         case QFont::ExtraBold:
-#endif // QT_VERSION
         case QFont::Black:
             out << "-bold";
             dashPrinted = true;
             break;
-#if QT_VERSION >= QT_VERSION_CHECK(5, 9, 0)
         case QFont::Thin:
         case QFont::ExtraLight:
-#endif // QT_VERSION
         case QFont::Light:
         case QFont::Normal:
-#if QT_VERSION >= QT_VERSION_CHECK(5, 9, 0)
         case QFont::Medium:
-#endif // QT_VERSION
         default:
             // not bold
             break;

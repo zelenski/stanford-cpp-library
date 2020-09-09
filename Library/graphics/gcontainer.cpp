@@ -228,33 +228,24 @@ double GContainer::getMargin() const {
 }
 
 double GContainer::getPadding() const {
-    int left, right, top, bottom;
-    _iqcontainer->getContentsMargins(&left, &top, &right, &bottom);
-    return (left + top + right + bottom) / 4.0;
+    QMargins m = _iqcontainer->contentsMargins();
+    return (m.left() + m.top() + m.right() + m.bottom()) / 4.0;
 }
 
 double GContainer::getPaddingBottom() const {
-    int left, right, top, bottom;
-    _iqcontainer->getContentsMargins(&left, &top, &right, &bottom);
-    return bottom;
+    return _iqcontainer->contentsMargins().bottom();
 }
 
 double GContainer::getPaddingLeft() const {
-    int left, right, top, bottom;
-    _iqcontainer->getContentsMargins(&left, &top, &right, &bottom);
-    return left;
+    return _iqcontainer->contentsMargins().left();
 }
 
 double GContainer::getPaddingRight() const {
-    int left, right, top, bottom;
-    _iqcontainer->getContentsMargins(&left, &top, &right, &bottom);
-    return right;
+    return _iqcontainer->contentsMargins().right();
 }
 
 double GContainer::getPaddingTop() const {
-    int left, right, top, bottom;
-    _iqcontainer->getContentsMargins(&left, &top, &right, &bottom);
-    return top;
+    return _iqcontainer->contentsMargins().top();
 }
 
 GDimension GContainer::getPreferredSize() const {

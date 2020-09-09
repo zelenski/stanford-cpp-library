@@ -282,6 +282,7 @@ int addr2line_all(void** addrs, int length, std::string& output) {
 
     if (toolpath.empty()) {
         std::cerr << "Backtrace unable to identify function names, no tool executable found." << std::endl;
+        return -1;
     } else {
         return execAndCapture(command.str(), output);
     }

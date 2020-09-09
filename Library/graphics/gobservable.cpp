@@ -153,8 +153,8 @@ void GObservable::fireGEvent(QWheelEvent* event,
                 /* name   */ eventName,
                 /* source */ this);
     wheelEvent.setButton((int) event->buttons());
-    wheelEvent.setX(event->x());
-    wheelEvent.setY(event->y());
+    wheelEvent.setX(event->position().x());
+    wheelEvent.setY(event->position().y());
     wheelEvent.setModifiers(event->modifiers());
     wheelEvent.setInternalEvent(event);
     fireEvent(wheelEvent);
