@@ -2,7 +2,7 @@
  * File: direction.cpp
  * -------------------
  * This file implements the direction.h interface.
- * 
+ *
  * @version 2016/08/04
  * - fixed operator >> to not throw errors
  * @version 2014/10/08
@@ -92,9 +92,6 @@ std::istream& operator >>(std::istream& is, Direction& dir) {
     } else if (startsWith("WEST", token)) {
         dir = WEST;
     } else {
-#ifdef SPL_ERROR_ON_COLLECTION_PARSE
-        error("Direction::operator >>: Unrecognized direction \"" + token + "\"");
-#endif
         is.setstate(std::ios_base::failbit);
         return is;
     }
