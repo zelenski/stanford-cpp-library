@@ -75,9 +75,7 @@ void initializeLibrary(int argc, char** argv) {
 }
 
 void initializeLibraryStudentThread() {
-#if defined(SPL_CONSOLE_PRINT_EXCEPTIONS)
     setConsolePrintExceptions(true, /* force */ true);
-#endif
 }
 
 // this should be roughly the same code as platform.cpp's parseArgs function
@@ -123,16 +121,6 @@ void shutdownLibrary() {
     shutdownConsole();
 #endif // SPL_HEADLESS_MODE
 }
-
-std::string pathForExecutable(const std::string& executableName)
-{
-    // JDZ: Use QT search function to find executable within user's path/environment
-    // This will find the addr2line installed with mingw rather than having to ship our
-    // own and deal with possible versionitis
-    QString found = QStandardPaths::findExecutable(QString::fromStdString(executableName));
-    return found.toStdString();
-}
-
 
 } // namespace stanfordcpplib
 
