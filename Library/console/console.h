@@ -8,7 +8,7 @@
  * __DONT_ENABLE_QT_GRAPHICAL_CONSOLE right before #include'ing this header.
  * Once the graphical console has been enabled, it cannot easily be turned off
  * again for that program.
- * 
+ *
  * @author Marty Stepp
  * @version 2018/11/22
  * - added headless mode support
@@ -296,9 +296,6 @@ void shutdownConsole();
  * declare the prototypes but not initialize the graphical console.
  */
 #ifndef __DONT_ENABLE_QT_GRAPHICAL_CONSOLE
-
-// signal that graphical console is in use (so it will be initialized)
-#define SPL_GRAPHICAL_CONSOLE_IN_USE 1
 
 extern void setConsoleEnabled(bool);
 
