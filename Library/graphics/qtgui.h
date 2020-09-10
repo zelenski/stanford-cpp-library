@@ -52,7 +52,7 @@ public:
      * Returns the display name of the application (used as
      * title for window and menu). If name not (yet) available,
      * returns empty string.
-     */    
+     */
     std::string getApplicationDisplayName() const;
 
     /**
@@ -131,7 +131,7 @@ namespace stanfordcpplib {
  * Code that runs when student thread shuts down.
  * @private
  */
-void endOfLibraryStudentThread();
+void studentThreadHasExited(const std::string& reason);
 } // namespace stanfordcpplib
 
 #endif // _qtgui_h

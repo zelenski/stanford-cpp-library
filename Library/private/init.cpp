@@ -74,7 +74,7 @@ void initializeLibrary(int argc, char** argv) {
 #endif // SPL_HEADLESS_MODE
 }
 
-void initializeLibraryStudentThread() {
+void initializeStudentThread() {
     setConsolePrintExceptions(true, /* force */ true);
 }
 
@@ -84,7 +84,7 @@ static void parseArgsQt(int argc, char** argv) {
         return;
     }
     std::string arg0 = argv[0];
-    exceptions::setProgramNameForStackTrace(argv[0]);
+    exceptions::setProgramName(argv[0]);
     // programName() = getRoot(getTail(arg0));
 
 #ifndef _WIN32

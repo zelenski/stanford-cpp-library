@@ -117,7 +117,7 @@ public:
     virtual void showFontDialog();
     virtual void showInputScriptDialog();
     virtual void showPrintDialog();
-    virtual void shutdown();
+    virtual void shutdown(const std::string& reason);
 
 private:
     static const bool ALLOW_RICH_INPUT_EDITING;
@@ -126,7 +126,6 @@ private:
     static const double DEFAULT_X;
     static const double DEFAULT_Y;
     static const std::string CONFIG_FILE_NAME;
-    static const std::string DEFAULT_WINDOW_TITLE;
     static const std::string DEFAULT_FONT_FAMILY;
     static const std::string DEFAULT_FONT_WEIGHT;
     static const int DEFAULT_FONT_SIZE;

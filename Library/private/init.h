@@ -43,7 +43,7 @@ void initializeLibrary(int argc, char** argv);
  * Currently this is used primarily to set up exception handlers for the
  * student's thread so we can print usable stack traces.
  */
-void initializeLibraryStudentThread();
+void initializeStudentThread();
 
 /**
  * Sets whether the std::exit function will be enabled or not.

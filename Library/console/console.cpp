@@ -314,7 +314,7 @@ void setConsoleWindowTitle(const std::string& title) {
 
 void shutdownConsole() {
     if (getConsoleEnabled() && !GConsoleWindow::instance()->isLocked()) {
-        GConsoleWindow::instance()->shutdown();
+        GConsoleWindow::instance()->shutdown("Shutdown");
     }
 }
 

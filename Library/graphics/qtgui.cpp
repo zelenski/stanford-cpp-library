@@ -129,10 +129,9 @@ void QtGui::startBackgroundEventLoop(GThunkInt mainFunc, bool exitAfter) {
 
     if (!GThread::studentThreadExists()) {
         GThread::startStudentThread([&]() -> int {
-            stanfordcpplib::initializeLibraryStudentThread();
+            stanfordcpplib::initializeStudentThread();
             int result = mainFunc();
-            stanfordcpplib::endOfLibraryStudentThread();
-            stanfordcpplib::endOfLibraryStudentThread(); // JDZ why called twice??
+            stanfordcpplib::studentThreadHasExited("Completed");
             return result;
         });
 
@@ -161,16 +160,10 @@ void QtGui::startEventLoop(bool exitAfter) {
 
 
 namespace stanfordcpplib {
-void endOfLibraryStudentThread() {
+void studentThreadHasExited(const std::string& reason) {
     // briefly wait for the console to finish printing any/all output
     GThread::getCurrentThread()->yield();
     GThread::getCurrentThread()->sleep(1);
-
-    int result = 0;
-    if (GThread::getStudentThread() != nullptr) {
-        result = GThread::getStudentThread()->getResult();
-    }
-    static_cast<void>(result);   // so it won't be unused
 
     // if I get here, student's main() has finished running;
     // indicate this by showing a completed title on the graphical console
@@ -178,7 +171,7 @@ void endOfLibraryStudentThread() {
 #ifndef SPL_HEADLESS_MODE
         GConsoleWindow* console = getConsoleWindow();
         if (console) {
-            console->shutdown();
+            console->shutdown(reason);
         }
 #endif // SPL_HEADLESS_MODE
     } else {

@@ -64,7 +64,6 @@ void setConsolePropertiesQt();
 /*static*/ const double GConsoleWindow::DEFAULT_X = 10;
 /*static*/ const double GConsoleWindow::DEFAULT_Y = 40;
 /*static*/ const std::string GConsoleWindow::CONFIG_FILE_NAME = "spl-jar-settings.txt";
-/*static*/ const std::string GConsoleWindow::DEFAULT_WINDOW_TITLE = "Console";
 /*static*/ const std::string GConsoleWindow::DEFAULT_FONT_FAMILY = "Monospace";
 /*static*/ const std::string GConsoleWindow::DEFAULT_FONT_WEIGHT = "";
 /*static*/ const int GConsoleWindow::DEFAULT_FONT_SIZE = 12;
@@ -283,11 +282,11 @@ void GConsoleWindow::_initWidgets() {
     // tell window to shut down when it is closed
     setWindowListener([this](GEvent event) {
         if (event.getEventType() == WINDOW_CLOSING) {
-            shutdown();
+            shutdown("Close");
         }
     });
 
-    setTitle(DEFAULT_WINDOW_TITLE);
+    setTitle(QCoreApplication::applicationName().toStdString() + " Console");
     setCloseOperation(GWindow::CLOSE_HIDE);
     setLocation(DEFAULT_X, DEFAULT_Y);
     setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
@@ -385,7 +384,7 @@ void GConsoleWindow::clipboardPaste() {
 }
 
 void GConsoleWindow::close() {
-    shutdown();
+    shutdown("Close");
     GWindow::close();   // call super
 }
 
@@ -1395,8 +1394,7 @@ void GConsoleWindow::showPrintDialog() {
     // TODO
 }
 
-void GConsoleWindow::shutdown() {
-    const std::string PROGRAM_COMPLETED_TITLE_SUFFIX = " [completed]";
+void GConsoleWindow::shutdown(const std::string& reason) {
     _shutdown = true;
     std::cout.flush();
     std::cerr.flush();
@@ -1417,8 +1415,8 @@ void GConsoleWindow::shutdown() {
 
     _textArea->setEditable(false);
     std::string title = getTitle();
-    if (title.find(PROGRAM_COMPLETED_TITLE_SUFFIX) == std::string::npos) {
-        setTitle(title + PROGRAM_COMPLETED_TITLE_SUFFIX);
+    if (title.find(reason) == std::string::npos) {
+        setTitle(title + "[" + reason + "]");
     }
 
     // TODO: disable some menu items
