@@ -155,7 +155,6 @@ inline bool readGenericValue(std::istream& is, std::string& value) {
 namespace stanfordcpplib {
 namespace collections {
 
-#ifdef SPL_THROW_ON_INVALID_ITERATOR
 template <typename CollectionType, typename IteratorType>
 void checkVersion(const CollectionType& coll, const IteratorType& itr,
                   const std::string& memberName = "") {
@@ -166,18 +165,11 @@ void checkVersion(const CollectionType& coll, const IteratorType& itr,
         if (!msg.empty()) {
             msg += ": ";
         }
-        msg += "Collection modified during iteration. Iterator is now invalid.\n";
-        msg += "Do not modify a collection during a for-each loop or iterator traversal.";
+        msg += "The collection was modified during iteration, which invalidates operation.\n";
+        msg += "Do not modify a collection during a for-each loop!";
         error(msg);
     }
 }
-#else // SPL_THROW_ON_INVALID_ITERATOR
-template <typename CollectionType, typename IteratorType>
-void checkVersion(const CollectionType&, const IteratorType&,
-                  const std::string& = "") {
-    // empty
-}
-#endif
 
 /*
  * Performs a comparison for ordering between the given two collections

@@ -71,9 +71,8 @@ develop_mode {
     CONFIG += silent
 }
 
-# JDZ to throw exceptions when a collection iterator is used after it has
-# been invalidated (e.g. if you remove from a Map while iterating over it)
-DEFINES += SPL_THROW_ON_INVALID_ITERATOR
+# JDZ maybe we won't have any, wow!
+# DEFINES +=
 
 # should we attempt to precompile the Qt moc_*.cpp files for speed?
 DEFINES += SPL_PRECOMPILE_QT_MOC_FILES
