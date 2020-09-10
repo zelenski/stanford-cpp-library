@@ -25,10 +25,13 @@
 #include <iostream>
 #include <string>
 
-// bug fix for missing SIGUSR1 on some Windows systems
+// bug fix for missing signals on some Windows systems
 #ifndef SIGUSR1
 #define SIGUSR1 10
-#endif // SIGUSR2
+#endif // SIGUSR1
+#ifndef SIGBUS
+#define SIGBUS 7
+#endif
 
 /**
  * This exception is thrown by calls to the <code>error</code>
@@ -84,23 +87,6 @@ public:
     virtual std::string getMessage() const;
 
     /**
-     * Returns a stack trace for this exception as a multi-line string.
-     * See exceptions.h/cpp for descriptions of the format.
-     * Not every exception has a proper stack trace, based on when/why it was
-     * thrown, platform incompatibilities, and other issues; use hasStackTrace to
-     * check if a given exception's stack trace is populated.
-     */
-    virtual std::string getStackTrace() const;
-
-    /**
-     * Returns whether this exception has a non-empty stack trace.
-     * Not every exception has a proper stack trace, based on when/why it was
-     * thrown, platform incompatibilities, and other issues; use hasStackTrace to
-     * check if a given exception's stack trace is populated.
-     */
-    virtual bool hasStackTrace() const;
-
-    /**
      * Sets what kind of exception this is.
      * Default is "error".
      */
@@ -111,22 +97,9 @@ public:
      */
     virtual const char* what() const noexcept;
 
-protected:
-    /**
-     * Sets this exception's stack trace to the given multi-line string.
-     */
-    void setStackTrace(const std::string& stackTrace);
-
 private:
     std::string _kind;
     std::string _msg;
-    std::string _stackTrace;
-
-    /**
-     * Prepends "*** " to each line of the given string.
-     * Used to format stack traces that print to the console.
-     */
-    static std::string insertStarsBeforeEachLine(const std::string& s);
 };
 
 /**
