@@ -193,7 +193,7 @@ int compare(const CollectionType& coll1, const CollectionType& coll2) {
     if (&coll1 == &coll2) {
         return 0;
     }
-    
+
     auto itr1 = coll1.begin(),
          itr2 = coll2.begin(),
          end1 = coll1.end(),
@@ -202,7 +202,7 @@ int compare(const CollectionType& coll1, const CollectionType& coll2) {
          itr1 != end1 && itr2 != end2;
          ++itr1, ++itr2) {
         // compare each pair of elements from iterators
-        
+
         // TO STUDENT:
         // If the line below is failing to compile in your program, it probably
         // means that you are trying to make a nested collection
@@ -218,7 +218,7 @@ int compare(const CollectionType& coll1, const CollectionType& coll2) {
             return 1;
         }
     }
-    
+
     // if we get here, everything from v1 matched v2, so they are either equal,
     // or one is shorter than the other (fewer elements) and is therefore less
     if (itr1 == end1 && itr2 == end2) {
@@ -246,7 +246,7 @@ int compareMaps(const MapType& map1, const MapType& map2) {
     if (&map1 == &map2) {
         return 0;
     }
-    
+
     auto itr1 = map1.begin(),
          itr2 = map2.begin(),
          end1 = map1.end(),
@@ -255,7 +255,7 @@ int compareMaps(const MapType& map1, const MapType& map2) {
          itr1 != end1 && itr2 != end2;
          ++itr1, ++itr2) {
         // compare each pair of elements from iterators
-        
+
         // TO STUDENT:
         // If the line below is failing to compile in your program, it probably
         // means that you are trying to make a nested collection
@@ -270,7 +270,7 @@ int compareMaps(const MapType& map1, const MapType& map2) {
         } else if (*itr2 < *itr1) {
             return 1;
         }
-        
+
         // key1 == key2, so compare values
         auto value1 = map1[*itr1];
         auto value2 = map2[*itr2];
@@ -280,7 +280,7 @@ int compareMaps(const MapType& map1, const MapType& map2) {
             return 1;
         }
     }
-    
+
     // if we get here, everything from v1 matched v2, so they are either equal,
     // or one is shorter than the other (fewer elements) and is therefore less
     if (itr1 == end1 && itr2 == end2) {
@@ -479,19 +479,11 @@ const ElementType& randomElementIndexed(const CollectionType<ElementType>& colle
  * The collection must have an add() method that takes a single value,
  * and a clear() method that removes all elements from the collection.
  */
-#ifdef SPL_ERROR_ON_COLLECTION_PARSE
-template <typename CollectionType, typename ElementType>
-std::istream& readCollection(std::istream& input, CollectionType& collection, ElementType& element, std::string descriptor = "readIterable") {
-#else
 template <typename CollectionType, typename ElementType>
 std::istream& readCollection(std::istream& input, CollectionType& collection, ElementType& element, std::string /* descriptor */) {
-#endif
     char ch = '\0';
     input >> ch;
     if (ch != '{') {
-#ifdef SPL_ERROR_ON_COLLECTION_PARSE
-        error(descriptor + ": Missing {");
-#endif
         input.setstate(std::ios_base::failbit);
         return input;
     }
@@ -501,9 +493,6 @@ std::istream& readCollection(std::istream& input, CollectionType& collection, El
         input.unget();
         while (true) {
             if (!readGenericValue(input, element)) {
-#ifdef SPL_ERROR_ON_COLLECTION_PARSE
-                error(descriptor + ": parse error");
-#endif
                 return input;
             }
             collection.add(element);
@@ -512,9 +501,6 @@ std::istream& readCollection(std::istream& input, CollectionType& collection, El
                 break;
             }
             if (ch != ',') {
-#ifdef SPL_ERROR_ON_COLLECTION_PARSE
-                error(std::string(descriptor + ": Unexpected character ") + ch);
-#endif
                 input.setstate(std::ios_base::failbit);
                 return input;
             }
@@ -528,19 +514,12 @@ std::istream& readCollection(std::istream& input, CollectionType& collection, El
  * The collection must have an add() method that takes a single value,
  * and a clear() method that removes all elements from the collection.
  */
-#ifdef SPL_ERROR_ON_COLLECTION_PARSE
-template <typename MapType, typename KeyType, typename ValueType>
-std::istream& readMap(std::istream& input, MapType& map, KeyType& key, ValueType& value, std::string descriptor = "readIterable") {
-#else
+
 template <typename MapType, typename KeyType, typename ValueType>
 std::istream& readMap(std::istream& input, MapType& map, KeyType& key, ValueType& value, std::string /* descriptor */) {
-#endif
     char ch = '\0';
     input >> ch;
     if (ch != '{') {
-#ifdef SPL_ERROR_ON_COLLECTION_PARSE
-        error(descriptor + ": Missing {");
-#endif
         input.setstate(std::ios_base::failbit);
         return input;
     }
@@ -550,23 +529,14 @@ std::istream& readMap(std::istream& input, MapType& map, KeyType& key, ValueType
         input.unget();
         while (true) {
             if (!readGenericValue(input, key)) {
-#ifdef SPL_ERROR_ON_COLLECTION_PARSE
-                error(descriptor + ": parse key error");
-#endif
                 return input;
             }
             input >> ch;
             if (ch != ':') {
-#ifdef SPL_ERROR_ON_COLLECTION_PARSE
-                error(descriptor + ": Missing colon after key");
-#endif
                 input.setstate(std::ios_base::failbit);
                 return input;
             }
             if (!readGenericValue(input, value)) {
-#ifdef SPL_ERROR_ON_COLLECTION_PARSE
-                error(descriptor + ": parse value error");
-#endif
                 return input;
             }
             map.put(key, value);
@@ -575,9 +545,6 @@ std::istream& readMap(std::istream& input, MapType& map, KeyType& key, ValueType
                 break;
             }
             if (ch != ',') {
-#ifdef SPL_ERROR_ON_COLLECTION_PARSE
-                error(std::string(descriptor + ": Unexpected character ") + ch);
-#endif
                 input.setstate(std::ios_base::failbit);
                 return input;
             }

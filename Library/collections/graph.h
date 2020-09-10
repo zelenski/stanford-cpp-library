@@ -3,7 +3,7 @@
  * -------------
  * This file exports a parameterized Graph class used to represent graphs,
  * which consist of a set of nodes (vertices) and a set of arcs (edges).
- * 
+ *
  * @version 2019/08/13
  * - fixed compiler error with Graph default constructor on older g++ compilers
  * @version 2018/09/07
@@ -88,13 +88,13 @@ public:
      * @bigoh O(1)
      */
     Graph();
-    
+
     /**
      * Frees the internal storage allocated to represent the graph.
      * @bigoh O(V + E)
      */
     virtual ~Graph();
-    
+
     /**
      * Adds a directed arc to the graph from node n1 to n2.
      * If either node is not found in the graph, said node will be added to the graph.
@@ -250,7 +250,7 @@ public:
      * @bigoh O(V log V + E log E)
      */
     bool equals(const Graph<NodeType, ArcType>& graph2) const;
-    
+
     /**
      * Returns the first node in the graph in the order as would be returned by
      * a for-each loop or iterator.
@@ -419,7 +419,7 @@ public:
      * @bigoh O(V log V)
      */
     Set<std::string> getNodeNames() const;
-    
+
     /**
      * Returns the set of all nodes in the graph.
      * These are direct pointers to the internal NodeType* structures in the
@@ -587,7 +587,7 @@ public:
      * @bigoh O(V + E)
      */
     std::string toString() const;
-    
+
     /**
      * Writes the data for the arc to the output stream.
      * The default implementation of this method is empty.
@@ -609,7 +609,7 @@ public:
     }
 
     using graph_iterator = typename Set<NodeType *>::const_iterator;
-    
+
     /**
      * Returns an STL iterator positioned at the first vertex in the graph.
      * @bigoh O(1)
@@ -625,7 +625,7 @@ public:
     graph_iterator end() const {
         return _nodes.end();
     }
-    
+
     /**
      * Relational operators to compare two graphs.
      * The ==, != operators require that the ValueType has a == operator
@@ -1340,9 +1340,6 @@ bool Graph<NodeType, ArcType>::scanGraphEntry(TokenScanner& scanner) {
     }
     NodeType* n2 = scanNode(scanner);
     if (!n2) {
-#ifdef SPL_ERROR_ON_COLLECTION_PARSE
-        error("Graph::scanGraphEntry: Missing node after " + op);
-#endif
         return false;
     }
     ArcType* forward = new ArcType();
@@ -1454,24 +1451,24 @@ int Graph<NodeType, ArcType>::graphCompare(const Graph<NodeType, ArcType>& graph
     if (this == &graph2) {
         return 0;
     }
-    
+
     auto itr1 = begin();
     auto itr2 = graph2.begin();
     auto g1end = end();
     auto g2end = graph2.end();
-    
+
     while (itr1 != g1end && itr2 != g2end) {
         // compare each pair of elements from iterators
         NodeType* node1 = *itr1;
         NodeType* node2 = *itr2;
-        
+
         // optimization: if literally same node, equal; don't compare
         if (node1 != node2) {
             // first check names
             if (node1->name != node2->name) {
                 return node1->name.compare(node2->name);
             }
-            
+
             // then check all arcs, pairwise
             auto eitr1 = node1->arcs.begin();
             auto eitr2 = node2->arcs.begin();
@@ -1480,7 +1477,7 @@ int Graph<NodeType, ArcType>::graphCompare(const Graph<NodeType, ArcType>& graph
             while (eitr1 != e1end && eitr2 != e2end) {
                 ArcType* arc1 = *eitr1;
                 ArcType* arc2 = *eitr2;
-                
+
                 // optimization: if literally same arc, equal; don't compare
                 if (arc1 != arc2) {
                     // first check start vertex names, then end vertex names
@@ -1493,7 +1490,7 @@ int Graph<NodeType, ArcType>::graphCompare(const Graph<NodeType, ArcType>& graph
                 eitr1++;
                 eitr2++;
             }
-            
+
             // if we get here, everything from me matched graph2, so either arcs equal,
             // or one is shorter than the other (fewer arcs) and is therefore less
             if (eitr1 == e1end && eitr2 == e2end) {
@@ -1504,13 +1501,13 @@ int Graph<NodeType, ArcType>::graphCompare(const Graph<NodeType, ArcType>& graph
                 return 1;
             }
         }
-        
+
         // if we get here, those two vertices and their outbound arcs
         // were equal; so advance to next element
         itr1++;
         itr2++;
     }
-    
+
     // if we get here, everything from me matched graph2, so either equal,
     // or one is shorter than the other (fewer vertices) and is therefore less
     if (itr1 == g1end && itr2 == g2end) {
@@ -1608,9 +1605,6 @@ std::istream& operator >>(std::istream& is, Graph<NodeType, ArcType>& g) {
     scanner.addOperator("->");
     std::string token = scanner.nextToken();
     if (token != "{") {
-#ifdef SPL_ERROR_ON_COLLECTION_PARSE
-        error("Graph::operator >>: Missing {");
-#endif
         is.setstate(std::ios_base::failbit);
         return is;
     }
@@ -1620,18 +1614,12 @@ std::istream& operator >>(std::istream& is, Graph<NodeType, ArcType>& g) {
         if (token == "}") {
             scanner.saveToken(token);
         } else if (token != ",") {
-#ifdef SPL_ERROR_ON_COLLECTION_PARSE
-            error("Graph::operator >>: Unexpected token " + token);
-#endif
             is.setstate(std::ios_base::failbit);
             return is;
         }
     }
     token = scanner.nextToken();
     if (token != "}") {
-#ifdef SPL_ERROR_ON_COLLECTION_PARSE
-        error("Graph::operator >>: Missing }");
-#endif
         is.setstate(std::ios_base::failbit);
         return is;
     }

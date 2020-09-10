@@ -580,9 +580,6 @@ std::istream& operator >>(std::istream& is, PriorityQueue<ValueType>& pq) {
     char ch = '\0';
     is >> ch;
     if (ch != '{') {
-#ifdef SPL_ERROR_ON_COLLECTION_PARSE
-        error("PriorityQueue::operator >>: Missing {");
-#endif
         is.setstate(std::ios_base::failbit);
         return is;
     }
@@ -594,17 +591,11 @@ std::istream& operator >>(std::istream& is, PriorityQueue<ValueType>& pq) {
             double priority = 0.0;
             is >> priority >> ch;
             if (ch != ':') {
-#ifdef SPL_ERROR_ON_COLLECTION_PARSE
-                error("PriorityQueue::operator >>: Missing colon after priority");
-#endif
                 is.setstate(std::ios_base::failbit);
                 return is;
             }
             ValueType value;
             if (!readGenericValue(is, value)) {
-#ifdef SPL_ERROR_ON_COLLECTION_PARSE
-                error("PriorityQueue::operator >>: parse error");
-#endif
                 return is;
             }
             pq.enqueue(value, priority);
@@ -613,9 +604,6 @@ std::istream& operator >>(std::istream& is, PriorityQueue<ValueType>& pq) {
                 break;
             }
             if (ch != ',') {
-#ifdef SPL_ERROR_ON_COLLECTION_PARSE
-                error(std::string("PriorityQueue::operator >>: Unexpected character ") + ch);
-#endif
                 is.setstate(std::ios_base::failbit);
                 return is;
             }

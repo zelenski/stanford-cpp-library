@@ -7,7 +7,7 @@
  * are empty.  It uses far less memory in such cases than a Grid does.
  * If the grid is expected to be mostly full of meaningful data,
  * Grid is recommended for use over SparseGrid.
- * 
+ *
  * @author Marty Stepp
  * @version 2018/03/12
  * - added overloads that accept GridLocation: get, inBounds, isSet, locations,
@@ -171,7 +171,7 @@ public:
      * Returns the grid's height, that is, the number of rows in the grid.
      */
     int height() const;
-    
+
     /*
      * Method: inBounds
      * Usage: if (grid.inBounds(row, col)) ...
@@ -836,7 +836,7 @@ void SparseGrid<ValueType>::resize(int nRows, int nCols, bool retain) {
     int oldnCols = this->_columnCount;
     this->_rowCount = nRows;
     this->_columnCount = nCols;
-    
+
     if (retain) {
         // if resizing to a smaller size, must evict any row/col entries
         // that exceed the new grid's bounds
@@ -982,19 +982,19 @@ int SparseGrid<ValueType>::gridCompare(const SparseGrid& grid2) const {
             } else if (r >= h2) {
                 return 1;
             }
-            
+
             if (c >= w1) {
                 return -1;
             } else if (c >= w2) {
                 return 1;
             }
-            
+
             if (!isSet(r, c) && grid2.isSet(r, c)) {
                 return -1;
             } else if (isSet(r, c) && !grid2.isSet(r, c)) {
                 return 1;
             }
-            
+
             if (get(r, c) < grid2.get(r, c)) {
                 return -1;
             } else if (grid2.get(r, c) < get(r, c)) {
@@ -1077,9 +1077,6 @@ std::istream& operator >>(std::istream& is, SparseGrid<ValueType>& grid) {
 
     // read "{...}" (map of elements)
     if (!(is >> grid._elements)) {
-#ifdef SPL_ERROR_ON_COLLECTION_PARSE
-        error("SparseGrid::operator >>: Invalid elements");
-#endif
         is.setstate(std::ios_base::failbit);
         return is;
     }
@@ -1087,17 +1084,11 @@ std::istream& operator >>(std::istream& is, SparseGrid<ValueType>& grid) {
     // throw away ', ' token
     std::string comma;
     if (!(is >> comma)) {
-#ifdef SPL_ERROR_ON_COLLECTION_PARSE
-        error("SparseGrid::operator >>: Invalid format");
-#endif
         is.setstate(std::ios_base::failbit);
         return is;
     }
 
     if (!(is >> grid._rowCount)) {
-#ifdef SPL_ERROR_ON_COLLECTION_PARSE
-        error("SparseGrid::operator >>: Invalid number of rows");
-#endif
         is.setstate(std::ios_base::failbit);
         return is;
     }
@@ -1106,9 +1097,6 @@ std::istream& operator >>(std::istream& is, SparseGrid<ValueType>& grid) {
     is >> x;       // throw away 'x' token
 
     if (!(is >> grid._columnCount)) {
-#ifdef SPL_ERROR_ON_COLLECTION_PARSE
-        error("SparseGrid::operator >>: Invalid number of rows");
-#endif
         is.setstate(std::ios_base::failbit);
         return is;
     }
@@ -1136,7 +1124,7 @@ const T& randomElement(const SparseGrid<T>& grid) {
     if (grid.isEmpty()) {
         error("randomElement: empty sparse grid was passed");
     }
-    
+
     // pick a non-empty row, then pick a random element from it
     // TODO: fix, this is NOT evenly distributed when rows/cols are unequal in size
     int row = randomKey(grid._elements);
