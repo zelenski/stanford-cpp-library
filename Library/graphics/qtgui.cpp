@@ -29,16 +29,13 @@ QSPLApplication::QSPLApplication(int& argc, char *argv[])
 }
 
 bool QSPLApplication::notify(QObject* receiver, QEvent* e) {
-#if defined(SPL_CONSOLE_PRINT_EXCEPTIONS)
     try {
         return QApplication::notify(receiver, e);
     } catch (ErrorException& ex) {
         ex.dump();
         return false;
     }
-#else
     return QApplication::notify(receiver, e);   // call super
-#endif
 }
 
 
