@@ -30,6 +30,25 @@
 #include "require.h"
 #include <chrono>
 
+#ifdef __APPLE__
+#include <pthread.h>
+void native_set_thread_name(const char *name)
+{
+    pthread_setname_np(name);
+}
+#else
+void native_set_thread_name(const char *)
+{ /* ignored for other platforms */ }
+
+    // JDZ:  SetThreadDescription on windows sets a name, but
+    // QT debugger on Windows won't display it
+    // for linux it ay be as simple as
+    // pthread_setname_np(pthread_self(), name);
+    // but I don't have linux system to test to be sure
+
+#endif
+
+
 QFunctionThread::QFunctionThread(GThunk func)
         : _func(func),
           _hasReturn(false),
@@ -149,7 +168,7 @@ GThread::GThread() {
 
 /*static*/ void GThread::startStudentThread(GThunkInt mainFunc) {
     if (!_studentThread) {
-        _studentThread = new GThreadStd(mainFunc);
+        _studentThread = new GThreadStd(mainFunc, "Student main()");
         _studentThread->start();
     }
 }
@@ -372,7 +391,10 @@ int GThreadStd::priority() const {
     return static_cast<int>(QThread::NormalPriority);
 }
 
+
+
 void GThreadStd::run() {
+    native_set_thread_name(_name.c_str());
     // run the given function
     _running = true;
     if (_hasReturn) {

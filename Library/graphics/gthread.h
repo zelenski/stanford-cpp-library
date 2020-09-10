@@ -472,7 +472,7 @@ public:
     GThreadStd(GThunkInt func, const std::string& threadName = "");
 
     /**
-     * Constructs a new thread to wrap the given existing Qt thread.
+     * Constructs a new thread to wrap the given existing std thread.
      */
     GThreadStd(std::thread* stdThread);
 
@@ -521,9 +521,13 @@ protected:
 private:
     Q_DISABLE_COPY(GThreadStd)
 
-    std::thread* _stdThread;   // underlying real Qt thread
+    std::thread* _stdThread;   // underlying real std thread
     std::string _name;
     std::atomic<bool> _running;
 };
+
+
+// Platform-specific way to set the name of current thread for display in debugger
+void native_set_thread_name(const char *name);
 
 #endif // _gthread_h

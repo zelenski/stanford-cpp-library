@@ -127,14 +127,15 @@ void QtGui::setArgs(int argc, char** argv) {
 // this should be called by the Qt main thread
 void QtGui::startBackgroundEventLoop(GThunkInt mainFunc, bool exitAfter) {
     GThread::ensureThatThisIsTheQtGuiThread("QtGui::startBackgroundEventLoop");
-
+    native_set_thread_name("Qt GUI Event Loop");
     // start student's main function in its own second thread
+
     if (!GThread::studentThreadExists()) {
         GThread::startStudentThread([&]() -> int {
             stanfordcpplib::initializeLibraryStudentThread();
             int result = mainFunc();
             stanfordcpplib::endOfLibraryStudentThread();
-            stanfordcpplib::endOfLibraryStudentThread();
+            stanfordcpplib::endOfLibraryStudentThread(); // JDZ why called twice??
             return result;
         });
 
