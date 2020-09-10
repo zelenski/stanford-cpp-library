@@ -3,7 +3,7 @@
  * ---------------
  * This file exports the <code>HashSet</code> class, which
  * implements an efficient abstraction for storing sets of values.
- * 
+ *
  * @version 2019/02/04
  * - changed internal implementation to wrap std collections
  * @version 2018/03/10
@@ -50,7 +50,7 @@ namespace stanfordcpplib {
             static std::string name() {
                 return "HashSet";
             }
-            /* You can default-construct a LinkedHashSet. */
+            /* You can default-construct a HashSet. */
             static MapType construct() {
                 return {};
             }
@@ -58,7 +58,7 @@ namespace stanfordcpplib {
             /* However, you can't pass in any other arguments. */
             template <typename... Args>
             static void construct(Args&&...) {
-                static_assert(Fail<Args...>::value, "Oops! Seems like you tried to initialize a LinkedHashSet incorrectly. Click here for details.");
+                static_assert(Fail<Args...>::value, "Oops! Seems like you tried to initialize a HashSet incorrectly. Click here for details.");
 
                 /*
                  * Hello student! If you are reading this message, it means that you tried to
@@ -67,11 +67,11 @@ namespace stanfordcpplib {
                  *
                  *     HashSet<int> mySet = 137; // Oops!
                  *
-                 * Here, for example, you're trying to assign an int to a LinkedHashSet<int>.
+                 * Here, for example, you're trying to assign an int to a HashSet<int>.
                  *
                  * or perhaps you had a function like this one:
                  *
-                 *     void myFunction(LinkedHashSet<int>& mySet);
+                 *     void myFunction(HashSet<int>& mySet);
                  *
                  * and you called it by writing
                  *

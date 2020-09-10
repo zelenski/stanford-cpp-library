@@ -165,8 +165,8 @@ void checkVersion(const CollectionType& coll, const IteratorType& itr,
         if (!msg.empty()) {
             msg += ": ";
         }
-        msg += "The collection was modified during iteration, which invalidates operation.\n";
-        msg += "Do not modify a collection during a for-each loop!";
+        msg += "A collection was modified during iteration, which invalidates operation.\n";
+        msg += "Do not modify a collection within a for-each loop!";
         error(msg);
     }
 }
