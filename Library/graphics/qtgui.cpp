@@ -147,7 +147,7 @@ void QtGui::startEventLoop(bool exitAfter) {
     }
 
     // start Qt event loop on main thread;
-    // Qt GUI main thread blocks here until student main() is done
+    // Qt GUI main thread blocks here until student main() finishes (in its own thread)
     int exitCode = _app->exec();
 
     // if I get here, it means an "exit on close" window was just closed;

@@ -29,9 +29,6 @@
 #ifndef SIGUSR1
 #define SIGUSR1 10
 #endif // SIGUSR1
-#ifndef SIGBUS
-#define SIGBUS 7
-#endif
 
 /**
  * This exception is thrown by calls to the <code>error</code>

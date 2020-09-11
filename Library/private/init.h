@@ -14,7 +14,6 @@
  * @version 2017/04/25
  * - wrap library initializer in an #ifndef to avoid multiple declaration
  *
- * TODO: figure out how to support both 0-arg and 2-arg main()
  */
 
 #ifndef _init_h
@@ -41,7 +40,7 @@ void initializeLibrary(int argc, char** argv);
  * This is for any initialization that needs to be done in the student's thread
  * rather than on the Qt GUI main thread.
  * Currently this is used primarily to set up exception handlers for the
- * student's thread so we can print usable stack traces.
+ * student's thread to catch and report errors.
  */
 void initializeStudentThread();
 

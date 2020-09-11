@@ -29,24 +29,26 @@
 #include "qtgui.h"
 #include "require.h"
 #include <chrono>
-
-#ifdef __APPLE__
 #include <pthread.h>
+
 void native_set_thread_name(const char *name)
 {
+#ifdef __APPLE__
     pthread_setname_np(name);
-}
+#elif defined _WIN32
+    pthread_setname_np(pthread_self(), name);
 #else
-void native_set_thread_name(const char *)
-{ /* ignored for other platforms */ }
-
-    // JDZ:  SetThreadDescription on windows sets a name, but
-    // QT debugger on Windows won't display it
-    // for linux it ay be as simple as
-    // pthread_setname_np(pthread_self(), name);
+    // ignored for other platforms
+    // JDZ: likely same on linux as windows
     // but I don't have linux system to test to be sure
-
 #endif
+}
+
+void native_thread_exit()
+{
+    pthread_exit(nullptr);
+    // JDZ:  Mac+Windows, but also linux? Need test
+}
 
 
 QFunctionThread::QFunctionThread(GThunk func)
@@ -76,7 +78,7 @@ void QFunctionThread::run() {
 }
 
 
-/*static*/ GThread* GThread::_qtMainThread = nullptr;
+/*static*/ GThread* GThread::_qtGuiThread = nullptr;
 /*static*/ GThread* GThread::_studentThread = nullptr;
 Map<QThread*, GThread*> GThread::_allGThreadsQt;
 Map<std::thread*, GThread*> GThread::_allGThreadsStd;
@@ -101,8 +103,8 @@ GThread::GThread() {
     }
 }
 
-/*static*/ GThread* GThread::getQtMainThread() {
-    return _qtMainThread;
+/*static*/ GThread* GThread::getQtGuiThread() {
+    return _qtGuiThread;
 }
 
 /*static*/ GThread* GThread::getStudentThread() {
@@ -110,11 +112,15 @@ GThread::GThread() {
 }
 
 /*static*/ bool GThread::iAmRunningOnTheQtGuiThread() {
-    return _qtMainThread && _qtMainThread == getCurrentThread();
+    return _qtGuiThread && _qtGuiThread == getCurrentThread();
+}
+
+/*static*/ bool GThread::iAmRunningOnTheStudentThread() {
+    return _studentThread && _studentThread == getCurrentThread();
 }
 
 /*static*/ bool GThread::qtGuiThreadExists() {
-    return _qtMainThread != nullptr;
+    return _qtGuiThread != nullptr;
 }
 
 /*static*/ void GThread::runInNewThread(GThunk func, const std::string& threadName) {
@@ -159,10 +165,10 @@ GThread::GThread() {
     }
 }
 
-/*static*/ void GThread::setMainThread() {
-    if (!_qtMainThread) {
-        _qtMainThread = new GThreadQt(QThread::currentThread());
-        _qtMainThread->setName("Qt GUI Thread");
+/*static*/ void GThread::setGuiThread() {
+    if (!_qtGuiThread) {
+        _qtGuiThread = new GThreadQt(QThread::currentThread());
+        _qtGuiThread->setName("Qt GUI Thread");
     }
 }
 

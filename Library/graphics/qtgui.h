@@ -117,7 +117,7 @@ private:
     char** _argv;
 
     static QSPLApplication* _app;
-    static QThread* _qtMainThread;
+    static QThread* _qtGuiThread;
     static GThread* _studentThread;
     static QtGui* _instance;
 

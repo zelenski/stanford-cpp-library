@@ -58,7 +58,7 @@ void initializeLibrary(int argc, char** argv) {
     _initialized = true;
 
 #ifndef SPL_HEADLESS_MODE
-    GThread::setMainThread();
+    GThread::setGuiThread();
 #endif // SPL_HEADLESS_MODE
 
     parseArgsQt(argc, argv);
@@ -75,7 +75,7 @@ void initializeLibrary(int argc, char** argv) {
 }
 
 void initializeStudentThread() {
-    setConsolePrintExceptions(true, /* force */ true);
+    exceptions::setTopLevelExceptionHandlerEnabled(true);
 }
 
 // this should be roughly the same code as platform.cpp's parseArgs function

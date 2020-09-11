@@ -194,7 +194,7 @@ public:
 
 
     /**
-     * Generates an error if the caller is not running on the Qt GUI main thread.
+     * Generates an error if the caller is not running on the Qt GUI thread.
      * An optional error detail message can be passed.
      */
     static void ensureThatThisIsTheQtGuiThread(const std::string& message = "");
@@ -205,10 +205,10 @@ public:
     static GThread* getCurrentThread();
 
     /**
-     * Returns the Qt thread object representing the main thread for the
-     * application, also referred to as the Qt GUI thread.
+     * Returns the Qt thread object representing the Qt Gui thread for the
+     * application.
      */
-    static GThread* getQtMainThread();
+    static GThread* getQtGuiThread();
 
     /**
      * Returns the Qt thread object representing the thread on which the
@@ -309,13 +309,13 @@ public:
 <<<<<<< HEAD
 =======
     /**
-     * Sets the current thread to be the "main" thread for the application.
+     * Sets the current thread to be the "Gui" thread for the application.
      * This is called by our library initialization code to inform the GThread
-     * class what thread is the main thread.
+     * class what thread is the Gui thread.
      * Clients do not need to call this method directly.
      * @private
      */
-    static void setMainThread();
+    static void setGuiThread();
 
 >>>>>>> 8efc62a7... Not really the beginning
 protected:
@@ -332,7 +332,7 @@ protected:
     int _returnValue;
 
     // pointers to the two core library threads
-    static GThread* _qtMainThread;
+    static GThread* _qtGuiThread;
     static GThread* _studentThread;
 
     // mapping between QThreads and their related GThread wrappings
@@ -529,5 +529,8 @@ private:
 
 // Platform-specific way to set the name of current thread for display in debugger
 void native_set_thread_name(const char *name);
+
+// Platform-specific way to exit current thread
+[[noreturn]] void native_thread_exit();
 
 #endif // _gthread_h
