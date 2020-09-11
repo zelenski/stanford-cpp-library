@@ -29,7 +29,7 @@
 // Default can be overridden with explicit call to setConsoleBlah
 static const int DEFAULT_X = -1, DEFAULT_Y = -1; // will center
 static const int DEFAULT_WIDTH = 900, DEFAULT_HEIGHT = 500;
-static const bool DEFAULT_ECHO = true, DEFAULT_EXIT_ON_CLOSE = true, DEFAULT_PRINT_EXCEPTIONS = true;
+static const bool DEFAULT_ECHO = true, DEFAULT_EXIT_ON_CLOSE = true;
 
 #ifdef SPL_HEADLESS_MODE
 

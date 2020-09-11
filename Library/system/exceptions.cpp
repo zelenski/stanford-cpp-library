@@ -111,7 +111,7 @@ void interruptIfDebug()
 enum status_t { DBG_UNKNOWN = -1, DBG_NO, DBG_YES };
 static status_t gStatus = DBG_UNKNOWN;
 
-static void local_handler(int signum)
+static void local_handler(int)
 {
     gStatus = DBG_NO;
     signal(SIGTRAP, SIG_DFL); // reset to default handler
@@ -124,6 +124,8 @@ void interruptIfDebug()
         signal(SIGTRAP, local_handler); // install our signal handler
         raise(SIGTRAP); // raise; if our handler receives signal, there is no IsDebuggerPresent
                         // if debugger then it will receive it
+    } else if (gStatus == DBG_YES) {
+        raise(SIGTRAP);
     }
 }
 

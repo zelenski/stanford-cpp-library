@@ -59,25 +59,20 @@ CONFIG += c++11
 # Set develop_mode to enable warnings, deprecated, nit-picks, all of it.
 # Pay attention and fix! Library should compile cleanly.
 # Disable mode when publish to quiet build for student.
-#CONFIG += develop_mode
 
 develop_mode {
+    CONFIG += debug
+    CONFIG -= silent
     CONFIG += warn_on
     QMAKE_CXXFLAGS_WARN_ON += -Wall -Wextra
+    QMAKE_CXXFLAGS += -Wno-inconsistent-missing-override
     DEFINES += QT_DEPRECATED_WARNINGS
-    CONFIG += debug
 } else {
     CONFIG += warn_off
     CONFIG += sdk_no_version_check
     CONFIG += silent
     CONFIG += release
 }
-
-# JDZ maybe we won't have any, wow!
-# DEFINES +=
-
-# should we attempt to precompile the Qt moc_*.cpp files for speed?
-DEFINES += SPL_PRECOMPILE_QT_MOC_FILES
 
 # Installation
 # ------------
@@ -138,5 +133,6 @@ INSTALLS += target headers debughelper
 ###############################################################################
 
 !versionAtLeast(QT_VERSION, $$REQUIRES_QT_VERSION) {
-    error(The CS106 library for $$SPL_VERSION requires Qt $$REQUIRES_QT_VERSION or newer; Qt $$[QT_VERSION] was detected on your computer. Please upgrade/re-install.)
+    error(The CS106 library for $$SPL_VERSION requires Qt $$REQUIRES_QT_VERSION or newer;\
+         $$[QT_VERSION] was detected on your computer. Please upgrade/re-install.)
 }
