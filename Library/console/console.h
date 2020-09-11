@@ -251,15 +251,6 @@ void setConsoleLocationSaved(bool value);
 void setConsoleOutputColor(const std::string& color);
 
 /**
- * Enables or disables a feature that causes exceptions to be echoed to the
- * Stanford graphical console window when they are thrown.
- * Disabled (false) by default.
- * Note that using this feature may make it harder to get a stack trace in the
- * debugger if you are debugging the cause of an exception.
- */
-void setConsolePrintExceptions(bool printExceptions, bool force = false);
-
-/**
  * If set to true, disables functions like setConsoleFont or setConsoleSize,
  * to facilitate autograder construction by negating any such calls in the
  * student's main program.  Initially false.

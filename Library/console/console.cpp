@@ -137,11 +137,6 @@ void setConsoleOutputColor(const std::string& /*color*/) {
     // empty
 }
 
-void setConsolePrintExceptions(bool printExceptions, bool force) {
-    if (getConsoleSettingsLocked()) { return; }
-    exceptions::setTopLevelExceptionHandlerEnabled(printExceptions, force);
-}
-
 void setConsoleSettingsLocked(bool /*value*/) {
     // empty
 }
@@ -293,11 +288,6 @@ void setConsoleOutputColor(const std::string& color) {
     GConsoleWindow::instance()->setOutputColor(color);
 }
 
-void setConsolePrintExceptions(bool printExceptions, bool force) {
-    if (getConsoleSettingsLocked()) { return; }
-    exceptions::setTopLevelExceptionHandlerEnabled(printExceptions, force);
-}
-
 void setConsoleSettingsLocked(bool value) {
     GConsoleWindow::instance()->setLocked(value);
 }
@@ -337,7 +327,6 @@ void setConsolePropertiesQt() {
  #endif
     setConsoleEcho(DEFAULT_ECHO);
     setConsoleExitProgramOnClose(DEFAULT_EXIT_ON_CLOSE);
-    setConsolePrintExceptions(DEFAULT_PRINT_EXCEPTIONS);
 }
 
 void initializeQtGraphicalConsole() {
