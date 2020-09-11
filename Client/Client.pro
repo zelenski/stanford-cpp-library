@@ -10,7 +10,7 @@ SPL_VERSION = 2020.1
 
 TEMPLATE  = app
 QT += core gui widgets multimedia network
-#CONFIG  += silent               # quieter progress during build
+CONFIG  += silent               # quieter progress during build
 CONFIG  -= depend_includepath   # library headers not changing, don't add depend
 
 ###############################################################################
@@ -31,7 +31,8 @@ QMAKE_EXTRA_TARGETS += error_no_lib
 PRE_TARGETDEPS += $${error_no_lib.target}
 
 # link project against cs106, add library headers to search path
-LIBS += -lcs106
+# cs106 lib also requires pthread, so add it here
+LIBS += -lcs106 -lpthread
 QMAKE_LFLAGS = -L$$shell_quote($${SPL_DIR}/lib)
 # put PWD first in search list to allow local copy to shadow if needed
 INCLUDEPATH += $$PWD "$${SPL_DIR}/include"
@@ -74,12 +75,13 @@ OTHER_FILES *= $$files(res/*, true)
 OTHER_FILES *= $$files(*.txt, true)
 
 ###############################################################################
-#       Configure compile/link flags, use of system libraries         #
+#       Configure compiler, compile flags                                     #
 ###############################################################################
 
 # Configure flags for the C++ compiler
 # (In general, many warnings/errors are enabled to tighten compile-time checking.
-# A few overly pedantic/confusing errors are turned off for simplicity.)
+# A few overly pedantic/confusing errors are turned off to avoid confusion.)
+
 CONFIG += sdk_no_version_check   # removes spurious warnings on Mac OS X
 
 # MinGW compiler lags, be conservative and use C++11 on all platforms
@@ -89,43 +91,23 @@ CONFIG += c++11
 # enable extra warnings
 QMAKE_CXXFLAGS_WARN_ON -= -Wall -Wextra -W
 
-QMAKE_CXXFLAGS += -Wcast-align
-QMAKE_CXXFLAGS += -Wformat=2
-QMAKE_CXXFLAGS += -Wno-missing-field-initializers
+QMAKE_CXXFLAGS += -Werror=return-type
+QMAKE_CXXFLAGS += -Werror=uninitialized
+QMAKE_CXXFLAGS += -Wunused-parameter
+QMAKE_CXXFLAGS += -Wmissing-field-initializers
 QMAKE_CXXFLAGS += -Wno-old-style-cast
 QMAKE_CXXFLAGS += -Wno-sign-compare
 QMAKE_CXXFLAGS += -Wno-sign-conversion
-QMAKE_CXXFLAGS += -Wno-write-strings
-QMAKE_CXXFLAGS += -Wreturn-type
-QMAKE_CXXFLAGS += -Werror=return-type
-QMAKE_CXXFLAGS += -Werror=uninitialized
-QMAKE_CXXFLAGS += -Wunreachable-code
-QMAKE_CXXFLAGS += -Wunused-parameter
-QMAKE_CXXFLAGS += -Wno-deprecated-declarations
 QMAKE_CXXFLAGS += -Wno-unused-const-variable
 
 *-clang { # warning flags specific to clang
     QMAKE_CXXFLAGS += -Wempty-init-stmt
     QMAKE_CXXFLAGS += -Wignored-qualifiers
-    QMAKE_CXXFLAGS += -Winitializer-overrides
-    QMAKE_CXXFLAGS += -Wmissing-field-initializers
-    QMAKE_CXXFLAGS += -Wmissing-method-return-type
-    QMAKE_CXXFLAGS += -Wnull-pointer-arithmetic
-    QMAKE_CXXFLAGS += -Wsemicolon-before-method-body
-    QMAKE_CXXFLAGS += -Wno-format-nonliteral
-    QMAKE_CXXFLAGS += -Wno-inconsistent-missing-override
-    QMAKE_CXXFLAGS += -Wno-overloaded-virtual
-    QMAKE_CXXFLAGS += -Wno-unknown-warning-option
-    QMAKE_CXXFLAGS += -Wno-useless-cast
 }
+
 *-g++ {   # warning flags specific to g++
     QMAKE_CXXFLAGS += -Wlogical-op
 }
-
-# LIBRARIES
-# thread used on all, other additions per-platform
-LIBS += -lpthread
-
 
 ###############################################################################
 #       Detect/report errors in project structure                             #

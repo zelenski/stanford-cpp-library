@@ -2,7 +2,6 @@
 #include "console.h"
 #include "vector.h"
 #include "simpio.h"
-#include <qwindowdefs.h>
 using namespace std;
 
 int main()
