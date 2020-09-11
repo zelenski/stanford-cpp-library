@@ -144,4 +144,4 @@ BAD_CHARS ~= s|[a-zA-Z0-9_ .\/:+-]+|
     error(Exiting. Project directory name contains invalid characters $$BAD_CHARS)
 }
 
-# END OF FILE (this should be line #195; if not, your .pro has been changed!)
+# END OF FILE (this should be line #147; if not, your .pro has been changed!)
