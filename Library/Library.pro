@@ -65,10 +65,12 @@ develop_mode {
     CONFIG += warn_on
     QMAKE_CXXFLAGS_WARN_ON += -Wall -Wextra
     DEFINES += QT_DEPRECATED_WARNINGS
+    CONFIG += debug
 } else {
     CONFIG += warn_off
     CONFIG += sdk_no_version_check
     CONFIG += silent
+    CONFIG += release
 }
 
 # JDZ maybe we won't have any, wow!
