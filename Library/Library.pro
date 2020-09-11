@@ -44,6 +44,7 @@ SOURCES *= $$files(private/*.cpp)
 
 RESOURCES = images.qrc
 OTHER_FILES = personaltypes.py
+QMAKE_SUBSTITUTES = private/build.h.in
 
 INCLUDEPATH += $$LIB_SUBDIRS
 QT += core gui widgets network multimedia
@@ -74,20 +75,6 @@ develop_mode {
     CONFIG += release
 }
 
-# Installation
-# ------------
-# make install is kind of what is wanted here (copy headers+lib
-# to install location). However make install always copies (no skip if up-to-date
-# and nothing was built), install target also requires add make step in Qt Creator,
-# both ugh.
-# Below are manual steps to copy lib+headers to install dir after each re-compile
-#
-# Install location is in user's home directory (near location required
-# for wizard). This should be writable even on cluster computer.
-# Note strategy is to specify all paths using forward-slash separator
-# which requires goopy rework of APPDATA environment variable
-QMAKE_SUBSTITUTES = private/build.h.in
-
 ###############################################################################
 #       Make install                                                          #
 ###############################################################################
@@ -115,18 +102,19 @@ USER_DATA_DIR = $$system($$[QT_INSTALL_BINS]/$$QTP_EXE --writable-path GenericDa
 SPL_DIR = $${USER_DATA_DIR}/cs106
 
 target.path = "$${SPL_DIR}/lib"
-
 headers.files = $$PUBLIC_HEADERS
 headers.path = "$${SPL_DIR}/include"
+INSTALLS += target headers
 
 debughelper.files = personaltypes.py
-mac {   # JDZ need reliable way to find these directories
-    debughelper.path = "$$(HOME)/Qt/Qt Creator.app/Contents/Resources/debugger"
+mac         { debughelper.path = "$$(HOME)/Qt/Qt Creator.app/Contents/Resources/debugger" }
+win32|win64 { debughelper.path = "C:/Qt/Tools/QtCreator/share/qtcreator/debugger" }
+unix:!mac   { debughelper.path = "$$(HOME)/Qt/Tools/QtCreator/share/qtcreator/debugger" }
+!build_pass:exists($$debughelper.path) {
+    INSTALLS += debughelper
 } else {
-    debughelper.path = "C:/Qt/Tools/QtCreator/share/qtcreator/debugger"
+    warning("Skipping debug helper, no such path $$debughelper.path")
 }
-
-INSTALLS += target headers debughelper
 
 ###############################################################################
 #       Requirements                                                          #
