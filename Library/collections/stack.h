@@ -3,7 +3,9 @@
  * -------------
  * This file exports the <code>Stack</code> class, which implements
  * a collection that processes values in a last-in/first-out (LIFO) order.
- * 
+ *
+ * @version 2020/09/12
+ * - simplify interface in preparation for install
  * @version 2019/04/09
  * - renamed private members with underscore naming scheme for consistency
  * @version 2019/02/04
@@ -69,16 +71,7 @@ public:
      * Frees any heap storage associated with this stack.
      */
     virtual ~Stack() = default;
-    
-    /*
-     * Method: add
-     * Usage: stack.add(value);
-     * -------------------------
-     * Pushes the specified value onto the top of this stack.
-     * A synonym for the push method.
-     */
-    void add(const ValueType& value);
-    
+
     /*
      * Method: clear
      * Usage: stack.clear();
@@ -86,7 +79,7 @@ public:
      * Removes all elements from this stack.
      */
     void clear();
-    
+
     /*
      * Method: equals
      * Usage: if (stack.equals(stack2)) ...
@@ -96,7 +89,7 @@ public:
      * Identical in behavior to the == operator.
      */
     bool equals(const Stack<ValueType>& stack2) const;
-    
+
     /*
      * Method: isEmpty
      * Usage: if (stack.isEmpty()) ...
@@ -104,7 +97,7 @@ public:
      * Returns <code>true</code> if this stack contains no elements.
      */
     bool isEmpty() const;
-    
+
     /*
      * Method: peek
      * Usage: ValueType top = stack.peek();
@@ -113,7 +106,7 @@ public:
      * it.  This method signals an error if called on an empty stack.
      */
     ValueType peek() const;
-    
+
     /*
      * Method: pop
      * Usage: ValueType top = stack.pop();
@@ -122,7 +115,7 @@ public:
      * method signals an error if called on an empty stack.
      */
     ValueType pop();
-    
+
     /*
      * Method: push
      * Usage: stack.push(value);
@@ -132,33 +125,12 @@ public:
     void push(const ValueType& value);
 
     /*
-     * Method: remove
-     * Usage: ValueType top = stack.remove();
-     * -----------------------------------
-     * Removes the top element from this stack and returns it.
-     * A synonym for the pop method.
-     */
-    ValueType remove();
-
-    /*
      * Method: size
      * Usage: int n = stack.size();
      * ----------------------------
      * Returns the number of values in this stack.
      */
     int size() const;
-    
-    /*
-     * Method: top
-     * Usage: ValueType top = stack.top();
-     * ------------------------------------
-     * Returns the value of top element from this stack, without removing
-     * it.  This method signals an error if called on an empty stack.  For
-     * compatibility with the STL classes, this method is exported
-     * under the name <code>top</code>, in which case it returns the value
-     * by reference.
-     */
-    ValueType& top();
 
     /*
      * Method: toString
@@ -217,10 +189,10 @@ public:
 
     template <typename T>
     friend int hashCode(const Stack<T>& s);
-    
+
     template <typename T>
     friend std::ostream& operator <<(std::ostream& os, const Stack<T>& stack);
-    
+
 private:
     Vector<ValueType> _elements;
 };
@@ -238,10 +210,6 @@ Stack<ValueType>::Stack(std::initializer_list<ValueType> list) : _elements(list)
 
 }
 
-template <typename ValueType>
-void Stack<ValueType>::add(const ValueType& value) {
-    push(value);
-}
 
 template <typename ValueType>
 void Stack<ValueType>::clear() {
@@ -280,21 +248,8 @@ void Stack<ValueType>::push(const ValueType& value) {
 }
 
 template <typename ValueType>
-ValueType Stack<ValueType>::remove() {
-    return pop();
-}
-
-template <typename ValueType>
 int Stack<ValueType>::size() const {
     return _elements.size();
-}
-
-template <typename ValueType>
-ValueType & Stack<ValueType>::top() {
-    if (isEmpty()) {
-        error("Stack::top: Attempting to read top of an empty stack");
-    }
-    return _elements.back();
 }
 
 template <typename ValueType>
