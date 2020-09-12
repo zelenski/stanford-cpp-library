@@ -169,7 +169,7 @@ void filelib_listDirectory(const std::string& path, Vector<std::string>& list) {
         }
         std::string name = std::string(ep->d_name);
         if (name != "." && name != "..") {
-            list.push_back(name);
+            list.add(name);
         }
     }
     closedir(dir);

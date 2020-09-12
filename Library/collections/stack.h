@@ -239,12 +239,12 @@ ValueType Stack<ValueType>::pop() {
     if (isEmpty()) {
         error("Stack::pop: Attempting to pop an empty stack");
     }
-    return _elements.pop_back();
+    return _elements.remove(_elements.size() -1);
 }
 
 template <typename ValueType>
 void Stack<ValueType>::push(const ValueType& value) {
-    _elements.push_back(value);
+    _elements.add(value);
 }
 
 template <typename ValueType>

@@ -52,14 +52,14 @@ Vector<std::string> explodeLines(const std::string& s) {
         char ch = s[i];
         if (ch == '\n') {
             // end of line
-            result.push_back(trimR(line));
+            result.add(trimR(line));
             line = "";
         } else if (ch != '\r') {
             line += ch;
         }
     }
     if ((int) line.length() > 0 || s.empty()) {
-        result.push_back(line);
+        result.add(line);
     }
     return result;
 }

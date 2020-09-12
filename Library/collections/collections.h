@@ -1559,7 +1559,7 @@ GenericSet<SetTraits>::back() const {
     if (isEmpty()) {
         error(SetTraits::name() + "::back: set is empty");
     }
-    return _map.back();
+    return _map.lastKey();
 }
 
 template <typename SetTraits>
@@ -1618,7 +1618,7 @@ GenericSet<SetTraits>::front() const {
     if (isEmpty()) {
         error(SetTraits::name() + "::front: set is empty");
     }
-    return _map.front();
+    return _map.firstKey();
 }
 
 template <typename SetTraits>

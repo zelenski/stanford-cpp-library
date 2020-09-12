@@ -4,6 +4,8 @@
  * This file exports the <code>Vector</code> class, which provides an
  * efficient, safe, convenient replacement for the array type in C++.
  *
+ * @version 2020/09/12
+ * - simplify interface in preparation for install
  * @version 2019/04/09
  * - renamed private members with underscore naming scheme for consistency
  * @version 2019/02/04
@@ -117,20 +119,6 @@ public:
     Vector<ValueType>& addAll(const Vector<ValueType>& v);
 
     /**
-     * Returns the element at index (size - 1) in this vector (without removing it).
-     * @throw ErrorException if vector is empty
-     * @bigoh O(1)
-     */
-    ValueType& back();
-
-    /**
-     * Returns the element at index (size - 1) in this vector (without removing it).
-     * @throw ErrorException if vector is empty
-     * @bigoh O(1)
-     */
-    const ValueType& back() const;
-
-    /**
      * Removes all elements from this vector.
      * @bigoh O(1)
      */
@@ -144,13 +132,6 @@ public:
     bool contains(const ValueType& value) const;
 
     /**
-     * Guarantees that the vector's internal array is at least the given length.
-     * If necessary, resizes the array to be the given length or larger.
-     * @bigoh O(N)
-     */
-    void ensureCapacity(int cap);
-
-    /**
      * Compares two vectors for equality.
      * Returns <code>true</code> if this vector contains exactly the same
      * values as the given other vector.
@@ -158,20 +139,6 @@ public:
      * @bigoh O(N)
      */
     bool equals(const Vector<ValueType>& v) const;
-
-    /**
-     * Returns the element at index 0 in this vector (without removing it).
-     * @throw ErrorExceptoin if vector is empty
-     * @bigoh O(1)
-     */
-    ValueType& front();
-
-    /**
-     * Returns the element at index 0 in this vector (without removing it).
-     * @throw ErrorExceptoin if vector is empty
-     * @bigoh O(1)
-     */
-    const ValueType& front() const;
 
     /**
      * Returns the element at the specified index in this vector.
@@ -220,58 +187,13 @@ public:
     void mapAll(std::function<void (const ValueType&)> fn) const;
 
     /**
-     * Removes and returns the first value of this vector.
-     * Equivalent to removeFront.
-     * @throw ErrorException if the vector is empty
-     * @bigoh O(N)
-     */
-    ValueType pop_front();
-
-    /**
-     * Removes and returns the last value of this vector.
-     * Equivalent to removeBack.
-     * @throw ErrorException if the vector is empty
-     * @bigoh O(1)
-     */
-    ValueType pop_back();
-
-    /**
-     * Adds a new value to the end of this vector.
-     * This method is a synonym of the add method that is provided to
-     * ensure compatibility with the STL <code>vector</code> class.
-     * @bigoh O(1)
-     */
-    void push_back(const ValueType& value);
-
-    /**
-     * Adds a new value to the start of this vector.
-     * This method is equivalent to calling insert(0, value) and is provided to
-     * improve compatibility with the STL <code>vector</code> class.
-     * @bigoh O(N)
-     */
-    void push_front(const ValueType& value);
-
-    /**
-     * Removes the element at the specified index from this vector.
-     * All subsequent elements are shifted one position to the left.
+     * Removes the element at the specified index from this vector
+     * and returns it. All subsequent elements are shifted one
+     * position to the left.
      * @throw ErrorException if the index is not in the array range
      * @bigoh O(N)
      */
-    void remove(int index);
-
-    /**
-     * Removes and returns the element at index 0 in this vector.
-     * @throw ErrorException if the vector is empty
-     * @bigoh O(N)
-     */
-    ValueType removeFront();
-
-    /**
-     * Removes and returns the element at index (size - 1) in this vector.
-     * @throw ErrorException if the vector is empty
-     * @bigoh O(1)
-     */
-    ValueType removeBack();
+    ValueType remove(int index);
 
     /**
      * Removes the first occurrence of the element value from this vector.
@@ -297,7 +219,7 @@ public:
      * @bigoh O(1)
      */
     void set(int index, const ValueType& value);
-    
+
     /**
      * Returns the number of elements in this vector.
      * @bigoh O(1)
@@ -568,19 +490,6 @@ Vector<ValueType>& Vector<ValueType>::addAll(const Vector<ValueType>& v) {
 }
 
 template <typename ValueType>
-ValueType& Vector<ValueType>::back() {
-    return const_cast<ValueType&>(static_cast<const Vector &>(*this).back());
-}
-
-template <typename ValueType>
-const ValueType& Vector<ValueType>::back() const {
-    if (isEmpty()) {
-        error("Vector::back: vector is empty");
-    }
-    return _elements.back();
-}
-
-template <typename ValueType>
 void Vector<ValueType>::clear() {
     _elements.clear();
     _version.update();
@@ -594,19 +503,6 @@ bool Vector<ValueType>::contains(const ValueType& value) const {
 template <typename ValueType>
 bool Vector<ValueType>::equals(const Vector<ValueType>& v) const {
     return stanfordcpplib::collections::equals(*this, v);
-}
-
-template <typename ValueType>
-ValueType& Vector<ValueType>::front() {
-    return const_cast<ValueType&>(static_cast<const Vector &>(*this).front());
-}
-
-template <typename ValueType>
-const ValueType& Vector<ValueType>::front() const {
-    if (isEmpty()) {
-        error("Vector::front: vector is empty");
-    }
-    return _elements.front();
 }
 
 template <typename ValueType>
@@ -660,52 +556,12 @@ void Vector<ValueType>::mapAll(std::function<void (const ValueType&)> fn) const 
 }
 
 template <typename ValueType>
-ValueType Vector<ValueType>::pop_back() {
-    if (isEmpty()) {
-        error("Vector::pop_back: vector is empty");
-    }
-    auto result = _elements.back();
-    _elements.pop_back();
-    _version.update();
-    return result;
-}
-
-template <typename ValueType>
-ValueType Vector<ValueType>::pop_front() {
-    if (isEmpty()) {
-        error("Vector::pop_front: vector is empty");
-    }
-    auto result = _elements.front();
-    _elements.erase(_elements.begin());
-    _version.update();
-    return result;
-}
-
-template <typename ValueType>
-void Vector<ValueType>::push_back(const ValueType& value) {
-    insert(size(), value);
-}
-
-template <typename ValueType>
-void Vector<ValueType>::push_front(const ValueType& value) {
-    insert(0, value);
-}
-
-template <typename ValueType>
-void Vector<ValueType>::remove(int index) {
+ValueType Vector<ValueType>::remove(int index) {
     checkIndex(index, 0, size() - 1, "remove");
+    ValueType elem = _elements[index];
     _elements.erase(_elements.begin() + index);
     _version.update();
-}
-
-template <typename ValueType>
-ValueType Vector<ValueType>::removeBack() {
-    return pop_back();
-}
-
-template <typename ValueType>
-ValueType Vector<ValueType>::removeFront() {
-    return pop_front();
+    return elem;
 }
 
 template <typename ValueType>

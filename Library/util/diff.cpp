@@ -66,7 +66,7 @@ std::string diff(std::string s1, std::string s2, int flags) {
         Vector<std::string> lines1Sorted;
         for (std::string line : lines1) {
             sort(line.begin(), line.end());
-            lines1Sorted.push_back(line);
+            lines1Sorted.add(line);
         }
         lines1 = lines1Sorted;
         s1 = stringutils::implode(lines1);
@@ -74,7 +74,7 @@ std::string diff(std::string s1, std::string s2, int flags) {
         Vector<std::string> lines2Sorted;
         for (std::string line : lines2) {
             sort(line.begin(), line.end());
-            lines2Sorted.push_back(line);
+            lines2Sorted.add(line);
         }
         lines2 = lines2Sorted;
         s2 = stringutils::implode(lines2);

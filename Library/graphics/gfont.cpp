@@ -159,7 +159,7 @@ QFont GFont::toQFont(const std::string& fontString) {
     int fontSize = 12;   // 12pt standard font size
 
     if (!tokens.isEmpty()) {
-        fontFamily = trim(tokens.removeFront());
+        fontFamily = trim(tokens.remove(0));
         if (fontFamily == "*") {
             fontFamily = "SansSerif";
         }
@@ -167,7 +167,7 @@ QFont GFont::toQFont(const std::string& fontString) {
     for (int i = 0; i < 2; i++) {
         if (!tokens.isEmpty()) {
             // tokens 2-3 can be size-style or style-size
-            std::string fontWeightStr = toLowerCase(trim(tokens.removeFront()));
+            std::string fontWeightStr = toLowerCase(trim(tokens.remove(0)));
             if (stringIsInteger(fontWeightStr)) {
                 fontSize = stringToInteger(fontWeightStr);
             }
@@ -200,7 +200,7 @@ QFont GFont::toQFont(const QFont& basisFont, const std::string& fontString) {
     int fontSize = basisFont.pointSize();   // 12pt standard font size
 
     if (!tokens.isEmpty()) {
-        fontFamily = trim(tokens.removeFront());
+        fontFamily = trim(tokens.remove(0));
         if (fontFamily == "*") {
             fontFamily = basisFont.family().toStdString();
         }
@@ -208,7 +208,7 @@ QFont GFont::toQFont(const QFont& basisFont, const std::string& fontString) {
     for (int i = 0; i < 2; i++) {
         if (!tokens.isEmpty()) {
             // tokens 2-3 can be size-style or style-size
-            std::string fontWeightStr = toLowerCase(trim(tokens.removeFront()));
+            std::string fontWeightStr = toLowerCase(trim(tokens.remove(0)));
             if (stringIsInteger(fontWeightStr)) {
                 fontSize = stringToInteger(fontWeightStr);
             } else if (stringContains(fontWeightStr, "bold")) {
