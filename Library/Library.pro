@@ -6,14 +6,6 @@
 #    build static lib and install into user data
 ###############################################################################
 
-# Versioning
-# ----------
-QUARTER_ID = 19-1
-REQUIRES_QT_VERSION = 5.11
-VERSION = 19.1
-# JDZ: above version gives auto access to qmake major/minor/patch and requires()
-#CONFIG += develop_mode
-
 # Top-level configuration
 # -----------------------
 # CS106B/X library project
@@ -21,33 +13,33 @@ VERSION = 19.1
 # along with library headers and shared resources (icons, binaries, etc.)
 # Student client program accesses library+resources from fixed location
 
-TARGET = cs106
-TEMPLATE = lib
-TARGET = cs106
-CONFIG += staticlib
+TEMPLATE    =   lib
+TARGET      =   cs106
+CONFIG      +=  staticlib
 
-SPL_VERSION = 2020.1
-REQUIRES_QT_VERSION = 5.15
+SPL_VERSION         =   2020.1
+REQUIRES_QT_VERSION =   5.15
 
 ###############################################################################
 #       Gather files                                                          #
 ###############################################################################
 
-LIB_SUBDIRS = collections console graphics io system util
+LIB_SUBDIRS         =   collections console graphics io system util
 
-for(dir, LIB_SUBDIRS): PUBLIC_HEADERS *= $$files($${dir}/*.h)
-PRIVATE_HEADERS *= $$files(private/*.h)
-HEADERS *= $$PUBLIC_HEADERS $$PRIVATE_HEADERS
+for(dir, LIB_SUBDIRS):
+    PUBLIC_HEADERS  +=  $$files($${dir}/*.h)
+    SOURCES         +=  $$files($${dir}/*.cpp)
 
-for(dir, LIB_SUBDIRS): SOURCES *= $$files($${dir}/*.cpp)
-SOURCES *= $$files(private/*.cpp)
+PRIVATE_HEADERS     +=  $$files(private/*.h)
+SOURCES             +=  $$files(private/*.cpp)
+HEADERS             +=  $$PUBLIC_HEADERS $$PRIVATE_HEADERS
 
-RESOURCES = images.qrc
-OTHER_FILES = personaltypes.py
-QMAKE_SUBSTITUTES = private/build.h.in
+RESOURCES           =   images.qrc
+OTHER_FILES         =   personaltypes.py
+QMAKE_SUBSTITUTES   =   private/build.h.in
 
-INCLUDEPATH += $$LIB_SUBDIRS
-QT += core gui widgets network multimedia
+INCLUDEPATH         +=  $$LIB_SUBDIRS
+QT                  +=  core gui widgets network multimedia
 
 ###############################################################################
 #       Build settings                                                        #
@@ -55,24 +47,24 @@ QT += core gui widgets network multimedia
 
 # MinGW compiler lags, be conservative and use C++11 on all platforms
 # rather than special case
-CONFIG += c++11
+CONFIG              +=  c++11
 
 # Set develop_mode to enable warnings, deprecated, nit-picks, all of it.
 # Pay attention and fix! Library should compile cleanly.
 # Disable mode when publish to quiet build for student.
 
 develop_mode {
-    CONFIG += debug
-    CONFIG -= silent
-    CONFIG += warn_on
+    CONFIG          +=  debug
+    CONFIG          -=  silent
+    CONFIG          +=  warn_on
     QMAKE_CXXFLAGS_WARN_ON += -Wall -Wextra
-    QMAKE_CXXFLAGS += -Wno-inconsistent-missing-override
-    DEFINES += QT_DEPRECATED_WARNINGS
+    QMAKE_CXXFLAGS  += -Wno-inconsistent-missing-override
+    DEFINES         += QT_DEPRECATED_WARNINGS
 } else {
-    CONFIG += warn_off
-    CONFIG += sdk_no_version_check
-    CONFIG += silent
-    CONFIG += release
+    CONFIG          +=  warn_off
+    CONFIG          +=  sdk_no_version_check
+    CONFIG          +=  silent
+    CONFIG          +=  release
 }
 
 ###############################################################################
@@ -101,17 +93,17 @@ win32|win64 { QTP_EXE = qtpaths.exe } else { QTP_EXE = qtpaths }
 USER_DATA_DIR = $$system($$[QT_INSTALL_BINS]/$$QTP_EXE --writable-path GenericDataLocation)
 SPL_DIR = $${USER_DATA_DIR}/cs106
 
-target.path = "$${SPL_DIR}/lib"
-headers.files = $$PUBLIC_HEADERS
-headers.path = "$${SPL_DIR}/include"
-INSTALLS += target headers
+target.path         =   "$${SPL_DIR}/lib"
+headers.files       =   $$PUBLIC_HEADERS
+headers.path        =   "$${SPL_DIR}/include"
+INSTALLS            +=  target headers
 
-debughelper.files = personaltypes.py
+debughelper.files   =   personaltypes.py
 mac         { debughelper.path = "$$(HOME)/Qt/Qt Creator.app/Contents/Resources/debugger" }
 win32|win64 { debughelper.path = "C:/Qt/Tools/QtCreator/share/qtcreator/debugger" }
 unix:!mac   { debughelper.path = "$$(HOME)/Qt/Tools/QtCreator/share/qtcreator/debugger" }
 !build_pass:exists($$debughelper.path) {
-    INSTALLS += debughelper
+    INSTALLS        +=  debughelper
 } else {
     warning("Skipping debug helper, no such path $$debughelper.path")
 }

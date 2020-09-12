@@ -8,25 +8,25 @@
 
 SPL_VERSION = 2020.1
 
-TEMPLATE =  app
-QT      +=  core gui widgets multimedia network
-CONFIG  +=  silent               # quieter progress during build
-CONFIG  -=  depend_includepath   # library headers not changing, don't add depend
+TEMPLATE    =   app
+QT          +=  core gui widgets multimedia network
+CONFIG      +=  silent               # quieter progress during build
+CONFIG      -=  depend_includepath   # library headers not changing, don't add depend
 
 ###############################################################################
 #       Find/use installed version of cs106 lib and headers                   #
 ###############################################################################
 
 # Library installed into per-user writable data location from QtStandardPaths
-win32|win64 { QTP_EXE = qtpaths.exe } else { QTP_EXE = qtpaths }
+win32|win64     { QTP_EXE = qtpaths.exe } else { QTP_EXE = qtpaths }
 USER_DATA_DIR   =   $$system($$[QT_INSTALL_BINS]/$$QTP_EXE --writable-path GenericDataLocation)
 
 SPL_DIR         =   $${USER_DATA_DIR}/cs106
 STATIC_LIB      =   $$system_path($${SPL_DIR}/lib/libcs106.a)
 
 # Confirm presence of lib before build using extra target as prereq
-check_lib.target     =  "$${STATIC_LIB}"
-check_lib.commands   =  $(error CS106 library not found. See http://cs106b.stanford.edu/qt for library install instructions)
+check_lib.target    =  "$${STATIC_LIB}"
+check_lib.commands  =  $(error CS106 library not found. See http://cs106b.stanford.edu/qt for library install instructions)
 QMAKE_EXTRA_TARGETS +=  check_lib
 PRE_TARGETDEP       +=  $${check_lib.target}
 
@@ -57,22 +57,22 @@ DEFINES     +=  main=qMain qMain=studentMain
 #       Gather files to list in Qt Creator project browser                    #
 ###############################################################################
 
-# honeypot to trick Qt Creator into glob while also allowing add files within IDE;
-# Qt looks for first 'SOURCES *=' line and adds newly added .cpp/h files there.
-# Later in this pro file we glob-add files to SOURCES to extend entries. Note
-# Use operator *=  which uniques entries, so no worries about duplicates
-SOURCES     *=  ""
-HEADERS     *=  ""
+# honeypot to trick Qt Creator to allow glob-all to coexist with user-added files
+# Qt looks for first 'SOURCES *=' line and lists user-added .cpp/h files there.
+# Afterward we glob-add files to SOURCES ourselves. Operator *= will unique
+# entries, so no worries about duplicates
+SOURCES         *=  ""
+HEADERS         *=  ""
 
 # Gather any .cpp or .h files within the project folder (student/starter code).
 # Second argument true makes search recursive
-SOURCES     *=  $$files(*.cpp, true)
-HEADERS     *=  $$files(*.h, true)
+SOURCES         *=  $$files(*.cpp, true)
+HEADERS         *=  $$files(*.h, true)
 
 # Gather resource files (image/sound/etc) from res dir, list under "Other files"
-OTHER_FILES *=  $$files(res/*, true)
+OTHER_FILES     *=  $$files(res/*, true)
 # Gather text files from root dir or anywhere recursively
-OTHER_FILES *=  $$files(*.txt, true)
+OTHER_FILES     *=  $$files(*.txt, true)
 
 ###############################################################################
 #       Configure compiler, compile flags                                     #
@@ -82,11 +82,11 @@ OTHER_FILES *=  $$files(*.txt, true)
 # (In general, many warnings/errors are enabled to tighten compile-time checking.
 # A few overly pedantic/confusing errors are turned off to avoid confusion.)
 
-CONFIG      +=  sdk_no_version_check   # removes spurious warnings on Mac OS X
+CONFIG          +=  sdk_no_version_check   # removes spurious warnings on Mac OS X
 
 # MinGW compiler lags, be conservative and use C++11 on all platforms
 # rather than special case
-CONFIG      +=  c++11
+CONFIG          +=  c++11
 
 # enable extra warnings
 QMAKE_CXXFLAGS_WARN_ON -= -Wall -Wextra -W
