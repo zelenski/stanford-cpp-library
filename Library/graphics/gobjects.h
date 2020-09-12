@@ -1302,7 +1302,7 @@ public:
 
     /**
      * Returns the vertex at the given 0-based index in this polygon.
-     * @throws ErrorException if the index is out of bounds.
+     * @throw ErrorException if the index is out of bounds.
      */
     virtual GPoint getVertex(int i) const;
 
@@ -1322,7 +1322,7 @@ public:
     /**
      * Sets the vertex at the given 0-based index in this polygon to the
      * given coordinates.
-     * @throws ErrorException if the index is out of bounds.
+     * @throw ErrorException if the index is out of bounds.
      */
     virtual void setVertex(int i, GPoint point);
 

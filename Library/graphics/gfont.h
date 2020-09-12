@@ -40,21 +40,21 @@ public:
     /**
      * Makes the given interactor's font bold.
      * The font name and size are unchanged.
-     * @throws ErrorException if the interactor is null
+     * @throw ErrorException if the interactor is null
      */
     static void boldFont(GInteractor* interactor);
 
     /**
      * Modifies the font of the given interactor, changing its size by the given
      * number of points.  The change in size can be positive or negative.
-     * @throws ErrorException if the interactor is null
+     * @throw ErrorException if the interactor is null
      */
     static void changeFontSize(GInteractor* interactor, int dsize);
 
     /**
      * Modifies the font of the given label, changing its size by the given
      * number of points.  The change in size can be positive or negative.
-     * @throws ErrorException if the interactor is null
+     * @throw ErrorException if the interactor is null
      */
     static void changeFontSize(GText* label, int dsize);
 
@@ -94,7 +94,7 @@ public:
     /**
      * Makes the given interactor's font italic.
      * The font name and size are unchanged.
-     * @throws ErrorException if the interactor is null
+     * @throw ErrorException if the interactor is null
      */
     static void italicFont(GInteractor* interactor);
 

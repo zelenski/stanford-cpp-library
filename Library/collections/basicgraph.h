@@ -415,7 +415,7 @@ public:
      * Equivalent to addNode.
      *
      * @return a pointer to the vertex created
-     * @throws ErrorException if vertex is null
+     * @throw ErrorException if vertex is null
      * @bigoh O(log V)
      */
     VertexGen<V, E>* addVertex(VertexGen<V, E>* v);
