@@ -4,7 +4,9 @@
  * This file exports the <code>Deque</code> class, a collection
  * in which values can be added and removed from the front or back.
  * It combines much of the functionality of a stack and a queue.
- * 
+ *
+ * @version 2020/09/12
+ * - simplify interface in preparation for install
  * @version 2019/04/09
  * - renamed private members with underscore naming scheme for consistency
  * @version 2019/02/04
@@ -68,25 +70,6 @@ public:
      * Frees any heap storage associated with this deque.
      */
     virtual ~Deque() = default;
-    
-    /*
-     * Method: add
-     * Usage: deque.add(value);
-     * ------------------------
-     * Adds <code>value</code> to the end of the deque.
-     * A synonym for the enqueueBack method.
-     */
-    void add(const ValueType& value);
-    void addBack(const ValueType& value);
-    void addFront(const ValueType& value);
-
-    /*
-     * Method: back
-     * Usage: ValueType last = deque.back();
-     * -------------------------------------
-     * Returns the last value in the deque by reference.
-     */
-    const ValueType& back() const;
 
     /*
      * Method: clear
@@ -95,29 +78,25 @@ public:
      * Removes all elements from the deque.
      */
     void clear();
-    
+
     /*
-     * Method: dequeue
-     * Usage: ValueType first = deque.dequeue();
-     * -----------------------------------------
-     * Removes and returns the first item in the deque.
-     * A synonym for the dequeueFront method.
+     * Method: dequeueBack, dequeueFront
+     * Usage: ValueType first = deque.dequeueFront();
+     * ----------------------------------------------
+     * Removes and returns the frontmost/backmost item in the deque.
      */
-    ValueType dequeue();
     ValueType dequeueBack();
     ValueType dequeueFront();
 
     /*
-     * Method: enqueue
-     * Usage: deque.enqueue(value);
-     * ----------------------------
-     * Adds <code>value</code> to the end of the deque.
-     * A synonym for the enqueueBack method.
+     * Method: enqueueBack, enqueueFront
+     * Usage: deque.enqueueBack(value);
+     * --------------------------------
+     * Adds <code>value</code> to the front/back of the deque.
      */
-    void enqueue(const ValueType& value);
     void enqueueBack(const ValueType& value);
     void enqueueFront(const ValueType& value);
-    
+
     /*
      * Method: equals
      * Usage: if (deque.equals(deque2)) ...
@@ -128,14 +107,6 @@ public:
      * Identical in behavior to the == operator.
      */
     bool equals(const Deque<ValueType>& deque2) const;
-    
-    /*
-     * Method: front
-     * Usage: ValueType first = deque.front();
-     * ---------------------------------------
-     * Returns the first value in the deque by reference.
-     */
-    const ValueType& front() const;
 
     /*
      * Method: isEmpty
@@ -144,31 +115,15 @@ public:
      * Returns <code>true</code> if the deque contains no elements.
      */
     bool isEmpty() const;
-    
-    /*
-     * Method: peek
-     * Usage: ValueType first = deque.peek();
-     * --------------------------------------
-     * Returns the first value in the deque, without removing it.  For
-     * compatibility with the STL classes, this method is also exported
-     * under the name <code>front</code>, in which case it returns the
-     * value by reference.
-     * A synonym for the peekFront method.
-     */
-    const ValueType& peek() const;
-    const ValueType& peekBack() const;
-    const ValueType& peekFront() const;
 
     /*
-     * Method: remove
-     * Usage: ValueType first = deque.remove();
-     * ----------------------------------------
-     * Removes and returns the first item in the deque.
-     * A synonym for the dequeue method.
+     * Method: peekBack, peekFront
+     * Usage: ValueType first = deque.peekFront();
+     * -------------------------------------------
+     * Returns the frontmost/lastmost value in the deque, without removing it.
      */
-    ValueType remove();
-    ValueType removeBack();
-    ValueType removeFront();
+    const ValueType& peekBack() const;
+    const ValueType& peekFront() const;
 
     /*
      * Method: size
@@ -177,12 +132,7 @@ public:
      * Returns the number of values in the deque.
      */
     int size() const;
-    
-    /*
-     * Returns an STL deque object with the same elements as this Deque.
-     */
-    std::deque<ValueType> toStlDeque() const;
-    
+
     /*
      * Method: toString
      * Usage: string str = deque.toString();
@@ -219,7 +169,7 @@ public:
 
     template <typename T>
     friend int hashCode(const Deque<T>& s);
-    
+
     template <typename T>
     friend std::ostream& operator <<(std::ostream& os, const Deque<T>& deque);
 
@@ -243,30 +193,6 @@ template <typename ValueType>
 Deque<ValueType>::Deque(std::initializer_list<ValueType> list) : _elements(list) {
 
 }
-
-template <typename ValueType>
-void Deque<ValueType>::add(const ValueType& value) {
-    enqueue(value);
-}
-
-template <typename ValueType>
-void Deque<ValueType>::addBack(const ValueType& value) {
-    enqueueBack(value);
-}
-
-template <typename ValueType>
-void Deque<ValueType>::addFront(const ValueType& value) {
-    enqueueFront(value);
-}
-
-template <typename ValueType>
-const ValueType& Deque<ValueType>::back() const {
-    if (isEmpty()) {
-        error("Deque::back: Attempting to read back of an empty deque");
-    }
-    return _elements.back();
-}
-
 template <typename ValueType>
 void Deque<ValueType>::clear() {
     _elements.clear();
@@ -279,10 +205,6 @@ void Deque<ValueType>::clear() {
  * These methods must check for an empty deque and report an error
  * if there is no first element.
  */
-template <typename ValueType>
-ValueType Deque<ValueType>::dequeue() {
-    return dequeueFront();
-}
 
 template <typename ValueType>
 ValueType Deque<ValueType>::dequeueBack() {
@@ -307,11 +229,6 @@ ValueType Deque<ValueType>::dequeueFront() {
 }
 
 template <typename ValueType>
-void Deque<ValueType>::enqueue(const ValueType& value) {
-    enqueueBack(value);
-}
-
-template <typename ValueType>
 void Deque<ValueType>::enqueueBack(const ValueType& value) {
     _elements.push_back(value);
     _version.update();
@@ -329,21 +246,8 @@ bool Deque<ValueType>::equals(const Deque<ValueType>& deque2) const {
 }
 
 template <typename ValueType>
-const ValueType& Deque<ValueType>::front() const {
-    if (isEmpty()) {
-        error("Deque::front: Attempting to read front of an empty deque");
-    }
-    return _elements.front();
-}
-
-template <typename ValueType>
 bool Deque<ValueType>::isEmpty() const {
     return _elements.empty();
-}
-
-template <typename ValueType>
-const ValueType& Deque<ValueType>::peek() const {
-    return peekFront();
 }
 
 template <typename ValueType>
@@ -351,7 +255,7 @@ const ValueType& Deque<ValueType>::peekBack() const {
     if (isEmpty()) {
         error("Deque::peekBack: Attempting to peek at an empty deque");
     }
-    return back();
+    return _elements.back();
 }
 
 template <typename ValueType>
@@ -359,38 +263,12 @@ const ValueType& Deque<ValueType>::peekFront() const {
     if (isEmpty()) {
         error("Deque::peekFront: Attempting to peek at an empty deque");
     }
-    return front();
-}
-
-template <typename ValueType>
-ValueType Deque<ValueType>::remove() {
-    return dequeue();
-}
-
-template <typename ValueType>
-ValueType Deque<ValueType>::removeBack() {
-    if (isEmpty()) {
-        error("Deque::removeBack: Attempting to remove from an empty deque");
-    }
-    return dequeueBack();
-}
-
-template <typename ValueType>
-ValueType Deque<ValueType>::removeFront() {
-    if (isEmpty()) {
-        error("Deque::removeFront: Attempting to remove from an empty deque");
-    }
-    return dequeueFront();
+    return _elements.front();
 }
 
 template <typename ValueType>
 int Deque<ValueType>::size() const {
     return _elements.size();
-}
-
-template <typename ValueType>
-std::deque<ValueType> Deque<ValueType>::toStlDeque() const {
-    return _elements;
 }
 
 template <typename ValueType>

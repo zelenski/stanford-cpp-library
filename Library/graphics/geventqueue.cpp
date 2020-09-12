@@ -99,14 +99,14 @@ GThunk GEventQueue::peek() {
 
 void GEventQueue::runOnQtGuiThreadAsync(GThunk thunk) {
     _functionQueueMutex.lockForWrite();
-    _functionQueue.add(thunk);
+    _functionQueue.enqueue(thunk);
     _functionQueueMutex.unlock();
     emit eventReady();
 }
 
 void GEventQueue::runOnQtGuiThreadSync(GThunk thunk) {
     _functionQueueMutex.lockForWrite();
-    _functionQueue.add(thunk);
+    _functionQueue.enqueue(thunk);
     _functionQueueMutex.unlock();
     emit eventReady();
 

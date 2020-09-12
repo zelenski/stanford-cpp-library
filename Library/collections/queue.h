@@ -4,7 +4,9 @@
  * This file exports the <code>Queue</code> class, a collection
  * in which values are ordinarily processed in a first-in/first-out
  * (FIFO) order.
- * 
+ *
+ * @version 2020/09/12
+ * - simplify interface in preparation for install
  * @version 2019/04/09
  * - renamed private members with underscore naming scheme for consistency
  * @version 2019/02/04
@@ -80,23 +82,6 @@ public:
      * Frees any heap storage associated with this queue.
      */
     virtual ~Queue() = default;
-    
-    /*
-     * Method: add
-     * Usage: queue.add(value);
-     * ------------------------
-     * Adds <code>value</code> to the end of the queue.
-     * A synonym for the enqueue method.
-     */
-    void add(const ValueType& value);
-
-    /*
-     * Method: back
-     * Usage: ValueType last = queue.back();
-     * -------------------------------------
-     * Returns the last value in the queue by reference.
-     */
-    const ValueType& back() const;
 
     /*
      * Method: clear
@@ -105,7 +90,7 @@ public:
      * Removes all elements from the queue.
      */
     void clear();
-    
+
     /*
      * Method: dequeue
      * Usage: ValueType first = queue.dequeue();
@@ -121,7 +106,7 @@ public:
      * Adds <code>value</code> to the end of the queue.
      */
     void enqueue(const ValueType& value);
-    
+
     /*
      * Method: equals
      * Usage: if (queue.equals(queue2)) ...
@@ -132,14 +117,6 @@ public:
      * Identical in behavior to the == operator.
      */
     bool equals(const Queue<ValueType>& queue2) const;
-    
-    /*
-     * Method: front
-     * Usage: ValueType first = queue.front();
-     * ---------------------------------------
-     * Returns the first value in the queue by reference.
-     */
-    const ValueType& front() const;
 
     /*
      * Method: isEmpty
@@ -148,26 +125,14 @@ public:
      * Returns <code>true</code> if the queue contains no elements.
      */
     bool isEmpty() const;
-    
+
     /*
      * Method: peek
      * Usage: ValueType first = queue.peek();
      * --------------------------------------
-     * Returns the first value in the queue, without removing it.  For
-     * compatibility with the STL classes, this method is also exported
-     * under the name <code>front</code>, in which case it returns the
-     * value by reference.
+     * Returns the first value in the queue, without removing it.
      */
     const ValueType& peek() const;
-
-    /*
-     * Method: remove
-     * Usage: ValueType first = queue.remove();
-     * ----------------------------------------
-     * Removes and returns the first item in the queue.
-     * A synonym for the dequeue method.
-     */
-    ValueType remove();
 
     /*
      * Method: size
@@ -218,10 +183,10 @@ public:
 
     template <typename T>
     friend int hashCode(const Queue<T>& s);
-    
+
     template <typename T>
     friend std::ostream& operator <<(std::ostream& os, const Queue<T>& queue);
-    
+
     /* Private section */
 
     /**********************************************************************/
@@ -237,19 +202,6 @@ private:
 template <typename ValueType>
 Queue<ValueType>::Queue(std::initializer_list<ValueType> list) : _elements(list) {
     // empty
-}
-
-template <typename ValueType>
-void Queue<ValueType>::add(const ValueType& value) {
-    enqueue(value);
-}
-
-template <typename ValueType>
-const ValueType& Queue<ValueType>::back() const {
-    if (isEmpty()) {
-        error("Queue::back: Attempting to read back of an empty queue");
-    }
-    return _elements.back();
 }
 
 template <typename ValueType>
@@ -282,31 +234,16 @@ bool Queue<ValueType>::equals(const Queue<ValueType>& queue2) const {
 }
 
 template <typename ValueType>
-const ValueType& Queue<ValueType>::front() const {
-    if (isEmpty()) {
-        error("Queue::front: Attempting to read front of an empty queue");
-    }
-    return _elements.front();
-}
-
-template <typename ValueType>
 bool Queue<ValueType>::isEmpty() const {
     return _elements.isEmpty();
 }
 
 template <typename ValueType>
 const ValueType& Queue<ValueType>::peek() const {
-    return front();
-}
-
-template <typename ValueType>
-ValueType Queue<ValueType>::remove() {
-    // this isEmpty check is also done in dequeue(), but we repeat it
-    // here so that the possible error message will be more descriptive.
     if (isEmpty()) {
-        error("Queue::remove: Attempting to remove from an empty queue");
+        error("Queue::peek: Attempting to peek at an empty queue");
     }
-    return dequeue();
+    return _elements.peekFront();
 }
 
 template <typename ValueType>
