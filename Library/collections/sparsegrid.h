@@ -8,6 +8,8 @@
  * If the grid is expected to be mostly full of meaningful data,
  * Grid is recommended for use over SparseGrid.
  *
+ * @version 2020/09/12
+ * - simplify interface in preparation for install
  * @author Marty Stepp
  * @version 2018/03/12
  * - added overloads that accept GridLocation: get, inBounds, isSet, locations,
@@ -100,17 +102,6 @@ public:
     virtual ~SparseGrid();
 
     /*
-     * Method: back
-     * Usage: ValueType value = grid.back();
-     * -------------------------------------
-     * Returns the last value in the grid in the order established by the
-     * <code>for-each</code> loop.  This is the highest row/col value that has
-     * been explicitly set.
-     * If the grid is empty, generates an error.
-     */
-    ValueType back() const;
-
-    /*
      * Method: clear
      * Usage: grid.clear();
      * --------------------
@@ -137,16 +128,6 @@ public:
     void fill(const ValueType& value);
 
     /*
-     * Method: front
-     * Usage: ValueType value = grid.front();
-     * --------------------------------------
-     * Returns the first value in the grid in the order established by the
-     * <code>for-each</code> loop.  Typically this is equivalent to grid[0][0].
-     * If the grid is empty, generates an error.
-     */
-    ValueType front() const;
-
-    /*
      * Method: get
      * Usage: ValueType value = grid.get(row, col);
      * --------------------------------------------
@@ -163,14 +144,6 @@ public:
     const ValueType& get(int row, int col) const;
     ValueType get(const GridLocation& loc);
     const ValueType& get(const GridLocation& loc) const;
-
-    /*
-     * Method: height
-     * Usage: int nRows = grid.height();
-     * ---------------------------------
-     * Returns the grid's height, that is, the number of rows in the grid.
-     */
-    int height() const;
 
     /*
      * Method: inBounds
@@ -319,14 +292,6 @@ public:
      */
     void unset(int row, int col);
     void unset(const GridLocation& loc);
-
-    /*
-     * Method: width
-     * Usage: int nCols = grid.width();
-     * --------------------------------
-     * Returns the grid's width, that is, the number of columns in the grid.
-     */
-    int width() const;
 
     /*
      * Operator: []
@@ -664,16 +629,6 @@ SparseGrid<ValueType>::~SparseGrid() {
 }
 
 template <typename ValueType>
-ValueType SparseGrid<ValueType>::back() const {
-    if (isEmpty()) {
-        error("SparseGrid::back: grid is empty");
-    }
-    int lastRow = _elements.back();
-    int lastCol = _elements[lastRow].back();
-    return _elements[lastRow][lastCol];
-}
-
-template <typename ValueType>
 void SparseGrid<ValueType>::clear() {
     _elements.clear();
 }
@@ -715,14 +670,6 @@ void SparseGrid<ValueType>::fill(const ValueType& value) {
 }
 
 template <typename ValueType>
-ValueType SparseGrid<ValueType>::front() const {
-    if (isEmpty()) {
-        error("SparseGrid::front: grid is empty");
-    }
-    return *begin();
-}
-
-template <typename ValueType>
 ValueType SparseGrid<ValueType>::get(int row, int col) {
     checkIndexes(row, col, _rowCount-1, _columnCount-1, "get");
     return _elements[row][col];
@@ -744,10 +691,6 @@ const ValueType& SparseGrid<ValueType>::get(const GridLocation& loc) const {
     return get(loc.row, loc.col);
 }
 
-template <typename ValueType>
-int SparseGrid<ValueType>::height() const {
-    return _rowCount;
-}
 
 template <typename ValueType>
 bool SparseGrid<ValueType>::inBounds(int row, int col) const {
@@ -942,11 +885,6 @@ unsigned int SparseGrid<ValueType>::version() const {
 }
 
 template <typename ValueType>
-int SparseGrid<ValueType>::width() const {
-    return _columnCount;
-}
-
-template <typename ValueType>
 void SparseGrid<ValueType>::checkIndexes(int row, int col,
                                          int rowMax, int colMax,
                                          std::string prefix) const {
@@ -969,10 +907,10 @@ void SparseGrid<ValueType>::checkIndexes(int row, int col,
 
 template <typename ValueType>
 int SparseGrid<ValueType>::gridCompare(const SparseGrid& grid2) const {
-    int h1 = height();
-    int w1 = width();
-    int h2 = grid2.height();
-    int w2 = grid2.width();
+    int h1 = numRows();
+    int w1 = numCols();
+    int h2 = grid2.numRows();
+    int w2 = grid2.numCols();
     int rows = h1 > h2 ? h1 : h2;
     int cols = w1 > w2 ? w1 : w2;
     for (int r = 0; r < rows; r++) {

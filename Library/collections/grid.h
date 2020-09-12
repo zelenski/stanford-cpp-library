@@ -4,6 +4,8 @@
  * This file exports the <code>Grid</code> class, which offers a
  * convenient abstraction for representing a two-dimensional array.
  *
+ * @version 2020/09/12
+ * - simplify interface in preparation for install
  * @version 2019/04/09
  * - renamed private members with underscore naming scheme for consistency
  * @version 2018/03/12
@@ -118,17 +120,6 @@ public:
     virtual ~Grid() = default;
 
     /*
-     * Method: back
-     * Usage: ValueType value = grid.back();
-     * -------------------------------------
-     * Returns the last value in the grid in the order established by the
-     * <code>for-each</code> loop.
-     * This is equivalent to grid[numRows - 1][numCols - 1].
-     * If the grid is empty, generates an error.
-     */
-    ValueType back() const;
-
-    /*
      * Method: clear
      * Usage: grid.clear();
      * --------------------
@@ -155,16 +146,6 @@ public:
     void fill(const ValueType& value);
 
     /*
-     * Method: front
-     * Usage: ValueType value = grid.front();
-     * --------------------------------------
-     * Returns the first value in the grid in the order established by the
-     * <code>for-each</code> loop.  This is equivalent to grid[0][0].
-     * If the grid is empty, generates an error.
-     */
-    ValueType front() const;
-
-    /*
      * Method: get
      * Usage: ValueType value = grid.get(row, col);
      * --------------------------------------------
@@ -177,14 +158,6 @@ public:
     const ValueType& get(int row, int col) const;
     ValueType get(const GridLocation& loc);
     const ValueType& get(const GridLocation& loc) const;
-
-    /*
-     * Method: height
-     * Usage: int nRows = grid.height();
-     * ---------------------------------
-     * Returns the grid's height, that is, the number of rows in the grid.
-     */
-    int height() const;
 
     /*
      * Method: inBounds
@@ -244,7 +217,6 @@ public:
      * Usage: int nCols = grid.numCols();
      * ----------------------------------
      * Returns the number of columns in the grid.
-     * This is equal to the grid's width.
      */
     int numCols() const;
 
@@ -253,7 +225,6 @@ public:
      * Usage: int nRows = grid.numRows();
      * ----------------------------------
      * Returns the number of rows in the grid.
-     * This is equal to the grid's height.
      */
     int numRows() const;
 
@@ -315,14 +286,6 @@ public:
             std::string rowEnd = "}",
             std::string colSeparator = ", ",
             std::string rowSeparator = ",\n ") const;
-
-    /*
-     * Method: width
-     * Usage: int nCols = grid.width();
-     * --------------------------------
-     * Returns the grid's width, that is, the number of columns in the grid.
-     */
-    int width() const;
 
 
     /*
@@ -471,7 +434,7 @@ public:
         }
 
         int size() const {
-            return _gp->width();
+            return _gp->numCols();
         }
 
     private:
@@ -498,7 +461,7 @@ public:
         }
 
         int size() const {
-            return _gp->width();
+            return _gp->numCols();
         }
 
     private:
@@ -550,14 +513,6 @@ Grid<ValueType>::Grid(std::initializer_list<std::initializer_list<ValueType>> li
 }
 
 template <typename ValueType>
-ValueType Grid<ValueType>::back() const {
-    if (isEmpty()) {
-        error("Grid::back: grid is empty");
-    }
-    return get(_rowCount - 1, _columnCount - 1);
-}
-
-template <typename ValueType>
 void Grid<ValueType>::clear() {
     ValueType defaultValue = ValueType();
     for (int r = 0; r < _rowCount; r++) {
@@ -599,14 +554,6 @@ void Grid<ValueType>::fill(const ValueType& value) {
 }
 
 template <typename ValueType>
-ValueType Grid<ValueType>::front() const {
-    if (isEmpty()) {
-        error("Grid::front: grid is empty");
-    }
-    return get(0, 0);
-}
-
-template <typename ValueType>
 ValueType Grid<ValueType>::get(int row, int col) {
     checkIndexes(row, col, _rowCount-1, _columnCount-1, "get");
     return _elements[(row * _columnCount) + col];
@@ -626,11 +573,6 @@ ValueType Grid<ValueType>::get(const GridLocation& loc) {
 template <typename ValueType>
 const ValueType& Grid<ValueType>::get(const GridLocation& loc) const {
     return get(loc.row, loc.col);
-}
-
-template <typename ValueType>
-int Grid<ValueType>::height() const {
-    return _rowCount;
 }
 
 template <typename ValueType>
@@ -765,11 +707,6 @@ std::string Grid<ValueType>::toString2D(
     }
     os << rowEnd;
     return os.str();
-}
-
-template <typename ValueType>
-int Grid<ValueType>::width() const {
-    return _columnCount;
 }
 
 template <typename ValueType>

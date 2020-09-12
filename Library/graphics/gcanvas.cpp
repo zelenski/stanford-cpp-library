@@ -438,8 +438,8 @@ void GCanvas::flatten() {
 }
 
 void GCanvas::fromGrid(const Grid<int>& grid) {
-    checkSize("GCanvas::fromGrid", grid.width(), grid.height());
-    setSize(grid.width(), grid.height());
+    checkSize("GCanvas::fromGrid", grid.numCols(), grid.numRows());
+    setSize(grid.numCols(), grid.numRows());
 
     bool wasAutoRepaint = isAutoRepaint();
     setAutoRepaint(false);
@@ -447,7 +447,7 @@ void GCanvas::fromGrid(const Grid<int>& grid) {
     GThread::runOnQtGuiThread([this, &grid]() {
         ensureBackgroundImage();
         lockForWrite();
-        for (int row = 0, width = grid.width(), height = grid.height(); row < height; row++) {
+        for (int row = 0, width = grid.numCols(), height = grid.numRows(); row < height; row++) {
             for (int col = 0; col < width; col++) {
                 int argb = GColor::fixAlpha(grid[row][col]);
                 _backgroundImage->setPixel(col, row, static_cast<unsigned int>(argb));
@@ -843,14 +843,14 @@ void GCanvas::setPixelARGB(double x, double y, int a, int r, int g, int b) {
 void GCanvas::setPixels(const Grid<int>& pixels) {
     // TODO: is this redundant with fromGrid?
     ensureBackgroundImage();
-    if (pixels.width() != (int) getWidth() || pixels.height() != (int) getHeight()) {
+    if (pixels.numCols() != (int) getWidth() || pixels.numRows() != (int) getHeight()) {
         // TODO
         // resize(pixels.width(), pixels.height());
         error("GCanvas::setPixels: wrong size");
     }
     GThread::runOnQtGuiThread([this, &pixels]() {
         lockForWrite();
-        for (int y = 0, w = pixels.width(), h = pixels.height(); y < h; y++) {
+        for (int y = 0, w = pixels.numCols(), h = pixels.numRows(); y < h; y++) {
             for (int x = 0; x < w; x++) {
                 int argb = pixels[y][x] | 0xff000000;
                 _backgroundImage->setPixel(x, y, static_cast<unsigned int>(argb));
@@ -863,7 +863,7 @@ void GCanvas::setPixels(const Grid<int>& pixels) {
 
 void GCanvas::setPixelsARGB(const Grid<int>& pixels) {
     ensureBackgroundImage();
-    if (pixels.width() != (int) getWidth() || pixels.height() != (int) getHeight()) {
+    if (pixels.numCols() != (int) getWidth() || pixels.numRows() != (int) getHeight()) {
         // TODO
         // resize(pixels.width(), pixels.height());
         error("GCanvas::setPixels: wrong size");
@@ -871,8 +871,8 @@ void GCanvas::setPixelsARGB(const Grid<int>& pixels) {
 
     GThread::runOnQtGuiThread([this, &pixels]() {
         lockForWrite();
-        for (int y = 0; y < pixels.height(); y++) {
-            for (int x = 0; x < pixels.width(); x++) {
+        for (int y = 0; y < pixels.numRows(); y++) {
+            for (int x = 0; x < pixels.numCols(); x++) {
                 _backgroundImage->setPixel(x, y, pixels[y][x]);
             }
         }
