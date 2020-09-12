@@ -41,7 +41,6 @@
 #include "grid.h"
 #include "gtypes.h"
 #include "map.h"
-#include "point.h"
 #include "set.h"
 
 class _Internal_QMainWindow;
@@ -1003,12 +1002,6 @@ public:
      * Sets the window's top-left x/y location on the screen to the given point.
      */
     virtual void setLocation(const GPoint& p);
-
-    /**
-     * Sets the window's top-left x/y location on the screen to the given point.
-     */
-
-    virtual void setLocation(const Point& p);
 
     /**
      * Sets whether the given item in the given menu is enabled or disabled.

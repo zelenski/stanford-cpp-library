@@ -101,7 +101,7 @@ bool GObject::contains(double x, double y) const {
 }
 
 bool GObject::contains(const GPoint& pt) const {
-    return contains(pt.getX(), pt.getY());
+    return contains(pt.x, pt.y);
 }
 
 GPoint GObject::getBottomRightLocation() const {
@@ -171,7 +171,7 @@ double GObject::getRightX() const {
 
 GDimension GObject::getSize() const {
     GRectangle bounds = getBounds();
-    return GDimension(bounds.getWidth(), bounds.getHeight());
+    return GDimension(bounds.width, bounds.height);
 }
 
 double GObject::getWidth() const {
@@ -334,7 +334,7 @@ void GObject::setBottomRightLocation(double x, double y) {
 }
 
 void GObject::setBottomRightLocation(const GPoint& pt) {
-    setBottomRightLocation(pt.getX(), pt.getY());   // calls repaint
+    setBottomRightLocation(pt.x, pt.y);   // calls repaint
 }
 
 void GObject::setBounds(double x, double y, double width, double height) {
@@ -346,7 +346,7 @@ void GObject::setBounds(double x, double y, double width, double height) {
 }
 
 void GObject::setBounds(const GRectangle& bounds) {
-    setBounds(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
+    setBounds(bounds.x, bounds.y, bounds.width, bounds.height);
 }
 
 void GObject::setCenterX(double x) {
@@ -362,7 +362,7 @@ void GObject::setCenterLocation(double x, double y) {
 }
 
 void GObject::setCenterLocation(const GPoint& pt) {
-    setCenterLocation(pt.getX(), pt.getY());   // calls repaint
+    setCenterLocation(pt.x, pt.y);   // calls repaint
 }
 
 void GObject::setColor(int r, int g, int b) {
@@ -460,7 +460,7 @@ void GObject::setLocation(double x, double y) {
 }
 
 void GObject::setLocation(const GPoint& pt) {
-    setLocation(pt.getX(), pt.getY());   // calls repaint
+    setLocation(pt.x, pt.y);   // calls repaint
 }
 
 void GObject::setOpacity(double opacity) {
@@ -479,7 +479,7 @@ void GObject::setSize(double width, double height) {
 }
 
 void GObject::setSize(const GDimension& size) {
-    setSize(size.getWidth(), size.getHeight());   // calls repaint
+    setSize(size.width, size.height);   // calls repaint
 }
 
 void GObject::setVisible(bool flag) {
@@ -677,7 +677,7 @@ void GArc::setFrameRectangle(double x, double y, double width, double height) {
 }
 
 void GArc::setFrameRectangle(const GRectangle& rect) {
-    setFrameRectangle(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight());   // calls repaint
+    setFrameRectangle(rect.x, rect.y, rect.width, rect.height);   // calls repaint
 }
 
 void GArc::setStartAngle(double start) {
@@ -801,10 +801,10 @@ GRectangle GCompound::getBounds() const {
     double yMax = -1E20;
     for (int i = 0; i < _contents.size(); i++) {
         GRectangle bounds = _contents.get(i)->getBounds();
-        xMin = std::min(xMin, bounds.getX());
-        yMin = std::min(yMin, bounds.getY());
-        xMax = std::max(xMax, bounds.getX());
-        yMax = std::max(yMax, bounds.getY());   // JL BUGFIX 2016/10/11
+        xMin = std::min(xMin, bounds.x);
+        yMin = std::min(yMin, bounds.y);
+        xMax = std::max(xMax, bounds.x);
+        yMax = std::max(yMax, bounds.y);   // JL BUGFIX 2016/10/11
     }
     // JL BUGFIX: shifted anchor point
     return GRectangle(xMin + getX(), yMin + getY(), xMax - xMin, yMax - yMin);
@@ -910,8 +910,8 @@ void GCompound::repaintRegion(int x, int y, int width, int height) {
 }
 
 void GCompound::repaintRegion(const GRectangle& bounds) {
-    repaintRegion((int) bounds.getX(), (int) bounds.getY(),
-                  (int) bounds.getWidth(), (int) bounds.getHeight());
+    repaintRegion((int) bounds.x, (int) bounds.y,
+                  (int) bounds.width, (int) bounds.height);
 }
 
 void GCompound::sendBackward(GObject* gobj) {
@@ -1116,9 +1116,9 @@ GLine::GLine(double x0, double y0, double x1, double y1, GObject::LineStyle line
 }
 
 GLine::GLine(const GPoint& p0, const GPoint& p1)
-        : GObject(p0.getX(), p0.getY()),
-          _dx(p1.getX() - p0.getX()),
-          _dy(p1.getY() - p0.getY()) {
+        : GObject(p0.x, p0.y),
+          _dx(p1.x - p0.x),
+          _dy(p1.y - p0.y) {
     // empty
 }
 
@@ -1220,7 +1220,7 @@ void GLine::setEndPoint(double x1, double y1) {
 }
 
 void GLine::setEndPoint(const GPoint& p) {
-    setEndPoint(p.getX(), p.getY());
+    setEndPoint(p.x, p.y);
 }
 
 void GLine::setPoints(double x0, double y0, double x1, double y1) {
@@ -1232,7 +1232,7 @@ void GLine::setPoints(double x0, double y0, double x1, double y1) {
 }
 
 void GLine::setPoints(const GPoint& p0, const GPoint& p1) {
-    setPoints(p0.getX(), p0.getY(), p1.getX(), p1.getY());
+    setPoints(p0.x, p0.y, p1.x, p1.y);
 }
 
 void GLine::setStartPoint(double x0, double y0) {
@@ -1240,7 +1240,7 @@ void GLine::setStartPoint(double x0, double y0) {
 }
 
 void GLine::setStartPoint(const GPoint& p) {
-    setStartPoint(p.getX(), p.getY());
+    setStartPoint(p.x, p.y);
 }
 
 std::string GLine::toStringExtra() const {
@@ -1300,7 +1300,7 @@ void GPolygon::addEdge(double dx, double dy) {
 }
 
 void GPolygon::addEdge(const GPoint& pt) {
-    addEdge(pt.getX(), pt.getY());
+    addEdge(pt.x, pt.y);
 }
 
 void GPolygon::addEdges(std::initializer_list<double> coords) {
@@ -1336,7 +1336,7 @@ void GPolygon::addVertex(double x, double y) {
 }
 
 void GPolygon::addVertex(const GPoint& pt) {
-    addVertex(pt.getX(), pt.getY());
+    addVertex(pt.x, pt.y);
 }
 
 void GPolygon::addVertexes(std::initializer_list<double> coords) {
@@ -1422,7 +1422,7 @@ GRectangle GPolygon::getBounds() const {
 }
 
 double GPolygon::getHeight() const {
-    return getBounds().getHeight();
+    return getBounds().height;
 }
 
 std::string GPolygon::getType() const {
@@ -1446,12 +1446,12 @@ Vector<GPoint> GPolygon::getVertices() const {
 }
 
 double GPolygon::getWidth() const {
-    return getBounds().getHeight();
+    return getBounds().width; // BUGFIX JDZ
 }
 
 void GPolygon::setVertex(int i, GPoint point) {
-    _vertices[i].setX(point.getX());
-    _vertices[i].setY(point.getY());
+    _vertices[i].setX(point.x);
+    _vertices[i].setY(point.y);
     repaint();
 }
 

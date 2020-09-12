@@ -27,7 +27,6 @@
 #include "gtypes.h"
 #endif // SPL_HEADLESS_MODE
 
-#include "point.h"
 
 /**
  * The mathematical constant pi, which is the ratio of the circumference
@@ -174,10 +173,7 @@ double vectorAngle(double x, double y);
  * system is flipped in the <i>y</i> direction from the traditional
  * Cartesian plane.
  */
-#ifndef SPL_HEADLESS_MODE
 double vectorAngle(const GPoint& pt);
-#endif // SPL_HEADLESS_MODE
-double vectorAngle(const Point& pt);
 
 /**
  * Computes the distance between the origin and the specified point.
@@ -187,9 +183,6 @@ double vectorDistance(double x, double y);
 /**
  * Computes the distance between the origin and the specified point.
  */
-#ifndef SPL_HEADLESS_MODE
 double vectorDistance(const GPoint& pt);
-#endif // SPL_HEADLESS_MODE
-double vectorDistance(const Point& pt);
 
 #endif // _gmath_h

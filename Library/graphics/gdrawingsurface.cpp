@@ -106,7 +106,7 @@ void GDrawingSurface::drawImage(const std::string& filename, double x, double y)
 }
 
 void GDrawingSurface::drawLine(const GPoint& p0, const GPoint& p1) {
-    drawLine(p0.getX(), p0.getY(), p1.getX(), p1.getY());
+    drawLine(p0.x, p0.y, p1.x, p1.y);
 }
 
 void GDrawingSurface::drawLine(double x0, double y0, double x1, double y1) {
@@ -116,7 +116,7 @@ void GDrawingSurface::drawLine(double x0, double y0, double x1, double y1) {
 }
 
 void GDrawingSurface::drawOval(const GRectangle& bounds) {
-    drawOval(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
+    drawOval(bounds.x, bounds.y, bounds.width, bounds.height);
 }
 
 void GDrawingSurface::drawOval(double x, double y, double width, double height) {
@@ -126,7 +126,7 @@ void GDrawingSurface::drawOval(double x, double y, double width, double height) 
 }
 
 GPoint GDrawingSurface::drawPolarLine(const GPoint& p0, double r, double theta) {
-    return drawPolarLine(p0.getX(), p0.getY(), r, theta);
+    return drawPolarLine(p0.x, p0.y, r, theta);
 }
 
 GPoint GDrawingSurface::drawPolarLine(double x0, double y0, double r, double theta) {
@@ -161,7 +161,7 @@ void GDrawingSurface::drawPolygon(std::initializer_list<GPoint> points) {
 }
 
 void GDrawingSurface::drawRect(const GRectangle& bounds) {
-    drawRect(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
+    drawRect(bounds.x, bounds.y, bounds.width, bounds.height);
 }
 
 void GDrawingSurface::drawRect(double x, double y, double width, double height) {
@@ -183,7 +183,7 @@ void GDrawingSurface::fillArc(double x, double y, double width, double height, d
 }
 
 void GDrawingSurface::fillOval(const GRectangle& bounds) {
-    fillOval(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
+    fillOval(bounds.x, bounds.y, bounds.width, bounds.height);
 }
 
 void GDrawingSurface::fillOval(double x, double y, double width, double height) {
@@ -205,7 +205,7 @@ void GDrawingSurface::fillPolygon(std::initializer_list<GPoint> points) {
 }
 
 void GDrawingSurface::fillRect(const GRectangle& bounds) {
-    fillRect(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
+    fillRect(bounds.x, bounds.y, bounds.width, bounds.height);
 }
 
 void GDrawingSurface::fillRect(double x, double y, double width, double height) {
@@ -341,8 +341,8 @@ bool GDrawingSurface::isRepaintImmediately() const {
 }
 
 void GDrawingSurface::repaintRegion(const GRectangle& bounds) {
-    repaintRegion((int) bounds.getX(), (int) bounds.getY(),
-                  (int) bounds.getWidth(), (int) bounds.getHeight());
+    repaintRegion((int) bounds.x, (int) bounds.y,
+                  (int) bounds.width, (int) bounds.height);
 }
 
 void GDrawingSurface::setAutoRepaint(bool autoRepaint) {

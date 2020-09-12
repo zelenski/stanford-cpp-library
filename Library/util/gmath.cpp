@@ -62,26 +62,14 @@ double vectorAngle(double x, double y) {
             ? 0 : toDegrees(atan2(-y, x));
 }
 
-#ifndef SPL_HEADLESS_MODE
 double vectorAngle(const GPoint& pt) {
-    return vectorAngle(pt.getX(), pt.getY());
-}
-#endif // SPL_HEADLESS_MODE
-
-double vectorAngle(const Point& pt) {
-    return vectorAngle(pt.getX(), pt.getY());
+    return vectorAngle(pt.x, pt.y);
 }
 
 double vectorDistance(double x, double y) {
     return sqrt(x * x + y * y);
 }
 
-#ifndef SPL_HEADLESS_MODE
 double vectorDistance(const GPoint& pt) {
-    return vectorDistance(pt.getX(), pt.getY());
-}
-#endif // SPL_HEADLESS_MODE
-
-double vectorDistance(const Point& pt) {
-    return vectorDistance(pt.getX(), pt.getY());
+    return vectorDistance(pt.x, pt.y);
 }

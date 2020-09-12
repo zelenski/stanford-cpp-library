@@ -31,37 +31,34 @@ typedef std::function<void()> GThunk;
  */
 typedef std::function<int()> GThunkInt;
 
-class Point;
 
 /**
- * This class contains real-valued width and height fields.
+ * This struct contains real-valued width and height fields.
  * It is used to indicate the size of a graphical object.
  */
-class GDimension {
+struct GDimension {
 public:
     /**
      * Creates a <code>GDimension</code> object with the specified
-     * <code>width</code> and <code>height</code> coordinates.  If the
-     * coordinates are not supplied, the default constructor sets these
-     * fields to 0.
+     * <code>width</code> and <code>height</code> coordinates.
      */
-    GDimension(double width = 0, double height = 0);
+    GDimension(double width, double height);
 
-    /**
-     * Returns the width component of the <code>GDimension</code> object.
+    /*
+     * Constructs a default dimension 0, 0.
      */
-    double getWidth() const;
+    GDimension();
 
-    /**
-     * Returns the height component of the <code>GDimension</code> object.
-     */
-    double getHeight() const;
 
     /**
      * Converts the <code>GDimension</code> to a string in the form
      * <code>"(</code><i>width</i><code>,</code>&nbsp;<i>height</i><code>)"</code>.
      */
     std::string toString() const;
+
+    /* width and height - may be directly accessed or modified */
+    double width;
+    double height;
 
     /* Private section */
 
@@ -71,8 +68,6 @@ public:
     /**********************************************************************/
 private:
     /* Instance variables */
-    double _width;                   /* The width of the GDimension       */
-    double _height;                  /* The height of the GDimension      */
 
     /* Friend declarations */
     friend std::ostream& operator <<(std::ostream& os, const GDimension& dim);
@@ -203,39 +198,31 @@ Qt::Alignment toQtAlignment(VerticalAlignment alignment);
 VerticalAlignment toVerticalAlignment(const std::string& alignmentStr);
 
 /**
- * This class contains real-valued x and y fields.
+ * This struct contains real-valued x and y fields.
  * It is used to represent a location on the graphics plane.
  */
-class GPoint {
+struct GPoint {
 public:
     /**
      * Creates a <code>GPoint</code> object with the specified <code>x</code>
-     * and <code>y</code> coordinates.  If the coordinates are not supplied,
-     * the default constructor sets these fields to 0.
+     * and <code>y</code> coordinates.
      */
-    GPoint(double x = 0, double y = 0);
+    GPoint(double x, double y);
 
-    /**
-     * Creates a <code>GPoint</code> object with the same <code>x</code>
-     * and <code>y</code> coordinates as the given point.
+    /*
+     * Constructs a default GPoint 0, 0.
      */
-    GPoint(const Point& point);
-
-    /**
-     * Returns the x component of the point.
-     */
-    double getX() const;
-
-    /**
-     * Returns the y component of the point.
-     */
-    double getY() const;
+    GPoint();
 
     /**
      * Converts the <code>GPoint</code> to a string in the form
      * <code>"(</code><i>x</i><code>,</code>&nbsp;<i>y</i><code>)"</code>.
      */
     std::string toString() const;
+
+    /* x and y coordinates - may be directly accessed or modified */
+    double x;
+    double y;
 
     /* Private section */
 
@@ -244,9 +231,6 @@ public:
     /* of the implementation and should not be of interest to clients.    */
     /**********************************************************************/
 private:
-    /* Instance variables */
-    double _x;                       /* The x-coordinate of the point */
-    double _y;                       /* The y-coordinate of the point */
 
     /* Friend declarations */
     friend std::ostream& operator <<(std::ostream& out, const GPoint& p);
@@ -311,10 +295,10 @@ GPoint operator *(const GPoint& p, double scale);
 int hashCode(const GPoint& pt);
 
 /**
- * This class contains real-valued x, y, width, and height fields.
+ * This struct contains real-valued x, y, width, and height fields.
  * It is used to represent the bounding box of a graphical object.
  */
-class GRectangle {
+struct GRectangle {
 public:
     /**
      * Creates a <code>GRectangle</code> object with the specified position
@@ -369,26 +353,6 @@ public:
     GRectangle enlargedBy(double amount);
 
     /**
-     * Returns the x component of the rectangle.
-     */
-    double getX() const;
-
-    /**
-     * Returns the y component of the rectangle.
-     */
-    double getY() const;
-
-    /**
-     * Returns the width component of the rectangle.
-     */
-    double getWidth() const;
-
-    /**
-     * Returns the height component of the rectangle.
-     */
-    double getHeight() const;
-
-    /**
      * Returns true if this rectangle and the given other rectangle overlap.
      */
     bool intersects(const GRectangle& other) const;
@@ -406,6 +370,12 @@ public:
      */
     std::string toString() const;
 
+    /* coordinates and dimension - may be directly accessed or modified */
+    double x;        /* The x-coordinate of the rectangle */
+    double y;        /* The y-coordinate of the rectangle */
+    double width;    /* The width of the rectangle        */
+    double height;   /* The height of the rectangle       */
+
     /* Private section */
 
     /**********************************************************************/
@@ -414,10 +384,7 @@ public:
     /**********************************************************************/
 private:
     /* Instance variables */
-    double _x;        /* The x-coordinate of the rectangle */
-    double _y;        /* The y-coordinate of the rectangle */
-    double _width;    /* The width of the rectangle        */
-    double _height;   /* The height of the rectangle       */
+
 
     /* Friend declarations */
     friend std::ostream& operator <<(std::ostream& os, const GRectangle& rect);

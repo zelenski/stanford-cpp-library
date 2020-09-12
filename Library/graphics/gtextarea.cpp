@@ -100,7 +100,7 @@ void GTextArea::clearText() {
 }
 
 int GTextArea::getColumns() const {
-    return (int) (getHeight() / getRowColumnSize().getWidth());
+    return (int) (getHeight() / getRowColumnSize().width);
 }
 
 int GTextArea::getCursorPosition() const {
@@ -125,7 +125,7 @@ GDimension GTextArea::getRowColumnSize() const {
 }
 
 int GTextArea::getRows() const {
-    return (int) (getHeight() / getRowColumnSize().getHeight());
+    return (int) (getHeight() / getRowColumnSize().height);
 }
 
 std::string GTextArea::getSelectedText() const {
@@ -250,7 +250,7 @@ void GTextArea::selectAll() {
 
 void GTextArea::setColumns(int columns) {
     require::nonNegative(columns, "GTextArea::setColumns");
-    double desiredWidth = getRowColumnSize().getWidth() * columns;
+    double desiredWidth = getRowColumnSize().width * columns;
     setPreferredSize(desiredWidth, getHeight());
     setSize(desiredWidth, getHeight());
 }
@@ -305,15 +305,15 @@ void GTextArea::setPlaceholder(const std::string& text) {
 
 void GTextArea::setRows(int rows) {
     require::nonNegative(rows, "GTextArea::setRows");
-    double desiredHeight = getRowColumnSize().getHeight() * rows;
+    double desiredHeight = getRowColumnSize().height * rows;
     setPreferredSize(getWidth(), desiredHeight);
     setSize(getWidth(), desiredHeight);
 }
 
 void GTextArea::setRowsColumns(int rows, int columns) {
     require::nonNegative2D(rows, columns, "GTextArea::setRowsColumns", "rows", "columns");
-    double desiredWidth = getRowColumnSize().getWidth() * columns;
-    double desiredHeight = getRowColumnSize().getHeight() * rows;
+    double desiredWidth = getRowColumnSize().width * columns;
+    double desiredHeight = getRowColumnSize().height * rows;
     setPreferredSize(desiredWidth, desiredHeight);
     setSize(desiredWidth, desiredHeight);
 }

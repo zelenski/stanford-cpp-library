@@ -254,7 +254,7 @@ GDimension GContainer::getPreferredSize() const {
 }
 
 double GContainer::getRegionHeight(Region region) const {
-    return getRegionSize(region).getHeight();
+    return getRegionSize(region).height;
 }
 
 double GContainer::getRegionHeight(const std::string& region) const {
@@ -276,7 +276,7 @@ GDimension GContainer::getRegionSize(const std::string& region) const {
 }
 
 double GContainer::getRegionWidth(Region region) const {
-    return getRegionSize(region).getWidth();
+    return getRegionSize(region).width;
 }
 
 double GContainer::getRegionWidth(const std::string& region) const {

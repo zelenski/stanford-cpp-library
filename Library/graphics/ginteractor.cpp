@@ -139,7 +139,7 @@ GPoint GInteractor::getLocation() const {
 }
 
 double GInteractor::getMinimumHeight() const {
-    return getMinimumSize().getHeight();
+    return getMinimumSize().height;
 }
 
 GDimension GInteractor::getMinimumSize() const {
@@ -148,7 +148,7 @@ GDimension GInteractor::getMinimumSize() const {
 }
 
 double GInteractor::getMinimumWidth() const {
-    return getMinimumSize().getWidth();
+    return getMinimumSize().width;
 }
 
 char GInteractor::getMnemonic() const {
@@ -165,7 +165,7 @@ std::string GInteractor::getName() const {
 }
 
 double GInteractor::getPreferredHeight() const {
-    return getPreferredSize().getHeight();
+    return getPreferredSize().height;
 }
 
 GDimension GInteractor::getPreferredSize() const {
@@ -179,7 +179,7 @@ GDimension GInteractor::getPreferredSize() const {
 }
 
 double GInteractor::getPreferredWidth() const {
-    return getPreferredSize().getWidth();
+    return getPreferredSize().width;
 }
 
 GDimension GInteractor::getSize() const {
@@ -350,7 +350,7 @@ void GInteractor::setBounds(double x, double y, double width, double height) {
 }
 
 void GInteractor::setBounds(const GRectangle& size) {
-    setBounds(size.getX(), size.getY(), size.getWidth(), size.getHeight());
+    setBounds(size.x, size.y, size.width, size.height);
 }
 
 void GInteractor::setClickListener(GEventListener func) {
@@ -478,7 +478,7 @@ void GInteractor::setMinimumSize(double width, double height) {
 }
 
 void GInteractor::setMinimumSize(const GDimension& size) {
-    setMinimumSize(size.getWidth(), size.getHeight());
+    setMinimumSize(size.width, size.height);
 }
 
 void GInteractor::setMnemonic(char /* mnemonic */) {
@@ -528,7 +528,7 @@ void GInteractor::setPreferredSize(double width, double height) {
 
 void GInteractor::setPreferredSize(const GDimension& size) {
     GThread::runOnQtGuiThread([this, size]() {
-        getInternalWidget()->setPreferredSize(size.getWidth(), size.getHeight());
+        getInternalWidget()->setPreferredSize(size.width, size.height);
     });
 }
 
@@ -548,7 +548,7 @@ void GInteractor::setSize(double width, double height) {
 }
 
 void GInteractor::setSize(const GDimension& size) {
-    setSize(size.getWidth(), size.getHeight());
+    setSize(size.width, size.height);
 }
 
 void GInteractor::setTooltip(const std::string& tooltipText) {
@@ -605,19 +605,19 @@ void _Internal_QWidget::detach() {
 }
 
 QSize _Internal_QWidget::getMinimumSize() const {
-    return QSize((int) _minimumSize.getWidth(), (int) _minimumSize.getHeight());
+    return QSize((int) _minimumSize.width, (int) _minimumSize.height);
 }
 
 bool _Internal_QWidget::hasMinimumSize() const {
-    return _minimumSize.getWidth() >= 0 && _minimumSize.getHeight() >= 0;
+    return _minimumSize.width >= 0 && _minimumSize.height >= 0;
 }
 
 QSize _Internal_QWidget::getPreferredSize() const {
-    return QSize((int) _preferredSize.getWidth(), (int) _preferredSize.getHeight());
+    return QSize((int) _preferredSize.width, (int) _preferredSize.height);
 }
 
 bool _Internal_QWidget::hasPreferredSize() const {
-    return _preferredSize.getWidth() >= 0 && _preferredSize.getHeight() >= 0;
+    return _preferredSize.width >= 0 && _preferredSize.height >= 0;
 }
 
 void _Internal_QWidget::setMinimumSize(double width, double height) {

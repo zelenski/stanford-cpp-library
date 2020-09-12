@@ -575,8 +575,8 @@ void GWindow::clearToolbarItems() {
 void GWindow::center() {
     GDimension screenSize = getScreenSize();
     GDimension windowSize = getSize();
-    setLocation(screenSize.getWidth()  / 2 - windowSize.getWidth()  / 2,
-                screenSize.getHeight() / 2 - windowSize.getHeight() / 2);
+    setLocation(screenSize.width  / 2 - windowSize.width  / 2,
+                screenSize.height / 2 - windowSize.height / 2);
 }
 
 /*static*/ std::string GWindow::chooseLightDarkModeColor(
@@ -759,7 +759,7 @@ double GWindow::getRegionWidth(const std::string& region) const {
 }
 
 /*static*/ double GWindow::getScreenHeight() {
-    return getScreenSize().getHeight();
+    return getScreenSize().height;
 }
 
 /*static*/ GDimension GWindow::getScreenSize() {
@@ -771,7 +771,7 @@ double GWindow::getRegionWidth(const std::string& region) const {
 }
 
 /*static*/ double GWindow::getScreenWidth() {
-    return getScreenSize().getWidth();
+    return getScreenSize().width;
 }
 
 GDimension GWindow::getSize() const {
@@ -1046,7 +1046,7 @@ void GWindow::setCanvasSize(double width, double height) {
 }
 
 void GWindow::setCanvasSize(const GDimension& size) {
-    setCanvasSize(size.getWidth(), size.getHeight());
+    setCanvasSize(size.width, size.height);
 }
 
 void GWindow::setCanvasWidth(double width) {
@@ -1080,11 +1080,7 @@ void GWindow::setLocation(double x, double y) {
 }
 
 void GWindow::setLocation(const GPoint& p) {
-    setLocation(p.getX(), p.getY());
-}
-
-void GWindow::setLocation(const Point& p) {
-    setLocation(p.getX(), p.getY());
+    setLocation(p.x, p.y);
 }
 
 void GWindow::setMenuItemEnabled(const std::string& menu, const std::string& item, bool enabled) {
@@ -1179,8 +1175,8 @@ void GWindow::setResizable(bool resizable) {
                                       static_cast<int>(getHeight()));
                 _iqmainwindow->setMinimumSize(_iqmainwindow->minimumSizeHint());
                 GDimension screenSize = getScreenSize();
-                _iqmainwindow->setMaximumSize(static_cast<int>(screenSize.getWidth()),
-                                              static_cast<int>(screenSize.getHeight()));
+                _iqmainwindow->setMaximumSize(static_cast<int>(screenSize.width),
+                                              static_cast<int>(screenSize.height));
                 _iqmainwindow->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
             }
         } else {
@@ -1207,7 +1203,7 @@ void GWindow::setSize(double width, double height) {
 }
 
 void GWindow::setSize(const GDimension& size) {
-    setSize(size.getWidth(), size.getHeight());
+    setSize(size.width, size.height);
 }
 
 void GWindow::setTimerListener(double ms, GEventListener func) {
