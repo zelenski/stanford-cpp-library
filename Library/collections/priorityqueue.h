@@ -4,6 +4,8 @@
  * This file exports the <code>PriorityQueue</code> class, a
  * collection in which values are processed in priority order.
  *
+ * @version 2020/09/12
+ * - simplify interface in preparation for install
  * @version 2019/04/09
  * - renamed private members with underscore naming scheme for consistency
  * @version 2016/11/07
@@ -99,22 +101,6 @@ public:
     virtual ~PriorityQueue() = default;
 
     /*
-     * Method: add
-     * Usage: pq.add(value, priority);
-     * -------------------------------
-     * A synonym for the enqueue method.
-     */
-    void add(const ValueType& value, double priority);
-
-    /*
-     * Method: back
-     * Usage: ValueType last = pq.back();
-     * ----------------------------------
-     * Returns the last value in the queue by reference.
-     */
-    ValueType& back();
-
-    /*
      * Method: changePriority
      * Usage: pq.changePriority(value, newPriority);
      * ---------------------------------------------
@@ -167,14 +153,6 @@ public:
     bool equals(const PriorityQueue<ValueType>& pq2) const;
 
     /*
-     * Method: front
-     * Usage: ValueType first = pq.front();
-     * ------------------------------------
-     * Returns the first value in the queue by reference.
-     */
-    ValueType& front();
-
-    /*
      * Method: isEmpty
      * Usage: if (pq.isEmpty()) ...
      * ----------------------------
@@ -199,14 +177,6 @@ public:
      * removing it.
      */
     double peekPriority() const;
-
-    /*
-     * Method: remove
-     * Usage: ValueType first = pq.remove();
-     * --------------------------------------
-     * A synonym for the dequeue method.
-     */
-    ValueType remove();
 
     /*
      * Method: size
@@ -304,19 +274,6 @@ PriorityQueue<ValueType>::PriorityQueue(
     }
 }
 
-template <typename ValueType>
-void PriorityQueue<ValueType>::add(const ValueType& value, double priority) {
-    enqueue(value, priority);
-}
-
-template <typename ValueType>
-ValueType & PriorityQueue<ValueType>::back() {
-    if (isEmpty()) {
-        error("PriorityQueue::back: Attempting to read back of an empty queue");
-    }
-    return _heap.back().value;
-}
-
 /*
  * changePriority function added by Marty Stepp.
  * Parts of this implementation are adapted from TrailblazerPQueue.h,
@@ -406,14 +363,6 @@ bool PriorityQueue<ValueType>::equals(const PriorityQueue<ValueType>& pq2) const
 }
 
 template <typename ValueType>
-ValueType& PriorityQueue<ValueType>::front() {
-    if (isEmpty()) {
-        error("PriorityQueue::front: Attempting to read front of an empty queue");
-    }
-    return _heap[0].value;
-}
-
-template <typename ValueType>
 bool PriorityQueue<ValueType>::isEmpty() const {
     return _heap.size() == 0;
 }
@@ -432,11 +381,6 @@ double PriorityQueue<ValueType>::peekPriority() const {
         error("PriorityQueue::peekPriority: Attempting to peek at an empty queue");
     }
     return _heap.get(0).priority;
-}
-
-template <typename ValueType>
-ValueType PriorityQueue<ValueType>::remove() {
-    return dequeue();
 }
 
 template <typename ValueType>
