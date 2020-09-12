@@ -4,6 +4,8 @@
  * This file exports the template class <code>Map</code>, which
  * maintains a collection of <i>key</i>-<i>value</i> pairs.
  *
+ * @version 2020/09/12
+ * - simplify interface in preparation for install
  * @version 2019/04/09
  * - renamed private members with underscore naming scheme for consistency
  * @version 2019/02/04
@@ -120,35 +122,13 @@ public:
     virtual ~Map() = default;
 
     /*
-     * Method: add
-     * Usage: map.add(key, value);
-     * ---------------------------
-     * Associates <code>key</code> with <code>value</code> in this map.
-     * A synonym for the put method.
-     */
-    void add(const KeyType& key, const ValueType& value);
-
-    /*
-     * Method: addAll
-     * Usage: map.addAll(map2);
-     * ------------------------
-     * Adds all key/value pairs from the given map to this map.
-     * If both maps contain a pair for the same key, the one from map2 will
-     * replace the one from this map.
-     * You can also pass an initializer list of pairs such as {{"a", 1}, {"b", 2}, {"c", 3}}.
-     * Returns a reference to this map.
-     * Identical in behavior to putAll.
-     */
-    Map& addAll(const Map& map2);
-
-    /*
-     * Method: back
-     * Usage: KeyType value = map.back();
+     * Method: lastKey
+     * Usage: KeyType value = map.lastKey();
      * ------------------------------------
      * Returns the last key in the map in the order established by the
      * <code>for-each</code> loop.  If the map is empty, generates an error.
      */
-    KeyType back() const;
+    KeyType lastKey() const;
 
     /*
      * Method: clear
@@ -177,13 +157,13 @@ public:
     bool equals(const Map& map2) const;
 
     /*
-     * Method: front
-     * Usage: KeyType value = map.front();
-     * -------------------------------------
+     * Method: firstKey
+     * Usage: KeyType value = map.firstKey();
+     * --------------------------------------
      * Returns the first key in the map in the order established by the
      * <code>for-each</code> loop.  If the map is empty, generates an error.
      */
-    KeyType front() const;
+    KeyType firstKey() const;
 
     /*
      * Method: get
@@ -242,7 +222,6 @@ public:
      * replace the one from this map.
      * You can also pass an initializer list of pairs such as {{"a", 1}, {"b", 2}, {"c", 3}}.
      * Returns a reference to this map.
-     * Identical in behavior to addAll.
      */
     Map& putAll(const Map& map2);
 
@@ -352,7 +331,7 @@ public:
      * Usage: map1 + map2
      * ------------------
      * Returns the union of the two maps, equivalent to a copy of the first map
-     * with addAll called on it passing the second map as a parameter.
+     * with putAll called on it passing the second map as a parameter.
      * If the two maps both contain a mapping for the same key, the mapping
      * from the second map is favored.
      * You can also pass an initializer list of pairs such as {{"a", 1}, {"b", 2}, {"c", 3}}.
@@ -364,7 +343,7 @@ public:
      * Usage: map1 += map2;
      * --------------------
      * Adds all key/value pairs from the given map to this map.
-     * Equivalent to calling addAll(map2).
+     * Equivalent to calling putAll(map2).
      * You can also pass an initializer list of pairs such as {{"a", 1}, {"b", 2}, {"c", 3}}.
      */
     Map& operator +=(const Map& map2);
@@ -476,20 +455,9 @@ Map<KeyType, ValueType>::Map(std::initializer_list<std::pair<const KeyType, Valu
 }
 
 template <typename KeyType, typename ValueType>
-void Map<KeyType, ValueType>::add(const KeyType& key,
-                                  const ValueType& value) {
-    put(key, value);
-}
-
-template <typename KeyType, typename ValueType>
-Map<KeyType, ValueType>& Map<KeyType, ValueType>::addAll(const Map& map2) {
-    return putAll(map2);
-}
-
-template <typename KeyType, typename ValueType>
-KeyType Map<KeyType, ValueType>::back() const {
+KeyType Map<KeyType, ValueType>::lastKey() const {
     if (isEmpty()) {
-        error("Map::back: map is empty");
+        error("Map::lastKey: map is empty");
     }
     return _elements.rbegin()->first;
 }
@@ -511,9 +479,9 @@ bool Map<KeyType, ValueType>::equals(const Map<KeyType, ValueType>& map2) const 
 }
 
 template <typename KeyType, typename ValueType>
-KeyType Map<KeyType, ValueType>::front() const {
+KeyType Map<KeyType, ValueType>::firstKey() const {
     if (isEmpty()) {
-        error("Map::front: map is empty");
+        error("Map::firstKey: map is empty");
     }
     return _elements.begin()->first;
 }

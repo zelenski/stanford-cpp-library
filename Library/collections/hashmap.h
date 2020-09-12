@@ -4,6 +4,8 @@
  * This file exports the <code>HashMap</code> class, which stores
  * a set of <i>key</i>-<i>value</i> pairs.
  *
+ * @version 2020/09/12
+ * - simplify interface in preparation for install
  * @version 2019/04/09
  * - renamed private members with underscore naming scheme for consistency
  * @version 2019/02/04
@@ -108,31 +110,9 @@ public:
     virtual ~HashMap() = default;
 
     /*
-     * Method: add
-     * Usage: map.add(key, value);
-     * ---------------------------
-     * Associates <code>key</code> with <code>value</code> in this map.
-     * A synonym for the put method.
-     */
-    void add(const KeyType& key, const ValueType& value);
-
-    /*
-     * Method: addAll
-     * Usage: map.addAll(map2);
-     * ------------------------
-     * Adds all key/value pairs from the given map to this map.
-     * If both maps contain a pair for the same key, the one from map2 will
-     * replace the one from this map.
-     * You can also pass an initializer list of pairs such as {{"a", 1}, {"b", 2}, {"c", 3}}.
-     * Returns a reference to this map.
-     * Identical in behavior to putAll.
-     */
-    HashMap& addAll(const HashMap& map2);
-
-    /*
-     * Method: back
-     * Usage: KeyType value = map.back();
-     * ----------------------------------
+     * Method: lastKey
+     * Usage: KeyType value = map.lastKey();
+     * ------------------------------------
      * Returns the last key in the map in the order established by the
      * <code>for-each</code> loop.
      * Note that since the keys are stored in an unpredictable order,
@@ -141,7 +121,7 @@ public:
      * from a for-each loop.
      * If the map is empty, generates an error.
      */
-    KeyType back() const;
+    KeyType lastKey() const;
 
     /*
      * Method: clear
@@ -170,9 +150,9 @@ public:
     bool equals(const HashMap& map2) const;
 
     /*
-     * Method: front
-     * Usage: KeyType value = map.front();
-     * -----------------------------------
+     * Method: firstKey
+     * Usage: KeyType value = map.firstKey();
+     * -------------------------------------
      * Returns the first key in the map in the order established by the
      * <code>for-each</code> loop.
      * Note that since the keys are stored in an unpredictable order,
@@ -181,7 +161,7 @@ public:
      * from a for-each loop.
      * If the map is empty, generates an error.
      */
-    KeyType front() const;
+    KeyType firstKey() const;
 
     /*
      * Method: get
@@ -320,7 +300,7 @@ public:
      * Usage: map1 + map2
      * ------------------
      * Returns the union of the two maps, equivalent to a copy of the first map
-     * with addAll called on it passing the second map as a parameter.
+     * with putAll called on it passing the second map as a parameter.
      * If the two maps both contain a mapping for the same key, the mapping
      * from the second map is favored.
      * You can also pass an initializer list of pairs such as {{"a", 1}, {"b", 2}, {"c", 3}}.
@@ -332,7 +312,7 @@ public:
      * Usage: map1 += map2;
      * --------------------
      * Adds all key/value pairs from the given map to this map.
-     * Equivalent to calling addAll(map2).
+     * Equivalent to calling putAll(map2).
      * You can also pass an initializer list of pairs such as {{"a", 1}, {"b", 2}, {"c", 3}}.
      */
     HashMap& operator +=(const HashMap& map2);
@@ -403,8 +383,7 @@ private:
     /*
      * Hello CS106 students! If you got directed to this line of code in a compiler error,
      * it probably means that you tried making a HashMap with a custom struct or class type
-     * as the key type or a HashSet with a custom struct as a value type. (The same also
-     * applies for LinkedHashMap and LinkedHashSet.)
+     * as the key type or a HashSet with a custom struct as a value type.
      *
      * In order to have a type be a key type in a HashMap - or to have a type be a value type
      * in a HashSet - it needs to have a hashCode function defined and be capable of being
@@ -500,19 +479,9 @@ HashMap<KeyType, ValueType>::HashMap(std::initializer_list<std::pair<const KeyTy
 }
 
 template <typename KeyType, typename ValueType>
-void HashMap<KeyType, ValueType>::add(const KeyType& key, const ValueType& value) {
-    put(key, value);
-}
-
-template <typename KeyType, typename ValueType>
-HashMap<KeyType, ValueType>& HashMap<KeyType, ValueType>::addAll(const HashMap& map2) {
-    return putAll(map2);
-}
-
-template <typename KeyType, typename ValueType>
-KeyType HashMap<KeyType, ValueType>::back() const {
+KeyType HashMap<KeyType, ValueType>::lastKey() const {
     if (isEmpty()) {
-        error("HashMap::back: map is empty");
+        error("HashMap::lastKey: map is empty");
     }
 
     return std::next(_elements.begin(), _elements.size() - 1)->first;
@@ -535,9 +504,9 @@ bool HashMap<KeyType, ValueType>::equals(const HashMap<KeyType, ValueType>& map2
 }
 
 template <typename KeyType, typename ValueType>
-KeyType HashMap<KeyType, ValueType>::front() const {
+KeyType HashMap<KeyType, ValueType>::firstKey() const {
     if (isEmpty()) {
-        error("HashMap::front: map is empty");
+        error("HashMap::firstKey: map is empty");
     }
     return *begin();
 }
