@@ -3,7 +3,7 @@
  * ---------------
  * This file exports the <code>HashMap</code> class, which stores
  * a set of <i>key</i>-<i>value</i> pairs.
- * 
+ *
  * @version 2019/04/09
  * - renamed private members with underscore naming scheme for consistency
  * @version 2019/02/04
@@ -134,7 +134,7 @@ public:
      * Usage: KeyType value = map.back();
      * ----------------------------------
      * Returns the last key in the map in the order established by the
-     * <code>foreach</code> macro.
+     * <code>for-each</code> loop.
      * Note that since the keys are stored in an unpredictable order,
      * this is not necessarily equal to the "largest" key value in any particular
      * sorting order; it is just the key that would happen to be emitted last
@@ -174,7 +174,7 @@ public:
      * Usage: KeyType value = map.front();
      * -----------------------------------
      * Returns the first key in the map in the order established by the
-     * <code>foreach</code> macro.
+     * <code>for-each</code> loop.
      * Note that since the keys are stored in an unpredictable order,
      * this is not necessarily equal to the "smallest" key value in any particular
      * sorting order; it is just the key that would happen to be emitted first
@@ -200,7 +200,7 @@ public:
      * Returns <code>true</code> if this map contains no entries.
      */
     bool isEmpty() const;
-    
+
     /*
      * Method: keys
      * Usage: Vector<KeyType> keys = map.keys();

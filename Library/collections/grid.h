@@ -122,7 +122,7 @@ public:
      * Usage: ValueType value = grid.back();
      * -------------------------------------
      * Returns the last value in the grid in the order established by the
-     * <code>foreach</code> macro.
+     * <code>for-each</code> loop.
      * This is equivalent to grid[numRows - 1][numCols - 1].
      * If the grid is empty, generates an error.
      */
@@ -159,7 +159,7 @@ public:
      * Usage: ValueType value = grid.front();
      * --------------------------------------
      * Returns the first value in the grid in the order established by the
-     * <code>foreach</code> macro.  This is equivalent to grid[0][0].
+     * <code>for-each</code> loop.  This is equivalent to grid[0][0].
      * If the grid is empty, generates an error.
      */
     ValueType front() const;

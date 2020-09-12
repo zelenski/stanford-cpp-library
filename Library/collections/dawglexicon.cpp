@@ -14,7 +14,7 @@
  * This lexicon implementation only has the code to load/search the DAWG.
  * The DAWG builder code is quite a bit more intricate, see Julie Zelenski
  * if you need it.
- * 
+ *
  * @version 2018/03/10
  * - added method front
  * @version 2017/11/14
@@ -459,11 +459,7 @@ void DawgLexicon::readBinaryFile(std::istream& input) {
  * DAWG:<startnode index>:<num bytes>:<num bytes block of edge data>
  */
 void DawgLexicon::readBinaryFile(const std::string& filename) {
-#ifdef _foreachpatch_h
-    std::ifstream input(filename.c_str(), __IOS_IN__ | __IOS_BINARY__);
-#else
     std::ifstream input(filename.c_str(), std::ios::in | std::ios::binary);
-#endif // _foreachpatch_h
     if (input.fail()) {
         error("DawgLexicon::addWordsFromFile: Couldn't open lexicon file " + filename);
     }

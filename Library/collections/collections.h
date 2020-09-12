@@ -42,9 +42,6 @@
 #include "hashcode.h"
 #include "random.h"
 
-// macro to get the length of a stack-allocated array
-#define ARRAY_LENGTH(a) (sizeof(a) / sizeof((a)[0]))
-
 // begin global namespace string read/writing functions from strlib.h
 
 /**
@@ -1099,7 +1096,7 @@ public:
      * Usage: ValueType value = set.back();
      * ------------------------------------
      * Returns the last value in the set in the order established by the
-     * <code>foreach</code> macro.  If the set is empty, generates an error.
+     * <code>for-each</code> loop.  If the set is empty, generates an error.
      */
     value_type back() const;
 
@@ -1161,7 +1158,7 @@ public:
      * Usage: ValueType value = set.first();
      * -------------------------------------
      * Returns the first value in the set in the order established by the
-     * <code>foreach</code> macro.  If the set is empty, <code>first</code>
+     * <code>for-each</code> loop.  If the set is empty, <code>first</code>
      * generates an error.
      * Equivalent to front.
      */
@@ -1172,7 +1169,7 @@ public:
      * Usage: ValueType value = set.front();
      * -------------------------------------
      * Returns the first value in the set in the order established by the
-     * <code>foreach</code> macro.  If the set is empty, generates an error.
+     * <code>for-each</code> loop.  If the set is empty, generates an error.
      * Equivalent to first.
      */
     value_type front() const;

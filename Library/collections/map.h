@@ -3,7 +3,7 @@
  * -----------
  * This file exports the template class <code>Map</code>, which
  * maintains a collection of <i>key</i>-<i>value</i> pairs.
- * 
+ *
  * @version 2019/04/09
  * - renamed private members with underscore naming scheme for consistency
  * @version 2019/02/04
@@ -118,7 +118,7 @@ public:
      * Frees any heap storage associated with this map.
      */
     virtual ~Map() = default;
-    
+
     /*
      * Method: add
      * Usage: map.add(key, value);
@@ -146,7 +146,7 @@ public:
      * Usage: KeyType value = map.back();
      * ------------------------------------
      * Returns the last key in the map in the order established by the
-     * <code>foreach</code> macro.  If the map is empty, generates an error.
+     * <code>for-each</code> loop.  If the map is empty, generates an error.
      */
     KeyType back() const;
 
@@ -157,7 +157,7 @@ public:
      * Removes all entries from this map.
      */
     void clear();
-    
+
     /*
      * Method: containsKey
      * Usage: if (map.containsKey(key)) ...
@@ -181,7 +181,7 @@ public:
      * Usage: KeyType value = map.front();
      * -------------------------------------
      * Returns the first key in the map in the order established by the
-     * <code>foreach</code> macro.  If the map is empty, generates an error.
+     * <code>for-each</code> loop.  If the map is empty, generates an error.
      */
     KeyType front() const;
 
@@ -202,7 +202,7 @@ public:
      * Returns <code>true</code> if this map contains no entries.
      */
     bool isEmpty() const;
-    
+
     /*
      * Method: keys
      * Usage: Vector<KeyType> keys = map.keys();
@@ -212,7 +212,7 @@ public:
      * so it is inefficient to call on large maps.
      */
     Vector<KeyType> keys() const;
-    
+
     /*
      * Method: mapAll
      * Usage: map.mapAll(fn);
@@ -285,7 +285,7 @@ public:
      * Returns the number of entries in this map.
      */
     int size() const;
-    
+
     /*
      * Method: toString
      * Usage: string str = map.toString();

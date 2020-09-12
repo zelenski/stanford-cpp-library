@@ -23,7 +23,7 @@
  * - added hashCode function
  * @version 2014/10/10
  * - added equals method, comparison operators ==, !=
- * - fixed inclusion of foreach macro to avoid errors
+ * - fixed inclusion of for-each macro to avoid errors
  */
 
 
@@ -129,7 +129,7 @@ public:
      * Each word from the stream is converted to lowercase before adding it.
      */
     void addWordsFromFile(std::istream& input);
-    
+
     /**
      * Reads the file and adds all of its words to the lexicon.
      * Each word from the file is converted to lowercase before adding it.
@@ -516,7 +516,7 @@ private:
     void readBinaryFile(const std::string& filename);
     bool removeHelper(TrieNode*& node, const std::string& word, const std::string& originalWord, bool isPrefix);
     void removeSubtreeHelper(TrieNode*& node, const std::string& originalWord);
-    
+
     friend std::ostream& operator <<(std::ostream& os, const Lexicon& lex);
     friend std::istream& operator >>(std::istream& is, Lexicon& lex);
 

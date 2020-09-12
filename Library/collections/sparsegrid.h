@@ -104,7 +104,7 @@ public:
      * Usage: ValueType value = grid.back();
      * -------------------------------------
      * Returns the last value in the grid in the order established by the
-     * <code>foreach</code> macro.  This is the highest row/col value that has
+     * <code>for-each</code> loop.  This is the highest row/col value that has
      * been explicitly set.
      * If the grid is empty, generates an error.
      */
@@ -141,7 +141,7 @@ public:
      * Usage: ValueType value = grid.front();
      * --------------------------------------
      * Returns the first value in the grid in the order established by the
-     * <code>foreach</code> macro.  Typically this is equivalent to grid[0][0].
+     * <code>for-each</code> loop.  Typically this is equivalent to grid[0][0].
      * If the grid is empty, generates an error.
      */
     ValueType front() const;
