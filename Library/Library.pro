@@ -26,9 +26,10 @@ REQUIRES_QT_VERSION =   5.15
 
 LIB_SUBDIRS         =   collections console graphics io system util
 
-for(dir, LIB_SUBDIRS):
+for(dir, LIB_SUBDIRS) {
     PUBLIC_HEADERS  +=  $$files($${dir}/*.h)
     SOURCES         +=  $$files($${dir}/*.cpp)
+}
 
 PRIVATE_HEADERS     +=  $$files(private/*.h)
 SOURCES             +=  $$files(private/*.cpp)
@@ -57,7 +58,7 @@ develop_mode {
     CONFIG          +=  debug
     CONFIG          -=  silent
     CONFIG          +=  warn_on
-    QMAKE_CXXFLAGS_WARN_ON += -Wall -Wextra
+    QMAKE_CXXFLAGS  += -Wall -Wextra
     QMAKE_CXXFLAGS  += -Wno-inconsistent-missing-override
     DEFINES         += QT_DEPRECATED_WARNINGS
 } else {
