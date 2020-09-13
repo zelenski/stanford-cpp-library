@@ -134,7 +134,7 @@ void filelib_listDirectory(const std::string& path, Vector<std::string> & list) 
     while (true) {
         std::string name = std::string(fd.cFileName);
         if (name != "." && name != "..") {
-            list.push_back(name);
+            list.add(name);
         }
         if (!FindNextFileA(h, &fd)) {
             break;

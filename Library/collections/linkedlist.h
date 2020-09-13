@@ -90,17 +90,15 @@ public:
      * Frees any heap storage allocated by this LinkedList.
      */
     virtual ~LinkedList() = default;
-    
+
     /*
      * Method: add
      * Usage: list.add(value);
      * ----------------------
-     * Adds a new value to the end of this LinkedList.  To ensure compatibility
-     * with the <code>LinkedList</code> class in the Standard Template Library,
-     * this method is also called <code>push_back</code>.
+     * Adds a new value to the end of this LinkedList.
      */
     void add(ValueType value);
-    
+
     /*
      * Method: addAll
      * Usage: list.addAll(l2);
@@ -114,23 +112,13 @@ public:
     LinkedList<ValueType>& addAll(std::initializer_list<ValueType> list);
 
     /*
-     * Method: back
-     * Usage: ValueType val = list.back();
-     * -----------------------------------
-     * Returns the element at the back (index size-1) of this LinkedList.
-     * This method signals an error if the list is empty.
-     */
-    ValueType& back();
-    const ValueType& back() const;
-
-    /*
      * Method: clear
      * Usage: list.clear();
      * --------------------
      * Removes all elements from this LinkedList.
      */
     void clear();
-    
+
     /*
      * Method: contains
      * Usage: if (list.contains(value)) ...
@@ -149,16 +137,6 @@ public:
      * Identical in behavior to the == operator.
      */
     bool equals(const LinkedList<ValueType>& l2) const;
-    
-    /*
-     * Method: front
-     * Usage: ValueType val = list.front();
-     * ------------------------------------
-     * Returns the element at the front (index 0) of this LinkedList.
-     * This method signals an error if the list is empty.
-     */
-    ValueType& front();
-    const ValueType& front() const;
 
     /*
      * Method: get
@@ -219,42 +197,7 @@ public:
      * ascending index order.
      */
     void mapAll(std::function<void (const ValueType &)> fn) const;
-    
-    /*
-     * Method: pop_back
-     * Usage: ValueType back = list.pop_back();
-     * ------------------------------------------
-     * Removes and returns the last value of this LinkedList.
-     * Throws an error if the list is empty.
-     */
-    ValueType pop_back();
 
-    /*
-     * Method: pop_front
-     * Usage: ValueType front = list.pop_front();
-     * ------------------------------------------
-     * Removes and returns the first value of this LinkedList.
-     * Throws an error if the list is empty.
-     */
-    ValueType pop_front();
-    
-    /*
-     * Method: push_back
-     * Usage: list.push_back(value);
-     * -----------------------------
-     * Adds a new value to the end of this LinkedList.
-     * Same behavior as the <code>add</code> method.
-     */
-    void push_back(const ValueType& value);
-
-    /*
-     * Method: push_front
-     * Usage: list.push_front(value);
-     * ------------------------------
-     * Adds a new value to the front of this LinkedList.
-     */
-    void push_front(const ValueType& value);
-    
     /*
      * Method: remove
      * Usage: list.remove(index);
@@ -263,24 +206,6 @@ public:
      * This method signals an error if the index is outside the list range.
      */
     void remove(int index);
-
-    /*
-     * Method: removeFirst
-     * Usage: ValueType val = list.removeFirst();
-     * ------------------------------------------
-     * Removes and returns the element at index 0 in this list.
-     * This method signals an error if list is empty.
-     */
-    ValueType removeFront();
-
-    /*
-     * Method: removeLast
-     * Usage: ValueType val = list.removeLast();
-     * -----------------------------------------
-     * Removes and returns the element at index (size - 1) in this list.
-     * This method signals an error if list is empty.
-     */
-    ValueType removeBack();
 
     /*
      * Method: removeValue
@@ -352,7 +277,7 @@ public:
      * within the bounds of this list, or if length is negative.
      */
     LinkedList<ValueType> subList(int start, int length) const;
-    
+
     /*
      * Method: toString
      * Usage: string str = list.toString();
@@ -555,19 +480,6 @@ LinkedList<ValueType>& LinkedList<ValueType>::addAll(std::initializer_list<Value
 }
 
 template <typename ValueType>
-ValueType& LinkedList<ValueType>::back() {
-    return const_cast<ValueType&>(static_cast<const LinkedList &>(*this).back());
-}
-
-template <typename ValueType>
-const ValueType& LinkedList<ValueType>::back() const {
-    if (isEmpty()) {
-        error("LinkedList::back: list is empty");
-    }
-    return _elements.back();
-}
-
-template <typename ValueType>
 void LinkedList<ValueType>::clear() {
     _elements.clear();
     _version.update();
@@ -583,18 +495,6 @@ bool LinkedList<ValueType>::equals(const LinkedList<ValueType>& list2) const {
     return _elements == list2._elements;
 }
 
-template <typename ValueType>
-ValueType& LinkedList<ValueType>::front() {
-    return const_cast<ValueType&>(static_cast<const LinkedList &>(*this).front());
-}
-
-template <typename ValueType>
-const ValueType& LinkedList<ValueType>::front() const {
-    if (isEmpty()) {
-        error("LinkedList::front: list is empty");
-    }
-    return _elements.front();
-}
 
 template <typename ValueType>
 const ValueType & LinkedList<ValueType>::get(int index) const {
@@ -659,56 +559,12 @@ void LinkedList<ValueType>::mapAll(std::function<void (const ValueType &)> fn) c
 }
 
 template <typename ValueType>
-ValueType LinkedList<ValueType>::pop_back() {
-    if (isEmpty()) {
-        error("LinkedList::pop_back: list is empty");
-    }
-    ValueType back = _elements.back();
-    _elements.pop_back();
-    _version.update();
-    return back;
-}
-
-template <typename ValueType>
-ValueType LinkedList<ValueType>::pop_front() {
-    if (isEmpty()) {
-        error("LinkedList::pop_front: list is empty");
-    }
-    ValueType front = _elements.front();
-    _elements.pop_front();
-    _version.update();
-    return front;
-}
-
-template <typename ValueType>
-void LinkedList<ValueType>::push_back(const ValueType& value) {
-    _elements.push_back(value);
-    _version.update();
-}
-
-template <typename ValueType>
-void LinkedList<ValueType>::push_front(const ValueType& value) {
-    _elements.push_front(value);
-    _version.update();
-}
-
-template <typename ValueType>
 void LinkedList<ValueType>::remove(int index) {
     checkIndex(index, 0, size()-1, "remove");
     auto itr = _elements.begin();
     advance(itr, index);
     _elements.erase(itr);
     _version.update();
-}
-
-template <typename ValueType>
-ValueType LinkedList<ValueType>::removeBack() {
-    return pop_back();
-}
-
-template <typename ValueType>
-ValueType LinkedList<ValueType>::removeFront() {
-    return pop_front();
 }
 
 template <typename ValueType>
