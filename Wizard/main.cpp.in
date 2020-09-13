@@ -1,0 +1,42 @@
+%{Cpp:LicenseTemplate}
+%{JS: Cpp.headerGuard('wonderment') }
+
+// Creation date: %{CurrentDate::ISO}
+// This works to get path to: "%{ProFile}"
+
+%{JS: QtSupport.qtIncludes([ 'QtGui/QApplication' ], [ 'QtWidgets/QApplication' ]) }\
+
+/****************************************************************************
+** 
+@if ('%{Env:USER}' === '' || '%{Env:QTC_COPYRIGHT_EMAIL}' === '')
+** Copyright (C) %{CurrentDate:yyyy} %{Env:USER} <$copyright_email$>.
+@elseuser$
+** Copyright (C) %{CurrentDate:yyyy} %{Env:USER} <%{Env:QTC_COPYRIGHT_EMAIL}>.
+@endif
+**
+** This file is part of %{CurrentProject:Name}
+** Here is a placeholder that you can fill <$your_name_here$> if using as placeholder
+** Current kit is %{CurrentKit:Id}
+**
+
+** DOES NOT WORK: %{target} %{data.target}
+** Without colon at end, these do not work %{CurrentProject} or %{CurrentDate}
+**
+****************************************************************************/
+
+/* 
+ * File: main.cpp
+ * --------------
+ * Author: %{MyUser}. THIS COULD WORK IF I SET IN THE WIZARD
+ * Created: %{CurrentDate::ISO}
+ */
+#include "console.h"
+#include <iostream>
+
+using namespace std;
+
+int main()
+{
+    cout << "Hello, Stanford!" << endl;
+    return 0;
+}

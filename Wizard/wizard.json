@@ -1,0 +1,57 @@
+{
+    "version": 1,
+    "supportedProjectTypes": [ "Qt4ProjectManager.Qt4Project" ],
+    "id": "A.Stanford CS106BX",
+    "category": "Custom Project",
+    "trDescription": "Create a C++ project for use in Stanford CS106 BXH courses.\nPrepared for quarter %{QuarterId}. \n",
+    "trDisplayName": "Stanford CS106 C++",
+    "trDisplayCategory": "Custom Project",
+    "icon": "splicon-large.png",
+    "featuresRequired": [ "QtSupport.Wizards.FeatureQt" ],
+    "enabled": "%{JS: value('Plugins').indexOf('CppEditor') >= 0 && (value('Plugins').indexOf('QmakeProjectManager') >= 0)}",
+
+    "options":
+    [
+        { "key": "QuarterId", "value": "19-1" },
+        { "key": "ProFile", "value": "%{JS: Util.fileName('%{ProjectDirectory}/%{ProjectName}', 'pro')}" }
+    ],
+
+    "pages":
+    [
+        {
+            "trDisplayName": "Project Setup",
+            "trShortTitle": "Setup",
+            "typeId": "Project",
+            "data": { "trDescription": "Quarter %{QuarterId}.\nJulie Zelenski  user = %{Env:USER}\n Today %{CurrentDate:yyyy}"}
+        },
+        {
+            "trDisplayName": "Kit Selection",
+            "trShortTitle": "Kits",
+            "typeId": "Kits",
+            "data": { "projectFilePath": "%{ProFile}" }
+        }
+    ],
+    "generators":
+    [
+        {
+            "typeId": "File",
+            "data":
+            [
+                {
+                    "source": "file.pro.in",
+                    "target": "%{ProFile}",
+                    "openAsProject": true
+                },
+                {
+                    "source": "main.cpp.in",
+                    "target": "main.cpp",
+                    "openInEditor": true
+                },
+                {
+                    "source": "README.md.in",
+                    "target": "README.md"
+                }
+            ]
+        }
+    ]
+}
