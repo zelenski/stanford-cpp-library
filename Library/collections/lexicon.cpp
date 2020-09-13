@@ -14,7 +14,7 @@
  * - It was optimized for space usage over ease of use and maintenance.
  *
  * The original DAWG implementation is retained as dawglexicon.h/cpp.
- * 
+ *
  * @version 2018/03/10
  * - added method front
  * @version 2016/09/24
@@ -146,7 +146,7 @@ std::string Lexicon::back() const {
     if (isEmpty()) {
         error("Lexicon::back: lexicon is empty");
     }
-    return _allWords.back();
+    return _allWords.last();
 }
 
 void Lexicon::clear() {
@@ -204,14 +204,14 @@ std::string Lexicon::first() const {
     if (isEmpty()) {
         error("Lexicon::first: lexicon is empty");
     }
-    return _allWords.front();
+    return _allWords.first();
 }
 
 std::string Lexicon::front() const {
     if (isEmpty()) {
         error("Lexicon::front: lexicon is empty");
     }
-    return _allWords.front();
+    return _allWords.first();
 }
 
 void Lexicon::insert(const std::string& word) {
@@ -300,7 +300,7 @@ bool Lexicon::removePrefix(const std::string& prefix) {
     if (!scrub(scrubbed)) {
         return false;
     }
-    
+
     return removeHelper(_root, scrubbed, /* originalWord */ scrubbed, /* isPrefix */ true);
 }
 
