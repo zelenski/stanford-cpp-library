@@ -231,7 +231,7 @@ ValueType Stack<ValueType>::peek() const {
     if (isEmpty()) {
         error("Stack::peek: Attempting to peek at an empty stack");
     }
-    return _elements.back();
+    return _elements[_elements.size() -1];
 }
 
 template <typename ValueType>

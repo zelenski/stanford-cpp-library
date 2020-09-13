@@ -7,6 +7,8 @@
  * a visible iterator (begin(), end()).
  * Used to implement comparison operators like < and >= on collections.
  *
+ * @version 2020/09/12
+ * - simplify interface in preparation for install
  * @author Marty Stepp
  * @version 2019/10/12
  * - added ARRAY_LENGTH macro
@@ -1069,36 +1071,18 @@ public:
      * Method: add
      * Usage: set.add(value);
      * ----------------------
-     * Adds an element to this set, if it was not already there.  For
-     * compatibility with the STL <code>set</code> class, this method
-     * is also exported as <code>insert</code>.
+     * Adds an element to this set, if it was not already there.
      */
     void add(const value_type& value);
 
     /**
-     * Method: addAll
-     * Usage: set.addAll(set2);
-     * ------------------------
-     * Adds all elements of the given other set to this set.
-     * You can also pass an initializer list such as {1, 2, 3}.
-     * Returns a reference to this set.
-     *
-     * Note that this function modifies the current set in place rather than
-     * returning a new set. If you want a new set, consider using the + operator
-     * instead (not +=), which returns a newly created copy set.
-     *
-     * Identical in behavior to the += operator.
-     */
-    GenericSet& addAll(const GenericSet& set);
-
-    /**
      * Method: back
-     * Usage: ValueType value = set.back();
+     * Usage: ValueType value = set.last();
      * ------------------------------------
      * Returns the last value in the set in the order established by the
      * <code>for-each</code> loop.  If the set is empty, generates an error.
      */
-    value_type back() const;
+    value_type last() const;
 
     /**
      * Method: clear
@@ -1117,17 +1101,6 @@ public:
     bool contains(const value_type& value) const;
 
     /**
-     * Method: containsAll
-     * Usage: if (set.containsAll(set2)) ...
-     * -------------------------------------
-     * Returns <code>true</code> if every value from the given other set
-     * is also found in this set.
-     * You can also pass an initializer list such as {1, 2, 3}.
-     * Equivalent in behavior to isSupersetOf.
-     */
-    bool containsAll(const GenericSet& set2) const;
-
-    /**
      * Method: difference
      * Usage: set.difference(set2);
      * ----------------------------
@@ -1139,7 +1112,7 @@ public:
      * returning a new set. If you want a new set, consider using the - operator
      * instead (not -=), which returns a newly created copy set.
      *
-     * Identical in behavior to the -= operator and the removeAll function.
+     * Identical in behavior to the -= operator.
      */
     GenericSet& difference(const GenericSet& set);
 
@@ -1160,28 +1133,8 @@ public:
      * Returns the first value in the set in the order established by the
      * <code>for-each</code> loop.  If the set is empty, <code>first</code>
      * generates an error.
-     * Equivalent to front.
      */
     value_type first() const;
-
-    /**
-     * Method: front
-     * Usage: ValueType value = set.front();
-     * -------------------------------------
-     * Returns the first value in the set in the order established by the
-     * <code>for-each</code> loop.  If the set is empty, generates an error.
-     * Equivalent to first.
-     */
-    value_type front() const;
-
-    /**
-     * Method: insert
-     * Usage: set.insert(value);
-     * -------------------------
-     * Adds an element to this set, if it was not already there.  This
-     * method is exported for compatibility with the STL <code>set</code> class.
-     */
-    void insert(const value_type& value);
 
     /**
      * Method: intersect
@@ -1196,7 +1149,7 @@ public:
      * returning a new set. If you want a new set, consider using the * operator
      * instead (not *=), which returns a newly created copy set.
      *
-     * Identical in behavior to the *= operator and the retainAll function.
+     * Identical in behavior to the *= operator.
      */
     GenericSet& intersect(const GenericSet& set);
 
@@ -1227,7 +1180,6 @@ public:
      * <code>true</code> if every element of this set is
      * contained in <code>set2</code>.
      * You can also pass an initializer list such as {1, 2, 3}.
-     * Equivalent in behavior to containsAll.
      */
     bool isSupersetOf(const GenericSet& set2) const;
 
@@ -1238,8 +1190,8 @@ public:
      * Iterates through the elements of the set and calls <code>fn(value)</code>
      * for each one.  The iteration order matches the underlying order in which
      * the elements are stored.  For Set, this is sorted order according to the
-     * comparison function; for LinkedHashSet, this is the insertion order; and
-     * for HashSet, this is whatever order the elements happen to be in.
+     * comparison function and for HashSet, this is whatever order the elements
+     * happen to be in.
      */
     void mapAll(std::function<void (const value_type&)> fn) const;
 
@@ -1252,39 +1204,6 @@ public:
      * remains unchanged.
      */
     void remove(const value_type& value);
-
-    /**
-     * Method: removeAll
-     * Usage: set.removeAll(set2);
-     * ---------------------------
-     * Removes all elements of the given other set from this set.
-     * You can also pass an initializer list such as {1, 2, 3}.
-     * Returns a reference to this set.
-     *
-     * Note that this function modifies the current set in place rather than
-     * returning a new set. If you want a new set, consider using the - operator
-     * instead (not -=), which returns a newly created copy set.
-     *
-     * Identical in behavior to the -= operator and the difference function.
-     */
-    GenericSet& removeAll(const GenericSet& set);
-
-    /**
-     * Method: retainAll
-     * Usage: set.retainAll(set2);
-     * ---------------------------
-     * Removes all elements from this set that are not contained in the given
-     * other set.
-     * You can also pass an initializer list such as {1, 2, 3}.
-     * Returns a reference to this set.
-     *
-     * Note that this function modifies the current set in place rather than
-     * returning a new set. If you want a new set, consider using the * operator
-     * instead (not *=), which returns a newly created copy set.
-     *
-     * Identical in behavior to the *= operator and the intersect function.
-     */
-    GenericSet& retainAll(const GenericSet& set);
 
     /**
      * Method: size
@@ -1309,7 +1228,7 @@ public:
      * Adds all elements of the given other set to this set.
      * You can also pass an initializer list such as {1, 2, 3}.
      * Returns a reference to this set.
-     * Identical in behavior to the += operator and the addAll function.
+     * Identical in behavior to the += operator.
      *
      * Note that this function modifies the current set in place rather than
      * returning a new set. If you want a new set, consider using the + operator
@@ -1546,16 +1465,8 @@ void GenericSet<SetTraits>::add(const value_type& value) {
 }
 
 template <typename SetTraits>
-GenericSet<SetTraits>& GenericSet<SetTraits>::addAll(const GenericSet& set2) {
-    for (const auto& value : set2) {
-        add(value);
-    }
-    return *this;
-}
-
-template <typename SetTraits>
 typename GenericSet<SetTraits>::value_type
-GenericSet<SetTraits>::back() const {
+GenericSet<SetTraits>::last() const {
     if (isEmpty()) {
         error(SetTraits::name() + "::back: set is empty");
     }
@@ -1573,18 +1484,9 @@ bool GenericSet<SetTraits>::contains(const value_type& value) const {
 }
 
 template <typename SetTraits>
-bool GenericSet<SetTraits>::containsAll(const GenericSet& set2) const {
-    for (const auto& value: set2) {
-        if (!contains(value)) {
-            return false;
-        }
-    }
-    return true;
-}
-
-template <typename SetTraits>
-GenericSet<SetTraits>& GenericSet<SetTraits>::difference(const GenericSet<SetTraits>& set) {
-    return removeAll(set);
+GenericSet<SetTraits>& GenericSet<SetTraits>::difference(const GenericSet<SetTraits>& set2) {
+    _map.removeAll(set2._map);
+    return *this;
 }
 
 template <typename SetTraits>
@@ -1609,26 +1511,13 @@ GenericSet<SetTraits>::first() const {
     if (isEmpty()) {
         error(SetTraits::name() + "::first: set is empty");
     }
-    return *begin();
-}
-
-template <typename SetTraits>
-typename GenericSet<SetTraits>::value_type
-GenericSet<SetTraits>::front() const {
-    if (isEmpty()) {
-        error(SetTraits::name() + "::front: set is empty");
-    }
     return _map.firstKey();
 }
 
 template <typename SetTraits>
-void GenericSet<SetTraits>::insert(const value_type& value) {
-    _map.put(value, true);
-}
-
-template <typename SetTraits>
-GenericSet<SetTraits>& GenericSet<SetTraits>::intersect(const GenericSet<SetTraits>& set) {
-    return retainAll(set);
+GenericSet<SetTraits>& GenericSet<SetTraits>::intersect(const GenericSet<SetTraits>& set2) {
+    _map.retainAll(set2._map);
+    return *this;
 }
 
 template <typename SetTraits>
@@ -1648,7 +1537,12 @@ bool GenericSet<SetTraits>::isSubsetOf(const GenericSet& set2) const {
 
 template <typename SetTraits>
 bool GenericSet<SetTraits>::isSupersetOf(const GenericSet& set2) const {
-    return containsAll(set2);
+    for (const auto& value: set2) {
+        if (!contains(value)) {
+            return false;
+        }
+    }
+    return true;
 }
 
 template <typename SetTraits>
@@ -1664,18 +1558,6 @@ void GenericSet<SetTraits>::remove(const value_type& value) {
 }
 
 template <typename SetTraits>
-GenericSet<SetTraits>& GenericSet<SetTraits>::removeAll(const GenericSet& set2) {
-    _map.removeAll(set2._map);
-    return *this;
-}
-
-template <typename SetTraits>
-GenericSet<SetTraits>& GenericSet<SetTraits>::retainAll(const GenericSet& set2) {
-    _map.retainAll(set2._map);
-    return *this;
-}
-
-template <typename SetTraits>
 int GenericSet<SetTraits>::size() const {
     return _map.size();
 }
@@ -1688,8 +1570,11 @@ std::string GenericSet<SetTraits>::toString() const {
 }
 
 template <typename SetTraits>
-GenericSet<SetTraits>& GenericSet<SetTraits>::unionWith(const GenericSet<SetTraits>& set) {
-    return addAll(set);
+GenericSet<SetTraits>& GenericSet<SetTraits>::unionWith(const GenericSet<SetTraits>& set2) {
+    for (const auto& value : set2) {
+        add(value);
+    }
+    return *this;
 }
 
 
@@ -1731,7 +1616,7 @@ bool operator >=(const GenericSet<SetTraits>& set1, const GenericSet<SetTraits>&
 
 template <typename SetTraits>
 GenericSet<SetTraits> GenericSet<SetTraits>::operator +(const GenericSet& set2) const {
-    return GenericSet(*this).addAll(set2);
+    return GenericSet(*this).unionWith(set2);
 }
 
 template <typename SetTraits>
@@ -1743,12 +1628,12 @@ GenericSet<SetTraits> GenericSet<SetTraits>::operator +(const value_type& elemen
 
 template <typename SetTraits>
 GenericSet<SetTraits> GenericSet<SetTraits>::operator *(const GenericSet& set2) const {
-    return GenericSet(*this).retainAll(set2);
+    return GenericSet(*this).intersect(set2);
 }
 
 template <typename SetTraits>
 GenericSet<SetTraits> GenericSet<SetTraits>::operator -(const GenericSet& set2) const {
-    return GenericSet(*this).removeAll(set2);
+    return GenericSet(*this).difference(set2);
 }
 
 template <typename SetTraits>
@@ -1761,7 +1646,7 @@ GenericSet<SetTraits> GenericSet<SetTraits>::operator -(const value_type& elemen
 template <typename SetTraits>
 GenericSet<SetTraits>& GenericSet<SetTraits>::operator +=(const GenericSet& set2) {
     _removeFlag = false;
-    return addAll(set2);
+    return unionWith(set2);
 }
 
 template <typename SetTraits>
@@ -1773,13 +1658,13 @@ GenericSet<SetTraits>& GenericSet<SetTraits>::operator +=(const value_type& valu
 
 template <typename SetTraits>
 GenericSet<SetTraits>& GenericSet<SetTraits>::operator *=(const GenericSet& set2) {
-    return retainAll(set2);
+    return intersect(set2);
 }
 
 template <typename SetTraits>
 GenericSet<SetTraits>& GenericSet<SetTraits>::operator -=(const GenericSet& set2) {
     _removeFlag = true;
-    return removeAll(set2);
+    return difference(set2);
 }
 
 template <typename SetTraits>

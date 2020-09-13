@@ -323,7 +323,7 @@ ValueType PriorityQueue<ValueType>::dequeue() {
 
     ValueType result = _heap[0].value;
     std::pop_heap(_heap.begin(), _heap.end());
-    _heap.pop_back();
+    _heap.remove(_heap.size() - 1);
     return result;
 }
 
@@ -372,7 +372,7 @@ ValueType PriorityQueue<ValueType>::peek() const {
     if (isEmpty()) {
         error("PriorityQueue::peek: Attempting to peek at an empty queue");
     }
-    return _heap.front().value;
+    return _heap[0].value;
 }
 
 template <typename ValueType>
@@ -380,7 +380,7 @@ double PriorityQueue<ValueType>::peekPriority() const {
     if (isEmpty()) {
         error("PriorityQueue::peekPriority: Attempting to peek at an empty queue");
     }
-    return _heap.get(0).priority;
+    return _heap[0].priority;
 }
 
 template <typename ValueType>
