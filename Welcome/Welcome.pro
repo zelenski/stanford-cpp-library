@@ -88,25 +88,23 @@ CONFIG          +=  sdk_no_version_check   # removes spurious warnings on Mac OS
 # rather than special case
 CONFIG          +=  c++11
 
-# enable extra warnings
-QMAKE_CXXFLAGS_WARN_ON -= -Wall -Wextra -W
-
-QMAKE_CXXFLAGS  +=  -Werror=return-type
-QMAKE_CXXFLAGS  +=  -Werror=uninitialized
-QMAKE_CXXFLAGS  +=  -Wunused-parameter
-QMAKE_CXXFLAGS  +=  -Wmissing-field-initializers
-QMAKE_CXXFLAGS  +=  -Wno-old-style-cast
-QMAKE_CXXFLAGS  +=  -Wno-sign-compare
-QMAKE_CXXFLAGS  +=  -Wno-sign-conversion
-QMAKE_CXXFLAGS  +=  -Wno-unused-const-variable
+# WARN_ON has -Wall -Wextra, add/remove a few specific warnings
+QMAKE_CXXFLAGS_WARN_ON      +=  -Werror=return-type
+QMAKE_CXXFLAGS_WARN_ON      +=  -Werror=uninitialized
+QMAKE_CXXFLAGS_WARN_ON      +=  -Wunused-parameter
+QMAKE_CXXFLAGS_WARN_ON      +=  -Wmissing-field-initializers
+QMAKE_CXXFLAGS_WARN_ON      +=  -Wno-old-style-cast
+QMAKE_CXXFLAGS_WARN_ON      +=  -Wno-sign-compare
+QMAKE_CXXFLAGS_WARN_ON      +=  -Wno-sign-conversion
+QMAKE_CXXFLAGS_WARN_ON      +=  -Wno-unused-const-variable
 
 *-clang { # warning flags specific to clang
-    QMAKE_CXXFLAGS  +=  -Wempty-init-stmt
-    QMAKE_CXXFLAGS  +=  -Wignored-qualifiers
+    QMAKE_CXXFLAGS_WARN_ON  +=  -Wempty-init-stmt
+    QMAKE_CXXFLAGS_WARN_ON  +=  -Wignored-qualifiers
 }
 
 *-g++ {   # warning flags specific to g++
-    QMAKE_CXXFLAGS  +=  -Wlogical-op
+    QMAKE_CXXFLAGS_WARN_ON  +=  -Wlogical-op
 }
 
 ###############################################################################

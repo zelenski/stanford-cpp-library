@@ -1,3 +1,11 @@
+/*
+ * File: main.cpp
+ * --------------
+ * Sample program used to confirm Qt/CS106 install.
+ * @author Julie Zelenski
+ * #version 2020/09/12
+ */
+
 #include <iostream>
 #include "console.h"
 #include "queue.h"
