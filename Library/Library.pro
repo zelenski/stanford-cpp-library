@@ -17,7 +17,7 @@ TEMPLATE    =   lib
 TARGET      =   cs106
 CONFIG      +=  staticlib
 
-SPL_VERSION         =   2020.1
+SPL_VERSION         =   2020.01
 REQUIRES_QT_VERSION =   5.15
 
 ###############################################################################
@@ -58,9 +58,9 @@ develop_mode {
     CONFIG          +=  debug
     CONFIG          -=  silent
     CONFIG          +=  warn_on
-    QMAKE_CXXFLAGS  += -Wall -Wextra
-    QMAKE_CXXFLAGS  += -Wno-inconsistent-missing-override
-    DEFINES         += QT_DEPRECATED_WARNINGS
+    QMAKE_CXXFLAGS  +=  -Wall -Wextra
+    QMAKE_CXXFLAGS  +=  -Wno-inconsistent-missing-override
+    DEFINES         +=  QT_DEPRECATED_WARNINGS
 } else {
     CONFIG          +=  warn_off
     CONFIG          +=  sdk_no_version_check
