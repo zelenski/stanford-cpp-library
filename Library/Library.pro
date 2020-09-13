@@ -97,16 +97,15 @@ SPL_DIR = $${USER_DATA_DIR}/cs106
 target.path         =   "$${SPL_DIR}/lib"
 headers.files       =   $$PUBLIC_HEADERS
 headers.path        =   "$${SPL_DIR}/include"
-INSTALLS            +=  target headers
+INSTALLS            +=  target headers debughelper
 
 debughelper.files   =   personaltypes.py
 mac         { debughelper.path = "$$(HOME)/Qt/Qt Creator.app/Contents/Resources/debugger" }
-win32|win64 { debughelper.path = "C:/Qt/Tools/QtCreator/share/qtcreator/debugger" }
+win32|win64 { debughelper.path = "C:\Qt\Tools\QtCreator\share\qtcreator\debugger" }
 unix:!mac   { debughelper.path = "$$(HOME)/Qt/Tools/QtCreator/share/qtcreator/debugger" }
-!build_pass:exists($$debughelper.path) {
-    INSTALLS        +=  debughelper
-} else {
-    warning("Skipping debug helper, no such path $$debughelper.path")
+!build_pass:!exists($$debughelper.path) {
+    warning("Debug helper: no such path $$debughelper.path")
+    debughelper.path = "$${SPL_DIR}"
 }
 
 ###############################################################################
