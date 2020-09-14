@@ -7,7 +7,7 @@
  * Windows, and Linux.  Directory and search paths are allowed to
  * contain separators in any of the supported styles, which usually
  * makes it possible to use the same code on different platforms.
- * 
+ *
  * @version 2018/10/23
  * - added getAbsolutePath
  * @version 2018/09/25
@@ -182,7 +182,7 @@ void listDirectory(const std::string& path, Vector<std::string>& list);
 
 /**
  * Adds an alphabetized list of the files in the specified directory
- * to the STL string vector <code>list</code>.  This list excludes the
+ * to the Vector <code>list</code>.  This list excludes the
  * names <code>.</code> and <code>..</code> entries.
  */
 void listDirectory(const std::string& path, Vector<std::string>& list);
@@ -376,19 +376,15 @@ std::string promptUserForFile(const std::string& prompt = "",
 
 /**
  * Reads the entire contents of the specified input stream into the
- * string vector <code>lines</code>.  The client is responsible for
- * opening and closing the stream.  The vector can be either an STL
- * <code>vector</code> or a <code>Vector</code> as defined in the
- * Stanford C++ libraries.
+ * string Vector <code>lines</code>.  The client is responsible for
+ * opening and closing the stream.
  */
 void readEntireFile(std::istream& is, Vector<std::string>& lines);
 
 /**
  * Reads the entire contents of the specified input stream into the
- * string STL vector <code>lines</code>.  The client is responsible for
- * opening and closing the stream.  The vector can be either an STL
- * <code>vector</code> or a <code>Vector</code> as defined in the
- * Stanford C++ libraries.
+ * string Vector <code>lines</code>.  The client is responsible for
+ * opening and closing the stream.
  */
 void readEntireFile(std::istream& is, Vector<std::string>& lines);
 

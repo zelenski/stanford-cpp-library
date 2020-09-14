@@ -3,7 +3,7 @@
  * --------------
  * This file exports several useful string functions that are not
  * included in the C++ string library.
- * 
+ *
  * @version 2018/11/14
  * - added std::to_string for bool, char, pointer, and generic template type T
  * @version 2018/09/25
@@ -245,7 +245,7 @@ bool stringIsLong(const std::string& str, int radix = 10);
 bool stringIsReal(const std::string& str);
 
 /**
- * Combines the elements of the given vector into a single string,
+ * Combines the elements of the given Vector into a single string,
  * with the given delimiter separating neighboring elements, and returns it.
  * For example, joining the elements of the vector
  * {"Hi", "there", "", "Jim"} with the delimiter '?' returns "Hi?there??Jim".
@@ -253,7 +253,7 @@ bool stringIsReal(const std::string& str);
 std::string stringJoin(const Vector<std::string>& v, char delimiter = '\n');
 
 /**
- * Combines the elements of the given STL vector into a single string,
+ * Combines the elements of the given Vector into a single string,
  * with the given delimiter separating neighboring elements, and returns it.
  * For example, joining the elements of the vector
  * {"Hi", "there", "", "Jim"} with the delimiter "??" returns "Hi??there????Jim".

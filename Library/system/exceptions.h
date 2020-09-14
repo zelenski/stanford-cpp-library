@@ -25,7 +25,7 @@
 #ifndef _exceptions_h
 #define _exceptions_h
 
-#include <iostream>
+#include <string>
 
 namespace exceptions {
 

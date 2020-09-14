@@ -3,7 +3,7 @@
  * --------------
  * This file exports a set of functions that simplify input/output
  * operations in C++ and provide some error-checking on console input.
- * 
+ *
  * @version 2018/09/25
  * - added doc comments for new documentation generation
  * @version 2016/09/29
@@ -37,10 +37,11 @@ void appendSpace(std::string& prompt);
  *
  * If supplied, the optional <code>prompt</code> string is printed before
  * reading the value.
+ * If no prompt is passed, defaults to, "You must type a single character. Try again.".
  *
  * The also optional <code>reprompt</code> argument provides an output message
- * displayed each time if the user types a file that is not found.
- * If no value is passed, defaults to, "You must type a single character. Try again.".
+ * displayed each time if the user enters an invalid input. If no reprompt
+ * is passed, defaults to prompt.
  */
 char getChar(const std::string& prompt = "",
              const std::string& reprompt = "");
@@ -56,8 +57,8 @@ char getChar(const std::string& prompt = "",
  * reading the value.
  *
  * The also optional <code>reprompt</code> argument provides an output message
- * displayed each time if the user types a file that is not found.
- * If no value is passed, defaults to, "Illegal numeric format. Try again.".
+ * displayed each time if the user enters an invalid input.
+ * If no prompt is passed, defaults to, "Illegal numeric format. Try again.".
  *
  * Equivalent to getReal.
  */
@@ -177,7 +178,7 @@ double getRealBetween(const std::string& prompt, double min, double max);
  * displayed each time if the user types a file that is not found.
  * If no value is passed, defaults to,
  * "Please type a word that starts with 'Y' or 'N'.".
- * 
+ *
  * The also also optional <code>defaultValue</code> argument indicates what
  * should happen if the user just presses Enter rather than typing Y or N.
  * By default, the user is re-prompted, but if a defaultValue is passed here,
