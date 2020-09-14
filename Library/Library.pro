@@ -2,7 +2,7 @@
 # Project file for CS106B/X Library
 #
 # @author Julie Zelenski
-# @version Fall Quarter 08/28/2020
+# @version Fall Quarter 09/12/2020
 #    build static lib and install into user data
 ###############################################################################
 
@@ -17,7 +17,7 @@ TEMPLATE    =   lib
 TARGET      =   cs106
 CONFIG      +=  staticlib
 
-SPL_VERSION         =   2020.01
+SPL_VERSION         =   2020.1
 REQUIRES_QT_VERSION =   5.15
 
 ###############################################################################
