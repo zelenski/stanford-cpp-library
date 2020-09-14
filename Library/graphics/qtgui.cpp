@@ -45,6 +45,10 @@ QtGui::QtGui()
 }
 
 void QtGui::exitGraphics(int exitCode) {
+    if (exitCode == EXITING_DUE_TO_WINDOW_CLOSE) {
+        std::cout << std::endl << std::endl << "[Program exiting due to window close event]" << std::endl;
+        exitCode = 0;
+    }
     if (_app) {
 // need to temporarily turn off C++ lib exit macro to call QApplication's exit method
 // (NOTE: must keep in sync with exit definition in init.h)

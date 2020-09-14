@@ -1412,7 +1412,7 @@ void _Internal_QMainWindow::closeEvent(QCloseEvent* event) {
 
     if (closeOp == GWindow::CLOSE_EXIT) {
         // exit app
-        QtGui::instance()->exitGraphics();
+        QtGui::instance()->exitGraphics(EXITING_DUE_TO_WINDOW_CLOSE);
     }
 }
 

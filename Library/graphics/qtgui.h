@@ -22,6 +22,8 @@
 #include "gthread.h"
 #include "gtypes.h"
 
+#define EXITING_DUE_TO_WINDOW_CLOSE 106
+
 class GWindow;
 
 class QSPLApplication : public QApplication {
