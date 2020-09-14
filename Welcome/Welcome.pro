@@ -28,7 +28,7 @@ STATIC_LIB      =   $$system_path($${SPL_DIR}/lib/libcs106.a)
 check_lib.target    =  "$${STATIC_LIB}"
 check_lib.commands  =  $(error CS106 library not found. See http://cs106b.stanford.edu/qt for library install instructions)
 QMAKE_EXTRA_TARGETS +=  check_lib
-PRE_TARGETDEP       +=  $${check_lib.target}
+PRE_TARGETDEPS       +=  $${check_lib.target}
 
 # link against libcs106.a, add library headers to search path
 # libcs106 requires libpthread, add link here

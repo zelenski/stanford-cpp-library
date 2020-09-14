@@ -73,7 +73,7 @@ develop_mode {
 ###############################################################################
 
 # Use makefile include to set default goal to install target
-QMAKE_EXTRA_INCLUDES += $${PWD}/assume_install.mk
+QMAKE_EXTRA_INCLUDES += $$relative_path($$absolute_path(assume_install.mk), $$OUT_PWD)
 
 # Library installed into per-user location. (writable even on shared/cluster)
 # Specify all paths using forward-slash as separator, let qmake rewrite as needed
