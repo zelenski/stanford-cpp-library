@@ -141,6 +141,20 @@ public:
     bool equals(const Vector<ValueType>& v) const;
 
     /**
+     * Returns the element at index 0 in this vector (without removing it).
+     * @throw ErrorException if vector is empty
+     * @bigoh O(1)
+     */
+    ValueType& first();
+
+    /**
+     * Returns the element at index 0 in this vector (without removing it).
+     * @throw ErrorException if vector is empty
+     * @bigoh O(1)
+     */
+    const ValueType& first() const;
+
+    /**
      * Returns the element at the specified index in this vector.
      * Similar in behavior to the [] operator.
      * @throw ErrorException if the index is not in the array range
@@ -170,6 +184,20 @@ public:
      * @bigoh O(1)
      */
     bool isEmpty() const;
+
+    /**
+     * Returns the element at index (size - 1) in this vector (without removing it).
+     * @throw ErrorException if vector is empty
+     * @bigoh O(1)
+     */
+    ValueType& last();
+
+    /**
+     * Returns the element at index (size - 1) in this vector (without removing it).
+     * @throw ErrorException if vector is empty
+     * @bigoh O(1)
+     */
+    const ValueType& last() const;
 
     /**
      * Returns the index of the last occurrence of the given value.
@@ -506,6 +534,19 @@ bool Vector<ValueType>::equals(const Vector<ValueType>& v) const {
 }
 
 template <typename ValueType>
+ValueType& Vector<ValueType>::first() {
+    return const_cast<ValueType&>(static_cast<const Vector &>(*this).first());
+}
+
+template <typename ValueType>
+const ValueType& Vector<ValueType>::first() const {
+    if (isEmpty()) {
+        error("Vector::first: vector is empty");
+    }
+    return _elements.front();
+}
+
+template <typename ValueType>
 const ValueType& Vector<ValueType>::get(int index) const {
     checkIndex(index, 0, size()-1, "get");
     return _elements[index];
@@ -529,6 +570,20 @@ template <typename ValueType>
 bool Vector<ValueType>::isEmpty() const {
     return _elements.empty();
 }
+
+template <typename ValueType>
+ValueType& Vector<ValueType>::last() {
+    return const_cast<ValueType&>(static_cast<const Vector &>(*this).last());
+}
+
+template <typename ValueType>
+const ValueType& Vector<ValueType>::last() const {
+    if (isEmpty()) {
+        error("Vector::last: vector is empty");
+    }
+    return _elements.back();
+}
+
 
 template <typename ValueType>
 int Vector<ValueType>::lastIndexOf(const ValueType& value) const {

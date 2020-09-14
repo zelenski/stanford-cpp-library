@@ -10,13 +10,6 @@
 
 #include "stl.h"
 
-std::set<std::string> toStlSet(const DawgLexicon& lex) {
-    std::set<std::string> result;
-    for (const std::string& s : lex) {
-        result.insert(s);
-    }
-    return result;
-}
 
 /**
  * Returns an STL set object with the same elements as this Lexicon.

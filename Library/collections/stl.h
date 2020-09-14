@@ -30,7 +30,6 @@
 #include <vector>
 
 #include "collections.h"
-#include "dawglexicon.h"
 #include "lexicon.h"
 #include "linkedlist.h"
 #include "map.h"
@@ -110,11 +109,6 @@ std::queue<ValueType> toStlQueue(const Queue<ValueType>& q) {
     }
     return result;
 }
-
-/**
- * Returns an STL set object with the same elements as this DawgLexicon.
- */
-std::set<std::string> toStlSet(const DawgLexicon& lex);
 
 /**
  * Returns an STL set object with the same elements as this Lexicon.

@@ -45,7 +45,6 @@
 #include <string>
 
 #include "collections.h"
-#include "dawglexicon.h"
 #include "error.h"
 #include "filelib.h"
 #include "hashcode.h"
@@ -118,18 +117,9 @@ Lexicon& Lexicon::addAll(std::initializer_list<std::string> list) {
 }
 
 void Lexicon::addWordsFromFile(std::istream& input) {
-    bool isDAWG = isDAWGFile(input);
-    rewindStream(input);
-    if (isDAWG) {
-        readBinaryFile(input);
-    } else {
-        if (input.fail()) {
-            error("Lexicon::addWordsFromFile: Couldn't read from input");
-        }
-        std::string line;
-        while (getline(input, line)) {
-            add(trim(line));
-        }
+    std::string line;
+    while (getline(input, line)) {
+        add(trim(line));
     }
 }
 
@@ -564,56 +554,6 @@ void Lexicon::deleteTree(TrieNode* node) {
             deleteTree(node->child(letter));
         }
         delete node;
-    }
-}
-
-/*
- * Returns true if the given file (probably) represents a
- * binary DAWG lexicon data file.
- */
-bool Lexicon::isDAWGFile(std::istream& input) const {
-    char firstFour[4], expected[] = "DAWG";
-    if (input.fail()) {
-        error(std::string("Lexicon::addWordsFromFile: Couldn't read input"));
-    }
-    input.read(firstFour, 4);
-    bool result = strncmp(firstFour, expected, 4) == 0;
-    return result;
-}
-
-/*
- * Returns true if the given file (probably) represents a
- * binary DAWG lexicon data file.
- */
-bool Lexicon::isDAWGFile(const std::string& filename) const {
-    std::ifstream input(filename.c_str());
-    if (input.fail()) {
-        error(std::string("Lexicon::addWordsFromFile: Couldn't open lexicon file ") + filename);
-    }
-    bool result = isDAWGFile(input);
-    input.close();
-    return result;
-}
-
-/*
- * We just delegate to DawgLexicon, the old implementation, to read a binary
- * lexicon data file, and then we extract its yummy data into our trie.
- */
-void Lexicon::readBinaryFile(std::istream& input) {
-    DawgLexicon ldawg(input);
-    for (std::string word : ldawg) {
-        add(word);
-    }
-}
-
-/*
- * We just delegate to DawgLexicon, the old implementation, to read a binary
- * lexicon data file, and then we extract its yummy data into our trie.
- */
-void Lexicon::readBinaryFile(const std::string& filename) {
-    DawgLexicon ldawg(filename);
-    for (std::string word : ldawg) {
-        add(word);
     }
 }
 

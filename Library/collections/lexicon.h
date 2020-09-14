@@ -510,10 +510,6 @@ private:
     bool containsHelper(TrieNode* node, const std::string& word, bool isPrefix) const;
     void deepCopy(const Lexicon& src);
     void deleteTree(TrieNode* node);
-    bool isDAWGFile(std::istream& input) const;
-    bool isDAWGFile(const std::string& filename) const;
-    void readBinaryFile(std::istream& input);
-    void readBinaryFile(const std::string& filename);
     bool removeHelper(TrieNode*& node, const std::string& word, const std::string& originalWord, bool isPrefix);
     void removeSubtreeHelper(TrieNode*& node, const std::string& originalWord);
 
