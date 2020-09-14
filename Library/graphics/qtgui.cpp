@@ -29,12 +29,8 @@ QSPLApplication::QSPLApplication(int& argc, char *argv[])
 }
 
 bool QSPLApplication::notify(QObject* receiver, QEvent* e) {
-    try {
-        return QApplication::notify(receiver, e);
-    } catch (ErrorException& ex) {
-        ex.dump();
-        return false;
-    }
+    // could use try/catch here to handle exceptions on gui thread
+    // but this disguises where came from (loses backtrace)
     return QApplication::notify(receiver, e);   // call super
 }
 

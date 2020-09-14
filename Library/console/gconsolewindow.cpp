@@ -1416,7 +1416,7 @@ void GConsoleWindow::shutdown(const std::string& reason) {
     _textArea->setEditable(false);
     std::string title = getTitle();
     if (title.find(reason) == std::string::npos) {
-        setTitle(title + "[" + reason + "]");
+        setTitle(title + " [" + reason + "]");
     }
 
     // TODO: disable some menu items

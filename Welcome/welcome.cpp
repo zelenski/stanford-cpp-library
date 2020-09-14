@@ -1,5 +1,5 @@
 /*
- * File: main.cpp
+ * File: welcome.cpp
  * --------------
  * Sample program used to confirm Qt/CS106 install.
  * @author Julie Zelenski
@@ -43,3 +43,4 @@ int main()
     return 0;
 }
 
+#

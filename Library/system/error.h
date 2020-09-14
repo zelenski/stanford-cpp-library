@@ -59,18 +59,6 @@ public:
     virtual ~ErrorException() noexcept = default;
 
     /**
-     * Prints the exception to the standard error stream (cerr),
-     * including its message and stack trace if any.
-     */
-    virtual void dump() const;
-
-    /**
-     * Prints the exception to the given output stream,
-     * including its message and stack trace if any.
-     */
-    virtual void dump(std::ostream& out) const;
-
-    /**
      * Returns what kind of exception this is.
      * In general this returns "error", but in some cases we catch other kinds
      * of exceptions (like thrown ints or strings) and wrap them up as

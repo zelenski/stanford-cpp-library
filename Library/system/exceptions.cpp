@@ -84,7 +84,7 @@ static void stanfordCppLibSignalHandler(int sig);
 
 #ifdef __GNUG__ // gnu C++ compiler
 
-std::string demangle(const char* mangled_name)
+static std::string demangle(const char* mangled_name)
 {
     int status = -99;
     // name is malloc'ed and will leak, but we only demangle on terminate...
@@ -94,7 +94,7 @@ std::string demangle(const char* mangled_name)
 
 #else
 
-std::string demangle(const char* mangled_name) { return mangled_name; }
+static std::string demangle(const char* mangled_name) { return mangled_name; }
 
 #endif // _GNUG_
 
@@ -232,9 +232,12 @@ static void reportFatalEvent(std::string event, std::string details)
  * Prints details about the signal.
  */
 static void stanfordCppLibSignalHandler(int sig) {
-    // tailor the error message to the kind of signal that occurred
+    signalHandlerDisable();
+
+   // tailor the error message to the kind of signal that occurred
     std::string event = "A fatal error (signal " + std::to_string(sig) + ") was received";
     std::string details = "No details were provided about the error";
+
 
     if (sig == SIGSEGV) {
         event = "A segmentation fault (SIGSEGV) occurred";
@@ -257,11 +260,12 @@ static void stanfordCppLibSignalHandler(int sig) {
     reportFatalEvent(event, details);
 
     if (GThread::iAmRunningOnTheQtGuiThread()) {
-        QtGui::instance()->exitGraphics();  // JDZ: this is not quite right
+        // no recovery possible if gui thread was the one who crashed
+        raise(sig); // our signal handling has been disabled, default handler will abort
     } else {
         interruptIfDebug();
         stanfordcpplib::studentThreadHasExited("Terminated");
-        native_thread_exit(); // will not return
+        native_thread_exit(); // exit this thread (no return), gui loop can live on
     }
 }
 
@@ -270,6 +274,8 @@ static void stanfordCppLibSignalHandler(int sig) {
  * Prints details about the exception.
  */
 [[noreturn]] static void stanfordCppLibTerminateHandler() {
+    signalHandlerDisable();
+
     std::string event  ="An exception was thrown during program execution";
     std::string details = "(details of exception unknown)";
 
@@ -297,11 +303,12 @@ static void stanfordCppLibSignalHandler(int sig) {
     reportFatalEvent(event, details);
 
     if (GThread::iAmRunningOnTheQtGuiThread()) {
-        QtGui::instance()->exitGraphics();  // JDZ: this is not quite right
+        // no recovery possible if gui thread was the one who crashed
+        abort();
     } else {
         interruptIfDebug();
         stanfordcpplib::studentThreadHasExited("Terminated");
-        native_thread_exit(); // will not return
+        native_thread_exit(); // exit this thread (no return), gui loop can live on
     }
 }
 

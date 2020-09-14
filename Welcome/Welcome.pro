@@ -10,7 +10,7 @@ SPL_VERSION = 2020.1
 
 TEMPLATE    =   app
 QT          +=  core gui widgets multimedia network
-CONFIG      +=  silent               # quieter progress during build
+CONFIG      +=  silent debug         # quiet build and debug symbols always
 CONFIG      -=  depend_includepath   # library headers not changing, don't add depend
 
 ###############################################################################
@@ -111,35 +111,30 @@ QMAKE_CXXFLAGS_WARN_ON      +=  -Wno-unused-const-variable
 #       Detect/report errors in project structure                             #
 ###############################################################################
 
-# error if project was opened from within a ZIP archive (common mistake on Windows)
+# error if project opened from within a ZIP archive (common mistake on Windows)
 win32|win64 {
     contains(PWD, .*\.zip.*) | contains(PWD, .*\.ZIP.*) {
-        message(*******************************************************************)
-        message(*** ERROR: You are trying to open this project from within a .ZIP archive:)
-        message(*** $$PWD)
-        message(*** You need to extract the files out of the ZIP file first.)
-        message(*** Open the ZIP in your file explorer and press the Extract button.)
-        message(*******************************************************************)
-        error(Exiting. Need to extract project from ZIP first.)
+        message( "*******************************************************************" )
+        message( "*** ERROR: You are trying to open this project from within a ZIP archive." )
+        message( "*** You must first extract the files then open in Qt Creator." )
+        message( "*** In File Explorer open the ZIP and choose to Extract All." )
+        message( "*******************************************************************" )
+        error( Exiting. Extract project from ZIP first.)
     }
 }
 
-# error if non-standard chars in path (common issue for intl students)
-BAD_CHARS = $$PWD
-BAD_CHARS ~= s|[a-zA-Z0-9_ .\/:+-]+|
-!isEmpty(BAD_CHARS) {
-    message(*******************************************************************)
-    message(*** ERROR: The name of your project directory contains invalid characters.)
-    message(*** $$PWD)
-    message(***)
-    message(*** The invalid characters are: $$BAD_CHARS)
-    message(***)
-    message(*** The name cannot contain punctuation or characters from international)
-    message(*** alphabets such as Chinese or Korean.)
-    message(*** Rename or move your project to a directory with a simple name)
-    message(*** such as "C:\Programs\Homework1" and try again.)
-    message(*******************************************************************)
-    error(Exiting. Project directory name contains invalid characters $$BAD_CHARS)
+# error if name of directory has chars that may cause trouble for qmake/make/shell
+PROJECT_DIR = $$basename(PWD)
+FOUND  = $$PROJECT_DIR
+FOUND ~= s|[a-z A-Z 0-9 _.+-]||   # yes, spaces ok, limited punctuation, $ % & are dicey
+!isEmpty(FOUND) {
+    message( "*******************************************************************" )
+    message( "*** ERROR: The name of your project directory has disallowed characters." )
+    message( "*** The allowed characters are letters, numbers, and simple punctuation." )
+    message( "*** Your directory is named $$PROJECT_DIR which contains the" )
+    message( "*** disallowed characters: $$FOUND" )
+    message( "*** Please rename to a simple name such as Assignment_1 that contains" )
+    message( "*** no disallowed characters." )
+    message( "*******************************************************************" )
+    error(Exiting. Rename project directory to remove disallowed characters. )
 }
-
-# END OF FILE (this should be line #147; if not, your .pro has been changed!)

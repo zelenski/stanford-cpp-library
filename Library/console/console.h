@@ -37,8 +37,8 @@
 
 #ifndef SPL_HEADLESS_MODE
 class GConsoleWindow;
-class GDimension;
-class GPoint;
+struct GDimension;
+struct GPoint;
 #endif // SPL_HEADLESS_MODE
 
 /**

@@ -21,22 +21,6 @@ ErrorException::ErrorException(std::string msg)
     _msg = msg;
 }
 
-void ErrorException::dump() const {
-    dump(std::cerr);
-}
-
-void ErrorException::dump(std::ostream& out) const {
-    out << std::endl;
-    out << "***" << std::endl;
-    out << "*** STANFORD C++ LIBRARY" << std::endl;
-    out << "*** An ErrorException occurred during program execution:" << std::endl;
-    if (!_msg.empty()) {
-        out << ("*** " + _msg) << std::endl;
-    }
-    out << "***" << std::endl;
-    out.flush();
-}
-
 std::string ErrorException::getKind() const {
     return _kind;
 }
