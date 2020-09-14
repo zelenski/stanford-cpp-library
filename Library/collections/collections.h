@@ -465,13 +465,21 @@ const ElementType& randomElementIndexed(const CollectionType<ElementType>& colle
     return collection[index];
 }
 
+
+template <typename CollectionType, typename ElementType>
+    void readOne(CollectionType& collection, const ElementType& elem)
+        { collection.add(elem); }
 /*
  * Reads in any collection from the given input stream.
- * The collection must have an add() method that takes a single value,
+ * The collection must eiither have an add() method that takes a single value,
+ * (or provide own callback to use as add operation)
  * and a clear() method that removes all elements from the collection.
  */
 template <typename CollectionType, typename ElementType>
-std::istream& readCollection(std::istream& input, CollectionType& collection, ElementType& element, std::string /* descriptor */) {
+std::istream& readCollection(std::istream& input, CollectionType& collection, ElementType& element, std::string /* descriptor */,
+        void (*fn)(CollectionType&, const ElementType&) = readOne<CollectionType,ElementType>)
+{
+
     char ch = '\0';
     input >> ch;
     if (ch != '{') {
@@ -486,7 +494,7 @@ std::istream& readCollection(std::istream& input, CollectionType& collection, El
             if (!readGenericValue(input, element)) {
                 return input;
             }
-            collection.add(element);
+            fn(collection, element);
             input >> ch;
             if (ch == '}') {
                 break;
@@ -500,21 +508,28 @@ std::istream& readCollection(std::istream& input, CollectionType& collection, El
     return input;
 }
 
+
+template <typename CollectionType, typename KeyType, typename ValueType>
+    void readOne(CollectionType& collection, const KeyType& key, const ValueType& value)
+        { collection.put(key, value); }
 /*
- * Reads in any Map collection from the given input stream.
- * The collection must have an add() method that takes a single value,
+ * Reads in any paired collection (Map or Priority Queue) from the given input stream.
+ * The collection must have a put() method that takes key and value
+ * (or provide a callback to use as add operation)
  * and a clear() method that removes all elements from the collection.
  */
 
-template <typename MapType, typename KeyType, typename ValueType>
-std::istream& readMap(std::istream& input, MapType& map, KeyType& key, ValueType& value, std::string /* descriptor */) {
+template <typename CollectionType, typename KeyType, typename ValueType>
+std::istream& readPairedCollection(std::istream& input, CollectionType& collection, KeyType& key, ValueType& value, std::string /* descriptor */,
+        void (*fn)(CollectionType&, const KeyType&, const ValueType&) = readOne<CollectionType,KeyType,ValueType>)
+{
     char ch = '\0';
     input >> ch;
     if (ch != '{') {
         input.setstate(std::ios_base::failbit);
         return input;
     }
-    map.clear();
+    collection.clear();
     input >> ch;
     if (ch != '}') {
         input.unget();
@@ -530,7 +545,7 @@ std::istream& readMap(std::istream& input, MapType& map, KeyType& key, ValueType
             if (!readGenericValue(input, value)) {
                 return input;
             }
-            map.put(key, value);
+            fn(collection, key, value);
             input >> ch;
             if (ch == '}') {
                 break;

@@ -698,7 +698,7 @@ std::istream& operator >>(std::istream& is,
                           HashMap<KeyType, ValueType>& map) {
     KeyType key;
     ValueType value;
-    return stanfordcpplib::collections::readMap(is, map, key, value, /* descriptor */ std::string("HashMap::operator >>"));
+    return stanfordcpplib::collections::readPairedCollection(is, map, key, value, /* descriptor */ std::string("HashMap::operator >>"));
 }
 
 /*

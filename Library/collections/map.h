@@ -685,7 +685,7 @@ template <typename KeyType, typename ValueType>
 std::istream& operator >>(std::istream& is, Map<KeyType,ValueType>& map) {
     KeyType key;
     ValueType value;
-    return stanfordcpplib::collections::readMap(is, map, key, value, /* descriptor */ std::string("Map::operator >>"));
+    return stanfordcpplib::collections::readPairedCollection(is, map, key, value, /* descriptor */ std::string("Map::operator >>"));
 }
 
 /*

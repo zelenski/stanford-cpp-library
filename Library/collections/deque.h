@@ -314,9 +314,13 @@ std::ostream& operator <<(std::ostream& os, const Deque<ValueType>& deque) {
 }
 
 template <typename ValueType>
+    void readOne(Deque<ValueType>& deque, const ValueType& value)
+        { deque.enqueueBack(value); }
+
+template <typename ValueType>
 std::istream& operator >>(std::istream& is, Deque<ValueType>& deque) {
     ValueType element;
-    return stanfordcpplib::collections::readCollection(is, deque, element, /* descriptor */ "Deque::operator >>");
+    return stanfordcpplib::collections::readCollection(is, deque, element, /* descriptor */ "Deque::operator >>", readOne<ValueType>);
 }
 
 template <typename ValueType>

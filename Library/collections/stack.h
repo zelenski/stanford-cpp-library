@@ -207,9 +207,7 @@ private:
 
 template <typename ValueType>
 Stack<ValueType>::Stack(std::initializer_list<ValueType> list) : _elements(list) {
-
 }
-
 
 template <typename ValueType>
 void Stack<ValueType>::clear() {
@@ -295,9 +293,13 @@ std::ostream& operator <<(std::ostream& os, const Stack<ValueType>& stack) {
 }
 
 template <typename ValueType>
+    void readOne(Stack<ValueType>& stack, const ValueType& value)
+        { stack.push(value); }
+
+template <typename ValueType>
 std::istream& operator >>(std::istream& is, Stack<ValueType>& stack) {
     ValueType element;
-    return stanfordcpplib::collections::readCollection(is, stack, element, /* descriptor */ "Stack::operator >>");
+    return stanfordcpplib::collections::readCollection(is, stack, element, /* descriptor */ "Stack::operator >>", readOne<ValueType>);
 }
 
 /*

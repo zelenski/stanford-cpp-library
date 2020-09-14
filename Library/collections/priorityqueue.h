@@ -520,40 +520,14 @@ std::ostream& operator <<(std::ostream& os,
 }
 
 template <typename ValueType>
+    void readOne(PriorityQueue<ValueType>& pq, const double& priority, const ValueType& value)
+        { pq.enqueue(value, priority); }
+
+template <typename ValueType>
 std::istream& operator >>(std::istream& is, PriorityQueue<ValueType>& pq) {
-    char ch = '\0';
-    is >> ch;
-    if (ch != '{') {
-        is.setstate(std::ios_base::failbit);
-        return is;
-    }
-    pq.clear();
-    is >> ch;
-    if (ch != '}') {
-        is.unget();
-        while (true) {
-            double priority = 0.0;
-            is >> priority >> ch;
-            if (ch != ':') {
-                is.setstate(std::ios_base::failbit);
-                return is;
-            }
-            ValueType value;
-            if (!readGenericValue(is, value)) {
-                return is;
-            }
-            pq.enqueue(value, priority);
-            is >> ch;
-            if (ch == '}') {
-                break;
-            }
-            if (ch != ',') {
-                is.setstate(std::ios_base::failbit);
-                return is;
-            }
-        }
-    }
-    return is;
+    double priority;
+    ValueType element;
+    return stanfordcpplib::collections::readPairedCollection(is, pq, priority, element, /* descriptor */ "PriorityQueue::operator >>", readOne<ValueType>);
 }
 
 #endif // _priorityqueue_h

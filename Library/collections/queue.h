@@ -294,10 +294,15 @@ std::ostream& operator <<(std::ostream& os, const Queue<ValueType>& queue) {
 }
 
 template <typename ValueType>
+    void readOne(Queue<ValueType>& queue, const ValueType& value)
+        { queue.enqueue(value); }
+
+template <typename ValueType>
 std::istream& operator >>(std::istream& is, Queue<ValueType>& queue) {
     ValueType element;
-    return stanfordcpplib::collections::readCollection(is, queue, queue._elements, /* descriptor */ "Queue::operator >>");
+    return stanfordcpplib::collections::readCollection(is, queue, element, /* descriptor */ "Queue::operator >>", readOne<ValueType>);
 }
+
 
 /*
  * Template hash function for queues.
