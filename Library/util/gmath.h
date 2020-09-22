@@ -22,10 +22,7 @@
 
 #include <cmath>
 #include <limits>
-
-#ifndef SPL_HEADLESS_MODE
 #include "gtypes.h"
-#endif // SPL_HEADLESS_MODE
 
 
 /**

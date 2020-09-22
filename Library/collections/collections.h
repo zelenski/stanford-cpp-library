@@ -35,6 +35,7 @@
 #ifndef _collections_h
 #define _collections_h
 
+#include <functional>
 #include <iostream>
 #include <sstream>
 #include <type_traits>
