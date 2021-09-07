@@ -16,10 +16,6 @@ Karel/.settings
 local/*
 sample-project/lib/*
 spl.jar
-SPL-unit-tests/UnitTests.app/Contents/Info.plist
-SPL-unit-tests/UnitTests.app/Contents/MacOS/UnitTests
-SPL-unit-tests/UnitTests.app/Contents/PkgInfo
-SPL-unit-tests/UnitTests.app/Contents/Resources/empty.lproj
 StanfordCPPLib_QtCreatorProject/lib/StanfordCPPLib
 StanfordCPPLib_experimental/
 stanfordcpplib.cpp
