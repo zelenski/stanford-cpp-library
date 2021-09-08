@@ -25,6 +25,7 @@
 #include <cmath>
 #include <iomanip>
 #include <iostream>
+#include <QApplication>
 #include <QBrush>
 #include <QFont>
 #include <QPointF>
@@ -42,7 +43,6 @@
 #include "private/static.h"
 
 const double GRoundRect::DEFAULT_CORNER = 10.0;
-const std::string GText::DEFAULT_FONT = "Dialog-13";
 
 // static constants
 STATIC_CONST_VARIABLE_DECLARE(double, LINE_TOLERANCE, 1.5)
@@ -1560,7 +1560,7 @@ std::string GRoundRect::toStringExtra() const {
 GText::GText(const std::string& str, double x, double y)
         : GObject(x, y),
           _text(str) {
-    _font = DEFAULT_FONT;
+    _font = GFont::toFontString(QApplication::font()); // default to standard family+size
     updateSize();
 }
 

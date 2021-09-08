@@ -1439,10 +1439,6 @@ protected:
  */
 class GText : public GObject {
 public:
-    /**
-     * The default font used in text labels if none is provided.
-     */
-    static const std::string DEFAULT_FONT;
 
     /**
      * Creates a <code>GText</code> object containing the specified string.
