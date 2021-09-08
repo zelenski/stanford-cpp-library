@@ -266,7 +266,11 @@ void GBrowserPane::setLinkListener(GEventListenerVoid func) {
 
 void GBrowserPane::setText(const std::string& text) {
     GThread::runOnQtGuiThread([this, text]() {
+        QScrollBar* scrollbar = _iqtextbrowser->verticalScrollBar();
+        int preserve = scrollbar->value();
         _iqtextbrowser->setText(QString::fromStdString(text));
+        scrollbar->setValue(preserve);
+        scrollbar->setSliderPosition(preserve);
     });
 }
 
