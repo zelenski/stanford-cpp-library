@@ -1,0 +1,36 @@
+/*
+ * File: styles.css
+ *
+ * This file is the stylesheet for the SimpleTest results window.
+ * Students can edit to set fonts, sizes, colors, per their preference.
+ */
+
+body {
+    background: white;
+    color: black;
+    font-size: large;
+}
+
+ul {
+    font-family:  Arial, Helvetica, sans-serif;
+    list-style-type: none;
+    margin-left: -40px;
+}
+
+li.pass     { background-color: #C1ECB0; }
+li.leak     { background-color: #E8DAA4; }
+li.fail, li.exception { background-color: #ECA9B6;}
+li.waiting  { color: #C9C9C9; }
+li.running  { color: #2156F2; font-style: italic; }
+
+li.title {
+    text-align: center;
+    font-size: xx-large;
+    margin: 10px 0px 10px 0px;
+}
+
+pre {
+    font-family: "Lucida Console", Inconsolata, Consolas, Menlo, Courier, monospace;
+    font-size: medium;
+    margin: 0;
+}

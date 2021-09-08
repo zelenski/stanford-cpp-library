@@ -1,0 +1,12 @@
+SimpleTest framework
+@version 09/2020
+Prepared for fall quarter 2020 by juliez
+
+Recent changes:
+sanitize outputs for HTML
+float equal
+abbreviate
+print float, pointer
+detail message
+time operation
+expect no error
