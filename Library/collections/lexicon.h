@@ -435,7 +435,7 @@ public:
 
     /**
      * Allows you to add multiple elements to a lexicon.
-     * @example lex += "she", "sells", "sea", "shells";
+     *  @example  lex += "she", "sells", "sea", "shells";
      */
     Lexicon& operator ,(const std::string& word);
 

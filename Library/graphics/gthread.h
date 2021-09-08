@@ -95,10 +95,7 @@ private:
  *
  *     <li> The student thread, which runs the student's main() function and
  *          any sub-functions called by main
-<<<<<<< HEAD
-=======
  * </ol>
->>>>>>> 8efc62a7... Not really the beginning
  *
  * Students and clients normally do not need to worry about threading issues.
  * These methods are called internally by many of the graphical interactors
@@ -306,8 +303,6 @@ public:
      */
     static bool wait(GThread* thread, long ms);
 
-<<<<<<< HEAD
-=======
     /**
      * Sets the current thread to be the "Gui" thread for the application.
      * This is called by our library initialization code to inform the GThread
@@ -317,7 +312,6 @@ public:
      */
     static void setGuiThread();
 
->>>>>>> 8efc62a7... Not really the beginning
 protected:
     // forbid construction
     GThread();
@@ -339,25 +333,10 @@ protected:
     static Map<QThread*, GThread*> _allGThreadsQt;
     static Map<std::thread*, GThread*> _allGThreadsStd;
 
-<<<<<<< HEAD
-private:
-    /**
-     * Sets the current thread to be the "main" thread for the application.
-     * This is called by our library initialization code to inform the GThread
-     * class what thread is the main thread.
-     * Clients do not need to call this method directly.
-     * @private
-     */
-    static void setMainThread();
-
-    friend class QtGui;
-    friend void stanfordcpplib::initializeLibrary(int argc, char** argv);
-=======
 
 
 private:
     friend class QtGui;
->>>>>>> 8efc62a7... Not really the beginning
 };
 
 

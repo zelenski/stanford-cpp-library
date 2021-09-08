@@ -6,13 +6,6 @@
 #    build static lib and install into user data
 ###############################################################################
 
-# Top-level configuration
-# -----------------------
-# CS106B/X library project
-# Builds static library libcs106.a to be installed in fixed location
-# along with library headers and shared resources (icons, binaries, etc.)
-# Student client program accesses library+resources from fixed location
-
 TEMPLATE    =   lib
 TARGET      =   cs106
 CONFIG      +=  staticlib
@@ -75,21 +68,6 @@ develop_mode {
 # Use makefile include to set default goal to install target
 QMAKE_EXTRA_INCLUDES += $$relative_path($$absolute_path(assume_install.mk), $$OUT_PWD)
 
-# Library installed into per-user location. (writable even on shared/cluster)
-# Specify all paths using forward-slash as separator, let qmake rewrite as needed
-win32|win64 {
-    USER_STORAGE = $$(APPDATA)
-} else {
-    USER_STORAGE = $$(HOME)/.config
-}
-INSTALL_PATH = $${USER_STORAGE}/QtProject/qtcreator/cs106
-
-for(h, PUBLIC_HEADERS): TO_COPY *= $$relative_path($$PWD, $$OUT_PWD)/$$h
-QMAKE_POST_LINK = @echo "Installing into "$${INSTALL_PATH} && $(COPY_FILE) $$TO_COPY $${INSTALL_PATH}/include
-
-HEADER_DEST = $${INSTALL_PATH}/include
-# provide string for info panel without any funky/unescaped chars
-INSTALLED_LOCATION = "QtProject/qtcreator/cs106 of user's home config"
 win32|win64 { QTP_EXE = qtpaths.exe } else { QTP_EXE = qtpaths }
 USER_DATA_DIR = $$system($$[QT_INSTALL_BINS]/$$QTP_EXE --writable-path GenericDataLocation)
 SPL_DIR = $${USER_DATA_DIR}/cs106

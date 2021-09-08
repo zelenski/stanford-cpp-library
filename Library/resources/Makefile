@@ -29,4 +29,4 @@ $(QRC_FILE):
 clean::
 	rm -rf $(PRODUCTS)
 
-.PHONY: all clean 
+.PHONY: all clean

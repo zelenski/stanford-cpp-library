@@ -63,7 +63,6 @@ void GTimer::start() {
 }
 
 void GTimer::stop() {
-
     _Internal_QMainWindow* lastWindow = static_cast<_Internal_QMainWindow*>(GWindow::getLastWindow());
     if (!lastWindow) {
         error("GTimer::constructor: You must create at least one GWindow before stopping a GTimer.");

@@ -528,6 +528,7 @@ bool Grid<ValueType>::equals(const Grid<ValueType>& grid2) const {
     if (this == &grid2) {
         return true;
     }
+
     if (_rowCount != grid2._rowCount || _columnCount != grid2._columnCount) {
         return false;
     }
@@ -645,10 +646,12 @@ void Grid<ValueType>::resize(int numRows, int numCols, bool retain) {
     Vector<ValueType> oldElements = std::move(_elements);
     int oldnRows = this->_rowCount;
     int oldnCols = this->_columnCount;
+
     // create new empty array and set new size
     this->_rowCount = numRows;
     this->_columnCount = numCols;
     this->_elements = Vector<ValueType>(numRows * numCols, ValueType());
+
     // possibly retain old contents
     if (retain) {
         int minRows = oldnRows < numRows ? oldnRows : numRows;

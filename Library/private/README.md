@@ -12,9 +12,6 @@ Student writes a main() function that appears to them to be the entry point for 
 - Threads
     A lot of the QT application/graphics interaction has to run on the qtgui thread, see GThread::runOnQtGuiThread for that dispatch
 
-- Autograder main
-    An autograder should directly supply its own main(), it can simply call the autograderMain from library if appropriate.
-
 
 __Static variables (initialization, constructors)__
 - No guarantees about order of execution code is run for static initializers. See private/static.h for macros that provide declaration/access to static variable to ensure initializer run exactly once on first use of variable.
