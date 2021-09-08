@@ -1,18 +1,11 @@
-/**
- * File: TestDriver.h
- *
- * @author Keith Schwarz
- * @version 2020/3/22
- *    Keith final revision from end of quarter 19-2
- * @version 20200/4/8
- *    Minor tweaks by Julie & Nick for quarter 19-3
- */
+
 #pragma once
 
-// be careful about what is #include here, this is dumping into all student sources right now
-#include <cmath>  // fabs
+// be careful about what is #include here, it will all end up in all student code
 #include <cfloat>
+#include "error.h"
 #include <functional>
+#include "gmath.h"
 #include <sstream>
 #include <iomanip>
 #include <string>
@@ -87,12 +80,24 @@ void doExpect(bool condition, const std::string& expression, std::size_t line);
     std::stringstream _out; \
     try {\
         (void)(condition); \
-        _out << "Line " << __LINE__ << " EXPECT_ERROR failed: " #condition " did not call error()."; \
+        _out << "Line " << __LINE__ << " EXPECT_ERROR failed: " #condition " did not call error()"; \
         doFail(_out.str()); \
     } catch (const ErrorException& e) { \
         _out << "Line " << __LINE__ << " EXPECT_ERROR ok: error raised " \
              << "\"" << e.getMessage() << "\""; \
         addDetail(_out.str()); \
+    }\
+} while(0)
+
+#undef EXPECT_NO_ERROR
+#define EXPECT_NO_ERROR(condition) do {\
+    std::stringstream _out; \
+    try {\
+        (void)(condition); \
+    } catch (const ErrorException& e) { \
+        _out << "Line " << __LINE__ << " EXPECT_NO_ERROR failed: error raised " \
+             << "\"" << e.getMessage() << "\""; \
+        doFail(_out.str()); \
     }\
 } while(0)
 
@@ -154,10 +159,17 @@ template <typename T> std::string debugFriendlyString(const T& value) {
 
 /* * * * Equality comparisons * * * */
 
+
 /* Equality comparisons are fuzzy for real numbers. */
+
 inline bool _areEqual(double lhs, double rhs) {
-    double tolerance = std::max(std::abs(lhs), std::abs(rhs))*DBL_EPSILON;
-    return std::abs(lhs - rhs) <= tolerance;
+    return floatingPointEqual(lhs, rhs);
+}
+
+inline bool _areEqual(float lhs, float rhs) {
+    // patch to fix ambiguous version in published library
+    float tolerance = std::numeric_limits<float>::epsilon() * std::fmax(fabs(lhs), fabs(rhs));
+    return floatingPointEqual(lhs, rhs, tolerance);
 }
 
 template <typename T1, typename T2> bool _areEqual(const T1& lhs, const T2& rhs) {
@@ -184,16 +196,13 @@ inline std::string abbreviate(const std::string& s, size_t maxLen = 300) {
        doExpect(_areEqual(_studentAnswer, _referenceAnswer), _expression.str(), __LINE__); \
     } while (0)
 
-#undef REPORT_FAILURE
-#define REPORT_FAILURE(message) doFail(message, __LINE__)
-
 #undef TIME_OPERATION
 #define TIME_OPERATION(n, expr) do {\
     Timer t;\
     t.start();\
     (void)(expr); \
     double elapsed = t.stop();\
-    ostringstream _out; \
-    _out << "Line " << __LINE__ << " Time " << #expr << " (size =" << setw(7) << n << ")" << " completed in " << setw(8) << (elapsed/1000) << " secs";\
+    std::ostringstream _out; \
+    _out << "Line " << __LINE__ << " TIME_OPERATION " << #expr << " (size =" << std::setw(7) << n << ")" << " completed in " << std::setw(8) << (elapsed/1000) << " secs";\
     addDetail(_out.str());\
 } while(0)

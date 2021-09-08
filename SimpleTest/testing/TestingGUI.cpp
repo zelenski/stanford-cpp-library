@@ -1,19 +1,27 @@
-#include <QCoreApplication> // for application name
-#include "gbrowserpane.h"
-#include "gwindow.h"
-#include "SimpleTest.h"
-#include "TestDriver.h"
-#include "TextUtils.h"
-#include "MemoryDiagnostics.h"
+/**
+ * TestingGUI.cpp
+ *
+ * @author Keith Schwarz
+ * @version 2020/3/5
+ *    Keith final revision from end of quarter 19-2
+ */
+#include "console.h"
 #include "error.h"
 #include "filelib.h"
+#include "gbrowserpane.h"
+#include "gthread.h"
+#include "gwindow.h"
 #include <iomanip>
 #include <map>
+#include "MemoryDiagnostics.h"
+#include <QCoreApplication> // for application name
+#include <QLoggingCategory> // to control log messages
+#include <QScrollBar>
 #include "simpio.h"
-#include "exceptions.h"
+#include "SimpleTest.h"
 using namespace std;
 
-Vector<string> gDetails;
+static Vector<string> gDetails;
 
 void addDetail(const string& msg)
 {
@@ -50,31 +58,22 @@ namespace SimpleTest {
         bool selected;
     };
 
-    string id(const TestResult& tr)
-    {
-        switch (tr) {
-            case TestResult::WAITING:   return "waiting";
-            case TestResult::RUNNING:   return "running";
-            case TestResult::PASS:      return "pass";
-            case TestResult::FAIL:      return "fail";
-            case TestResult::LEAK:      return "leak";
-            case TestResult::EXCEPTION: return "exception";
-        }
-        return "";
-    }
+    static const string NORMAL="\033[0m", RED="\033[31m", BLUE="\033[34m",
+           GREEN="\033[32m", YELLOW="\033[33m", BOLD="\033[1m", FAINT="\033[2m";
 
-    string status(const TestResult& tr)
-    {
-        switch (tr) {
-            case TestResult::WAITING:   return "&nbsp;";
-            case TestResult::RUNNING:   return "Running...";
-            case TestResult::PASS:      return "Correct";
-            case TestResult::FAIL:      return "Incorrect";
-            case TestResult::LEAK:      return "Leak";
-            case TestResult::EXCEPTION: return "Exception";
-        }
-        return "";
-    }
+    struct status_info {
+        string status, id, color;
+    };
+
+    static Map<TestResult, status_info> info = {
+        {TestResult::WAITING,   {"&nbsp;", "waiting", FAINT} },
+        {TestResult::RUNNING,   {"Running...", "running", BLUE} },
+        {TestResult::PASS,      {"Correct", "pass", GREEN + BOLD} },
+        {TestResult::FAIL,      {"Incorrect", "fail",  RED + BOLD} },
+        {TestResult::LEAK,      {"Leak", "leak", YELLOW + BOLD} },
+        {TestResult::EXCEPTION, {"Exception", "exception", RED + BOLD} }
+    };
+
     string affirmation()
     {
         Vector<string> choices = {
@@ -122,7 +121,7 @@ namespace SimpleTest {
                 out << endl << "Test had allocation count mismatch with these types:" << endl;
                 for (const auto& entry: errors) {
                     string type = entry.first;
-                    int    delta = entry.second;
+                    int delta = entry.second;
 
                     if (delta > 0) {
                         out << "    " << type << ": Leaked " << pluralize(delta, "object") << "." << endl;
@@ -130,7 +129,6 @@ namespace SimpleTest {
                         out << "    " << type << ": Deallocated " << pluralize(-delta, "more object") << " than allocated." << endl;
                     }
                 }
-
                 test.detailMessage += out.str();
             }
         } catch (const TestFailedException& e) {
@@ -138,7 +136,6 @@ namespace SimpleTest {
             ostringstream out;
             out << e.what() << endl;
             test.detailMessage = out.str();
-            exceptions::interruptIfDebug();
         } catch (const ErrorException& e) {
             test.result = TestResult::EXCEPTION;
             ostringstream out;
@@ -150,7 +147,6 @@ namespace SimpleTest {
             out << endl;
             out << "Error: " << e.getMessage();
             test.detailMessage = out.str();
-            exceptions::interruptIfDebug();
         } catch (const exception& e) {
             test.result = TestResult::EXCEPTION;
             ostringstream out;
@@ -163,7 +159,6 @@ namespace SimpleTest {
             out << endl;
             out << "Error: " << e.what() << endl;
             test.detailMessage = out.str();
-            exceptions::interruptIfDebug();
         } catch (...) {
             test.result = TestResult::EXCEPTION;
             ostringstream out;
@@ -176,7 +171,6 @@ namespace SimpleTest {
             out << "recognize." << endl;
             out << endl;
             test.detailMessage = out.str();
-            exceptions::interruptIfDebug();
         }
         string indented;
         for (auto& line : stringSplit(test.detailMessage, "\n")) {
@@ -185,11 +179,31 @@ namespace SimpleTest {
         test.detailMessage = indented;
     }
 
+    // When replace the text in a browser pane, it scrolls to seemingly arbitrary location
+    // Annoying! I will fix setText() in library to do right thing, but need to jam
+    // temporary fix here as students have already installed library that has bad behavior
+    // compiled in. Once fixed in library, this hack can be removed.
+    void setTextPreserveScroll(GBrowserPane *bp, string contents, bool preserve)
+    {
+        auto qtb = static_cast<_Internal_QTextBrowser *>(bp->getInternalWidget());
+        GThread::runOnQtGuiThread([qtb, contents, preserve]() {
+            auto scrollbar = qtb->verticalScrollBar();
+            int pos = scrollbar->value();
+            qtb->setText(QString::fromStdString(contents));
+            if (!preserve) pos = scrollbar->maximum();
+            scrollbar->setValue(pos);
+            scrollbar->setSliderPosition(pos);
+        });
+    }
+
+
     /* Displays all the results from the given test group. */
     string displayResults(GBrowserPane *bp, const string& stylesheet, const Vector<TestGroup>& testGroups, int npass=-1, int nrun=-1)
     {
         stringstream h;
         string conclusion;
+
+        if (!bp) return affirmation();
 
         h << "<html><style>" << stylesheet << "</style><body><ul>";
         for (const auto& group: testGroups) {
@@ -198,8 +212,8 @@ namespace SimpleTest {
             /* Display each test as list item */
             for (const auto& test: group.tests) {
                 h << "<hr>" << endl;
-                string li = "<li class=" + quotedVersionOf(id(test.result)) + ">";
-                h << li << "<b>" << status(test.result) << "</b> " << test.id << " " << test.testname << "</li>";
+                string li = "<li class=" + quotedVersionOf(info[test.result].id) + ">";
+                h << li << "<b>" << info[test.result].status << "</b> " << test.id << " " << test.testname << "</li>";
                 if (!test.detailMessage.empty()) {
                     h << li << "<pre>" << sanitize(test.detailMessage) << "</pre></li>";
                 }
@@ -208,14 +222,14 @@ namespace SimpleTest {
             h << "<hr>" << endl;
         }
         h << "</ul>";
-        if (nrun > 0) {
+        if (nrun > 0) { // all tests completed
             h << "<h3> Passed " << npass << " of " << nrun << " tests. ";
             if (npass == nrun) conclusion = affirmation();
             h << conclusion << "</h3>";
 
         }
         h << "</body></html>";
-        if (bp) bp->setText(h.str());   // display in browser pane
+        setTextPreserveScroll(bp, h.str(), nrun == -1);
         return conclusion;
     }
 
@@ -261,6 +275,8 @@ namespace SimpleTest {
         string stylesheet;
         bool displayWindow = (where == CONSOLE_AND_WINDOW || where == WINDOW_ONLY);
         bool displayConsole = (where == CONSOLE_AND_WINDOW || where == CONSOLE_ONLY);
+        ostringstream devnull;
+        ostream& console = displayConsole ? cout : devnull;
 
         if (displayWindow) {
             GWindow* window = new GWindow(700, 600);
@@ -272,7 +288,7 @@ namespace SimpleTest {
             window->setVisible(true);
             window->requestFocus();
             // student can customize display by editing the stylesheet
-            readEntireFile("src/testing/styles.css", stylesheet);
+            readEntireFile("testing/styles.css", stylesheet);
         }
 
         /* Show everything so there's some basic data available. */
@@ -282,21 +298,33 @@ namespace SimpleTest {
         /* Now, go run the tests. */
         for (auto& group: groups) {
             if (!group.selected) continue;
-            if (displayConsole) cout << endl << "[SimpleTest] ---- Tests from " << group.name << " -----" << endl;
+            console << endl << "[SimpleTest] ---- Tests from " << group.name << " -----" << endl;
             for (auto& test: group.tests) {
                 /* Make clear that we're running the test. */
                 test.result = TestResult::RUNNING;
                 displayResults(bp,stylesheet, groups);
-                if (displayConsole) cout << "[SimpleTest] starting" << test.id << left << setfill('.') << setw(25) << test.testname.substr(0,25) << "... " << flush;
+                console << "[SimpleTest] starting" << test.id << left << setfill('.') << setw(25) << test.testname.substr(0,25) << "... " << flush;
                 runSingleTest(test);
                 nrun++;
                 if (test.result == TestResult::PASS) npassed++;
-                if (displayConsole) cout << " =  "<< status(test.result) << endl << test.detailMessage;
+                string status = info[test.result].status;
+                if (!getConsoleEnabled()) status = info[test.result].color + status + NORMAL;
+                console << " =  " << status << endl << test.detailMessage << flush;
                 displayResults(bp, stylesheet, groups);
             }
         }
         string conclusion = displayResults(bp, stylesheet, groups, npassed, nrun);
-         if (displayConsole) cout << "You passed " << npassed << " of " << nrun << " tests. " << conclusion << endl << endl;
+        console << "You passed " << npassed << " of " << nrun << " tests. " << conclusion << endl << endl;
+        if (npassed < nrun) {
+            cout << "Failed tests:" << endl;
+            for (const auto& group: groups) {
+                if (!group.selected) continue;
+                for (const auto& test: group.tests) {
+                    if (test.result != TestResult::PASS)
+                        cout << info[test.result].status << test.id << test.testname << endl;
+                }
+            }
+        }
     }
 
     int userChoiceFromMenu(Vector<string>& options)
@@ -347,6 +375,9 @@ namespace SimpleTest {
 
     bool runSimpleTests(Choice ch, Where where)
     {
+        // suppress harmless warning about font substitutions (this should be in library too)
+        QLoggingCategory::setFilterRules("qt.qpa.fonts.warning=false");
+
         Vector<TestGroup> testGroups = prepareGroups(gTestsMap());
 
         if (selectChosenGroup(testGroups, ch)) {

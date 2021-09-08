@@ -1,10 +1,4 @@
-/**
- * MemoryDiagnostics.h
- *
- * @author Keith Schwarz
- * @version 2020/3/5
- *    Keith final revision from end of quarter 19-2
- */
+
 #pragma once
 
 /* Set of utility functions that can be used to track allocations and deallocations of

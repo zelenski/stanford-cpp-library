@@ -1,11 +1,14 @@
 /**
  * File: SimpleTest.h
  *
+ * This files defines the interface to the SimpleTest features that you
+ * can use to test your code.
+ *
  * @author Keith Schwarz
  * @version 2020/3/22
  *    Keith final revision from end of quarter 19-2
- * @version 20200/4/8
- *    Minor tweaks by Julie for quarter 19-3
+ * @version 2020 Fall Quarter
+ *    Minor tweaks by Julie
  */
 #pragma once
 
@@ -38,11 +41,16 @@
  */
 #define EXPECT_ERROR(expression) /* Use to confirm an expected error is raised. */
 
-/* Fails the given test, printing out the specified error message. For example:
+/* Checks whether the given expression completed without calling the error() handler.
+ * If so, nothing happens. If the expression did call error(), then the test fails. You
+ * can use this to confirm that an expression that is supposed to complete successfully
+ * indeed does so. For example:
  *
- *     REPORT_FAILURE("Something went wrong.");
+ *     Vector<int> myVec;
+ *     EXPECT_NO_ERROR(myVec.isEmpty()); // Nothing happens because no error would be generated here.
+ *     EXPECT_NO_ERROR(myVec.get(0));    // The test fails, since myVec.get(0) does trigger error().
  */
-#define REPORT_FAILURE(message) /* Use message to explain the failure */
+#define EXPECT_NO_ERROR(expression) /* Use to confirm no error raised by expression. */
 
 /* Time the evaluation of an expression report the time in seconds in test results.
  * The argument size is the size of the input.
