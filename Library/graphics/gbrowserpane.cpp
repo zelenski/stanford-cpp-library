@@ -204,8 +204,8 @@ void GBrowserPane::scrollToTop() {
 }
 
 void GBrowserPane::select(int startIndex, int length) {
-    require::nonNegative(startIndex, 0, "GBrowserPane::select", "startIndex");
-    require::nonNegative(length, 0, "GBrowserPane::select", "length");
+    require::nonNegative(startIndex, "GBrowserPane::select", "startIndex");
+    require::nonNegative(length, "GBrowserPane::select", "length");
     GThread::runOnQtGuiThread([this, startIndex, length]() {
         QTextCursor cursor = _iqtextbrowser->textCursor();
         cursor.setPosition(startIndex);
