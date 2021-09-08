@@ -7,3 +7,8 @@
 
 *.pro.user.*
 *.pro.user
+
+# Build products
+build-*
+*.app
+*.exe
