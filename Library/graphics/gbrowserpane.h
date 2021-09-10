@@ -63,14 +63,6 @@ public:
     virtual void clearText();
 
     /**
-     * Returns the MIME content type for the current page.
-     * The default content type is "text/html".
-     * (If you need to look up the content type for a given file/page extension,
-     * consider using the HttpServer::getContentType(extension) function.)
-     */
-    virtual std::string getContentType() const;
-
-    /**
      * Returns the keyboard cursor's current position in the text pane as a
      * 0-based character index within the overall text string.
      */
@@ -211,16 +203,6 @@ public:
     virtual void selectAll();
 
     /**
-     * Sets the MIME content type being used to display the current/future pages.
-     * The default content type is "text/html".
-     * The suggested use of this function would be to call it just before calling
-     * loadTextFromFile or loadTextFromUrl.
-     * (If you need to look up the content type for a given file/page extension,
-     * consider using the HttpServer::getContentType(extension) function.)
-     */
-    virtual void setContentType(const std::string& contentType);
-
-    /**
      * Moves the keyboard cursor to the given 0-based character index within
      * the text.
      * @throw ErrorException if index is negative
@@ -310,7 +292,6 @@ private:
     Q_DISABLE_COPY(GBrowserPane)
 
     std::string _pageUrl;   // url/filename of the most recently loaded page
-    std::string _contentType;
     _Internal_QTextBrowser* _iqtextbrowser;
 
     friend class _Internal_QTextBrowser;

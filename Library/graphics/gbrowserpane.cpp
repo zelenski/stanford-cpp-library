@@ -25,7 +25,6 @@
 #include "filelib.h"
 #include "gthread.h"
 #include "require.h"
-#include "server.h"
 
 GBrowserPane::GBrowserPane(const std::string& url, QWidget* parent) {
     GThread::runOnQtGuiThread([this, url, parent]() {
@@ -55,10 +54,6 @@ void GBrowserPane::clearText() {
     GThread::runOnQtGuiThread([this]() {
         _iqtextbrowser->clear();
     });
-}
-
-std::string GBrowserPane::getContentType() const {
-    return _contentType;
 }
 
 int GBrowserPane::getCursorPosition() const {
@@ -162,11 +157,6 @@ void GBrowserPane::readTextFromFile(const std::string& filename) {
     input.open(filename.c_str());
     if (!input.fail()) {
         _pageUrl = filename;
-        std::string extension = getExtension(filename);
-        std::string contentType = HttpServer::getContentType(extension);
-        if (!contentType.empty()) {
-            setContentType(contentType);
-        }
         readTextFromFile(input);
     }
 }
@@ -218,10 +208,6 @@ void GBrowserPane::selectAll() {
     GThread::runOnQtGuiThread([this]() {
         _iqtextbrowser->selectAll();
     });
-}
-
-void GBrowserPane::setContentType(const std::string& contentType) {
-    _contentType = contentType;
 }
 
 void GBrowserPane::setCursorPosition(int index, bool keepAnchor) {
