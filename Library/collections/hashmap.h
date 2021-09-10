@@ -3,46 +3,7 @@
  * ---------------
  * This file exports the <code>HashMap</code> class, which stores
  * a set of <i>key</i>-<i>value</i> pairs.
- *
- * @version 2020/09/12
- * - simplify interface in preparation for install
- * @version 2019/04/09
- * - renamed private members with underscore naming scheme for consistency
- * @version 2019/02/04
- * - changed internal implementation to wrap std collections
- * @version 2018/03/10
- * - added methods front, back
- * @version 2017/11/30
- * - bug fix for iterator version checking support
- * @version 2017/11/14
- * - added iterator version checking support
- * @version 2016/10/14
- * - modified floating-point equality tests to use floatingPointEqual function
- * @version 2016/09/24
- * - refactored to use collections.h utility functions
- * @version 2016/08/10
- * - added support for std initializer_list usage, such as
- *   {{"a", 1}, {"b", 2}, {"c", 3}} in constructor, putAll, removeAll, retainAll,
- *   operators +, +=, -, -=, *, *=
- * - added addAll method
- * @version 2016/08/04
- * - fixed operator >> to not throw errors
- * @version 2015/07/05
- * - using global hashing functions rather than global variables
- * - fixed bug where string quotes would not show when map was printed
- * @version 2015/06/19
- * - fixed deepCopy code that was causing copies to have different hash code than
- *   the original they were copied from (credit to SL Wen Zhang for finding the bug)
- * @version 2014/11/13
- * - added add() method as synonym for put()
- * - added template hashCode function
- * - moved hashCode functions to hashcode.h/cpp
- * @version 2014/10/29
- * - moved hashCode functions out to hashcode.h
- * @version 2014/10/10
- * - added comparison operators ==, !=
  */
-
 
 #ifndef _hashmap_h
 #define _hashmap_h

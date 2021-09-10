@@ -3,49 +3,7 @@
  * -------------
  * This file exports a parameterized Graph class used to represent graphs,
  * which consist of a set of nodes (vertices) and a set of arcs (edges).
- *
- * @version 2019/08/13
- * - fixed compiler error with Graph default constructor on older g++ compilers
- * @version 2018/09/07
- * - reformatted doc-style comments
- * @version 2018/03/10
- * - added methods front, back
- * - fixed compiler issue with getArcSet call
- * @version 2017/11/14
- * - added nodeCount, arcCount, getNodeNames
- * @version 2016/12/09
- * - added iterator version checking support (implicitly via Map)
- * - fixed bug in getInverseNeighborNames function
- * @version 2016/12/01
- * - removed memory leaks of graph node and arc structures
- * - fixed bug in containsNode method (was returning false positives)
- * - fixed bugs in some node/arc methods (should not crash on empty/null args)
- * @version 2016/11/29
- * - added getNeighborNames, getInverseNeighborNames
- * @version 2016/11/26
- * - added getInverseArcSet
- * @version 2016/11/19
- * - changed addNode to not throw when adding duplicates
- * @version 2016/09/24
- * - refactored to use collections.h utility functions
- * @version 2016/08/04
- * - fixed operator >> to not throw errors
- * @version 2015/07/05
- * - using global hashing functions rather than global variables
- * @version 2014/11/13
- * - added iterator begin(), end() support so that students can directly
- *   for-each over the vertices of a graph.
- * - added comparison operators ==, !=, <, etc.
- * - added template hashCode function
- * @version 2014/10/20
- * - converted functions to accept const string& rather than string for speed
- * - added iterator/for-each support over nodes; begin() / end() members
- * - updated various methods that accept node/arc pointers to verify
- *   that those nodes/arcs are part of the graph first, and to check for null
- * @version 2014/10/10
- * - removed use of __foreach macro
  */
-
 
 #ifndef _graph_h
 #define _graph_h

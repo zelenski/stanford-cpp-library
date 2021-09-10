@@ -3,34 +3,7 @@
  * ---------------
  * This file exports the <code>HashSet</code> class, which
  * implements an efficient abstraction for storing sets of values.
- *
- * @version 2019/02/04
- * - changed internal implementation to wrap std collections
- * @version 2018/03/10
- * - added methods front, back
- * @version 2016/12/09
- * - added iterator version checking support (implicitly via HashMap)
- * @version 2016/12/06
- * - slight speedup bug fix in equals() method
- * @version 2016/09/24
- * - refactored to use collections.h utility functions
- * @version 2016/08/11
- * - added containsAll, isSupersetOf methods
- * @version 2016/08/10
- * - added support for std initializer_list usage, such as {1, 2, 3}
- *   in constructor, addAll, containsAll, isSubsetOf, isSupersetOf, removeAll,
- *   retainAll, and operators +, +=, -, -=, *, *=
- * - bug fix in hashCode function
- * @version 2016/08/04
- * - fixed operator >> to not throw errors
- * @version 2015/07/05
- * - using global hashing functions rather than global variables
- * @version 2014/11/13
- * - added template hashCode function
- * @version 2014/10/10
- * - removed foreach patch
  */
-
 
 #ifndef _hashset_h
 #define _hashset_h

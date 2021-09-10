@@ -8,63 +8,6 @@
  *
  * Most members are implemented in this file, since the class is a template.
  * See BasicGraph.cpp for implementation of some non-template members.
- *
- * @author Marty Stepp
- * @version 2018/09/07
- * - reformatted doc-style comments
- * @version 2018/03/10
- * - added methods front, back, toMap
- * - added operator << for various collections of Vertex* and Edge*
- * @version 2018/02/28
- * - compiler flag to enable/disable Vertex fields like visited, previous
- * @version 2017/11/14
- * - fix missing "this->" on some methods
- * - added getVertexNames, vertexCount, edgeCount
- * @version 2017/10/24
- * - print nullptr instead of null in uppercase
- * @version 2017/10/18
- * - fix compiler warnings
- * @version 2016/12/09
- * - added iterator version checking support (implicitly via Graph)
- * @version 2016/12/04
- * - bug fix in resetData method (was referring to Vertex* and Edge*)
- * @version 2016/12/01
- * - bug fix in addEdge method (now correctly adds vertexes if not present)
- * - fixed bugs in some node/arc methods (should not crash on empty/null args)
- * @version 2016/11/26
- * - added BasicGraphV, VertexV, EdgeV macros
- * - added getInverseEdgeSet
- * @version 2016/11/19
- * - changed addVertex to not throw when adding duplicates
- * - added operator []
- * @version 2016/11/07
- * - small bug fix for printing cost in operator << (courtesy GitHub @hsivnightbeam)
- * @version 2016/10/14
- * - modified floating-point equality tests to use floatingPointEqual function
- * @version 2016/09/24
- * - refactored to use collections.h utility functions
- * @version 2016/09/22
- * - bug fix for hashCode function
- * @version 2016/08/12
- * - added initializer_list functionality
- * @version 2014/12/04
- * - bug fix: Edge end reference was not properly pointing at finish field
- * @version 2014/11/21
- * - bug fix: Edge weight reference was not properly pointing at cost field
- * @version 2014/11/13
- * - added iterator begin(), end() support so that students can directly
- *   for-each over the vertices of a graph.
- * - added comparison operators ==, !=, <, etc.
- * - bug fix to Edge to add move/copy = operators
- * @version 2014/10/31
- * - bug fix: extraData was being nulled accidentally in Vertex::resetData()
- * @version 2014/10/23
- * - bug fixes based on cppcheck lint output
- * @version 2014/10/20
- * - converted functions to accept const string& rather than string for speed
- * @version 2014/08/16
- * - added Vertex 'weight' alias for 'cost'
- * - added Edge 'weight' alias for 'cost, and 'end' alias for 'finish'
  */
 
 

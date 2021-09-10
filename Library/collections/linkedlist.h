@@ -4,38 +4,6 @@
  * This file exports the <code>LinkedList</code> class, which provides an
  * implementation of a doubly-linked list of objects and provides a
  * public interface similar to that of the <code>Vector</code> class.
- *
- * @version 2019/04/09
- * - renamed private members with underscore naming scheme for consistency
- * @version 2019/02/04
- * - changed internal implementation to wrap std collections
- * @version 2018/01/07
- * - added removeFront, removeBack
- * @version 2017/11/15
- * - added contains, indexOf, lastIndexOf, removeValue, reverse, shuffle, sort
- * @version 2017/11/14
- * - added iterator version checking support
- * @version 2016/09/24
- * - refactored to use collections.h utility functions
- * @version 2016/08/10
- * - added support for std initializer_list usage, such as {1, 2, 3}
- *   in constructor, addAll, +, +=
- * @version 2016/08/04
- * - fixed operator >> to not throw errors
- * @version 2015/07/05
- * - using global hashing functions rather than global variables
- * @version 2014/11/13
- * - added comparison operators <, >=, etc.
- * - added template hashCode function
- * @version 2014/10/19
- * - added subList method
- * @version 2014/10/10
- * - removed usage of __foreach macro
- * 2014/07/10
- *  - fixed compiler errors/bugs in initial implementation:
- *    back(), front() members, etc.
- *  - changed checkLinkedListIndex into a member function to avoid warnings
- * @since 2014/07/10
  */
 
 #ifndef _linkedlist_h

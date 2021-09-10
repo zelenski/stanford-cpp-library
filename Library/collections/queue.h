@@ -4,39 +4,7 @@
  * This file exports the <code>Queue</code> class, a collection
  * in which values are ordinarily processed in a first-in/first-out
  * (FIFO) order.
- *
- * @version 2020/09/12
- * - simplify interface in preparation for install
- * @version 2019/04/09
- * - renamed private members with underscore naming scheme for consistency
- * @version 2019/02/04
- * - changed internal implementation to wrap std collections
- * @version 2018/01/23
- * - fixed bad reference bug on queue.enqueue(queue.peek())
- * @version 2017/11/14
- * - added iterator version checking support
- * @version 2016/09/24
- * - refactored to use collections.h utility functions
- * - added iterators begin(), end()
- * @version 2016/09/22
- * - optimized equals, ==, != to avoid deep-copy
- * @version 2016/08/10
- * - added constructor support for std initializer_list usage, such as {1, 2, 3}
- * @version 2016/08/04
- * - fixed operator >> to not throw errors
- * @version 2015/07/05
- * - using global hashing functions rather than global variables
- * @version 2014/11/13
- * - added comparison operators ==, !=, <, etc.
- * - added add() method as synonym for enqueue()
- * - added remove() method as synonym for dequeue()
- * - added template hashCode function
- * - optimized some functions (operator <<, toStlQueue) to avoid making unneeded deep copy
- * @version 2014/10/10
- * - removed dependency on 'using namespace' statement
- * - removed usage of __foreach macro
  */
-
 
 #ifndef _queue_h
 #define _queue_h

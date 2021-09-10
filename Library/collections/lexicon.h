@@ -3,29 +3,7 @@
  * ---------------
  * This file exports the <code>Lexicon</code> class, which is a
  * compact structure for storing a list of words.
- *
- * @version 2019/04/09
- * - renamed private members with underscore naming scheme for consistency
- * @author Marty Stepp
- * @version 2018/03/10
- * - added methods front, back
- * @version 2016/12/09
- * - added iterator version checking support (implicitly via Set)
- * @version 2016/09/24
- * - refactored to use collections.h utility functions
- * @version 2016/08/12
- * - added methods addAll, containsAll, removeAll, retainAll,
- *   operators +, +=, -, -=, *, *= to better match Set/HashSet
- * @version 2016/08/10
- * - added constructor support for std initializer_list usage, such as {"a", "b", "c"}
- * @version 2014/11/13
- * - added comparison operators <, >= etc.
- * - added hashCode function
- * @version 2014/10/10
- * - added equals method, comparison operators ==, !=
- * - fixed inclusion of for-each macro to avoid errors
  */
-
 
 #ifndef _lexicon_h
 #define _lexicon_h

@@ -4,16 +4,7 @@
  * This file declares global hashing functions for various common data types.
  * These functions are used by the HashMap and HashSet collections, as well as
  * by other collections that wish to be used as elements within HashMaps/Sets.
- *
- * @version 2017/10/21
- * - added hash codes for short, unsigned integers
- * @version 2017/09/29
- * - added composite hashCode functions (hashCode2, 3, 4, ...)
- * @version 2015/07/05
- * - using global hashing functions rather than global variables
- *   (hashSeed(), hashMultiplier(), and hashMask())
  */
-
 
 #ifndef _hashcode_h
 #define _hashcode_h

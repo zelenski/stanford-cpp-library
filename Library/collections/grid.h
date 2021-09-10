@@ -3,48 +3,7 @@
  * ------------
  * This file exports the <code>Grid</code> class, which offers a
  * convenient abstraction for representing a two-dimensional array.
- *
- * @version 2020/09/12
- * - simplify interface in preparation for install
- * @version 2019/04/09
- * - renamed private members with underscore naming scheme for consistency
- * @version 2018/03/12
- * - added overloads that accept GridLocation: get, inBounds, locations, set, operator []
- * @version 2018/03/10
- * - added methods front, back, clear
- * @version 2017/11/14
- * - added iterator version checking support
- * @version 2017/10/18
- * - fix compiler warnings
- * @version 2016/12/09
- * - bug fix in resize method (credit to Liu Ren)
- * @version 2016/09/24
- * - refactored to use collections.h utility functions
- * - made member variables actually private (oops)
- * - added size() method
- * @version 2016/08/10
- * - added constructor support for std initializer_list usage, such as
- *   {{1, 2, 3}, {4, 5, 6}}
- * @version 2016/08/04
- * - fixed operator >> to not throw errors
- * @version 2015/07/05
- * - using global hashing functions rather than global variables
- * @version 2014/11/20
- * - minor bug fixes in member initializers
- * @version 2014/11/13
- * - added comparison operators <, >=, etc.
- * - added template hashCode function
- * @version 2014/10/10
- * - added resize(true) function with ability to retain old contents
- * - made ==, != operators const as they should be
- * - added comparison operators ==, !=
- * 2014/08/16
- * - added width, height functions; added mapAllColumnMajor
- * 2014/07/09
- * - changed checkGridIndexes range checking function into a private member
- *   function to avoid unused-function errors on some newer compilers
  */
-
 
 #ifndef _grid_h
 #define _grid_h

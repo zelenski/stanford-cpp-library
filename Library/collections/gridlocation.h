@@ -14,11 +14,7 @@
  * which represents a 2D range of grid locations that can be looped over.
  *
  * See gridlocation.cpp for the implementation of each member.
- *
- * @version 2018/03/12
- * - initial version
  */
-
 
 #ifndef _gridlocation_h
 #define _gridlocation_h

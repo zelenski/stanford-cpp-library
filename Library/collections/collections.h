@@ -6,30 +6,6 @@
  * For example, we have functions for comparing any collections that have
  * a visible iterator (begin(), end()).
  * Used to implement comparison operators like < and >= on collections.
- *
- * @version 2020/09/12
- * - simplify interface in preparation for install
- * @author Marty Stepp
- * @version 2019/10/12
- * - added ARRAY_LENGTH macro
- * @version 2019/04/12
- * - added GenericSet unionWith, intersect, difference methods
- * - added functions to read/write quoted char values
- * - changed comment formatting
- * @version 2017/12/12
- * - added equalsDouble for collections of double values (can't compare with ==)
- * @version 2017/10/18
- * - fix compiler warnings
- * @version 2017/09/29
- * - added compareTo1-5
- * @version 2016/12/09
- * - added checkVersion for iterators
- * @version 2016/09/24
- * - renamed compare.h to collections.h
- * - added printing functions
- * @version 2014/10/10
- * - initial version as compare.h
- * @since 2014/10/10
  */
 
 #ifndef _collections_h

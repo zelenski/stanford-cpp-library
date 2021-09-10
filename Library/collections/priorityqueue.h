@@ -3,49 +3,7 @@
  * ---------------------
  * This file exports the <code>PriorityQueue</code> class, a
  * collection in which values are processed in priority order.
- *
- * @version 2020/09/12
- * - simplify interface in preparation for install
- * @version 2019/04/09
- * - renamed private members with underscore naming scheme for consistency
- * @version 2016/11/07
- * - small const-correctness bug fix in front() / back() (courtesy Truman Cranor)
- * @version 2016/10/14
- * - modified floating-point equality tests to use floatingPointEqual function
- * @version 2016/09/24
- * - refactored to use collections.h utility functions
- * @version 2016/09/22
- * - renamed from pqueue.h to priorityqueue.h (old name left as an alias)
- * @version 2016/08/10
- * - added constructor support for std initializer_list usage, such as
- *   {{1.0, "a"}, {2.0, "b"}, {3.0, "c"}}
- * @version 2016/08/04
- * - fixed operator >> to not throw errors
- * @version 2015/07/05
- * - using global hashing functions rather than global variables
- * @version 2015/06/22
- * - added optional compiler flag SPL_PQUEUE_PRINT_IN_HEAP_ORDER to indicate
- *   that PQ should be printed in heap-internal order rather than sorted order
- * - added optional compiler flag SPL_PQUEUE_ALLOW_HEAP_ACCESS and corresponding
- *   semi-private methods to access value/priority at a given index
- *   (wanted internally for some testing and for practice exam problems;
- *    not meant to be called explicitly by students or most clients)
- * @version 2014/12/04
- * - moved comparison operators <, >=, etc. behind a (default-disabled)
- *   compiler flag because implementation is inefficient
- * @version 2014/11/13
- * - added comparison operators <, >=, etc.
- * - added add() method as synonym for enqueue()
- * - added remove() method as synonym for dequeue()
- * - added template hashCode function
- * @version 2014/10/20
- * - added equals method, ==, != operators
- * @version 2014/10/10
- * - removed usage of __foreach macro
- * 2014/02/01
- * - added changePriority member to raise a given value's priority
  */
-
 
 #ifndef _priorityqueue_h
 #define _priorityqueue_h

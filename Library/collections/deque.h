@@ -4,26 +4,6 @@
  * This file exports the <code>Deque</code> class, a collection
  * in which values can be added and removed from the front or back.
  * It combines much of the functionality of a stack and a queue.
- *
- * @version 2020/09/12
- * - simplify interface in preparation for install
- * @version 2019/04/09
- * - renamed private members with underscore naming scheme for consistency
- * @version 2019/02/04
- * - changed internal implementation to wrap std collections
- * @version 2017/11/14
- * - added iterator version checking support
- * @version 2016/09/24
- * - refactored to use collections.h utility functions
- * @version 2016/09/22
- * - added constructor support for std initializer_list usage, such as {1, 2, 3}
- * @version 2016/08/04
- * - fixed operator >> to not throw errors
- * @version 2015/07/05
- * - using global hashing functions rather than global variables
- * @version 2014/10/29
- * - added comparison operators ==, !=, <, etc.
- * @since 2014/10/29
  */
 
 #ifndef _deque_h

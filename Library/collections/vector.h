@@ -3,50 +3,7 @@
  * --------------
  * This file exports the <code>Vector</code> class, which provides an
  * efficient, safe, convenient replacement for the array type in C++.
- *
- * @version 2020/09/12
- * - simplify interface in preparation for install
- * @version 2019/04/09
- * - renamed private members with underscore naming scheme for consistency
- * @version 2019/02/04
- * - changed internal implementation to wrap std collections
- * @version 2018/09/06
- * - refreshed doc comments for new documentation generation
- * @version 2018/01/07
- * - added front, back, removeFront, removeBack, pop_front, pop_back, push_front
- * @version 2017/11/15
- * - added contains, indexOf, lastIndexOf, removeValue, reverse, shuffle, sort
- * @version 2017/10/18
- * - fix compiler warnings
- * @version 2016/12/09
- * - added iterator version checking support
- * @version 2016/09/24
- * - refactored to use collections.h utility functions
- * @version 2016/08/12
- * - bug fix for constructor based on initializer list
- * @version 2016/08/10
- * - added support for std initializer_list usage, such as {1, 2, 3}
- *   in constructor, addAll, +, +=
- * @version 2016/08/04
- * - fixed operator >> to not throw errors
- * @version 2015/10/13
- * - nulled out pointer fields in destructor after deletion to avoid double-free
- * @version 2015/07/05
- * - using global hashing functions rather than global variables
- * @version 2014/11/13
- * - added comparison operators <, >=, etc.
- * - added template hashCode function
- * @version 2014/10/19
- * - added subList method
- * @version 2014/10/10
- * - removed usage of __foreach macro
- * 2014/07/09
- * - changed checkVectorIndex range checking function into a private member
- *   function to avoid unused-function errors on some newer compilers
- * 2014/04/27
- * - fixed bug in addAll method that was not returning reference properly.
  */
-
 
 #ifndef _vector_h
 #define _vector_h

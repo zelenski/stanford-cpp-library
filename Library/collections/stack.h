@@ -3,29 +3,7 @@
  * -------------
  * This file exports the <code>Stack</code> class, which implements
  * a collection that processes values in a last-in/first-out (LIFO) order.
- *
- * @version 2020/09/12
- * - simplify interface in preparation for install
- * @version 2019/04/09
- * - renamed private members with underscore naming scheme for consistency
- * @version 2019/02/04
- * - changed internal implementation to wrap std collections
- * @version 2016/12/09
- * - added iterator version checking support (implicitly via Vector)
- * @version 2016/09/24
- * - refactored to use collections.h utility functions
- * - made const iterators public
- * @version 2016/08/10
- * - added constructor support for std initializer_list usage, such as {1, 2, 3}
- * @version 2016/08/04
- * - fixed operator >> to not throw errors
- * @version 2014/11/13
- * - added add() method as synonym for push()
- * - added remove() method as synonym for pop()
- * - added comparison operators <, >=, etc.
- * - added template hashCode function
  */
-
 
 #ifndef _stack_h
 #define _stack_h

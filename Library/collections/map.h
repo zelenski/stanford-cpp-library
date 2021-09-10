@@ -3,45 +3,7 @@
  * -----------
  * This file exports the template class <code>Map</code>, which
  * maintains a collection of <i>key</i>-<i>value</i> pairs.
- *
- * @version 2020/09/12
- * - simplify interface in preparation for install
- * @version 2019/04/09
- * - renamed private members with underscore naming scheme for consistency
- * @version 2019/02/04
- * - changed internal implementation to wrap std collections
- * @version 2018/03/19
- * - added constructors that accept a comparison function
- * @version 2018/03/10
- * - added methods front, back
- * @version 2017/10/18
- * - fix compiler warnings
- * @version 2016/12/09
- * - added iterator version checking support
- * @version 2016/09/24
- * - refactored to use collections.h utility functions
- * @version 2016/09/22
- * - bug fix for operators <, <=, >, >= (was comparing only keys!)
- * @version 2016/08/10
- * - added support for std initializer_list usage, such as
- *   {{"a", 1}, {"b", 2}, {"c", 3}} in constructor, addAll, putAll,
- *   removeAll, retainAll, and operators +, +=, -, -=, *, *=
- * - added addAll method
- * @version 2016/08/04
- * - fixed operator >> to not throw errors
- * @version 2015/10/13
- * - nulled out pointer fields in destructor after deletion to avoid double-free
- * @version 2015/07/05
- * - using global hashing functions rather than global variables
- * - fixed bug where string quotes would not show when map was printed
- * @version 2014/11/13
- * - added comparison operators <, >=, etc.
- * - added add() method as synonym for put()
- * - added template hashCode function
- * @version 2014/10/10
- * - removed usage of __foreach macro
  */
-
 
 #ifndef _map_h
 #define _map_h
