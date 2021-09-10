@@ -40,7 +40,7 @@ void appendSpace(std::string& prompt);
  * If no prompt is passed, defaults to, "You must type a single character. Try again.".
  *
  * The also optional <code>reprompt</code> argument provides an output message
- * displayed each time if the user enters an invalid input. If no reprompt
+ * displayed when the user enters an invalid input. If no reprompt
  * is passed, defaults to prompt.
  */
 char getChar(const std::string& prompt = "",
@@ -57,7 +57,7 @@ char getChar(const std::string& prompt = "",
  * reading the value.
  *
  * The also optional <code>reprompt</code> argument provides an output message
- * displayed each time if the user enters an invalid input.
+ * displayed when the user enters an invalid input.
  * If no prompt is passed, defaults to, "Illegal numeric format. Try again.".
  *
  * Equivalent to getReal.
@@ -91,7 +91,7 @@ double getDoubleBetween(const std::string& prompt, double min, double max);
  * reading the value.
  *
  * The also optional <code>reprompt</code> argument provides an output message
- * displayed each time if the user types a file that is not found.
+ * displayed when the user enters an invalid input.
  * If no value is passed, defaults to, "Illegal integer format. Try again.".
  */
 int getInteger(const std::string& prompt = "",
@@ -142,7 +142,7 @@ void getLine(std::istream& input,
  * reading the value.
  *
  * The also optional <code>reprompt</code> argument provides an output message
- * displayed each time if the user types a file that is not found.
+ * displayed when the user enters an invalid input.
  * If no value is passed, defaults to, "Illegal numeric format. Try again.".
  *
  * Equivalent to getDouble.
@@ -175,7 +175,7 @@ double getRealBetween(const std::string& prompt, double min, double max);
  * reading the value.
  *
  * The also optional <code>reprompt</code> argument provides an output message
- * displayed each time if the user types a file that is not found.
+ * displayed when the user enters an invalid input.
  * If no value is passed, defaults to,
  * "Please type a word that starts with 'Y' or 'N'.".
  *
