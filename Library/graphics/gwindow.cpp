@@ -50,7 +50,6 @@
 #include <QToolBar>
 #include "filelib.h"
 #include "gcolor.h"
-#include "gdiffgui.h"
 #include "gdiffimage.h"
 #include "glabel.h"
 #include "glayout.h"

@@ -5,7 +5,6 @@
 #include "moc_gcheckbox.cpp"
 #include "moc_gchooser.cpp"
 #include "moc_gcontainer.cpp"
-#include "moc_gdownloader.cpp"
 #include "moc_geventqueue.cpp"
 #include "moc_glabel.cpp"
 #include "moc_gradiobutton.cpp"

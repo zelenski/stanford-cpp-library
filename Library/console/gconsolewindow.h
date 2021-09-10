@@ -65,8 +65,6 @@ public:
     virtual void clipboardCut();
     virtual void clipboardPaste();
     void close() override;
-    virtual void compareOutput(const std::string& filename);
-    virtual std::string getAllOutput() const;
     std::string getBackground() const override;
     int getBackgroundInt() const override;
     std::string getColor() const override;
@@ -77,14 +75,11 @@ public:
     int getForegroundInt() const override;
     virtual std::string getOutputColor() const;
     virtual std::string getUserInputColor() const;
-    virtual bool hasInputScript() const;
     virtual bool isClearEnabled() const;
     virtual bool isEcho() const;
     virtual bool isLocationSaved() const;
     virtual bool isLocked() const;
     virtual void loadConfiguration();
-    virtual void loadInputScript(int number);
-    virtual void loadInputScript(const std::string& filename);
     virtual void print(const std::string& str, bool isStdErr = false);
     virtual void println(bool isStdErr = false);
     virtual void println(const std::string& str, bool isStdErr = false);
@@ -113,9 +108,7 @@ public:
     virtual void setUserInputColor(const std::string& userInputColor);
     virtual void showAboutDialog();
     virtual void showColorDialog(bool background = false);
-    virtual void showCompareOutputDialog();
     virtual void showFontDialog();
-    virtual void showInputScriptDialog();
     virtual void showPrintDialog();
     virtual void shutdown(const std::string& reason);
 

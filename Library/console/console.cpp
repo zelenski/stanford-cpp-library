@@ -299,16 +299,9 @@ void shutdownConsole() {
  * to default values
  */
 void setConsolePropertiesQt() {
-#if defined(SPL_CONSOLE_FONTSIZE)
-    std::string fontStr = std::string("Monospaced-Bold-") + std::to_string(SPL_CONSOLE_FONTSIZE);
-    setConsoleFont(fontStr);
-#endif
 
     setConsoleSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
     setConsoleLocation(DEFAULT_X, DEFAULT_Y);
- #if defined(SPL_CONSOLE_LOCATION_SAVED)
-    setConsoleLocationSaved(true);
- #endif
     setConsoleEcho(DEFAULT_ECHO);
     setConsoleExitProgramOnClose(DEFAULT_EXIT_ON_CLOSE);
 }

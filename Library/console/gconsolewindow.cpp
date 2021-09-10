@@ -44,8 +44,6 @@
 #include "gclipboard.h"
 #include "gcolor.h"
 #include "gcolorchooser.h"
-#include "gdiffgui.h"
-#include "gdownloader.h"
 #include "gfilechooser.h"
 #include "gfont.h"
 #include "gfontchooser.h"
@@ -161,20 +159,9 @@ void GConsoleWindow::_initMenuBar() {
     setMenuItemEnabled("File", "Print", false);
     addMenuSeparator("File");
 
-    addMenuItem("File", "&Load Input Script...", QPixmap(":/load_input_script"),
-                [this]() { this->showInputScriptDialog(); });
-    addToolbarItem("Load Input Script...", QPixmap(":/load_input_script"),
-                       [this]() { this->showInputScriptDialog(); });
-
-    addMenuItem("File", "&Compare Output...",  QPixmap(":/compare_output"),
-                [this]() { this->showCompareOutputDialog(); });
-    addToolbarItem("Compare Output...", QPixmap(":/compare_output"),
-                       [this]() { this->showCompareOutputDialog(); });
-
     addMenuItem("File", "&Quit", QPixmap(":/quit"),
                 [this]() { this->close(); /* TODO: exit app */ })
                 ->setShortcut(QKeySequence::Quit);
-    addToolbarSeparator();
 
     // Edit menu
     addMenu("&Edit");
@@ -388,29 +375,6 @@ void GConsoleWindow::close() {
     GWindow::close();   // call super
 }
 
-void GConsoleWindow::compareOutput(const std::string& filename) {
-    std::string expectedOutput;
-    if (!filename.empty() && fileExists(filename)) {
-        expectedOutput = readEntireFile(filename);
-    } else {
-        expectedOutput = "File not found: " + filename;
-    }
-
-    std::string studentOutput = getAllOutput();
-
-    GDiffGui::showDialog("Expected Output", expectedOutput,
-                         "Your Output", studentOutput,
-                         /* showCheckBoxes */ false);
-}
-
-std::string GConsoleWindow::getAllOutput() const {
-    GConsoleWindow* thisHack = const_cast<GConsoleWindow*>(this);
-    thisHack->_coutMutex.lock();
-    std::string allOutput = thisHack->_allOutputBuffer.str();
-    thisHack->_coutMutex.unlock();
-    return allOutput;
-}
-
 std::string GConsoleWindow::getBackground() const {
     return _textArea->getBackground();
 }
@@ -509,10 +473,6 @@ int GConsoleWindow::getUserInputEnd() const {
     }
 }
 
-bool GConsoleWindow::hasInputScript() const {
-    return !_inputScript.isEmpty();
-}
-
 bool GConsoleWindow::isClearEnabled() const {
     return _clearEnabled;
 }
@@ -579,76 +539,7 @@ void GConsoleWindow::loadConfiguration() {
     }
 }
 
-void GConsoleWindow::loadInputScript(int number) {
-    std::string sep = getDirectoryPathSeparator();
-    static std::initializer_list<std::string> directoriesToCheck {
-            ".",
-            "." + sep + "input",
-            "." + sep + "output"
-    };
-    std::string inputFile;
-    std::string expectedOutputFile;
-    for (std::string dir : directoriesToCheck) {
-        if (!isDirectory(dir)) {
-            continue;
-        }
 
-        for (std::string filename : listDirectory(dir)) {
-            filename = dir + sep + filename;
-            if (inputFile.empty()
-                    && stringContains(filename, "input-" + std::to_string(number))
-                    && endsWith(filename, ".txt")) {
-                inputFile = filename;
-            } else if (expectedOutputFile.empty()
-                       && stringContains(filename, "expected-output-" + std::to_string(number))
-                       && endsWith(filename, ".txt")) {
-                expectedOutputFile = filename;
-            }
-        }
-    }
-
-    if (!_shutdown && !inputFile.empty()) {
-        loadInputScript(inputFile);
-        pause(50);
-    }
-    if (!expectedOutputFile.empty()) {
-        GThread::runInNewThreadAsync([this, expectedOutputFile]() {
-            GThread* currentThread = GThread::getCurrentThread();
-            GThread* studentThread = GThread::getStudentThread();
-            if (!studentThread) {
-                return;
-            }
-            const long MAX_TIME_TO_WAIT = 20000;
-            long timeWaited = 0;
-            while (timeWaited < MAX_TIME_TO_WAIT && studentThread->isRunning()) {
-                currentThread->sleep(50);
-                timeWaited += 50;
-            }
-            if (!studentThread->isRunning()) {
-                compareOutput(expectedOutputFile);
-            }
-        }, "Compare Output");
-    }
-}
-
-void GConsoleWindow::loadInputScript(const std::string& filename) {
-    if (_shutdown) {
-        return;
-    }
-    if (!filename.empty() && fileExists(filename)) {
-        std::ifstream infile;
-        infile.open(filename.c_str());
-        Vector<std::string> lines;
-        readEntireFile(infile, lines);
-
-        _cinQueueMutex.lockForWrite();
-        _inputScript.clear();
-        for (std::string line : lines) {
-            _inputScript.enqueue(line);
-        }
-        _cinQueueMutex.unlock();
-    }
-}
 
 void GConsoleWindow::print(const std::string& str, bool isStdErr) {
     if (_echo) {
@@ -718,9 +609,6 @@ void GConsoleWindow::processKeyPress(GEvent event) {
             // normalize font size
             event.ignore();
             setFont(DEFAULT_FONT_FAMILY + "-" + std::to_string(DEFAULT_FONT_SIZE));
-        } else if (keyCode >= Qt::Key_1 && keyCode <= Qt::Key_9) {
-            // load input script 1-9
-            loadInputScript(keyCode - Qt::Key_0);
         } else if (keyCode == Qt::Key_C) {
             event.ignore();
             clipboardCopy();
@@ -1358,15 +1246,6 @@ void GConsoleWindow::showColorDialog(bool background) {
     }
 }
 
-void GConsoleWindow::showCompareOutputDialog() {
-    std::string filename = GFileChooser::showOpenDialog(
-                /* parent */ getWidget(),
-                /* title  */ "Select an expected output file");
-    if (!filename.empty() && fileExists(filename)) {
-        compareOutput(filename);
-    }
-}
-
 void GConsoleWindow::showFontDialog() {
     std::string font = GFontChooser::showDialog(
                 /* parent */ getWidget(),
@@ -1375,18 +1254,6 @@ void GConsoleWindow::showFontDialog() {
     if (!font.empty()) {
         _textArea->setFont(font);
         saveConfiguration();   // prompt to save configuration
-    }
-}
-
-void GConsoleWindow::showInputScriptDialog() {
-    if (_shutdown) {
-        return;
-    }
-    std::string filename = GFileChooser::showOpenDialog(
-                /* parent */ getWidget(),
-                /* title  */ "Select an input script file");
-    if (!filename.empty() && fileExists(filename)) {
-        loadInputScript(filename);
     }
 }
 
