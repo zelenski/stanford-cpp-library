@@ -69,14 +69,6 @@ public:
     virtual ~GInteractor();
 
     /**
-     * Adds an event listener to be notified when this interactor is clicked or
-     * generally interacted with.
-     *
-     * @deprecated does nothing; use setActionListener instead
-     */
-    virtual void addActionListener() Q_DECL_DEPRECATED;   // does nothing
-
-    /**
      * Returns true if this interactor is currently accepting events.
      * Initially true.
      * An interactor must be visible and added to an onscreen window to receive events.
@@ -211,15 +203,6 @@ public:
      * itself to be resized to.
      */
     virtual double getMinimumWidth() const;
-
-    /**
-     * Returns a one-character 'mnemonic' shortcut that can be used to activate
-     * this interactor.  This method is a relic from a previous Java-based
-     * GUI system and should no longer be used.
-     * @deprecated
-     * @private
-     */
-    virtual char getMnemonic() const Q_DECL_DEPRECATED;
 
     /**
      * Returns a string representing a unique name for this interactor.
@@ -556,15 +539,6 @@ public:
      * @throw ErrorException if width or height is negative
      */
     virtual void setMinimumSize(const GDimension& size);
-
-    /**
-     * Sets a one-character 'mnemonic' shortcut that can be used to activate
-     * this interactor.  This method is a relic from a previous Java-based
-     * GUI system and should no longer be used.
-     * @deprecated
-     * @private
-     */
-    virtual void setMnemonic(char mnemonic) Q_DECL_DEPRECATED;
 
     /**
      * Sets a mouse listener on this interactor so that it will be called

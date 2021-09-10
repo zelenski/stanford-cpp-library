@@ -106,14 +106,6 @@ public:
      */
     virtual void setTextPosition(GInteractor::TextPosition position);
 
-    /**
-     * Sets the button's text position relative to its icon.
-     * Clients should not call this method; it is a relic from an older Java-based
-     * GUI system.
-     * @private
-     */
-    virtual void setTextPosition(SwingConstants horizontal, SwingConstants vertical) Q_DECL_DEPRECATED;
-
 private:
     Q_DISABLE_COPY(GButton)
     _Internal_QPushButton* _iqpushbutton;

@@ -170,12 +170,6 @@ void GButton::setTextPosition(GInteractor::TextPosition position) {
     });
 }
 
-void GButton::setTextPosition(SwingConstants /*horizontal*/, SwingConstants /*vertical*/) {
-    // TODO: not really supported
-    setTextPosition(GInteractor::TEXT_UNDER_ICON);
-}
-
-
 _Internal_QPushButton::_Internal_QPushButton(GButton* button, QWidget* parent)
         : QToolButton(parent),
           _gbutton(button) {

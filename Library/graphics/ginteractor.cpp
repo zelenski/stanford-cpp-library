@@ -51,10 +51,6 @@ GInteractor::~GInteractor() {
     // empty
 }
 
-void GInteractor::addActionListener() {
-    // empty
-}
-
 bool GInteractor::eventsEnabled() const {
     return GObservable::eventsEnabled() && getWidget() != nullptr && isVisible();
 }
@@ -149,11 +145,6 @@ GDimension GInteractor::getMinimumSize() const {
 
 double GInteractor::getMinimumWidth() const {
     return getMinimumSize().width;
-}
-
-char GInteractor::getMnemonic() const {
-    // TODO
-    return '?';
 }
 
 std::string GInteractor::getName() const {
@@ -479,10 +470,6 @@ void GInteractor::setMinimumSize(double width, double height) {
 
 void GInteractor::setMinimumSize(const GDimension& size) {
     setMinimumSize(size.width, size.height);
-}
-
-void GInteractor::setMnemonic(char /* mnemonic */) {
-    // empty; use an & before mnemonic character in interactor's text instead
 }
 
 void GInteractor::setMouseListener(GEventListener func) {
