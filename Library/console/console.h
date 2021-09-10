@@ -75,14 +75,6 @@ bool getConsoleEcho();
 bool getConsoleEnabled();
 
 /**
- * Returns whether an event should be generated if the console
- * window is closed.  By default this is false initially.
- * @private
- * @deprecated
- */
-bool getConsoleEventOnClose();
-
-/**
  * Returns whether the overall C++ program will terminate if the console
  * window is closed.  By default this is false initially.
  */
@@ -200,14 +192,6 @@ void setConsoleEcho(bool echo);
  * See gcolor.h for more detail about colors and color strings.
  */
 void setConsoleErrorColor(const std::string& color);
-
-/**
- * Sets whether an event should be generated if the console
- * window is closed.  By default this is false initially.
- * @private
- * @deprecated
- */
-void setConsoleEventOnClose(bool eventOnClose);
 
 /**
  * Sets whether the overall C++ program should terminate if the console

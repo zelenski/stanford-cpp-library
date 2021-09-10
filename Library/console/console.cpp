@@ -53,10 +53,6 @@ bool getConsoleEnabled() {
     return true;
 }
 
-bool getConsoleEventOnClose() {
-    return true;
-}
-
 bool getConsoleExitProgramOnClose() {
     return true;
 }
@@ -110,10 +106,6 @@ void setConsoleEnabled(bool /*enabled*/) {
 }
 
 void setConsoleErrorColor(const std::string& /*color*/) {
-    // empty
-}
-
-void setConsoleEventOnClose(bool /*eventOnClose*/) {
     // empty
 }
 
@@ -177,10 +169,6 @@ bool getConsoleEnabled() {
 #else
     return GConsoleWindow::consoleEnabled();
 #endif
-}
-
-bool getConsoleEventOnClose() {
-    return true;
 }
 
 bool getConsoleExitProgramOnClose() {
@@ -255,10 +243,6 @@ void setConsoleEnabled(bool enabled) {
 void setConsoleErrorColor(const std::string& color) {
     if (getConsoleSettingsLocked()) { return; }
     GConsoleWindow::instance()->setErrorColor(color);
-}
-
-void setConsoleEventOnClose(bool /*eventOnClose*/) {
-    // empty
 }
 
 void setConsoleExitProgramOnClose(bool exitOnClose) {
