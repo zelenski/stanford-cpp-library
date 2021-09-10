@@ -736,9 +736,10 @@ void _Internal_QContainer::fixMargin(QLayout* layout, bool hasStretch) {
     }
     int emptyCount = hasStretch ? 2 : 0;
     if (layout->count() <= emptyCount) {
-        layout->setMargin(0);
+        layout->setContentsMargins(0,0,0,0);
     } else {
-        layout->setMargin(getMargin());
+        auto m = getMargin();
+        layout->setContentsMargins(m,m,m,m);
     }
     GLayout::invalidateLayout(layout);
 }
@@ -1057,23 +1058,12 @@ void _Internal_QContainer::setLayoutType(GContainer::Layout layoutType) {
             _centerLayout->setSpacing(0);
             _middleLayout->setSpacing(0);
 
-            _overallLayout->setMargin(0);
             _overallLayout->setContentsMargins(0, 0, 0, 0);
-//            _northLayout->setMargin(getMargin());
-//            _southLayout->setMargin(getMargin());
-//            _westLayout->setMargin(getMargin());
-//            _eastLayout->setMargin(getMargin());
-            _northLayout->setMargin(0);
             _northLayout->setContentsMargins(0, 0, 0, 0);
-            _southLayout->setMargin(0);
             _southLayout->setContentsMargins(0, 0, 0, 0);
-            _westLayout->setMargin(0);
             _westLayout->setContentsMargins(0, 0, 0, 0);
-            _eastLayout->setMargin(0);
             _eastLayout->setContentsMargins(0, 0, 0, 0);
-            _centerLayout->setMargin(0);
             _centerLayout->setContentsMargins(0, 0, 0, 0);
-            _middleLayout->setMargin(0);
             _middleLayout->setContentsMargins(0, 0, 0, 0);
 
             // add "stretches" at start and end of N/S/W/E regions
@@ -1122,7 +1112,8 @@ void _Internal_QContainer::setLayoutType(GContainer::Layout layoutType) {
         case GContainer::LAYOUT_FLOW_VERTICAL: {
             QVBoxLayout* qlayout = new QVBoxLayout;
             qlayout->setSpacing(getSpacing());
-            qlayout->setMargin(getMargin());
+            auto m = getMargin();
+            qlayout->setContentsMargins(m,m,m,m);
             qlayout->addStretch(99);   // top side stretch
             if (layout()) {
                 // transfer over from previous layout
@@ -1143,7 +1134,8 @@ void _Internal_QContainer::setLayoutType(GContainer::Layout layoutType) {
         default: {
             QHBoxLayout* qlayout = new QHBoxLayout;
             qlayout->setSpacing(getSpacing());
-            qlayout->setMargin(getMargin());
+            auto m = getMargin();
+            qlayout->setContentsMargins(m,m,m,m);
             qlayout->addStretch(99);   // left side stretch
             if (layout()) {
                 // transfer over from previous layout
@@ -1172,7 +1164,7 @@ void _Internal_QContainer::setMargin(int margin) {
             // fixMargin(_centerLayout, /* hasStretch */ false);
             // _centerLayout->setMargin(margin);
         } else {
-            layout()->setMargin(margin);
+            layout()->setContentsMargins(margin,margin,margin,margin);
         }
     }
 }
