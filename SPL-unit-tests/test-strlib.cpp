@@ -1,3 +1,11 @@
+/*
+ * File: test-strlib.cpp
+ * -------------------
+ * Unit tests for public functions of strlib.h
+ *
+ * @author Cathy Zhang Spring 2020
+ */
+
 #include "testing/SimpleTest.h"
 #include <string>
 #include "strlib.h"
