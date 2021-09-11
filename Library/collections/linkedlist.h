@@ -74,10 +74,8 @@ public:
      * Adds all elements of the given other linked list to this list.
      * Returns a reference to this list.
      * Identical in behavior to the += operator.
-     * You may also pass an initializer list such as {1, 2, 3}.
      */
     LinkedList<ValueType>& addAll(const LinkedList<ValueType>& list);
-    LinkedList<ValueType>& addAll(std::initializer_list<ValueType> list);
 
     /*
      * Method: clear
@@ -86,15 +84,6 @@ public:
      * Removes all elements from this LinkedList.
      */
     void clear();
-
-    /*
-     * Method: contains
-     * Usage: if (list.contains(value)) ...
-     * ------------------------------------
-     * Returns true if the list contains the given value.
-     * The ValueType must have an == operator to use this method.
-     */
-    bool contains(const ValueType& value) const;
 
     /*
      * Method: equals
@@ -120,16 +109,6 @@ public:
     const ValueType& get(int index) const;
 
     /*
-     * Method: indexOf
-     * Usage: int index = list.indexOf(value);
-     * ---------------------------------------
-     * Returns the index of the first occurrence of the given value.
-     * If the value is not found in the vector, returns -1.
-     * The ValueType must have an == operator to use this method.
-     */
-    int indexOf(const ValueType& value) const;
-
-    /*
      * Method: insert
      * Usage: list.insert(0, value);
      * -----------------------------
@@ -146,16 +125,6 @@ public:
      * Returns <code>true</code> if this LinkedList contains no elements.
      */
     bool isEmpty() const;
-
-    /*
-     * Method: lastIndexOf
-     * Usage: int index = list.lastIndexOf(value);
-     * -------------------------------------------
-     * Returns the index of the last occurrence of the given value.
-     * If the value is not found in the vector, returns -1.
-     * The ValueType must have an == operator to use this method.
-     */
-    int lastIndexOf(const ValueType& value) const;
 
     /*
      * Method: mapAll
@@ -176,26 +145,6 @@ public:
     void remove(int index);
 
     /*
-     * Method: removeValue
-     * Usage: list.removeValue(value);
-     * -------------------------------
-     * Removes the first occurrence of the element value from this list.
-     * All subsequent elements are shifted one position to the left.
-     * If the vector does not contain the given value, has no effect.
-     * The ValueType must have an == operator to use this method.
-     */
-    void removeValue(const ValueType& value);
-
-    /*
-     * Method: reverse
-     * Usage: list.reverse();
-     * ----------------------
-     * Reverses the order of the elements in this list.
-     * For example, if the list stores {1, 3, 4, 9}, changes it to store {9, 4, 3, 1}.
-     */
-    void reverse();
-
-    /*
      * Method: set
      * Usage: list.set(index, value);
      * ------------------------------
@@ -208,14 +157,6 @@ public:
      * the given index.
      */
     void set(int index, const ValueType& value);
-
-    /*
-     * Method: shuffle
-     * Usage: list.shuffle();
-     * ----------------------
-     * Rearranges the order of the elements in this list into a random order.
-     */
-    void shuffle();
 
     /*
      * Method: size
@@ -295,10 +236,8 @@ public:
      *    LinkedList&lt;int&gt; digits;
      *    digits += 0, 1, 2, 3, 4, 5, 6, 7, 8, 9;
      *</pre>
-     * You can also pass an initializer list such as {1, 2, 3}.
      */
     LinkedList& operator +=(const LinkedList& l2);
-    LinkedList& operator +=(std::initializer_list<ValueType> list);
     LinkedList& operator +=(const ValueType& value);
 
     /*
@@ -439,24 +378,11 @@ LinkedList<ValueType>::addAll(const LinkedList<ValueType>& list) {
 }
 
 template <typename ValueType>
-LinkedList<ValueType>& LinkedList<ValueType>::addAll(std::initializer_list<ValueType> list) {
-    for (const ValueType& value : list) {
-        add(value);
-    }
-    _version.update();
-    return *this;
-}
-
-template <typename ValueType>
 void LinkedList<ValueType>::clear() {
     _elements.clear();
     _version.update();
 }
 
-template <typename ValueType>
-bool LinkedList<ValueType>::contains(const ValueType& value) const {
-    return indexOf(value) >= 0;
-}
 
 template <typename ValueType>
 bool LinkedList<ValueType>::equals(const LinkedList<ValueType>& list2) const {
@@ -471,19 +397,6 @@ const ValueType & LinkedList<ValueType>::get(int index) const {
 }
 
 template <typename ValueType>
-int LinkedList<ValueType>::indexOf(const ValueType& value) const {
-    // loop using iterator to avoid O(N^2) runtime
-    int i = 0;
-    for (const ValueType& element : *this) {
-        if (element == value) {
-            return i;
-        }
-        i++;
-    }
-    return -1;
-}
-
-template <typename ValueType>
 void LinkedList<ValueType>::insert(int index, ValueType value) {
     checkIndex(index, 0, size(), "insert");
     auto itr = _elements.begin();
@@ -495,22 +408,6 @@ void LinkedList<ValueType>::insert(int index, ValueType value) {
 template <typename ValueType>
 bool LinkedList<ValueType>::isEmpty() const {
     return _elements.empty();
-}
-
-template <typename ValueType>
-int LinkedList<ValueType>::lastIndexOf(const ValueType& value) const {
-    // loop using iterator to avoid O(N^2) runtime
-    int i = size();
-    auto begin = this->begin();
-    auto itr = this->end();
-    while (itr != begin) {
-        itr--;
-        i--;
-        if (*itr == value) {
-            return i;
-        }
-    }
-    return -1;
 }
 
 /*
@@ -536,45 +433,9 @@ void LinkedList<ValueType>::remove(int index) {
 }
 
 template <typename ValueType>
-void LinkedList<ValueType>::removeValue(const ValueType& value) {
-    auto itr = std::find(_elements.begin(), _elements.end(), value);
-    if (itr != _elements.end()) {
-        _elements.erase(itr);
-        _version.update();
-    }
-}
-
-template <typename ValueType>
-void LinkedList<ValueType>::reverse() {
-    _elements.reverse();
-    _version.update();
-}
-
-template <typename ValueType>
 void LinkedList<ValueType>::set(int index, const ValueType & value) {
     checkIndex(index, 0, size()-1, "set");
     (*this)[index] = value;
-}
-
-template <typename ValueType>
-void LinkedList<ValueType>::shuffle() {
-    // actually shuffle a vector to avoid O(N^2) runtime
-    // at the cost of O(N) extra memory usage
-    Vector<ValueType> vec;
-    for (ValueType element : *this) {
-        vec.add(element);
-    }
-    for (int i = 0, length = vec.size(); i < length; i++) {
-        int j = randomInteger(i, length - 1);
-        if (i != j) {
-            std::swap(vec[i], vec[j]);
-        }
-    }
-
-    clear();
-    for (const ValueType& element : vec) {
-        add(element);
-    }
 }
 
 template <typename ValueType>
@@ -663,11 +524,6 @@ template <typename ValueType>
 LinkedList<ValueType>&
 LinkedList<ValueType>::operator +=(const LinkedList& list2) {
     return addAll(list2);
-}
-
-template <typename ValueType>
-LinkedList<ValueType>& LinkedList<ValueType>::operator +=(std::initializer_list<ValueType> list) {
-    return addAll(list);
 }
 
 template <typename ValueType>
@@ -778,17 +634,6 @@ int hashCode(const LinkedList<T>& list) {
 template <typename T>
 const T& randomElement(const LinkedList<T>& list) {
     return stanfordcpplib::collections::randomElementIndexed(list);
-}
-
-/*
- * Randomly rearranges the elements of the given list.
- * Because it is slow to arbitrarily access/modify indexes in a linked list,
- * this function uses an auxiliary Vector to assist in its implementation,
- * although doing so increases the memory consumption of the algorithm.
- */
-template <typename T>
-void shuffle(LinkedList<T>& list) {
-    list.shuffle();
 }
 
 #endif // _linkedlist_h

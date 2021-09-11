@@ -82,13 +82,6 @@ public:
     void clear();
 
     /**
-     * Returns true if the vector contains the given value.
-     * The ValueType must have an == operator to use this method.
-     * @bigoh O(N)
-     */
-    bool contains(const ValueType& value) const;
-
-    /**
      * Compares two vectors for equality.
      * Returns <code>true</code> if this vector contains exactly the same
      * values as the given other vector.
@@ -98,34 +91,12 @@ public:
     bool equals(const Vector<ValueType>& v) const;
 
     /**
-     * Returns the element at index 0 in this vector (without removing it).
-     * @throw ErrorException if vector is empty
-     * @bigoh O(1)
-     */
-    ValueType& first();
-
-    /**
-     * Returns the element at index 0 in this vector (without removing it).
-     * @throw ErrorException if vector is empty
-     * @bigoh O(1)
-     */
-    const ValueType& first() const;
-
-    /**
      * Returns the element at the specified index in this vector.
      * Similar in behavior to the [] operator.
      * @throw ErrorException if the index is not in the array range
      * @bigoh O(1)
      */
     const ValueType& get(int index) const;
-
-    /**
-     * Returns the index of the first occurrence of the given value.
-     * If the value is not found in the vector, returns -1.
-     * The ValueType must have an == operator to use this method.
-     * @bigoh O(N)
-     */
-    int indexOf(const ValueType& value) const;
 
     /**
      * Inserts the element into this vector before the specified index.
@@ -141,28 +112,6 @@ public:
      * @bigoh O(1)
      */
     bool isEmpty() const;
-
-    /**
-     * Returns the element at index (size - 1) in this vector (without removing it).
-     * @throw ErrorException if vector is empty
-     * @bigoh O(1)
-     */
-    ValueType& last();
-
-    /**
-     * Returns the element at index (size - 1) in this vector (without removing it).
-     * @throw ErrorException if vector is empty
-     * @bigoh O(1)
-     */
-    const ValueType& last() const;
-
-    /**
-     * Returns the index of the last occurrence of the given value.
-     * If the value is not found in the vector, returns -1.
-     * The ValueType must have an == operator to use this method.
-     * @bigoh O(N)
-     */
-    int lastIndexOf(const ValueType& value) const;
 
     /**
      * Calls the specified function on each element of the vector in
@@ -181,22 +130,6 @@ public:
     ValueType remove(int index);
 
     /**
-     * Removes the first occurrence of the element value from this vector.
-     * All subsequent elements are shifted one position to the left.
-     * If the vector does not contain the given value, has no effect.
-     * The ValueType must have an == operator to use this method.
-     * @bigoh O(N)
-     */
-    void removeValue(const ValueType& value);
-
-    /**
-     * Reverses the order of the elements in this vector.
-     * For example, if vector stores {1, 3, 4, 9}, changes it to store {9, 4, 3, 1}.
-     * @bigoh O(N)
-     */
-    void reverse();
-
-    /**
      * Replaces the element at the specified index in this vector with
      * a new value.  The previous value at that index is overwritten.
      * Similar in behavior to the [] operator.
@@ -210,12 +143,6 @@ public:
      * @bigoh O(1)
      */
     int size() const;
-
-    /**
-     * Rearranges the order of the elements in this vector into a random order.
-     * @bigoh O(N)
-     */
-    void shuffle();
 
     /**
      * Rearranges the order of the elements in this vector into sorted order.
@@ -481,39 +408,14 @@ void Vector<ValueType>::clear() {
 }
 
 template <typename ValueType>
-bool Vector<ValueType>::contains(const ValueType& value) const {
-    return indexOf(value) >= 0;
-}
-
-template <typename ValueType>
 bool Vector<ValueType>::equals(const Vector<ValueType>& v) const {
     return stanfordcpplib::collections::equals(*this, v);
-}
-
-template <typename ValueType>
-ValueType& Vector<ValueType>::first() {
-    return const_cast<ValueType&>(static_cast<const Vector &>(*this).first());
-}
-
-template <typename ValueType>
-const ValueType& Vector<ValueType>::first() const {
-    if (isEmpty()) {
-        error("Vector::first: vector is empty");
-    }
-    return _elements.front();
 }
 
 template <typename ValueType>
 const ValueType& Vector<ValueType>::get(int index) const {
     checkIndex(index, 0, size()-1, "get");
     return _elements[index];
-}
-
-template <typename ValueType>
-int Vector<ValueType>::indexOf(const ValueType& value) const {
-    auto result = std::find(_elements.begin(), _elements.end(), value);
-    if (result == _elements.end()) return -1;
-    return result - _elements.begin();
 }
 
 template <typename ValueType>
@@ -526,32 +428,6 @@ void Vector<ValueType>::insert(int index, const ValueType& value) {
 template <typename ValueType>
 bool Vector<ValueType>::isEmpty() const {
     return _elements.empty();
-}
-
-template <typename ValueType>
-ValueType& Vector<ValueType>::last() {
-    return const_cast<ValueType&>(static_cast<const Vector &>(*this).last());
-}
-
-template <typename ValueType>
-const ValueType& Vector<ValueType>::last() const {
-    if (isEmpty()) {
-        error("Vector::last: vector is empty");
-    }
-    return _elements.back();
-}
-
-
-template <typename ValueType>
-int Vector<ValueType>::lastIndexOf(const ValueType& value) const {
-    auto result = std::find(_elements.rbegin(), _elements.rend(), value);
-    if (result == _elements.rend()) return -1;
-
-    /* These iterators are going in the reverse direction, and so the index they give is the number of
-     * steps from the end of the range, not from the beginning. Reverse this before returning the
-     * value.
-     */
-    return (size() - 1) - (result - _elements.rbegin());
 }
 
 /*
@@ -577,19 +453,6 @@ ValueType Vector<ValueType>::remove(int index) {
 }
 
 template <typename ValueType>
-void Vector<ValueType>::removeValue(const ValueType& value) {
-    int index = indexOf(value);
-    if (index >= 0) {
-        remove(index);
-    }
-}
-
-template <typename ValueType>
-void Vector<ValueType>::reverse() {
-    std::reverse(begin(), end());
-}
-
-template <typename ValueType>
 void Vector<ValueType>::set(int index, const ValueType& value) {
     checkIndex(index, 0, size()-1, "set");
     _elements[index] = value;
@@ -598,13 +461,6 @@ void Vector<ValueType>::set(int index, const ValueType& value) {
 template <typename ValueType>
 int Vector<ValueType>::size() const {
     return _elements.size();
-}
-
-template <typename ValueType>
-void Vector<ValueType>::shuffle() {
-    for (int i = 0; i < size() - 1; i++) {
-        std::swap(_elements[i], _elements[randomInteger(i, size() - 1)]);
-    }
 }
 
 template <typename ValueType>
@@ -809,12 +665,5 @@ const T& randomElement(const Vector<T>& vec) {
     return stanfordcpplib::collections::randomElementIndexed(vec);
 }
 
-/*
- * Randomly rearranges the elements of the given vector.
- */
-template <typename T>
-void shuffle(Vector<T>& v) {
-    v.shuffle();
-}
 
 #endif // _vector_h

@@ -125,7 +125,7 @@ public:
      * Returns the value of highest priority in the queue, without
      * removing it.
      */
-    ValueType peek() const;
+    const ValueType& peek() const;
 
     /*
      * Method: peekPriority
@@ -170,21 +170,6 @@ public:
     bool operator ==(const PriorityQueue& pq2) const;
     bool operator !=(const PriorityQueue& pq2) const;
 
-#ifdef SPL_PQUEUE_COMPARISON_OPERATORS_ENABLED
-    /*
-     * Operators: <, <=, >, >=
-     * Usage: if (pq1 < pq2) ...
-     * -------------------------
-     * Relational operators to compare two queues.
-     * The <, >, <=, >= operators require that the ValueType has a < operator
-     * so that the elements can be compared pairwise.
-     */
-    bool operator <(const PriorityQueue& pq2) const;
-    bool operator <=(const PriorityQueue& pq2) const;
-    bool operator >(const PriorityQueue& pq2) const;
-    bool operator >=(const PriorityQueue& pq2) const;
-#endif // SPL_PQUEUE_COMPARISON_OPERATORS_ENABLED
-
     /* Private section */
 
     /**********************************************************************/
@@ -211,10 +196,6 @@ private:
     /* Instance variables */
     Vector<HeapEntry> _heap;
     long _enqueueCount = 0;
-
-#ifdef SPL_PQUEUE_COMPARISON_OPERATORS_ENABLED
-    int pqCompare(const PriorityQueue& other) const;
-#endif // SPL_PQUEUE_COMPARISON_OPERATORS_ENABLED
 
 public:
     /* private implentation section */
@@ -326,7 +307,7 @@ bool PriorityQueue<ValueType>::isEmpty() const {
 }
 
 template <typename ValueType>
-ValueType PriorityQueue<ValueType>::peek() const {
+const ValueType& PriorityQueue<ValueType>::peek() const {
     if (isEmpty()) {
         error("PriorityQueue::peek: Attempting to peek at an empty queue");
     }
@@ -353,47 +334,6 @@ std::string PriorityQueue<ValueType>::toString() const {
     return os.str();
 }
 
-#ifdef SPL_PQUEUE_COMPARISON_OPERATORS_ENABLED
-/*
- * Implementation note: Due to the complexity and unpredictable heap ordering of the elements,
- * this function sadly makes a deep copy of both PQs for comparing.
- * Therefore it is recommended not to use PQs in a context where <, <=, etc. are being
- * called on them frequently.
- */
-template <typename ValueType>
-int PriorityQueue<ValueType>::pqCompare(const PriorityQueue& pq2) const {
-    if (this == &pq2) {
-        return 0;
-    }
-    PriorityQueue<ValueType> backup1 = *this;
-    PriorityQueue<ValueType> backup2 = pq2;
-    while (!backup1.isEmpty() && !backup2.isEmpty()) {
-        if (backup1.peek() < backup2.peek()) {
-            return -1;
-        } else if (backup2.peek() < backup1.peek()) {
-            return 1;
-        }
-
-        double pri1 = backup1.peekPriority();
-        double pri2 = backup2.peekPriority();
-        if (pri1 < pri2) {
-            return -1;
-        } else if (pri2 < pri1) {
-            return 1;
-        }
-
-        backup1.dequeue();
-        backup2.dequeue();
-    }
-    if (backup1.size() < backup2.size()) {
-        return -1;
-    } else if (backup2.size() < backup1.size()) {
-        return 1;
-    } else {
-        return 0;
-    }
-}
-#endif // SPL_PQUEUE_COMPARISON_OPERATORS_ENABLED
 
 /*
  * Comparison function for heap entries. The comparison is lexicographic, first by
@@ -419,28 +359,6 @@ template <typename ValueType>
 bool PriorityQueue<ValueType>::operator !=(const PriorityQueue& pq2) const {
     return !equals(pq2);
 }
-
-#ifdef SPL_PQUEUE_COMPARISON_OPERATORS_ENABLED
-template <typename ValueType>
-bool PriorityQueue<ValueType>::operator <(const PriorityQueue& pq2) const {
-    return pqCompare(pq2) < 0;
-}
-
-template <typename ValueType>
-bool PriorityQueue<ValueType>::operator <=(const PriorityQueue& pq2) const {
-    return pqCompare(pq2) <= 0;
-}
-
-template <typename ValueType>
-bool PriorityQueue<ValueType>::operator >(const PriorityQueue& pq2) const {
-    return pqCompare(pq2) > 0;
-}
-
-template <typename ValueType>
-bool PriorityQueue<ValueType>::operator >=(const PriorityQueue& pq2) const {
-    return pqCompare(pq2) >= 0;
-}
-#endif // SPL_PQUEUE_COMPARISON_OPERATORS_ENABLED
 
 /*
  * Template hash function for priority queues.

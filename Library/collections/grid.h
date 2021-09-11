@@ -113,9 +113,7 @@ public:
      * <code>row</code> and <code>col</code> arguments are outside
      * the grid boundaries.
      */
-    ValueType get(int row, int col);
     const ValueType& get(int row, int col) const;
-    ValueType get(const GridLocation& loc);
     const ValueType& get(const GridLocation& loc) const;
 
     /*
@@ -159,17 +157,6 @@ public:
      * in row 1, and so on.
      */
     void mapAll(std::function<void (const ValueType &)>) const;
-
-    /*
-     * Method: mapAllColumnMajor
-     * Usage: grid.mapAllColumnMajor(fn);
-     * ----------------------------------
-     * Calls the specified function on each element of the grid.  The
-     * elements are processed in <b><i>column-major order,</i></b> in which
-     * all the elements of column 0 are processed, followed by the elements
-     * in column 1, and so on.
-     */
-    void mapAllColumnMajor(std::function<void (const ValueType &)>) const;
 
     /*
      * Method: numCols
@@ -514,20 +501,9 @@ void Grid<ValueType>::fill(const ValueType& value) {
 }
 
 template <typename ValueType>
-ValueType Grid<ValueType>::get(int row, int col) {
-    checkIndexes(row, col, _rowCount-1, _columnCount-1, "get");
-    return _elements[(row * _columnCount) + col];
-}
-
-template <typename ValueType>
 const ValueType& Grid<ValueType>::get(int row, int col) const {
     checkIndexes(row, col, _rowCount-1, _columnCount-1, "get");
     return _elements[(row * _columnCount) + col];
-}
-
-template <typename ValueType>
-ValueType Grid<ValueType>::get(const GridLocation& loc) {
-    return get(loc.row, loc.col);
 }
 
 template <typename ValueType>
@@ -559,15 +535,6 @@ template <typename ValueType>
 void Grid<ValueType>::mapAll(std::function<void (const ValueType &)> fn) const {
     for (int i = 0; i < _rowCount; i++) {
         for (int j = 0; j < _columnCount; j++) {
-            fn(get(i, j));
-        }
-    }
-}
-
-template <typename ValueType>
-void Grid<ValueType>::mapAllColumnMajor(std::function<void (const ValueType &)> fn) const {
-    for (int j = 0; j < _columnCount; j++) {
-        for (int i = 0; i < _rowCount; i++) {
             fn(get(i, j));
         }
     }
@@ -824,26 +791,5 @@ const T& randomElement(const Grid<T>& grid) {
     return grid.get(row, col);
 }
 
-/*
- * Randomly rearranges the elements of the given grid.
- */
-template <typename T>
-void shuffle(Grid<T>& grid) {
-    int rows = grid.numRows();
-    int cols = grid.numCols();
-    int length = rows * cols;
-    for (int i = 0; i < length; i++) {
-        int j = randomInteger(i, length - 1);
-        if (i != j) {
-            int r1 = i / cols;
-            int c1 = i % cols;
-            int r2 = j / cols;
-            int c2 = j % cols;
-            T temp = grid[r1][c1];
-            grid[r1][c1] = grid[r2][c2];
-            grid[r2][c2] = temp;
-        }
-    }
-}
 
 #endif // _grid_h

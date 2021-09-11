@@ -83,7 +83,7 @@ public:
      * Returns the value of top element from this stack, without removing
      * it.  This method signals an error if called on an empty stack.
      */
-    ValueType peek() const;
+    const ValueType& peek() const;
 
     /*
      * Method: pop
@@ -203,7 +203,7 @@ bool Stack<ValueType>::isEmpty() const {
 }
 
 template <typename ValueType>
-ValueType Stack<ValueType>::peek() const {
+const ValueType& Stack<ValueType>::peek() const {
     if (isEmpty()) {
         error("Stack::peek: Attempting to peek at an empty stack");
     }

@@ -84,15 +84,6 @@ public:
     virtual ~Map() = default;
 
     /*
-     * Method: lastKey
-     * Usage: KeyType value = map.lastKey();
-     * ------------------------------------
-     * Returns the last key in the map in the order established by the
-     * <code>for-each</code> loop.  If the map is empty, generates an error.
-     */
-    KeyType lastKey() const;
-
-    /*
      * Method: clear
      * Usage: map.clear();
      * -------------------
@@ -154,6 +145,15 @@ public:
      * so it is inefficient to call on large maps.
      */
     Vector<KeyType> keys() const;
+
+    /*
+     * Method: lastKey
+     * Usage: KeyType value = map.lastKey();
+     * ------------------------------------
+     * Returns the last key in the map in the order established by the
+     * <code>for-each</code> loop.  If the map is empty, generates an error.
+     */
+    KeyType lastKey() const;
 
     /*
      * Method: mapAll
