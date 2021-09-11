@@ -44,17 +44,6 @@ extern const double E;
  */
 double cosDegrees(double angle);
 
-
-/**
- * Returns the number of digits in the given integer in the given base.
- * Defaults to base-10, decimal.
- * @example countDigits(3456) returns 4.
- * @example countDigits(0)    returns 1.
- * @example countDigits(-778) returns 3.
- * @throw ErrorException if base is 0 or negative.
- */
-int countDigits(int n, int base = 10);
-
 /**
  * Returns true if the two given floating-point numbers are "equal" to each other,
  * within a given tolerance.

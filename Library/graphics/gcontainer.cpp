@@ -33,7 +33,18 @@
 const int GContainer::MARGIN_DEFAULT = 5;
 const int GContainer::SPACING_DEFAULT = 8;
 
+// JDZ: list of interactors seems to be used more as set than indexed/vector
+// this is a custom for use within this module as stop gap
 
+template <typename ValueType>
+void removeValue(Vector<ValueType> &v, const ValueType& value) {
+    for (int i = 0; i < v.size(); i++) {
+        if (v[i] == value) {
+            v.remove(i);
+            return;
+        }
+    }
+}
 GContainer::GContainer(Layout layout, QWidget* parent)
         : _iqcontainer(nullptr),
           _layout(layout) {
@@ -143,7 +154,7 @@ void GContainer::clearRegion(Region region) {
     for (GInteractor* interactor : _interactorsByRegion[region]) {
         interactor->setContainer(nullptr);
         interactor->setVisible(false);
-        _interactors.removeValue(interactor);
+        removeValue(_interactors, interactor);
     }
     _interactorsByRegion.remove(region);
 
@@ -375,7 +386,7 @@ void GContainer::remove(GInteractor* interactor) {
     }
 
     interactor->setContainer(nullptr);
-    _interactors.removeValue(interactor);
+    removeValue(_interactors, interactor);
 
     GThread::runOnQtGuiThread([this, widget]() {
         _iqcontainer->remove(widget);
@@ -404,8 +415,8 @@ void GContainer::removeFromRegion(GInteractor* interactor, Region region) {
     }
 
     interactor->setContainer(nullptr);
-    _interactors.removeValue(interactor);
-    _interactorsByRegion[region].removeValue(interactor);
+    removeValue(_interactors, interactor);
+    removeValue(_interactorsByRegion[region], interactor);
 
     GThread::runOnQtGuiThread([this, widget, region]() {
         _iqcontainer->removeFromRegion(widget, region);
@@ -427,7 +438,7 @@ void GContainer::removeFromRegion(GInteractor& interactor, const std::string& re
 void GContainer::removeFromRegion(int index, Region region) {
     GInteractor* interactor = _interactorsByRegion[region][index];
     interactor->setContainer(nullptr);
-    _interactors.removeValue(interactor);
+    removeValue(_interactors, interactor);
     _interactorsByRegion[region].remove(index);
 
     GThread::runOnQtGuiThread([this, index, region]() {

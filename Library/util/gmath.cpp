@@ -24,23 +24,6 @@ double cosDegrees(double angle) {
     return cos(toRadians(angle));
 }
 
-int countDigits(int n, int base) {
-    if (base <= 0) {
-        error("countDigits: base must be 1 or greater");
-    }
-    if (n == 0) {
-        return 0;
-    } else if (n < 0) {
-        n = -n;
-    }
-
-    int digits = 0;
-    for (int temp = n; temp > 0 && digits < 65; temp /= base) {
-        digits++;
-    }
-    return digits;
-}
-
 double sinDegrees(double angle) {
     return sin(toRadians(angle));
 }
