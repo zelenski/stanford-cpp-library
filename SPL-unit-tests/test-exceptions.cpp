@@ -9,6 +9,7 @@
 #include "strlib.h"
 #include "gthread.h"
 #include "exceptions.h"
+#include "testing/SimpleTest.h"
 
 using namespace std;
 
@@ -46,7 +47,9 @@ struct  {
     {"gui error",       ([] { GThread::runOnQtGuiThread([] {  Vector<int> v; v[106]; } ); } ) },
     {"gui stack",       ([] { GThread::runOnQtGuiThread([] { stack_overflow(); } ); } ) },
 };
-int main()
+
+
+PROVIDED_TEST("Create exception and see what happens")
 {
   //  exceptions::setTopLevelExceptionHandlerEnabled(false);
    // exceptions::interruptIfDebug();
@@ -60,5 +63,4 @@ int main()
     cout << "Choice was: " << faults[i].explain << endl;
     faults[i].fn();
     cout << "This is after the fault, and mostly won't appear" << endl;
-    return 0;
 }
