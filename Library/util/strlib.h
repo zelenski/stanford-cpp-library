@@ -311,16 +311,18 @@ int stringReplaceInPlace(std::string& str, const std::string& old, const std::st
 /**
  * Returns a vector whose elements are strings formed by splitting the
  * given string 'str' by the given separator character.
- * For example, splitting "Hi there  Jim!" on " " returns
- * {"Hi", "there", "", "Jim!"}.
+ * Any adjacent separators are coalesced.
+ * For example, splitting "Hi there    Jim!" on delimiter " " returns
+ * {"Hi", "there", "Jim!"}.
  */
 Vector<std::string> stringSplit(const std::string& str, char delimiter, int limit = -1);
 
 /**
  * Returns a vector whose elements are strings formed by splitting the
  * given string 'str' by the given separator text.
- * For example, splitting "Hi there  Jim!" on " " returns
- * {"Hi", "there", "", "Jim!"}.
+ * Any adjacent separators are coalesced.
+ * For example, splitting "Hi there    Jim!" on delimiter " " returns
+ * {"Hi", "there", "Jim!"}.
  */
 Vector<std::string> stringSplit(const std::string& str, const std::string& delimiter, int limit = -1);
 

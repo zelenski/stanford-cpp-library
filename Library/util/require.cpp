@@ -56,8 +56,8 @@ void inRange2D(double x, double y, double maxX, double maxY, const std::string& 
 }
 
 void inRange2D(double x, double y, double minX, double minY, double maxX, double maxY, const std::string& caller, const std::string& xValueName, const std::string& yValueName, const std::string& details) {
-    inRange(x, minX, maxX, caller, xValueName, _default(details, " must be between (" + std::to_string(minX) + "," + std::to_string(minY) + ")-" + std::to_string(maxX) + "," + std::to_string(maxY) + ") inclusive but was (" + std::to_string(x) + "," + std::to_string(y) + ")"));
-    inRange(y, minY, maxY, caller, yValueName, _default(details, " must be between (" + std::to_string(minX) + "," + std::to_string(minY) + ")-" + std::to_string(maxX) + "," + std::to_string(maxY) + ") inclusive but was (" + std::to_string(x) + "," + std::to_string(y) + ")"));
+    inRange(x, minX, maxX, caller, xValueName, details);
+    inRange(y, minY, maxY, caller, yValueName, details);
 }
 
 void inRange2D(int x, int y, int maxX, int maxY, const std::string& caller, const std::string& xValueName, const std::string& yValueName, const std::string& details) {
@@ -65,8 +65,8 @@ void inRange2D(int x, int y, int maxX, int maxY, const std::string& caller, cons
 }
 
 void inRange2D(int x, int y, int minX, int minY, int maxX, int maxY, const std::string& caller, const std::string& xValueName, const std::string& yValueName, const std::string& details) {
-    inRange(x, minX, maxX, caller, xValueName, _default(details, " must be between (" + std::to_string(minX) + "," + std::to_string(minY) + ")-" + std::to_string(maxX) + "," + std::to_string(maxY) + ") inclusive but was (" + std::to_string(x) + "," + std::to_string(y) + ")"));
-    inRange(y, minY, maxY, caller, yValueName, _default(details, " must be between (" + std::to_string(minX) + "," + std::to_string(minY) + ")-" + std::to_string(maxX) + "," + std::to_string(maxY) + ") inclusive but was (" + std::to_string(x) + "," + std::to_string(y) + ")"));
+    inRange(x, minX, maxX, caller, xValueName, details);
+    inRange(y, minY, maxY, caller, yValueName, details);
 }
 
 void nonEmpty(const std::string& str, const std::string& caller, const std::string& valueName, const std::string& details) {

@@ -252,11 +252,20 @@ void GBrowserPane::setLinkListener(GEventListenerVoid func) {
 
 void GBrowserPane::setText(const std::string& text) {
     GThread::runOnQtGuiThread([this, text]() {
-        QScrollBar* scrollbar = _iqtextbrowser->verticalScrollBar();
-        int preserve = scrollbar->value();
         _iqtextbrowser->setText(QString::fromStdString(text));
-        scrollbar->setValue(preserve);
-        scrollbar->setSliderPosition(preserve);
+    });
+}
+
+// JDZ: when replace text, browser pane scrolls to seemingly arbitrary location
+// Annoying! this version perserve scroll position (if true) or scrolls to end (if false)
+void GBrowserPane::setTextPreserveScroll(const std::string& text, bool preserve) {
+    GThread::runOnQtGuiThread([this, text, preserve]() {
+        QScrollBar* scrollbar = _iqtextbrowser->verticalScrollBar();
+        int oldPos = scrollbar->value();
+        _iqtextbrowser->setText(QString::fromStdString(text));
+        int newPos = preserve ? oldPos : scrollbar->maximum();
+        scrollbar->setValue(newPos);
+        scrollbar->setSliderPosition(newPos);
     });
 }
 
@@ -268,7 +277,6 @@ void GBrowserPane::setTextChangeListener(GEventListenerVoid func) {
     setEventListener("textchange", func);
 }
 
-
 _Internal_QTextBrowser::_Internal_QTextBrowser(GBrowserPane* gbrowserpane, QWidget* parent)
         : QTextBrowser(parent),
           _gbrowserpane(gbrowserpane) {
@@ -279,20 +287,6 @@ _Internal_QTextBrowser::_Internal_QTextBrowser(GBrowserPane* gbrowserpane, QWidg
 
 void _Internal_QTextBrowser::detach() {
     _gbrowserpane = nullptr;
-}
-
-QVariant _Internal_QTextBrowser::loadResource(int type, const QUrl &url) {
-    // patch to work properly for data:... URLs
-    if (type == QTextDocument::ImageResource && url.scheme() == QLatin1String("data")) {
-        QRegExp regex("^image/[^;]+;base64,(.+)={0,2}$");
-        if (regex.indexIn(url.path()) >= 0) {
-            QImage img;
-            if (img.loadFromData(QByteArray::fromBase64(regex.cap(1).toLatin1()))) {
-                return QVariant::fromValue(img);
-            }
-        }
-    }
-    return QTextBrowser::loadResource(type, url);
 }
 
 void _Internal_QTextBrowser::mousePressEvent(QMouseEvent* event) {

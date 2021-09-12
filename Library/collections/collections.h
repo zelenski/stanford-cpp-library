@@ -1752,10 +1752,11 @@ std::function<bool (const T&, const T&)> checkedLess() {
      * type. Here's the syntax for doing that:
      *
      *     bool operator< (const YourCustomType& lhs, const YourCustomType& rhs) {
+     *         using namespace stanfordcpplib::collections;
      *         return compareTo(lhs.data1, rhs.data1,
      *                          lhs.data2, rhs.data2,
      *                          ...
-     *                          lhs.dataN, rhs.dataN);
+     *                          lhs.dataN, rhs.dataN) == -1; // -1 signals less than
      *     }
      *
      * where data1, data2, ... dataN are the data members of your type. For example, if you had
@@ -1769,8 +1770,9 @@ std::function<bool (const T&, const T&)> checkedLess() {
      * you would define the function
      *
      *     bool operator< (const MyType& lhs, const MyType& rhs) {
+     *         using namespace stanfordcpplib::collections;
      *         return compareTo(lhs.myInt,    rhs.myInt,
-     *                          lhs.myString, rhs.myString);
+     *                          lhs.myString, rhs.myString) == -1;
      *     }
      *
      * Hope this helps!

@@ -47,6 +47,7 @@
 
 #include "error.h"
 #include "vector.h"
+#include "require.h"
 
 /* Function prototypes */
 
@@ -327,6 +328,7 @@ std::string stringReplace(const std::string& str, char old, char replacement, in
 }
 
 std::string stringReplace(const std::string& str, const std::string& old, const std::string& replacement, int limit) {
+    require::nonEmpty(old, "stringReplace", "old");
     std::string str2 = str;
     stringReplaceInPlace(str2, old, replacement, limit);
     return str2;
@@ -347,6 +349,7 @@ int stringReplaceInPlace(std::string& str, char old, char replacement, int limit
 }
 
 int stringReplaceInPlace(std::string& str, const std::string& old, const std::string& replacement, int limit) {
+    require::nonEmpty(old, "stringReplaceInPlace", "old");
     int count = 0;
     size_t startIndex = 0;
     size_t rlen = replacement.length();
@@ -368,6 +371,7 @@ Vector<std::string> stringSplit(const std::string& str, char delimiter, int limi
 }
 
 Vector<std::string> stringSplit(const std::string& str, const std::string& delimiter, int limit) {
+    require::nonEmpty(delimiter, "stringSplit", "delimiter");
     std::string str2 = str;
     Vector<std::string> result;
     int count = 0;
@@ -377,7 +381,8 @@ Vector<std::string> stringSplit(const std::string& str, const std::string& delim
         if (index == std::string::npos) {
             break;
         }
-        result.add(str2.substr(0, index));
+        // don't add empty token, coalesce adjacent/leading delimiters
+        if (index != 0) result.add(str2.substr(0, index));
         str2.erase(str2.begin(), str2.begin() + index + delimiter.length());
         count++;
     }
@@ -404,11 +409,10 @@ bool stringToBool(const std::string& str) {
 }
 
 char stringToChar(const std::string& str) {
-    std::string str2 = trim(str);
-    if ((int) str2.length() != 1) {
-        error("stringToChar: string must contain exactly 1 non-whitespace character");
+    if ((int) str.length() != 1) {
+        error("stringToChar: string must contain exactly 1 character");
     }
-    return str2[0];
+    return str[0];
 }
 
 double stringToDouble(const std::string& str) {

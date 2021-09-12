@@ -257,6 +257,15 @@ public:
     virtual void setText(const std::string& text);
 
     /**
+     * Variant of above that also controls the scroll position when
+     * changing text contents.
+     *
+     * If preserve is true, the current scroll position is preserved and
+     * restored, otherwise will scroll to new bottom
+     */
+     void setTextPreserveScroll(const std::string& text, bool preserve);
+
+    /**
      * Sets a text change listener on this text pane so that it will be called
      * when the user modifies the current text.
      * Any existing text change listener will be replaced.
@@ -307,7 +316,6 @@ class _Internal_QTextBrowser : public QTextBrowser, public _Internal_QWidget {
 public:
     _Internal_QTextBrowser(GBrowserPane* gbrowserpane, QWidget* parent = nullptr);
     void detach() override;
-    QVariant loadResource(int type, const QUrl &url) override;
     void mousePressEvent(QMouseEvent* event) override;
     void mouseReleaseEvent(QMouseEvent* event) override;
     QSize sizeHint() const override;

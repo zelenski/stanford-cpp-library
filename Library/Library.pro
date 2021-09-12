@@ -33,7 +33,7 @@ OTHER_FILES         =   personaltypes.py
 QMAKE_SUBSTITUTES   =   private/build.h.in
 
 INCLUDEPATH         +=  $$LIB_SUBDIRS
-QT                  +=  core gui widgets network multimedia
+QT                  +=  core gui widgets network
 
 ###############################################################################
 #       Build settings                                                        #
