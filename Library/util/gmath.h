@@ -4,16 +4,6 @@
  * This file exports several functions for working with graphical
  * geometry along with the mathematical constants <code>PI</code>
  * and <code>E</code>.
- *
- * @version 2018/11/22
- * - added headless mode support
- * - alphabetized methods
- * @version 2018/09/25
- * - added doc comments for new documentation generation
- * @version 2017/12/12
- * - added floatingPointEqual(a, b, tolerance)
- * @version 2016/10/14
- * - added floatingPointEqual method for comparing floats and doubles
  */
 
 
@@ -45,83 +35,14 @@ extern const double E;
 double cosDegrees(double angle);
 
 /**
- * Returns true if the two given floating-point numbers are "equal" to each other,
- * within a given tolerance.
- * Floating-point equality is tricky because of round-off errors, which can cause
+ * Returns true if the two given floating-point numbers are "equal".
+ * Floating-point equality is tricky because of roundoff errors, which can cause
  * the numbers to be nearly the same but not identical.
- *
- * See also:
- * http://stackoverflow.com/questions/4548004/how-to-correctly-and-standardly-compare-floats
+ * This comparison tests whether difference of the two numbers is within machine
+ * epsilon.
  */
-template<typename T>
-bool floatingPointEqual(T f1, T f2, T tolerance) {
-    return (std::fabs(f1 - f2) <= tolerance);
-}
-
-/**
- * Returns true if the two given floating-point numbers are "equal" to each other.
- * Floating-point equality is tricky because of round-off errors, which can cause
- * the numbers to be nearly the same but not identical.
- *
- * See also:
- * http://stackoverflow.com/questions/4548004/how-to-correctly-and-standardly-compare-floats
- */
-template<typename T>
-bool floatingPointEqual(T f1, T f2) {
-    return floatingPointEqual(f1, f2, /* tolerance */ (T) std::numeric_limits<T>::epsilon() * std::fmax(fabs(f1), fabs(f2)));
-}
-
-/**
- * Returns true if the given floating-point number is "equal" to the given integer.
- * Floating-point equality is tricky because of round-off errors, which can cause
- * the numbers to be nearly the same but not identical.
- *
- * See also:
- * http://stackoverflow.com/questions/4548004/how-to-correctly-and-standardly-compare-floats
- */
-template<typename T>
-bool floatingPointEqual(T f1, int f2) {
-    return floatingPointEqual(f1, (T) f2);
-}
-
-/**
- * Returns true if the given floating-point number is "equal" to the given integer.
- * Floating-point equality is tricky because of round-off errors, which can cause
- * the numbers to be nearly the same but not identical.
- *
- * See also:
- * http://stackoverflow.com/questions/4548004/how-to-correctly-and-standardly-compare-floats
- */
-template<typename T>
-bool floatingPointEqual(int f1, T f2) {
-    return floatingPointEqual((T) f1, f2);
-}
-
-/**
- * Returns true if the given floating-point number is "equal" to the given integer.
- * Floating-point equality is tricky because of round-off errors, which can cause
- * the numbers to be nearly the same but not identical.
- *
- * See also:
- * http://stackoverflow.com/questions/4548004/how-to-correctly-and-standardly-compare-floats
- */
-template<typename T>
-bool floatingPointEqual(T f1, long int f2) {
-    return floatingPointEqual(f1, (T) f2);
-}
-
-/**
- * Returns true if the given floating-point number is "equal" to the given integer.
- * Floating-point equality is tricky because of round-off errors, which can cause
- * the numbers to be nearly the same but not identical.
- *
- * See also:
- * http://stackoverflow.com/questions/4548004/how-to-correctly-and-standardly-compare-floats
- */
-template<typename T>
-bool floatingPointEqual(long int f1, T f2) {
-    return floatingPointEqual((T) f1, f2);
-}
+bool floatingPointEqual(double f1, double f2);
+bool floatingPointEqual(float f1, float f2);
 
 /**
  * Returns the trigonometric sine of <code>angle</code>, which is

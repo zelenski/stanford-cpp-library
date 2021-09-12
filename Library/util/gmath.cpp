@@ -20,6 +20,23 @@
 extern const double PI = 3.14159265358979323846;
 extern const double E  = 2.71828182845904523536;
 
+// See also:
+// http://stackoverflow.com/questions/4548004/how-to-correctly-and-standardly-compare-floats
+template<typename T>
+bool withinEpsilon(T f1, T f2) {
+    T larger = std::fmax(std::fabs(f1), std::fabs(f2));
+    T tolerance = std::numeric_limits<T>::epsilon() * larger;
+    return std::fabs(f1 - f2) <= tolerance;
+}
+
+bool floatingPointEqual(double f1, double f2) {
+    return withinEpsilon(f1, f2);
+}
+
+bool floatingPointEqual(float f1, float f2) {
+    return withinEpsilon(f1, f2);
+}
+
 double cosDegrees(double angle) {
     return cos(toRadians(angle));
 }
