@@ -1,7 +1,31 @@
 #! /usr/bin/env python3
+#
+# Generate C++ code with 106B collection classes of various elem type
+# Authored by Jeremy Barenholz & Julie Zelenski
+
 import copy
 from typing import List, Optional, Any
 
+# A little bit of manual testing
+FIXED = '''
+    struct Node {
+        char letter;
+        Node *left, *right;
+    };
+
+    Node *ptr = new Node {'A', nullptr, nullptr};
+    PriorityQueue<Node *> pq {{4.0, ptr}};
+    Vector<Node *> v = {ptr, ptr, nullptr, nullptr};
+    Set<Node *> s = {ptr, nullptr};
+    Map<char, Node *> m = {{'a', ptr}, {'b', ptr},
+                           {'c', nullptr}};
+
+    std::vector<bool> stdvb = {true, true, false, false, true, true, true, true};
+    std::vector<Node *> stdv = {ptr, nullptr, ptr};
+    std::map<char, Node *> stdm = {{'a', ptr}, {'b', ptr},
+                                   {'c', nullptr}};
+
+'''
 
 class Type:
     def __init__(
@@ -83,6 +107,8 @@ def generate_source_code(depth: int = 1) -> str:
         + ' '.join([str(t), t.varname(), '=', create_init_list_str(t) + ';'])
         for t in generate_all_types(depth)
     ]
+    others = FIXED.split('\n')
+    src += others
     src += ['', '\treturn 0;', '}']
 
     return '\n'.join(src)

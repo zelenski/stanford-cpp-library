@@ -102,5 +102,24 @@ int main() {
 	Vector<int> Vector_int = {0, 1, 2};
 	Vector<string> Vector_string = {"bananas", "ice cream", "nachos"};
 
+    struct Node {
+        char letter;
+        Node *left, *right;
+    };
+
+    Node *ptr = new Node {'A', nullptr, nullptr};
+    PriorityQueue<Node *> pq {{4.0, ptr}};
+    Vector<Node *> v = {ptr, ptr, nullptr, nullptr};
+    Set<Node *> s = {ptr, nullptr};
+    Map<char, Node *> m = {{'a', ptr}, {'b', ptr},
+                           {'c', nullptr}};
+
+    std::vector<bool> stdvb = {true, true, false, false, true, true, true, true};
+    std::vector<Node *> stdv = {ptr, nullptr, ptr};
+    std::map<char, Node *> stdm = {{'a', ptr}, {'b', ptr},
+                                   {'c', nullptr}};
+
+
+
 	return 0;
 }
