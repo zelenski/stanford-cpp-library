@@ -1100,7 +1100,7 @@ void _Internal_QContainer::setLayoutType(GContainer::Layout layoutType) {
             setLayout(_overallLayout);
             if (layout()) {
                 layout()->setSpacing(0);
-                layout()->setMargin(0);
+                layout()->setContentsMargins(0,0,0,0);
             }
             setRegionAlignment(GContainer::REGION_NORTH, ALIGN_CENTER, ALIGN_MIDDLE);
             setRegionAlignment(GContainer::REGION_SOUTH, ALIGN_CENTER, ALIGN_MIDDLE);

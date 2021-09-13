@@ -176,8 +176,8 @@ void _Internal_QRadioButton::mouseDoubleClickEvent(QMouseEvent* event) {
                 /* source */ _gradioButton);
     mouseEvent.setActionCommand(_gradioButton->getActionCommand());
     mouseEvent.setButton((int) event->button());
-    mouseEvent.setX(event->x());
-    mouseEvent.setY(event->y());
+    mouseEvent.setX(event->pos().x());
+    mouseEvent.setY(event->pos().y());
     _gradioButton->fireEvent(mouseEvent);
 }
 

@@ -210,8 +210,8 @@ void _Internal_QPushButton::mouseDoubleClickEvent(QMouseEvent* event) {
                 /* source */ _gbutton);
     mouseEvent.setActionCommand(_gbutton->getActionCommand());
     mouseEvent.setButton((int) event->button());
-    mouseEvent.setX(event->x());
-    mouseEvent.setY(event->y());
+    mouseEvent.setX(event->pos().x());
+    mouseEvent.setY(event->pos().y());
     _gbutton->fireEvent(mouseEvent);
 }
 

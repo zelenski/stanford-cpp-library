@@ -109,8 +109,8 @@ void GObservable::fireGEvent(QMouseEvent* event,
                 /* name   */ eventName,
                 /* source */ this);
     mouseEvent.setButton((int) event->button());
-    mouseEvent.setX(event->x());
-    mouseEvent.setY(event->y());
+    mouseEvent.setX(event->pos().x());
+    mouseEvent.setY(event->pos().y());
     mouseEvent.setModifiers(event->modifiers());
     mouseEvent.setActionCommand(actionCommand);
     mouseEvent.setInternalEvent(event);

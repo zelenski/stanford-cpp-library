@@ -344,8 +344,8 @@ void _Internal_QLabel::mouseDoubleClickEvent(QMouseEvent* event) {
                 /* source */ _glabel);
     mouseEvent.setActionCommand(_glabel->getActionCommand());
     mouseEvent.setButton((int) event->button());
-    mouseEvent.setX(event->x());
-    mouseEvent.setY(event->y());
+    mouseEvent.setX(event->pos().x());
+    mouseEvent.setY(event->pos().y());
     _glabel->fireEvent(mouseEvent);
 }
 
@@ -374,8 +374,8 @@ void _Internal_QLabel::mousePressEvent(QMouseEvent* event) {
                 /* source */ _glabel);
     actionEvent.setActionCommand(_glabel->getActionCommand());
     actionEvent.setButton((int) event->button());
-    actionEvent.setX(event->x());
-    actionEvent.setY(event->y());
+    actionEvent.setX(event->pos().x());
+    actionEvent.setY(event->pos().y());
     _glabel->fireEvent(actionEvent);
 }
 

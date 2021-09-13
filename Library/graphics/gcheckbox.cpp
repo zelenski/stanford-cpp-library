@@ -160,8 +160,8 @@ void _Internal_QCheckBox::mouseDoubleClickEvent(QMouseEvent* event) {
                 /* source */ _gcheckBox);
     mouseEvent.setActionCommand(_gcheckBox->getActionCommand());
     mouseEvent.setButton((int) event->button());
-    mouseEvent.setX(event->x());
-    mouseEvent.setY(event->y());
+    mouseEvent.setX(event->pos().x());
+    mouseEvent.setY(event->pos().y());
     _gcheckBox->fireEvent(mouseEvent);
 }
 

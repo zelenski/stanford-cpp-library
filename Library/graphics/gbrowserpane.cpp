@@ -328,8 +328,8 @@ void _Internal_QTextBrowser::mouseReleaseEvent(QMouseEvent* event) {
                 /* name   */ "linkclick",
                 /* source */ _gbrowserpane);
     linkEvent.setButton(static_cast<int>(event->button()));
-    linkEvent.setX(event->x());
-    linkEvent.setY(event->y());
+    linkEvent.setX(event->pos().x());
+    linkEvent.setY(event->pos().y());
     linkEvent.setModifiers(event->modifiers());
     linkEvent.setRequestURL(clickedAnchor.toStdString());
     linkEvent.setActionCommand(_gbrowserpane->getActionCommand());
