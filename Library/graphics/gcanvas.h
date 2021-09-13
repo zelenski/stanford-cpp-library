@@ -671,6 +671,12 @@ private:
     void notifyOfResize(double width, double height);
 };
 
+// Parameter has new type >= Qt 6
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    typedef QEvent ParameterToEnterEvent;
+#else
+    typedef QEnterEvent ParameterToEnterEvent;
+#endif
 
 /**
  * Internal class; not to be used by clients.
@@ -682,7 +688,7 @@ class _Internal_QCanvas : public QWidget, public _Internal_QWidget {
 public:
     _Internal_QCanvas(GCanvas* gcanvas, QWidget* parent = nullptr);
     void detach() override;
-    void enterEvent(QEvent* event) override;
+    void enterEvent(ParameterToEnterEvent* event) override;
     void keyPressEvent(QKeyEvent* event) override;
     void keyReleaseEvent(QKeyEvent* event) override;
     void leaveEvent(QEvent* event) override;

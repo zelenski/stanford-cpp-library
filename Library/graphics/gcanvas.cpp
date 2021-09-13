@@ -941,7 +941,7 @@ void _Internal_QCanvas::detach() {
     _gcanvas = nullptr;
 }
 
-void _Internal_QCanvas::enterEvent(QEvent* event) {
+void _Internal_QCanvas::enterEvent(ParameterToEnterEvent* event) {
     QWidget::enterEvent(event);   // call super
     if (!_gcanvas || !_gcanvas->isAcceptingEvent("mouseenter")) {
         return;
@@ -992,8 +992,8 @@ void _Internal_QCanvas::mouseDoubleClickEvent(QMouseEvent* event) {
                 /* source */ _gcanvas);
     mouseEvent.setActionCommand(_gcanvas->getActionCommand());
     mouseEvent.setButton((int) event->button());
-    mouseEvent.setX(event->x());
-    mouseEvent.setY(event->y());
+    mouseEvent.setX(event->pos().x());
+    mouseEvent.setY(event->pos().y());
     _gcanvas->fireEvent(mouseEvent);
 }
 
