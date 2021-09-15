@@ -77,11 +77,9 @@ void GDownloader::downloadInternal() {
         QNetworkRequest* request = new QNetworkRequest(QUrl(QString::fromStdString(_url)));
 
         // set up SSL / HTTPS settings, if possible
-#if QT_VERSION >= QT_VERSION_CHECK(5, 9, 0)
 #if QT_CONFIG(ssl)
         request->setSslConfiguration(QSslConfiguration::defaultConfiguration());
 #endif // QT_CONFIG(ssl)
-#endif // QT_VERSION
 
         for (std::string headerKey : _headers) {
             request->setRawHeader(QByteArray(headerKey.c_str()), QByteArray(_headers[headerKey].c_str()));
@@ -94,18 +92,8 @@ void GDownloader::downloadInternal() {
         //         _reply, SIGNAL(finished()),
         //         this, SLOT(fileDownloadFinished()));
 
-        // this seemingly won't be called ever (thanks, useless Qt networking tutorials!)
-        _reply->connect(
-                _reply, SIGNAL(error(QNetworkReply::NetworkError)),
-                this, SLOT(fileDownloadError(QNetworkReply::NetworkError)));
-
-#if QT_VERSION >= QT_VERSION_CHECK(5, 9, 0)
-#if QT_CONFIG(ssl)
-        _reply->connect(
-                _reply, SIGNAL(sslErrors(QList<QSslError>)),
-                this, SLOT(sslErrors(QList<QSslError>)));
-#endif // QT_CONFIG(ssl)
-#endif // QT_VERSION
+        _reply->connect(_reply, &QNetworkReply::errorOccurred, this, &GDownloader::fileDownloadError);
+        _reply->connect(_reply, &QNetworkReply::sslErrors, this, &GDownloader::sslErrors);
     });
 
     // wait for download to finish (in student thread)
@@ -158,10 +146,8 @@ std::string GDownloader::qtNetworkErrorToString(QNetworkReply::NetworkError nerr
     case QNetworkReply::TemporaryNetworkFailureError: return "the connection was broken due to disconnection from the network, however the system has initiated roaming to another access point. The request should be resubmitted and will be processed as soon as the connection is re-established.";
     case QNetworkReply::NetworkSessionFailedError: return "the connection was broken due to disconnection from the network or failure to start the network.";
     case QNetworkReply::BackgroundRequestNotAllowedError: return "the background request is not currently allowed due to platform policy.";
-#if QT_VERSION >= QT_VERSION_CHECK(5, 9, 0)
     case QNetworkReply::TooManyRedirectsError: return "while following redirects, the maximum limit was reached. The limit is by default set to 50 or as set by QNetworkRequest::setMaxRedirectsAllowed(). (This value was introduced in 5.6.)";
     case QNetworkReply::InsecureRedirectError: return "while following redirects, the network access API detected a redirect from a encrypted protocol (https) to an unencrypted one (http). (This value was introduced in 5.6.)";
-#endif // QT_VERSION
     case QNetworkReply::ProxyConnectionRefusedError: return "the connection to the proxy server was refused (the proxy server is not accepting requests)";
     case QNetworkReply::ProxyConnectionClosedError: return "the proxy server closed the connection prematurely, before the entire reply was received and processed";
     case QNetworkReply::ProxyNotFoundError: return "the proxy host name was not found (invalid proxy hostname)";
@@ -198,9 +184,7 @@ void GDownloader::saveDownloadedData(const std::string& member, const std::strin
             _lastErrorMessage = qtNetworkErrorToString(nerror);
         } else if (filename.empty()) {
             // save to a string
-#if QT_VERSION >= QT_VERSION_CHECK(5, 9, 0)
             _filedata = _reply->readAll().toStdString();
-#endif // QT_VERSION
         } else {
             // save to a file
             QFile outfile(QString::fromStdString(filename));
