@@ -2,7 +2,7 @@
 # Project file for CS106B/X Library
 #
 # @author Julie Zelenski
-# @version Fall Quarter 09/12/2020
+# @version Fall Quarter 2021.1 for Qt 6
 #    build static lib and install into user data
 ###############################################################################
 
@@ -10,7 +10,7 @@ TEMPLATE    =   lib
 TARGET      =   cs106
 CONFIG      +=  staticlib
 
-SPL_VERSION         =   2020.1
+SPL_VERSION         =   2021.1
 REQUIRES_QT_VERSION =   5.15
 
 ###############################################################################
@@ -75,7 +75,7 @@ SPL_DIR = $${USER_DATA_DIR}/cs106
 target.path         =   "$${SPL_DIR}/lib"
 headers.files       =   $$PUBLIC_HEADERS
 headers.path        =   "$${SPL_DIR}/include"
-INSTALLS            +=  target headers debughelper
+INSTALLS            +=  target headers debughelper versionfile
 
 debughelper.files   =   personaltypes.py
 mac         { debughelper.path = "$$(HOME)/Qt/Qt Creator.app/Contents/Resources/debugger" }
@@ -86,11 +86,15 @@ unix:!mac   { debughelper.path = "$$(HOME)/Qt/Tools/QtCreator/share/qtcreator/de
     debughelper.path = "$${SPL_DIR}"
 }
 
+versionfile.files   =   "version$${SPL_VERSION}"
+versionfile.path    =   "$${SPL_DIR}/lib"
+
+
 ###############################################################################
 #       Requirements                                                          #
 ###############################################################################
 
 !versionAtLeast(QT_VERSION, $$REQUIRES_QT_VERSION) {
-    error(The CS106 library for $$SPL_VERSION requires Qt $$REQUIRES_QT_VERSION or newer;\
-         $$[QT_VERSION] was detected on your computer. Please upgrade/re-install.)
+    error(The CS106 library $$SPL_VERSION requires Qt version $$REQUIRES_QT_VERSION and\
+         your computer has older Qt version $$[QT_VERSION]. You must uninstall Qt and install version $$REQUIRES_QT_VERSION or newer.)
 }
