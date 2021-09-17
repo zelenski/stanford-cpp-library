@@ -1,16 +1,16 @@
 ###############################################################################
 # Project file for CS106B/X student program
 #
-# @version Fall Quarter 09/12/2020
+# @version Fall Quarter 2021 for Qt 6
 # @author Julie Zelenski
 #   build client program using installed static library
 ###############################################################################
 
-SPL_VERSION = 2020.1
+SPL_VERSION = 2021.1
 SPL_URL = https://web.stanford.edu/dept/cs_edu/qt
 
 TEMPLATE    =   app
-QT          +=  core gui widgets multimedia network
+QT          +=  core gui widgets network
 CONFIG      +=  silent debug         # quiet build and debug symbols always
 CONFIG      -=  depend_includepath   # library headers not changing, don't add depend
 
