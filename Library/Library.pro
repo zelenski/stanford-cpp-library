@@ -11,7 +11,7 @@ TARGET      =   cs106
 CONFIG      +=  staticlib
 
 SPL_VERSION         =   2021.1
-REQUIRES_QT_VERSION =   5.15
+REQUIRES_QT_VERSION =   6.1
 
 ###############################################################################
 #       Gather files                                                          #
