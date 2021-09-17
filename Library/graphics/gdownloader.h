@@ -135,10 +135,11 @@ signals:
 private slots:
     void downloadInternal();
     void fileDownloadError(QNetworkReply::NetworkError);
+    void reportNoSSL();
     void saveDownloadedData(const std::string& member, const std::string& filename = "");
-    void sslErrors(QList<QSslError>);
+    void sslErrorsNam(QNetworkReply*, QList<QSslError>);
+    void sslErrorsReply(QList<QSslError>);
     void waitForDownload();
-
 private:
     Q_DISABLE_COPY(GDownloader)
 

@@ -25,11 +25,16 @@
 #include "error.h"
 #include "gthread.h"
 
+static int _sslSupported = -1;
+
 GDownloader::GDownloader()
         : _manager(nullptr),
           _reply(nullptr),
           _httpStatusCode(0),
           _downloadComplete(false) {
+            if (_sslSupported == -1) {
+                _sslSupported = QSslSocket::supportsSsl();
+            }
 }
 
 GDownloader::~GDownloader() {
@@ -44,7 +49,7 @@ std::string GDownloader::downloadAsString(const std::string& url) {
     _httpStatusCode = 0;
     _lastErrorMessage = "";
 
-    // actually download the file (block/wait for it to finish)
+    // download the file on gui thread and block/wait for it to finish
     downloadInternal();
 
     // save download to string
@@ -60,26 +65,27 @@ void GDownloader::downloadToFile(const std::string& url, const std::string& file
     _httpStatusCode = 0;
     _lastErrorMessage = "";
 
-    // actually download the file (block/wait for it to finish)
+    // download the file on gui thread and block/wait for it to finish
     downloadInternal();
 
-    // save download to file
+    // write to file
     saveDownloadedData("downloadToFile", file);
 }
 
 void GDownloader::downloadInternal() {
+    // Cheezy check
+    // Access https: url if no SSL support present is a lose, so don't even try
+    if (!_sslSupported && _url.compare(0, 6, "https:") == 0) {
+        reportNoSSL();
+        return;
+    }
+
     GThread::runOnQtGuiThreadAsync([this]() {
+
         if (!_manager) {
             _manager = new QNetworkAccessManager();
-            // disabling Qt signal-handling because it doesn't seem to work at all
-            // connect(_manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(fileDownloaded(QNetworkReply*)));
         }
         QNetworkRequest* request = new QNetworkRequest(QUrl(QString::fromStdString(_url)));
-
-        // set up SSL / HTTPS settings, if possible
-#if QT_CONFIG(ssl)
-        request->setSslConfiguration(QSslConfiguration::defaultConfiguration());
-#endif // QT_CONFIG(ssl)
 
         for (std::string headerKey : _headers) {
             request->setRawHeader(QByteArray(headerKey.c_str()), QByteArray(_headers[headerKey].c_str()));
@@ -87,14 +93,11 @@ void GDownloader::downloadInternal() {
 
         _reply = _manager->get(*request);
 
-        // disabling Qt signal-handling because it doesn't seem to work at all
-        // _reply->connect(
-        //         _reply, SIGNAL(finished()),
-        //         this, SLOT(fileDownloadFinished()));
-
-        _reply->connect(_reply, &QNetworkReply::errorOccurred, this, &GDownloader::fileDownloadError);
-        _reply->connect(_reply, &QNetworkReply::sslErrors, this, &GDownloader::sslErrors);
-    });
+        // these do not seem to be called and/or I do not have a test case to trigger them
+        // so rather than leave here untested, I am disabling
+        //connect(_reply, &QNetworkReply::errorOccurred, this, &GDownloader::fileDownloadError);
+        //connect(_reply, &QNetworkReply::sslErrors, this, &GDownloader::sslErrorsReply);
+  });
 
     // wait for download to finish (in student thread)
     waitForDownload();
@@ -130,7 +133,7 @@ bool GDownloader::hasError() const {
         // values 2xx indicate success
         return _httpStatusCode < 200 || _httpStatusCode > 299;
     } else {
-        return _lastErrorMessage.empty();
+        return !_lastErrorMessage.empty();
     }
 }
 
@@ -210,8 +213,17 @@ void GDownloader::setUserAgent(const std::string& userAgent) {
     setHeader("User-Agent", userAgent);
 }
 
-void GDownloader::sslErrors(QList<QSslError>) {
-    std::cout << "  DEBUG: sslErrors" << std::endl;
+void GDownloader::sslErrorsReply(QList<QSslError>) {
+    std::cout << "  DEBUG: sslErrors from NetworkReply" << std::endl;
+}
+
+void GDownloader::sslErrorsNam(QNetworkReply *reply, QList<QSslError>) {
+    std::cout << "  DEBUG: sslErrors from NetworkAccessManager" << std::endl;
+}
+
+void GDownloader::reportNoSSL() {
+    _downloadComplete = true;
+    _lastErrorMessage = "No ssl support, unable to fetch secure url " + _url;
 }
 
 void GDownloader::waitForDownload() {
