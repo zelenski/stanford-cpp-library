@@ -7,6 +7,7 @@
 ###############################################################################
 
 SPL_VERSION = 2020.1
+SPL_URL = https://web.stanford.edu/dept/cs_edu/qt
 
 TEMPLATE    =   app
 QT          +=  core gui widgets multimedia network
@@ -23,12 +24,19 @@ USER_DATA_DIR   =   $$system($$[QT_INSTALL_BINS]/$$QTP_EXE --writable-path Gener
 
 SPL_DIR         =   $${USER_DATA_DIR}/cs106
 STATIC_LIB      =   $$system_path($${SPL_DIR}/lib/libcs106.a)
+SPL_VERSION_FILE =  $$system_path($${SPL_DIR}/lib/version$${SPL_VERSION})
 
 # Confirm presence of lib before build using extra target as prereq
 check_lib.target    =  "$${STATIC_LIB}"
-check_lib.commands  =  $(error CS106 library not found. See http://cs106b.stanford.edu/qt for library install instructions)
+check_lib.commands  =  $(error No CS106 library found. Install CS106 package following instructions at $${SPL_URL})
 QMAKE_EXTRA_TARGETS +=  check_lib
 PRE_TARGETDEPS       +=  $${check_lib.target}
+
+# Confirm version of library is current
+check_version.target    =  "$${SPL_VERSION_FILE}"
+check_version.commands  =  $(error Cannot find version $${SPL_VERSION} of CS106 library. Install CS106 package following instructions at $${SPL_URL})
+QMAKE_EXTRA_TARGETS +=  check_version
+PRE_TARGETDEPS       +=  $${check_version.target}
 
 # link against libcs106.a, add library headers to search path
 # libcs106 requires libpthread, add link here
