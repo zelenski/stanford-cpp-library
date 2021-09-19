@@ -302,29 +302,25 @@ struct GRectangle {
 public:
     /**
      * Creates a <code>GRectangle</code> object with the specified position
-     * and size. If these parameters are not supplied, the constructor sets
-     * these fields to 0.
+     * and size.
      */
-    GRectangle(double x = 0, double y = 0, double width = 0, double height = 0);
+    GRectangle(double x, double y, double width, double height);
 
     /**
      * Creates a <code>GRectangle</code> object with the specified position
-     * and size. If these parameters are not supplied, the constructor sets
-     * these fields to 0.
+     * and size.
      */
     GRectangle(double x, double y, const GDimension& size);
 
     /**
      * Creates a <code>GRectangle</code> object with the specified position
-     * and size. If these parameters are not supplied, the constructor sets
-     * these fields to 0.
+     * and size.
      */
-    GRectangle(const GPoint& p, double width = 0, double height = 0);
+    GRectangle(const GPoint& p, double width, double height);
 
     /**
      * Creates a <code>GRectangle</code> object with the specified position
-     * and size. If these parameters are not supplied, the constructor sets
-     * these fields to 0.
+     * and size.
      */
     GRectangle(const GPoint& p, const GDimension& size);
 
