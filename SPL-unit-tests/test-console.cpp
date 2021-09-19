@@ -1,7 +1,6 @@
 
 #include "consoletext.h"
 #include "error.h"
-#include "regexpr.h"
 #include "simpio.h"
 #include "strlib.h"
 #include <iostream>
