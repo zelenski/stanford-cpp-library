@@ -68,7 +68,7 @@ public:
 #define JOIN(X, Y) X##Y
 
 /***** Macros used to implement testing primitives. *****/
-void doFail(const std::string& message, std::size_t line = 0);
+void reportFailure(const std::string& message, std::size_t line = 0);
 void addDetail(const std::string& message);
 
 #undef EXPECT
@@ -81,7 +81,7 @@ void doExpect(bool condition, const std::string& expression, std::size_t line);
     try {\
         (void)(condition); \
         _out << "Line " << __LINE__ << " EXPECT_ERROR failed: " #condition " did not call error()"; \
-        doFail(_out.str()); \
+        reportFailure(_out.str()); \
     } catch (const ErrorException& e) { \
         _out << "Line " << __LINE__ << " EXPECT_ERROR ok: error raised " \
              << "\"" << e.getMessage() << "\""; \
@@ -97,7 +97,7 @@ void doExpect(bool condition, const std::string& expression, std::size_t line);
     } catch (const ErrorException& e) { \
         _out << "Line " << __LINE__ << " EXPECT_NO_ERROR failed: error raised " \
              << "\"" << e.getMessage() << "\""; \
-        doFail(_out.str()); \
+        reportFailure(_out.str()); \
     }\
 } while(0)
 
@@ -165,11 +165,8 @@ template <typename T> std::string debugFriendlyString(const T& value) {
 inline bool _areEqual(double lhs, double rhs) {
     return floatingPointEqual(lhs, rhs);
 }
-
 inline bool _areEqual(float lhs, float rhs) {
-    // patch to fix ambiguous version in published library
-    float tolerance = std::numeric_limits<float>::epsilon() * std::fmax(fabs(lhs), fabs(rhs));
-    return floatingPointEqual(lhs, rhs, tolerance);
+    return floatingPointEqual(lhs, rhs);
 }
 
 template <typename T1, typename T2> bool _areEqual(const T1& lhs, const T2& rhs) {

@@ -24,7 +24,7 @@ map<TestKey, multimap<int, TestCase>>& gTestsMap() {
     return result;
 }
 
-void doFail(const string& message, size_t line) {
+void reportFailure(const string& message, size_t line) {
     string msg = message;
     if (line != 0) {
         msg =  "Line " + to_string(line) + ": " + msg;
@@ -34,7 +34,7 @@ void doFail(const string& message, size_t line) {
 
 void doExpect(bool condition, const string &expression, size_t line) {
     if (!condition) {
-        doFail(expression, line);
+        reportFailure(expression, line);
     }
 }
 
