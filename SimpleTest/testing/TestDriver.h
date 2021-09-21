@@ -187,10 +187,10 @@ inline std::string abbreviate(const std::string& s, size_t maxLen = 300) {
        _expression << std::boolalpha << "EXPECT_EQUAL failed: "                             \
                    << #student << " != " << #reference "\n"                                 \
                    << "                " #student   " = "                                   \
-                   << abbreviate(debugFriendlyString(_studentAnswer)) << '\n'                           \
+                   << abbreviate(debugFriendlyString(_studentAnswer)) << '\n'               \
                    << "                " #reference " = "                                   \
-                   << abbreviate(debugFriendlyString(_referenceAnswer));                                \
-       doExpect(_areEqual(_studentAnswer, _referenceAnswer), _expression.str(), __LINE__); \
+                   << abbreviate(debugFriendlyString(_referenceAnswer));                    \
+       doExpect(_areEqual(_studentAnswer, _referenceAnswer), _expression.str(), __LINE__);  \
     } while (0)
 
 #undef TIME_OPERATION
@@ -198,8 +198,8 @@ inline std::string abbreviate(const std::string& s, size_t maxLen = 300) {
     Timer t;\
     t.start();\
     (void)(expr); \
-    double elapsed = t.stop();\
+    double elapsed_ms = t.stop();\
     std::ostringstream _out; \
-    _out << "Line " << __LINE__ << " TIME_OPERATION " << #expr << " (size =" << std::setw(7) << n << ")" << " completed in " << std::setw(8) << (elapsed/1000) << " secs";\
+    _out << "Line " << __LINE__ << " TIME_OPERATION " << #expr << " (size = " << std::setw(8) << n << ")" << " completed in " << std::setw(8) << std::fixed << std::setprecision(3) << (elapsed_ms/1000) << " secs";\
     addDetail(_out.str());\
 } while(0)
