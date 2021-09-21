@@ -277,6 +277,7 @@ namespace SimpleTest {
         displayResults(bp, stylesheet, groups);
 
         int nrun=0, npassed=0;
+        const int test_name_length = 30;
         /* Now, go run the tests. */
         for (auto& group: groups) {
             if (!group.selected) continue;
@@ -285,7 +286,7 @@ namespace SimpleTest {
                 /* Make clear that we're running the test. */
                 test.result = TestResult::RUNNING;
                 displayResults(bp,stylesheet, groups);
-                console << "[SimpleTest] starting" << test.id << left << setfill('.') << setw(25) << test.testname.substr(0,25) << "... " << flush;
+                console << "[SimpleTest] starting" << test.id << left << setfill('.') << setw(test_name_length) << test.testname.substr(0,test_name_length) << "... " << flush;
                 runSingleTest(test);
                 nrun++;
                 if (test.result == TestResult::PASS) npassed++;
