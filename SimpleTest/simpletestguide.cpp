@@ -58,7 +58,7 @@ STUDENT_TEST("Time operation vector sort on tiny input")
 
 STUDENT_TEST("Time operation vector sort over a range of input sizes")
 {
-    for (int size = 50000; size < 1000000; size *= 2) {
+    for (int size = 25000; size < 20000000; size *= 4) {
         Vector<int> v;
         for (int i = 0; i < size; i++) {
             v.add(randomInteger(1, 1000)); // fill vector with random values
@@ -73,7 +73,6 @@ STUDENT_TEST("Time operation vector sort on tiny input and verify is sorted")
     TIME_OPERATION(v.size(), v.sort());
     EXPECT(inSortedOrder(v));
 }
-
 
 STUDENT_TEST("confirm isEven() works correctly for even number 4") {
     EXPECT(isEven(4));
