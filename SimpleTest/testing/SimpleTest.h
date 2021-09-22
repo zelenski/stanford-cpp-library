@@ -67,7 +67,7 @@
  *
  * The syntax for defining a new test case is
  *
- *    ADD_TEST("Description of Test Case") {
+ *    STUDENT_TEST("Description of Test Case") {
  *       ... whatever code you'd like! ...
  *    }
  */

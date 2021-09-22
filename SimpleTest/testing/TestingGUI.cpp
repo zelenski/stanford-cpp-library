@@ -179,24 +179,6 @@ namespace SimpleTest {
         test.detailMessage = indented;
     }
 
-    // When replace the text in a browser pane, it scrolls to seemingly arbitrary location
-    // Annoying! I will fix setText() in library to do right thing, but need to jam
-    // temporary fix here as students have already installed library that has bad behavior
-    // compiled in. Once fixed in library, this hack can be removed.
-    void setTextPreserveScroll(GBrowserPane *bp, string contents, bool preserve)
-    {
-        auto qtb = static_cast<_Internal_QTextBrowser *>(bp->getInternalWidget());
-        GThread::runOnQtGuiThread([qtb, contents, preserve]() {
-            auto scrollbar = qtb->verticalScrollBar();
-            int pos = scrollbar->value();
-            qtb->setText(QString::fromStdString(contents));
-            if (!preserve) pos = scrollbar->maximum();
-            scrollbar->setValue(pos);
-            scrollbar->setSliderPosition(pos);
-        });
-    }
-
-
     /* Displays all the results from the given test group. */
     string displayResults(GBrowserPane *bp, const string& stylesheet, const Vector<TestGroup>& testGroups, int npass=-1, int nrun=-1)
     {
@@ -223,13 +205,13 @@ namespace SimpleTest {
         }
         h << "</ul>";
         if (nrun > 0) { // all tests completed
-            h << "<h3> Passed " << npass << " of " << nrun << " tests. ";
+            h << "<h3> Passed " << npass << " of " << nrun << " tests.&nbsp;"; // trailing space after period consumed otherwise
             if (npass == nrun) conclusion = affirmation();
             h << conclusion << "</h3>";
 
         }
         h << "</body></html>";
-        setTextPreserveScroll(bp, h.str(), nrun == -1);
+        bp->setTextPreserveScroll(h.str(), nrun == -1); // patch now incorporated into library
         return conclusion;
     }
 
@@ -295,6 +277,7 @@ namespace SimpleTest {
         displayResults(bp, stylesheet, groups);
 
         int nrun=0, npassed=0;
+        const int test_name_length = 30;
         /* Now, go run the tests. */
         for (auto& group: groups) {
             if (!group.selected) continue;
@@ -303,7 +286,7 @@ namespace SimpleTest {
                 /* Make clear that we're running the test. */
                 test.result = TestResult::RUNNING;
                 displayResults(bp,stylesheet, groups);
-                console << "[SimpleTest] starting" << test.id << left << setfill('.') << setw(25) << test.testname.substr(0,25) << "... " << flush;
+                console << "[SimpleTest] starting" << test.id << left << setfill('.') << setw(test_name_length) << test.testname.substr(0,test_name_length) << "... " << flush;
                 runSingleTest(test);
                 nrun++;
                 if (test.result == TestResult::PASS) npassed++;
