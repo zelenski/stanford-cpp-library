@@ -177,20 +177,32 @@ inline std::string abbreviate(const std::string& s, size_t maxLen = 300) {
     return s.length() < maxLen ? s : s.substr(0, maxLen) + " ...";
 }
 
+template <typename T> std::string evaluate(const std::string& orig, const T& answer)
+{
+    std::string evaluated = abbreviate(debugFriendlyString(answer));
+    // if argument was expressed as literal and matches its evaluated answer,
+    // no explanation needed, otherwise show the evaluated result
+    if (orig == evaluated) {
+        return "";
+    } else {
+        return "                " + orig  + " = " + evaluated + '\n';
+    }
+}
+
 #undef EXPECT_EQUAL
-#define EXPECT_EQUAL(student, reference)                                                    \
+#define EXPECT_EQUAL(student, ...)                                                          \
     do {                                                                                    \
        auto _studentAnswer   = (student);                                                   \
-       auto _referenceAnswer = (reference);                                                 \
+       decltype(_studentAnswer) _referenceAnswer = __VA_ARGS__;                             \
                                                                                             \
-       std::stringstream _expression;                                                       \
-       _expression << std::boolalpha << "EXPECT_EQUAL failed: "                             \
-                   << #student << " != " << #reference "\n"                                 \
-                   << "                " #student   " = "                                   \
-                   << abbreviate(debugFriendlyString(_studentAnswer)) << '\n'               \
-                   << "                " #reference " = "                                   \
-                   << abbreviate(debugFriendlyString(_referenceAnswer));                    \
-       doExpect(_areEqual(_studentAnswer, _referenceAnswer), _expression.str(), __LINE__);  \
+       if (!_areEqual(_studentAnswer, _referenceAnswer)) {                                  \
+           std::stringstream _expression;                                                   \
+           _expression << std::boolalpha << "EXPECT_EQUAL failed: "                         \
+                       << #student << " != " << #__VA_ARGS__ << "\n"                        \
+                       << evaluate(#student, _studentAnswer)                                \
+                       << evaluate(#__VA_ARGS__, _referenceAnswer);                         \
+           reportFailure(_expression.str(), __LINE__);                                      \
+        }                                                                                   \
     } while (0)
 
 #undef TIME_OPERATION
