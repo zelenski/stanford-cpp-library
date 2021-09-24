@@ -7,10 +7,11 @@
  * @author Keith Schwarz
  * @version 2020/3/22
  *    Keith final revision from end of quarter 19-2
- * @version 2020 Fall Quarter
+ * @version 2021 Fall Quarter
  *    Minor tweaks by Julie
  */
 #pragma once
+#include <string>
 
 
 /*** Utility functions to express your test cases. ***/
@@ -80,11 +81,10 @@
 
 
 /* Enumerated type for the different options when running tests. Your options are:
- *     NO_TESTS (and thus just continue to normal main function)
  *     ALL_TESTS (all tests from all files) or
- *     SELECTED_TESTS (to select which tests to run from a menu)
+ *     SELECTED_TESTS (user selects from menu which test groups to run)
  */
-enum Choice { NO_TESTS, ALL_TESTS, SELECTED_TESTS };
+enum Choice { ALL_TESTS, SELECTED_TESTS };
 
 /* Enumerated type for where to report test results. Your options are:
  *     CONSOLE_ONLY (text output on console)
@@ -96,6 +96,7 @@ enum Where { CONSOLE_ONLY, WINDOW_ONLY, CONSOLE_AND_WINDOW };
 /* Call this function from your main to run the desired tests.
  */
 bool runSimpleTests(Choice ch, Where where = CONSOLE_AND_WINDOW);
+bool runSimpleTests(std::string groupName, Where where = CONSOLE_AND_WINDOW);
 
 
 #include "TestDriver.h"

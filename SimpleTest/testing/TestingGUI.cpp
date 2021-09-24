@@ -4,6 +4,8 @@
  * @author Keith Schwarz
  * @version 2020/3/5
  *    Keith final revision from end of quarter 19-2
+ * @version 2021 Fall Quarter
+ *    Julie edits
  */
 #include "console.h"
 #include "error.h"
@@ -89,7 +91,7 @@ namespace SimpleTest {
 
     string sanitize(string s)
     {
-        for (int i = 0; i < s.length(); i++) {
+        for (size_t i = 0; i < s.length(); i++) {
             if (s[i] == '<') s.replace(i, 1, "&lt;");
             if (s[i] == '>') s.replace(i, 1, "&gt;");
         }
@@ -327,24 +329,26 @@ namespace SimpleTest {
         return chosen;
     }
 
-    int getChoice(Vector<TestGroup>& groups, Choice ch)
+    int getChoice(Vector<TestGroup>& groups, Choice ch, std::string groupName)
     {
-        if (ch == NO_TESTS) {
-            return 0;
-        } else if (ch == ALL_TESTS ) {
+        if (ch == ALL_TESTS ) {
             return groups.size()+1;
         } else {
-            Vector<string> names = { "None", "All of the above" };
+            Vector<string> names = { "None (instead execute ordinary main() function)", "All of the above tests" };
             for (const auto& entry: groups) {
-                names.insert(names.size()-1, "From " + entry.name);
+                int index = names.size() - 1;
+                names.insert(index, "From " + entry.name);
+                if (entry.name == groupName) {
+                    return index;
+                }
             }
             return userChoiceFromMenu(names);
         }
     }
 
-    bool selectChosenGroup(Vector<TestGroup>& groups, Choice ch)
+    bool selectChosenGroup(Vector<TestGroup>& groups, Choice ch, std::string groupName)
     {
-        int chosen = getChoice(groups, ch);
+        int chosen = getChoice(groups, ch, groupName);
 
         if (chosen == 0) {
             return false;
@@ -356,14 +360,14 @@ namespace SimpleTest {
         }
     }
 
-    bool runSimpleTests(Choice ch, Where where)
+    bool runSimpleTests(Choice ch, Where where, std::string groupName = "")
     {
         // suppress harmless warning about font substitutions (this should be in library too)
         QLoggingCategory::setFilterRules("qt.qpa.fonts.warning=false");
 
         Vector<TestGroup> testGroups = prepareGroups(gTestsMap());
 
-        if (selectChosenGroup(testGroups, ch)) {
+        if (selectChosenGroup(testGroups, ch, groupName)) {
             runSelectedGroups(testGroups, where);
             return true;
         } else {
@@ -373,6 +377,10 @@ namespace SimpleTest {
 }
 
 bool runSimpleTests(Choice ch, Where where) {
-    return SimpleTest::runSimpleTests(ch, where);
+    return SimpleTest::runSimpleTests(ch, where, "");
 }
+bool runSimpleTests(std::string groupName, Where where) {
+    return SimpleTest::runSimpleTests(SELECTED_TESTS, where, groupName);
+}
+
 
