@@ -20,6 +20,7 @@ void welcomeAlert(string name)
     window->setTitle("Fall Quarter 2021");
     window->setLocation(300, 100);
     window->setExitOnClose(true);
+    window->setResizable(false);
     window->setBackground("White");
     window->clear();
     window->setColor("black");
