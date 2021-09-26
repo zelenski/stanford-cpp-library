@@ -142,23 +142,23 @@ namespace SimpleTest {
             test.result = TestResult::EXCEPTION;
             ostringstream out;
             out << "Test failed due to the program triggering an ErrorException." << endl;
-            out << endl;
+            out << " " << endl;
             out << "This means that the test did not fail because of a call" << endl;
             out << "to EXPECT() or EXPECT_ERROR() failing, but rather because" << endl;
             out << "some code explicitly called the error() function." << endl;
-            out << endl;
+            out << " " << endl;
             out << "Error: " << e.getMessage();
             test.detailMessage = out.str();
         } catch (const exception& e) {
             test.result = TestResult::EXCEPTION;
             ostringstream out;
             out << "Test failed due to the program triggering an exception." << endl;
-            out << endl;
+            out << " " << endl;
             out << "This means that the test did not fail because of a call" << endl;
             out << "to EXPECT() or an EXPECT_ERROR() failing, but rather because" << endl;
             out << "some code - probably an internal C++ library - triggered" << endl;
             out << "an error." << endl;
-            out << endl;
+            out << " " << endl;
             out << "Error: " << e.what() << endl;
             test.detailMessage = out.str();
         } catch (...) {
@@ -166,12 +166,12 @@ namespace SimpleTest {
             ostringstream out;
             out << "Test failed due to the program triggering an unknown type" << endl;
             out << "of exception. " << endl;
-            out << endl;
+            out << " " << endl;
             out << "This means that the test did not fail because of a call" << endl;
             out << "to EXPECT() or an EXPECT_ERROR() failing, but rather because" << endl;
             out << "some code triggered an error whose format we couldn't" << endl;
             out << "recognize." << endl;
-            out << endl;
+            out << " " << endl;
             test.detailMessage = out.str();
         }
         string indented;
