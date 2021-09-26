@@ -293,7 +293,7 @@ namespace SimpleTest {
                 nrun++;
                 if (test.result == TestResult::PASS) npassed++;
                 string status = info[test.result].status;
-                if (!getConsoleEnabled()) status = info[test.result].color + status + NORMAL;
+                if (!GThread::qtGuiThreadExists()) status = info[test.result].color + status + NORMAL;
                 console << " =  " << status << endl << test.detailMessage << flush;
                 displayResults(bp, stylesheet, groups);
             }
@@ -364,6 +364,9 @@ namespace SimpleTest {
     {
         // suppress harmless warning about font substitutions (this should be in library too)
         QLoggingCategory::setFilterRules("qt.qpa.fonts.warning=false");
+        if (!GThread::qtGuiThreadExists()) {
+            where = CONSOLE_ONLY;   // without Qt GUI, fall back to console only
+        }
 
         Vector<TestGroup> testGroups = prepareGroups(gTestsMap());
 
