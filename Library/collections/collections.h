@@ -20,6 +20,7 @@
 #include "gmath.h"
 #include "hashcode.h"
 #include "random.h"
+#include "typeproperties.h"
 
 // begin global namespace string read/writing functions from strlib.h
 
@@ -81,6 +82,7 @@ bool stringNeedsQuoting(const std::string& str);
  */
 template <typename ValueType>
 std::ostream& writeGenericValue(std::ostream& os, const ValueType& value, bool) {
+    ASSERT_STREAM_INSERTABLE(ValueType);
     return os << std::boolalpha << value;
 }
 
@@ -116,6 +118,7 @@ inline std::string genericValueToString(const std::string& value,
  */
 template <typename ValueType>
 bool readGenericValue(std::istream& is, ValueType& value) {
+    ASSERT_STREAM_EXTRACTABLE(ValueType);
     return (bool) (is >> value);
 }
 
@@ -147,6 +150,7 @@ void checkVersion(const CollectionType& coll, const IteratorType& itr,
     }
 }
 
+
 /*
  * Performs a comparison for ordering between the given two collections
  * by comparing their elements pairwise to each other.
@@ -157,6 +161,8 @@ void checkVersion(const CollectionType& coll, const IteratorType& itr,
  */
 template <typename CollectionType>
 int compare(const CollectionType& coll1, const CollectionType& coll2) {
+    ASSERT_IS_COMPARABLE(decltype(*coll1.begin()));
+
     // optimization: if they are the same object, then they are equal
     if (&coll1 == &coll2) {
         return 0;
@@ -171,15 +177,6 @@ int compare(const CollectionType& coll1, const CollectionType& coll2) {
          ++itr1, ++itr2) {
         // compare each pair of elements from iterators
 
-        // TO STUDENT:
-        // If the line below is failing to compile in your program, it probably
-        // means that you are trying to make a nested collection
-        // (e.g. Set<Vector<T>>) for some element type T that does not have a
-        // less-than < operator.  That operator is *required* in order to make
-        // a Set or Map of Vectors, so that the set/map knows how to sort the
-        // elements into their ascending order.
-        // You should either add a < operator to your class, or consider a
-        // different nested collection solution.  Good luck!
         if (*itr1 < *itr2) {
             return -1;
         } else if (*itr2 < *itr1) {
@@ -210,6 +207,10 @@ int compare(const CollectionType& coll1, const CollectionType& coll2) {
  */
 template <typename MapType>
 int compareMaps(const MapType& map1, const MapType& map2) {
+    /* Keys and values must be comparable. */
+    ASSERT_IS_COMPARABLE(decltype(*map1.begin()));
+    ASSERT_IS_COMPARABLE(decltype(map1[*map1.begin()]));
+
     // optimization: if they are the same object, then they are equal
     if (&map1 == &map2) {
         return 0;
@@ -272,9 +273,25 @@ inline int compareTo() {
 }
 template <typename T, typename... Rest>
 int compareTo(const T& first, const T& second, const Rest&... rest) {
+    ASSERT_IS_COMPARABLE(T);
+
     if (first < second) return -1;
     if (second < first) return +1;
     return compareTo(rest...);
+}
+
+/*
+ * Template functions to compare two interleaved sequences of values, returning
+ * whether they're equal. The types must support the == operator.
+ */
+inline int equalTo() {
+    return 0;
+}
+template <typename T, typename... Rest>
+int equalTo(const T& first, const T& second, const Rest&... rest) {
+    ASSERT_HAS_EQUALITY(T);
+
+    return first == second && compareTo(rest...);
 }
 
 /*
@@ -283,6 +300,8 @@ int compareTo(const T& first, const T& second, const Rest&... rest) {
  */
 template <typename CollectionType>
 bool equals(const CollectionType& coll1, const CollectionType& coll2) {
+    ASSERT_HAS_EQUALITY(decltype(*coll1.begin()));
+
     // optimization: if literally same collection, stop
     if (&coll1 == &coll2) {
         return true;
@@ -345,6 +364,10 @@ bool equalsDouble(const CollectionType& coll1, const CollectionType& coll2) {
  */
 template <typename MapType>
 bool equalsMap(const MapType& map1, const MapType& map2) {
+    /* Both keys and values must be equality-comparable. */
+    ASSERT_HAS_EQUALITY(decltype(*map1.begin()));
+    ASSERT_HAS_EQUALITY(decltype(map1[*map1.begin()]));
+
     // optimization: if literally same map, stop
     if (&map1 == &map2) {
         return true;
@@ -372,6 +395,8 @@ bool equalsMap(const MapType& map1, const MapType& map2) {
  */
 template <typename IteratorType>
 int hashCodeIterable(IteratorType begin, IteratorType end, bool orderMatters = true) {
+    ASSERT_IS_HASHABLE(decltype(*begin));
+
     int code = hashSeed();
     while (begin != end) {
         if (orderMatters) {
@@ -398,6 +423,10 @@ int hashCodeCollection(const CollectionType& collection, bool orderMatters = tru
  */
 template <typename MapType>
 int hashCodeMap(const MapType& map, bool orderMatters = true) {
+    /* Both keys and values must be hashable. */
+    ASSERT_IS_HASHABLE(decltype(*map.begin()));
+    ASSERT_IS_HASHABLE(decltype(map[*map.begin()]));
+
     int code = hashSeed();
     auto begin = map.begin();
     auto end = map.end();
@@ -456,6 +485,7 @@ template <typename CollectionType, typename ElementType>
 std::istream& readCollection(std::istream& input, CollectionType& collection, ElementType& element, std::string /* descriptor */,
         void (*fn)(CollectionType&, const ElementType&) = readOne<CollectionType,ElementType>)
 {
+    ASSERT_STREAM_EXTRACTABLE(ElementType);
 
     char ch = '\0';
     input >> ch;
@@ -500,6 +530,9 @@ template <typename CollectionType, typename KeyType, typename ValueType>
 std::istream& readPairedCollection(std::istream& input, CollectionType& collection, KeyType& key, ValueType& value, std::string /* descriptor */,
         void (*fn)(CollectionType&, const KeyType&, const ValueType&) = readOne<CollectionType,KeyType,ValueType>)
 {
+    ASSERT_STREAM_EXTRACTABLE(KeyType);
+    ASSERT_STREAM_EXTRACTABLE(ValueType);
+
     char ch = '\0';
     input >> ch;
     if (ch != '{') {
@@ -542,6 +575,8 @@ std::istream& readPairedCollection(std::istream& input, CollectionType& collecti
  */
 template <typename IteratorType>
 std::ostream& writeIterable(std::ostream& out, IteratorType begin, IteratorType end) {
+    ASSERT_STREAM_INSERTABLE(decltype(*begin));
+
     out << "{";
     bool first = true;
     while (begin != end) {
@@ -571,6 +606,8 @@ std::ostream& writeCollection(std::ostream& out, CollectionType collection) {
  */
 template <typename IteratorType>
 std::ostream& writeIterableOfPointers(std::ostream& out, IteratorType begin, IteratorType end) {
+    ASSERT_STREAM_INSERTABLE(decltype(**begin));
+
     out << "{";
     bool first = true;
     while (begin != end) {
@@ -603,6 +640,9 @@ std::ostream& writeCollectionOfPointers(std::ostream& out, CollectionType collec
  */
 template <typename MapType>
 std::ostream& writeMap(std::ostream& out, const MapType& map) {
+    ASSERT_STREAM_INSERTABLE(decltype(*map.begin()));
+    ASSERT_STREAM_INSERTABLE(decltype(map[*map.begin()]));
+
     out << "{";
     auto begin = map.begin();
     auto end = map.end();
@@ -1677,55 +1717,6 @@ std::istream& operator >>(std::istream& is, GenericSet<SetTraits>& set) {
     return stanfordcpplib::collections::readCollection(is, set, element, /* descriptor */ SetTraits::name() + "::operator >>");
 }
 
-
-/*
- * Types used to automatically check whether a type is comparable using
- * the < operator and whether a type supports operator== and hashCode.
- *
- * This is used to provide better compiler diagnostics to students when
- * they try to instantiate our times incorrectly.
- *
- * Later on, when C++20 concepts are rolled out, we should consider
- * replacing this code with concepts.
- */
-template <typename T>
-struct IsLessThanComparable {
-private:
-    /* Use SFNIAE overloading to detect which of these two options to pick. */
-    struct Yes{};
-    struct No {};
-
-    template <typename U>
-    static Yes check(int,
-                     decltype(std::declval<U>() < std::declval<U>()) = 0);
-    template <typename U> static No  check(...);
-
-public:
-    static constexpr bool value =
-            std::conditional<std::is_same<decltype(check<T>(0)), Yes>::value,
-                             std::true_type,
-                             std::false_type>::type::value;
-};
-
-template <typename T>
-struct IsHashable {
-private:
-    /* Use SFNIAE overloading to detect which of these two options to pick. */
-    struct Yes{};
-    struct No {};
-
-    template <typename U>
-    static Yes check(int,
-                     decltype(hashCode(std::declval<U>())) = 0,
-                     decltype(std::declval<U>() == std::declval<U>()) = 0);
-    template <typename U> static No  check(...);
-
-public:
-    static constexpr bool value =
-            std::conditional<std::is_same<decltype(check<T>(0)), Yes>::value,
-                             std::true_type,
-                             std::false_type>::type::value;
-};
 
 /*
  * Returns std::less<T>, except with a nice static assertion wrapped around it to

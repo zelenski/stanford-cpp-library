@@ -78,3 +78,14 @@ PROVIDED_TEST("Stack initializer_list") {
     EXPECT_EQUAL( "{10, 20, 30}", stack.toString());
 }
 
+PROVIDED_TEST("Sensible compiler error messages.") {
+    struct Bad {};
+
+    Stack<Bad> v1;
+    Stack<Bad> v2;
+    //(void) (v1 <  v2);        // Should trigger a static assertion rather than a long chain of sorrows
+    //(void) (v1 == v2);        // Should trigger a static assertion rather than a long chain of sorrows
+    //(void) hashCode(v1);      // Should trigger a static assertion rather than a long chain of sorrows
+    //(void) (std::cout << v1); // Should trigger a static assertion rather than a long chain of sorrows
+    //(void) (std::cin  >> v1); // Should trigger a static assertion rather than a long chain of sorrows
+}

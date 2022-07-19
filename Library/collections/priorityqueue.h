@@ -281,6 +281,8 @@ void PriorityQueue<ValueType>::enqueue(const ValueType& value, double priority) 
 
 template <typename ValueType>
 bool PriorityQueue<ValueType>::equals(const PriorityQueue<ValueType>& pq2) const {
+    ASSERT_HAS_EQUALITY(ValueType);
+
     // optimization: if literally same pq, stop
     if (this == &pq2) {
         return true;
@@ -294,7 +296,7 @@ bool PriorityQueue<ValueType>::equals(const PriorityQueue<ValueType>& pq2) const
         if (!floatingPointEqual(backup1.peekPriority(), backup2.peekPriority())) {
             return false;
         }
-        if (backup1.dequeue() != backup2.dequeue()) {
+        if (!(backup1.dequeue() == backup2.dequeue())) {
             return false;
         }
     }
@@ -366,6 +368,8 @@ bool PriorityQueue<ValueType>::operator !=(const PriorityQueue& pq2) const {
  */
 template <typename T>
 int hashCode(const PriorityQueue<T>& pq) {
+    ASSERT_IS_HASHABLE(T);
+
     // (slow, memory-inefficient) implementation: copy pq, dequeue all, and hash together
     PriorityQueue<T> backup = pq;
     int code = hashSeed();
@@ -380,6 +384,8 @@ int hashCode(const PriorityQueue<T>& pq) {
 template <typename ValueType>
 std::ostream& operator <<(std::ostream& os,
                           const PriorityQueue<ValueType>& pq) {
+    ASSERT_STREAM_INSERTABLE(ValueType);
+
     os << "{";
 
     // faster implementation: print in heap order

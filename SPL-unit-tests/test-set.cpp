@@ -227,3 +227,17 @@ PROVIDED_TEST("Set, removeAndRetain") {
     all.intersect(primes);
      EXPECT_EQUAL(all, expected);
 }
+
+PROVIDED_TEST("Sensible compiler error messages.") {
+    struct Bad {
+        bool operator< (const Bad&) const {
+            return true;
+        }
+    };
+
+    Set<Bad> v1;
+    Set<Bad> v2;
+    //(void) hashCode(v1);      // Should trigger a static assertion rather than a long chain of sorrows
+    //(void) (std::cout << v1); // Should trigger a static assertion rather than a long chain of sorrows
+    //(void) (std::cin  >> v1); // Should trigger a static assertion rather than a long chain of sorrows
+}
