@@ -39,7 +39,7 @@ PROVIDED_TEST("Queue, compare") {
     testCompareOperators(q1, q1, EqualTo);
 
     Set<Queue<int> > sq {q1, q2};
-    EXPECT_EQUAL( "{{1, 2, 1, 4, 7}, {1, 2, 1, 5}}", sq.toString());
+    EXPECT_EQUAL(sq.toString(), "{{1, 2, 1, 4, 7}, {1, 2, 1, 5}}");
 }
 
 PROVIDED_TEST("Queue, forEach") {
@@ -78,20 +78,20 @@ PROVIDED_TEST("Queue, hashCode") {
 
 PROVIDED_TEST("Queue, initializerList") {
     Queue<int> queue {10, 20, 30};
-    EXPECT_EQUAL( "{10, 20, 30}", queue.toString());
+    EXPECT_EQUAL(queue.toString(), "{10, 20, 30}");
 }
 
 PROVIDED_TEST("Queue, peekEnqueueBug") {
     {
         Queue<int> queue {10, 20, 30, 40, 50, 60, 70, 80};
-        EXPECT_EQUAL( "{10, 20, 30, 40, 50, 60, 70, 80}", queue.toString());
+        EXPECT_EQUAL(queue.toString(), "{10, 20, 30, 40, 50, 60, 70, 80}");
         queue.enqueue(queue.peek());
-        EXPECT_EQUAL( "{10, 20, 30, 40, 50, 60, 70, 80, 10}", queue.toString());
+        EXPECT_EQUAL(queue.toString(), "{10, 20, 30, 40, 50, 60, 70, 80, 10}");
     }
     {
         Queue<int> queue {10, 20, 30, 40, 50, 60, 70, 80, 90};
-        EXPECT_EQUAL( "{10, 20, 30, 40, 50, 60, 70, 80, 90}", queue.toString());
+        EXPECT_EQUAL(queue.toString(), "{10, 20, 30, 40, 50, 60, 70, 80, 90}");
         queue.enqueue(queue.peek());
-        EXPECT_EQUAL( "{10, 20, 30, 40, 50, 60, 70, 80, 90, 10}", queue.toString());
+        EXPECT_EQUAL(queue.toString(), "{10, 20, 30, 40, 50, 60, 70, 80, 90, 10}");
     }
 }

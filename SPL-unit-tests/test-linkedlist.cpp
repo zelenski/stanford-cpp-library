@@ -40,7 +40,7 @@ PROVIDED_TEST("LinkedList, compare") {
     testCompareOperators(ll2, ll2, EqualTo);
 
     Set<LinkedList<int> > sll {ll1, ll2, ll3, ll4};
-    EXPECT_EQUAL( "{{}, {1, 1, 7}, {1, 2, 4, 5}, {1, 3, 1, 4, 8}}", sll.toString());
+    EXPECT_EQUAL(sll.toString(), "{{}, {1, 1, 7}, {1, 2, 4, 5}, {1, 3, 1, 4, 8}}");
 }
 
 PROVIDED_TEST("LinkedList, forEach") {
@@ -81,8 +81,18 @@ PROVIDED_TEST("LinkedList, initializerList") {
     assertCollection("after + copy", {10, 20, 30, 40, 50, 60, 70}, copy);
 }
 
-void addDuring(LinkedList<int>& v) { for (int m : v) v.add(0); }
-void removeDuring(LinkedList<int>& v) { for (int m : v) v.remove(0); }
+void addDuring(LinkedList<int>& v) {
+    for (int m : v) {
+        (void) m;
+        v.add(0);
+    }
+}
+void removeDuring(LinkedList<int>& v) {
+    for (int m : v) {
+        (void) m;
+        v.remove(0);
+    }
+}
 
 PROVIDED_TEST("LinkedList, error on modify during iterate") {
     LinkedList<int> ll {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};

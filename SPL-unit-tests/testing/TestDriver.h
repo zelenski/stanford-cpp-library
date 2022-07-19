@@ -3,6 +3,7 @@
 
 // be careful about what is #include here, it will all end up in all student code
 #include <cfloat>
+#include <math.h>
 #include "error.h"
 #include <functional>
 #include "gmath.h"
@@ -68,7 +69,7 @@ public:
 #define JOIN(X, Y) X##Y
 
 /***** Macros used to implement testing primitives. *****/
-void doFail(const std::string& message, std::size_t line = 0);
+void reportFailure(const std::string& message, std::size_t line = 0);
 void addDetail(const std::string& message);
 
 #undef EXPECT
@@ -81,7 +82,7 @@ void doExpect(bool condition, const std::string& expression, std::size_t line);
     try {\
         (void)(condition); \
         _out << "Line " << __LINE__ << " EXPECT_ERROR failed: " #condition " did not call error()"; \
-        doFail(_out.str()); \
+        reportFailure(_out.str()); \
     } catch (const ErrorException& e) { \
         _out << "Line " << __LINE__ << " EXPECT_ERROR ok: error raised " \
              << "\"" << e.getMessage() << "\""; \
@@ -97,7 +98,7 @@ void doExpect(bool condition, const std::string& expression, std::size_t line);
     } catch (const ErrorException& e) { \
         _out << "Line " << __LINE__ << " EXPECT_NO_ERROR failed: error raised " \
              << "\"" << e.getMessage() << "\""; \
-        doFail(_out.str()); \
+        reportFailure(_out.str()); \
     }\
 } while(0)
 
@@ -163,13 +164,13 @@ template <typename T> std::string debugFriendlyString(const T& value) {
 /* Equality comparisons are fuzzy for real numbers. */
 
 inline bool _areEqual(double lhs, double rhs) {
+    // JDZ: 10/2021 hack -- need to fix in library for next time
+    if (isinf(lhs) || isinf(rhs)) return isinf(lhs) && isinf(rhs);
     return floatingPointEqual(lhs, rhs);
 }
-
 inline bool _areEqual(float lhs, float rhs) {
-    // patch to fix ambiguous version in published library
-    float tolerance = std::numeric_limits<float>::epsilon() * std::fmax(fabs(lhs), fabs(rhs));
-    return floatingPointEqual(lhs, rhs, tolerance);
+    if (isinf(lhs) || isinf(rhs)) return isinf(lhs) && isinf(rhs);
+    return floatingPointEqual(lhs, rhs);
 }
 
 template <typename T1, typename T2> bool _areEqual(const T1& lhs, const T2& rhs) {
@@ -180,20 +181,32 @@ inline std::string abbreviate(const std::string& s, size_t maxLen = 300) {
     return s.length() < maxLen ? s : s.substr(0, maxLen) + " ...";
 }
 
+template <typename T> std::string evaluate(const std::string& orig, const T& answer)
+{
+    std::string evaluated = abbreviate(debugFriendlyString(answer));
+    // if argument was expressed as literal and matches its evaluated answer,
+    // no explanation needed, otherwise show the evaluated result
+    if (orig == evaluated) {
+        return "";
+    } else {
+        return "                " + orig  + " = " + evaluated + '\n';
+    }
+}
+
 #undef EXPECT_EQUAL
-#define EXPECT_EQUAL(student, reference)                                                    \
+#define EXPECT_EQUAL(student, ...)                                                          \
     do {                                                                                    \
        auto _studentAnswer   = (student);                                                   \
-       auto _referenceAnswer = (reference);                                                 \
+       decltype(_studentAnswer) _referenceAnswer = __VA_ARGS__;                             \
                                                                                             \
-       std::stringstream _expression;                                                       \
-       _expression << std::boolalpha << "EXPECT_EQUAL failed: "                             \
-                   << #student << " != " << #reference "\n"                                 \
-                   << "                " #student   " = "                                   \
-                   << abbreviate(debugFriendlyString(_studentAnswer)) << '\n'                           \
-                   << "                " #reference " = "                                   \
-                   << abbreviate(debugFriendlyString(_referenceAnswer));                                \
-       doExpect(_areEqual(_studentAnswer, _referenceAnswer), _expression.str(), __LINE__); \
+       if (!_areEqual(_studentAnswer, _referenceAnswer)) {                                  \
+           std::stringstream _expression;                                                   \
+           _expression << std::boolalpha << "EXPECT_EQUAL failed: "                         \
+                       << #student << " != " << #__VA_ARGS__ << "\n"                        \
+                       << evaluate(#student, _studentAnswer)                                \
+                       << evaluate(#__VA_ARGS__, _referenceAnswer);                         \
+           reportFailure(_expression.str(), __LINE__);                                      \
+        }                                                                                   \
     } while (0)
 
 #undef TIME_OPERATION
@@ -201,8 +214,8 @@ inline std::string abbreviate(const std::string& s, size_t maxLen = 300) {
     Timer t;\
     t.start();\
     (void)(expr); \
-    double elapsed = t.stop();\
+    double elapsed_ms = t.stop();\
     std::ostringstream _out; \
-    _out << "Line " << __LINE__ << " TIME_OPERATION " << #expr << " (size =" << std::setw(7) << n << ")" << " completed in " << std::setw(8) << (elapsed/1000) << " secs";\
+    _out << "Line " << __LINE__ << " TIME_OPERATION " << #expr << " (size = " << std::setw(8) << n << ")" << " completed in " << std::setw(8) << std::fixed << std::setprecision(3) << (elapsed_ms/1000) << " secs";\
     addDetail(_out.str());\
 } while(0)

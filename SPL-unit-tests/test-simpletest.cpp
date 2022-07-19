@@ -60,12 +60,12 @@ PROVIDED_TEST("capture output, compare equal") {
     ioutils::captureStdoutBegin();
     std::cout << 12.3456789 << std::endl;
     std::string output = ioutils::captureStdoutEnd();
-    EXPECT_EQUAL( "12.3457\n", output);
+    EXPECT_EQUAL(output, "12.3457\n");
 }
 
 PROVIDED_TEST("capture output, compare equal") {
     ioutils::captureStdoutBegin();
     std::cout << std::fixed << std::setprecision(2) << 12.3456789 << std::endl;
     std::string output = ioutils::captureStdoutEnd();
-    EXPECT_EQUAL( "12.35\n", output);
+    EXPECT_EQUAL(output, "12.35\n");
 }

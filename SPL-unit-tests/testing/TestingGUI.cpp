@@ -4,6 +4,8 @@
  * @author Keith Schwarz
  * @version 2020/3/5
  *    Keith final revision from end of quarter 19-2
+ * @version 2021 Fall Quarter
+ *    Julie edits
  */
 #include "console.h"
 #include "error.h"
@@ -89,7 +91,7 @@ namespace SimpleTest {
 
     string sanitize(string s)
     {
-        for (int i = 0; i < s.length(); i++) {
+        for (size_t i = 0; i < s.length(); i++) {
             if (s[i] == '<') s.replace(i, 1, "&lt;");
             if (s[i] == '>') s.replace(i, 1, "&gt;");
         }
@@ -140,23 +142,23 @@ namespace SimpleTest {
             test.result = TestResult::EXCEPTION;
             ostringstream out;
             out << "Test failed due to the program triggering an ErrorException." << endl;
-            out << endl;
+            out << " " << endl;
             out << "This means that the test did not fail because of a call" << endl;
             out << "to EXPECT() or EXPECT_ERROR() failing, but rather because" << endl;
             out << "some code explicitly called the error() function." << endl;
-            out << endl;
+            out << " " << endl;
             out << "Error: " << e.getMessage();
             test.detailMessage = out.str();
         } catch (const exception& e) {
             test.result = TestResult::EXCEPTION;
             ostringstream out;
             out << "Test failed due to the program triggering an exception." << endl;
-            out << endl;
+            out << " " << endl;
             out << "This means that the test did not fail because of a call" << endl;
             out << "to EXPECT() or an EXPECT_ERROR() failing, but rather because" << endl;
             out << "some code - probably an internal C++ library - triggered" << endl;
             out << "an error." << endl;
-            out << endl;
+            out << " " << endl;
             out << "Error: " << e.what() << endl;
             test.detailMessage = out.str();
         } catch (...) {
@@ -164,12 +166,12 @@ namespace SimpleTest {
             ostringstream out;
             out << "Test failed due to the program triggering an unknown type" << endl;
             out << "of exception. " << endl;
-            out << endl;
+            out << " " << endl;
             out << "This means that the test did not fail because of a call" << endl;
             out << "to EXPECT() or an EXPECT_ERROR() failing, but rather because" << endl;
             out << "some code triggered an error whose format we couldn't" << endl;
             out << "recognize." << endl;
-            out << endl;
+            out << " " << endl;
             test.detailMessage = out.str();
         }
         string indented;
@@ -178,24 +180,6 @@ namespace SimpleTest {
         }
         test.detailMessage = indented;
     }
-
-    // When replace the text in a browser pane, it scrolls to seemingly arbitrary location
-    // Annoying! I will fix setText() in library to do right thing, but need to jam
-    // temporary fix here as students have already installed library that has bad behavior
-    // compiled in. Once fixed in library, this hack can be removed.
-    void setTextPreserveScroll(GBrowserPane *bp, string contents, bool preserve)
-    {
-        auto qtb = static_cast<_Internal_QTextBrowser *>(bp->getInternalWidget());
-        GThread::runOnQtGuiThread([qtb, contents, preserve]() {
-            auto scrollbar = qtb->verticalScrollBar();
-            int pos = scrollbar->value();
-            qtb->setText(QString::fromStdString(contents));
-            if (!preserve) pos = scrollbar->maximum();
-            scrollbar->setValue(pos);
-            scrollbar->setSliderPosition(pos);
-        });
-    }
-
 
     /* Displays all the results from the given test group. */
     string displayResults(GBrowserPane *bp, const string& stylesheet, const Vector<TestGroup>& testGroups, int npass=-1, int nrun=-1)
@@ -223,13 +207,13 @@ namespace SimpleTest {
         }
         h << "</ul>";
         if (nrun > 0) { // all tests completed
-            h << "<h3> Passed " << npass << " of " << nrun << " tests. ";
+            h << "<h3> Passed " << npass << " of " << nrun << " tests.&nbsp;"; // trailing space after period consumed otherwise
             if (npass == nrun) conclusion = affirmation();
             h << conclusion << "</h3>";
 
         }
         h << "</body></html>";
-        setTextPreserveScroll(bp, h.str(), nrun == -1);
+        bp->setTextPreserveScroll(h.str(), nrun == -1); // patch now incorporated into library
         return conclusion;
     }
 
@@ -295,6 +279,7 @@ namespace SimpleTest {
         displayResults(bp, stylesheet, groups);
 
         int nrun=0, npassed=0;
+        const int test_name_length = 30;
         /* Now, go run the tests. */
         for (auto& group: groups) {
             if (!group.selected) continue;
@@ -303,12 +288,12 @@ namespace SimpleTest {
                 /* Make clear that we're running the test. */
                 test.result = TestResult::RUNNING;
                 displayResults(bp,stylesheet, groups);
-                console << "[SimpleTest] starting" << test.id << left << setfill('.') << setw(25) << test.testname.substr(0,25) << "... " << flush;
+                console << "[SimpleTest] starting" << test.id << left << setfill('.') << setw(test_name_length) << test.testname.substr(0,test_name_length) << "... " << flush;
                 runSingleTest(test);
                 nrun++;
                 if (test.result == TestResult::PASS) npassed++;
                 string status = info[test.result].status;
-                if (!getConsoleEnabled()) status = info[test.result].color + status + NORMAL;
+                if (!GThread::qtGuiThreadExists()) status = info[test.result].color + status + NORMAL;
                 console << " =  " << status << endl << test.detailMessage << flush;
                 displayResults(bp, stylesheet, groups);
             }
@@ -344,24 +329,26 @@ namespace SimpleTest {
         return chosen;
     }
 
-    int getChoice(Vector<TestGroup>& groups, Choice ch)
+    int getChoice(Vector<TestGroup>& groups, Choice ch, std::string groupName)
     {
-        if (ch == NO_TESTS) {
-            return 0;
-        } else if (ch == ALL_TESTS ) {
+        if (ch == ALL_TESTS ) {
             return groups.size()+1;
         } else {
-            Vector<string> names = { "None", "All of the above" };
+            Vector<string> names = { "None (instead execute ordinary main() function)", "All of the above tests" };
             for (const auto& entry: groups) {
-                names.insert(names.size()-1, "From " + entry.name);
+                int index = names.size() - 1;
+                names.insert(index, "From " + entry.name);
+                if (entry.name == groupName) {
+                    return index;
+                }
             }
             return userChoiceFromMenu(names);
         }
     }
 
-    bool selectChosenGroup(Vector<TestGroup>& groups, Choice ch)
+    bool selectChosenGroup(Vector<TestGroup>& groups, Choice ch, std::string groupName)
     {
-        int chosen = getChoice(groups, ch);
+        int chosen = getChoice(groups, ch, groupName);
 
         if (chosen == 0) {
             return false;
@@ -373,14 +360,17 @@ namespace SimpleTest {
         }
     }
 
-    bool runSimpleTests(Choice ch, Where where)
+    bool runSimpleTests(Choice ch, Where where, std::string groupName = "")
     {
         // suppress harmless warning about font substitutions (this should be in library too)
         QLoggingCategory::setFilterRules("qt.qpa.fonts.warning=false");
+        if (!GThread::qtGuiThreadExists()) {
+            where = CONSOLE_ONLY;   // without Qt GUI, fall back to console only
+        }
 
         Vector<TestGroup> testGroups = prepareGroups(gTestsMap());
 
-        if (selectChosenGroup(testGroups, ch)) {
+        if (selectChosenGroup(testGroups, ch, groupName)) {
             runSelectedGroups(testGroups, where);
             return true;
         } else {
@@ -390,6 +380,10 @@ namespace SimpleTest {
 }
 
 bool runSimpleTests(Choice ch, Where where) {
-    return SimpleTest::runSimpleTests(ch, where);
+    return SimpleTest::runSimpleTests(ch, where, "");
 }
+bool runSimpleTests(std::string groupName, Where where) {
+    return SimpleTest::runSimpleTests(SELECTED_TESTS, where, groupName);
+}
+
 
