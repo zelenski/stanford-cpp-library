@@ -102,7 +102,10 @@ private:
     public:
         GridLocationRangeIterator(const GridLocationRange* glr, bool end)
                 : glr(glr) {
-            if (end) {
+            /* Need to check that the range isn't empty. If the range
+             * is empty, we need to be an end iterator.
+             */
+            if (end || glr->isEmpty()) {
                 loc.row = glr->endRow() + 1;
                 loc.col = glr->endCol() + 1;
             } else {
