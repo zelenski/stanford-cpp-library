@@ -335,3 +335,19 @@ PROVIDED_TEST("Vector sublist") {
         }
     }
 }
+
+/*
+ * Uncomment this code to test that we get sensible error messages for
+ * a lack of operator support on the underlying type.
+ */
+PROVIDED_TEST("Sensible compiler error messages.") {
+    struct Bad {};
+
+    Vector<Bad> v1;
+    Vector<Bad> v2;
+    //(void) (v1 <  v2);        // Should trigger a static assertion rather than a long chain of sorrows
+    //(void) (v1 == v2);        // Should trigger a static assertion rather than a long chain of sorrows
+    //(void) hashCode(v1);      // Should trigger a static assertion rather than a long chain of sorrows
+    //(void) (std::cout << v1); // Should trigger a static assertion rather than a long chain of sorrows
+    //(void) (std::cin  >> v1); // Should trigger a static assertion rather than a long chain of sorrows
+}

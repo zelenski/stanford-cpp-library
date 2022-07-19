@@ -115,3 +115,15 @@ PROVIDED_TEST("LinkedList, sort") {
     LinkedList<int> exp { 0, 10, 10, 20, 30, 40, 50, 50, 60, 70, 90};
     EXPECT_EQUAL( exp.toString(), vec.toString());
 }
+
+PROVIDED_TEST("Sensible compiler error messages.") {
+    struct Bad {};
+
+    LinkedList<Bad> v1;
+    LinkedList<Bad> v2;
+    //(void) (v1 <  v2);        // Should trigger a static assertion rather than a long chain of sorrows
+    //(void) (v1 == v2);        // Should trigger a static assertion rather than a long chain of sorrows
+    //(void) hashCode(v1);      // Should trigger a static assertion rather than a long chain of sorrows
+    //(void) (std::cout << v1); // Should trigger a static assertion rather than a long chain of sorrows
+    //(void) (std::cin  >> v1); // Should trigger a static assertion rather than a long chain of sorrows
+}

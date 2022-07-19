@@ -222,6 +222,7 @@ void Deque<ValueType>::enqueueFront(const ValueType& value) {
 
 template <typename ValueType>
 bool Deque<ValueType>::equals(const Deque<ValueType>& deque2) const {
+    ASSERT_HAS_EQUALITY(ValueType);
     return _elements == deque2._elements;
 }
 

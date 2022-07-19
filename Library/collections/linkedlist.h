@@ -539,32 +539,38 @@ LinkedList<ValueType>::operator +=(const ValueType& value) {
  */
 template <typename ValueType>
 bool LinkedList<ValueType>::operator ==(const LinkedList& list2) const {
+    ASSERT_HAS_EQUALITY(ValueType);
     return _elements == list2._elements;
 }
 
 template <typename ValueType>
 bool LinkedList<ValueType>::operator !=(const LinkedList& list2) const {
-    return _elements != list2._elements;
+    ASSERT_HAS_EQUALITY(ValueType);
+    return !(*this == list2);
 }
 
 template <typename ValueType>
 bool LinkedList<ValueType>::operator <(const LinkedList& list2) const {
+    ASSERT_IS_COMPARABLE(ValueType);
     return _elements < list2._elements;
 }
 
 template <typename ValueType>
 bool LinkedList<ValueType>::operator <=(const LinkedList& list2) const {
+    ASSERT_IS_COMPARABLE(ValueType);
     return _elements <= list2._elements;
 }
 
 template <typename ValueType>
 bool LinkedList<ValueType>::operator >(const LinkedList& list2) const {
+    ASSERT_IS_COMPARABLE(ValueType);
     return _elements > list2._elements;
 }
 
 template <typename ValueType>
 bool LinkedList<ValueType>::operator >=(const LinkedList& list2) const {
-    return this->_elements >= list2._elements;
+    ASSERT_IS_COMPARABLE(ValueType);
+    return _elements >= list2._elements;
 }
 
 template <typename ValueType>

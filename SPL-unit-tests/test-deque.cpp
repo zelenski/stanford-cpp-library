@@ -86,3 +86,14 @@ PROVIDED_TEST("Deque, error on modify during iterate") {
    EXPECT_ERROR(removeDuring(deque));
 }
 
+PROVIDED_TEST("Sensible compiler error messages.") {
+    struct Bad {};
+
+    Deque<Bad> v1;
+    Deque<Bad> v2;
+    //(void) (v1 <  v2);        // Should trigger a static assertion rather than a long chain of sorrows
+    //(void) (v1 == v2);        // Should trigger a static assertion rather than a long chain of sorrows
+    //(void) hashCode(v1);      // Should trigger a static assertion rather than a long chain of sorrows
+    //(void) (std::cout << v1); // Should trigger a static assertion rather than a long chain of sorrows
+    //(void) (std::cin  >> v1); // Should trigger a static assertion rather than a long chain of sorrows
+}

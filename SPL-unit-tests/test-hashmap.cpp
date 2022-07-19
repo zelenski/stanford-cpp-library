@@ -167,3 +167,14 @@ PROVIDED_TEST("HashMap, streamExtract") {
     bool result = bool(hmstreambad >> hm);
     EXPECT(! result);
 }
+
+PROVIDED_TEST("Sensible compiler error messages.") {
+    struct Bad {};
+
+    HashMap<std::string, Bad> v1;
+    HashMap<std::string, Bad> v2;
+    //(void) (v1 == v2);        // Should trigger a static assertion rather than a long chain of sorrows
+    //(void) hashCode(v1);      // Should trigger a static assertion rather than a long chain of sorrows
+    //(void) (std::cout << v1); // Should trigger a static assertion rather than a long chain of sorrows
+    //(void) (std::cin  >> v1); // Should trigger a static assertion rather than a long chain of sorrows
+}

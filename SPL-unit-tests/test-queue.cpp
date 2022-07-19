@@ -95,3 +95,15 @@ PROVIDED_TEST("Queue, peekEnqueueBug") {
         EXPECT_EQUAL( "{10, 20, 30, 40, 50, 60, 70, 80, 90, 10}", queue.toString());
     }
 }
+
+PROVIDED_TEST("Sensible compiler error messages.") {
+    struct Bad {};
+
+    Queue<Bad> v1;
+    Queue<Bad> v2;
+    //(void) (v1 <  v2);        // Should trigger a static assertion rather than a long chain of sorrows
+    //(void) (v1 == v2);        // Should trigger a static assertion rather than a long chain of sorrows
+    //(void) hashCode(v1);      // Should trigger a static assertion rather than a long chain of sorrows
+    //(void) (std::cout << v1); // Should trigger a static assertion rather than a long chain of sorrows
+    //(void) (std::cin  >> v1); // Should trigger a static assertion rather than a long chain of sorrows
+}

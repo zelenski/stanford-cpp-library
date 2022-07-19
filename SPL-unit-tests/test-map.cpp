@@ -176,3 +176,15 @@ PROVIDED_TEST("Map, streamExtract") {
     stream >> map;
     EXPECT_EQUAL( "{1:10, 2:20, 3:30, 4:40}", map.toString());
 }
+
+PROVIDED_TEST("Sensible compiler error messages.") {
+    struct Bad {};
+
+    Map<std::string, Bad> v1;
+    Map<std::string, Bad> v2;
+    //(void) (v1 <  v2);        // Should trigger a static assertion rather than a long chain of sorrows
+    //(void) (v1 == v2);        // Should trigger a static assertion rather than a long chain of sorrows
+    //(void) hashCode(v1);      // Should trigger a static assertion rather than a long chain of sorrows
+    //(void) (std::cout << v1); // Should trigger a static assertion rather than a long chain of sorrows
+    //(void) (std::cin  >> v1); // Should trigger a static assertion rather than a long chain of sorrows
+}
