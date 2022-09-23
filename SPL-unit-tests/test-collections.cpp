@@ -38,8 +38,8 @@ PROVIDED_TEST("collection initializer lists") {
     auto list2 = {20, 50};
     std::initializer_list<std::string> lexlist = {"sixty", "seventy"};
     std::initializer_list<std::string> lexlist2 = {"twenty", "fifty"};
-    std::initializer_list<std::pair<std::string, int> > pairlist = {{"k", 60}, {"t", 70}};
-    std::initializer_list<std::pair<std::string, int> > pairlist2 = {{"b", 20}, {"e", 50}};
+ //   std::initializer_list<std::pair<std::string, int> > pairlist = {{"k", 60}, {"t", 70}};
+ //   std::initializer_list<std::pair<std::string, int> > pairlist2 = {{"b", 20}, {"e", 50}};
 
     Grid<int> grid {{1, 2, 3}, {4, 5, 6}};
     cout << "init list Grid = " << grid << endl;

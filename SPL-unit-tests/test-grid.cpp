@@ -168,6 +168,39 @@ PROVIDED_TEST("Grid, randomElement") {
     }
 }
 
+PROVIDED_TEST("Grid<T>, locations() GridLocationRange iterator, begin/end/distance") {
+    Grid<int> grid;
+    GridLocationRange range;
+    Set<GridLocation> set;
+
+    /* 5 x 1 */
+    grid = Grid<int>(5, 1);
+    range = grid.locations();
+    set.clear();
+    for (auto loc: range)
+        set.add(loc);
+    EXPECT_EQUAL(set, {{0,0},{1,0},{2,0},{3,0},{4,0}});
+    EXPECT_EQUAL(std::distance(range.begin(), range.end()), set.size());
+
+    /* 1 x 5 */
+    grid = Grid<int>(1, 5);
+    range = grid.locations();
+    set.clear();
+    for (auto loc: range)
+        set.add(loc);
+    EXPECT_EQUAL(set, {{0,0},{0,1},{0,2},{0,3},{0,4}});
+    EXPECT_EQUAL(std::distance(range.begin(), range.end()), set.size());
+
+    /* 2 x 3 */
+    grid = Grid<int>(2, 3);
+    range = grid.locations();
+    set.clear();
+    for (auto loc: range)
+        set.add(loc);
+    EXPECT_EQUAL(set, {{0,0},{0,1},{0,2},{1,0},{1,1},{1,2}});
+    EXPECT_EQUAL(std::distance(range.begin(), range.end()), set.size());
+}
+
 PROVIDED_TEST("Grid<T>, locations() works on an empty Grid.") {
     Grid<int> empty;
     GridLocationRange range;
