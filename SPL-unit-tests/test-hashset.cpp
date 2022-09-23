@@ -7,7 +7,6 @@
 #include "hashset.h"
 #include "map.h"
 #include "queue.h"
-#include "stl.h"
 #include "common.h"
 #include "testing/SimpleTest.h"
 #include <initializer_list>

@@ -56,6 +56,7 @@
 # # for more details or look at qttypes.py, stdtypes.py, boosttypes.py
 # # for more complex examples.
 
+import platform
 import dumper
 from dumper import Children, SubItem
 
@@ -571,5 +572,29 @@ def map_helper_libstd(d, value, elem_fn):
 
 def is_lib_cpp(value):
     """Returns whether the class is from libc++."""
-
     return value.type.name.startswith('std::__1')
+
+
+# 3/8/2022
+# A quick hack courtesy of Julie Zelenski, Chris Gregg, Neel Kishnani, and Jonathan Kula
+# clang on M1 hardware is generating std::string with different layout than
+# it did on intel.
+# See bug report https://bugreports.qt.io/browse/QTCREATORBUG-26175
+# layout on M1 = 24 bytes
+#    internal [23 byte chars][length byte]
+#    external [8 byte pointer to char data][length short][14 other bytes][0x80]
+# see here for data types: https://doc.qt.io/qtcreator/creator-debugging-helpers.html
+
+if platform.machine() == 'arm64':
+    def qdump__std____1__string(d, value):
+        all = value.split('pHbbbbbbbbbbbbbb')
+        size = all[-1]
+        if size == -128:  # 0x80
+            data = all[0]
+            size = all[1]
+        else:
+            data = value.address()
+
+        d.putCharArrayHelper(data, size, d.charType(), d.currentItemFormat())
+        d.putType("std::string")
+

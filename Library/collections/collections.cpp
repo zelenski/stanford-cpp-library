@@ -91,19 +91,22 @@ bool readQuotedString(std::istream& is, std::string& str, bool throwOnError) {
     if (is.fail()) {
         return true;   // empty string?
     }
-    if (ch == '\'' || ch == '"') {
-        char delim = ch;
-        while (is.get(ch) && ch != delim) {
-            if (is.fail()) {
+    if (ch == '\'' || ch == '"') { // if starts with single or double quote, read to match close
+        char delim = ch; // record open delimiter (either " or ') to match later
+        while (true) {
+            if (!is.get(ch) || is.fail()) {
                 if (throwOnError) {
                     error("Unterminated string");
                 }
                 return false;
             }
+            if (ch == delim) {
+                break; // read to end of string
+            }
             if (ch == '\\') {
                 if (!is.get(ch)) {
                     if (throwOnError) {
-                        error("Unterminated string");
+                        error("Unterminated escape sequence");
                     }
                     is.setstate(std::ios_base::failbit);
                     return false;
@@ -114,6 +117,13 @@ bool readQuotedString(std::istream& is, std::string& str, bool throwOnError) {
                     if (ch == 'x') {
                         base = 16;
                         maxDigits = 2;
+                        if (!is.get(ch)) { // read past x
+                          if (throwOnError) {
+                              error("Unterminated escape sequence");
+                          }
+                          is.setstate(std::ios_base::failbit);
+                          return false;
+                        }
                     }
                     int result = 0;
                     int digit = 0;
@@ -126,7 +136,7 @@ bool readQuotedString(std::istream& is, std::string& str, bool throwOnError) {
                             break;
                         }
                         result = base * result + digit;
-                        if (!is.get(ch)) {
+                        if (!is.get(ch)) { // read ahead one
                             if (throwOnError) {
                                 error("Unterminated string");
                             }
@@ -135,7 +145,7 @@ bool readQuotedString(std::istream& is, std::string& str, bool throwOnError) {
                         }
                     }
                     ch = char(result);
-                    is.unget();
+                    is.unget(); // unget last char (had to read one too far)
                 } else {
                     switch (ch) {
                     case 'a': ch = '\a'; break;
@@ -153,7 +163,7 @@ bool readQuotedString(std::istream& is, std::string& str, bool throwOnError) {
             }
             str += ch;
         }
-    } else {
+    } else { // not quoted string at all, fallback read until EOF/delim (sketchy..?)
         str += ch;
         int endTrim = 0;
         while (is.get(ch) && STATIC_VARIABLE(STRING_DELIMITERS).find(ch) == std::string::npos) {

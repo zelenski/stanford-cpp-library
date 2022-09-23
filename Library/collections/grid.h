@@ -762,6 +762,10 @@ std::istream& operator >>(std::istream& is, Grid<ValueType>& grid) {
 
     int nRows = vec2d.size();
     int nCols = (nRows == 0) ? 0 : vec2d[0].size();
+    for (int i = 0; i < nRows; i++) {
+        if (vec2d[i].size() != nCols)
+            error("Grid::operator >> list is not rectangular (must have same # cols in each row)");
+    }
     grid.resize(nRows, nCols);
     for (int i = 0; i < nRows; i++) {
         for (int j = 0; j < nCols; j++) {

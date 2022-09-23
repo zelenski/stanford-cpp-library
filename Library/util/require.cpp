@@ -108,7 +108,7 @@ void positive(int value, const std::string& caller, const std::string& valueName
 }
 
 void require(bool test, const std::string& caller, const std::string& details) {
-    _spl_assert(test, caller, "", details);
+    _spl_assert(test, caller, " ", details); // use empty string to avoid erroneous use of default value
 }
 
 } // namespace require

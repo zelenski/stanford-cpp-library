@@ -1068,15 +1068,6 @@ public:
     void add(const value_type& value);
 
     /**
-     * Method: back
-     * Usage: ValueType value = set.last();
-     * ------------------------------------
-     * Returns the last value in the set in the order established by the
-     * <code>for-each</code> loop.  If the set is empty, generates an error.
-     */
-    value_type last() const;
-
-    /**
      * Method: clear
      * Usage: set.clear();
      * -------------------
@@ -1176,6 +1167,15 @@ public:
     bool isSupersetOf(const GenericSet& set2) const;
 
     /**
+     * Method: last
+     * Usage: ValueType value = set.last();
+     * ------------------------------------
+     * Returns the last value in the set in the order established by the
+     * <code>for-each</code> loop.  If the set is empty, generates an error.
+     */
+    value_type last() const;
+
+        /**
      * Method: mapAll
      * Usage: set.mapAll(fn);
      * ----------------------
@@ -1460,7 +1460,7 @@ template <typename SetTraits>
 typename GenericSet<SetTraits>::value_type
 GenericSet<SetTraits>::last() const {
     if (isEmpty()) {
-        error(SetTraits::name() + "::back: set is empty");
+        error(SetTraits::name() + "::last: set is empty");
     }
     return _map.lastKey();
 }

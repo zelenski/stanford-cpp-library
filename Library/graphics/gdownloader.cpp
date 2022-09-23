@@ -217,7 +217,7 @@ void GDownloader::sslErrorsReply(QList<QSslError>) {
     std::cout << "  DEBUG: sslErrors from NetworkReply" << std::endl;
 }
 
-void GDownloader::sslErrorsNam(QNetworkReply *reply, QList<QSslError>) {
+void GDownloader::sslErrorsNam(QNetworkReply *, QList<QSslError>) {
     std::cout << "  DEBUG: sslErrors from NetworkAccessManager" << std::endl;
 }
 
