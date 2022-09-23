@@ -120,13 +120,14 @@ template <size_t N> std::string debugFriendlyString(char (&s)[N]) {
 /* Print float/double with maximum precision. */
 inline std::string debugFriendlyString(float value) {
     std::ostringstream result;
+    // do add suffix if float since may need type to understand result
     result << std::setprecision(FLT_DIG+1) << value << "f";
     return result.str();
 }
 
 inline std::string debugFriendlyString(double value) {
     std::ostringstream result;
-    result << std::setprecision(DBL_DIG+1) << value << "d";
+    result << std::setprecision(DBL_DIG+1) << value;
     return result.str();
 }
 
