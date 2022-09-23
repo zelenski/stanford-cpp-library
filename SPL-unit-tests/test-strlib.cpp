@@ -16,10 +16,10 @@ using namespace std;
 
 PROVIDED_TEST("Conversions between bool and string") {
     /* Conversion from bool to string */
-    EXPECT_EQUAL("true", boolToString(true));
-    EXPECT_EQUAL("true", boolToString(1));
-    EXPECT_EQUAL("false", boolToString(false));
-    EXPECT_EQUAL("false", boolToString(0));
+    EXPECT_EQUAL(boolToString(true), "true");
+    EXPECT_EQUAL(boolToString(1), "true");
+    EXPECT_EQUAL(boolToString(false), "false");
+    EXPECT_EQUAL(boolToString(0), "false");
 
     /* Conversion from string to bool */
     EXPECT_EQUAL(true, stringToBool("true"));

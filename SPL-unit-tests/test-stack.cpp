@@ -42,7 +42,7 @@ PROVIDED_TEST("Stack push, compare") {
     testCompareOperators(s1, s1, EqualTo);
 
     Set<Stack<int> > ss {s1, s2};
-    EXPECT_EQUAL("{{1, 2, 1, 4, 7}, {1, 2, 1, 5}}", ss.toString());
+    EXPECT_EQUAL(ss.toString(), "{{1, 2, 1, 4, 7}, {1, 2, 1, 5}}");
 }
 
 PROVIDED_TEST("Stack peek/pop") {
@@ -75,6 +75,6 @@ PROVIDED_TEST("Stack hashcode") {
 
 PROVIDED_TEST("Stack initializer_list") {
     Stack<int> stack {10, 20, 30};
-    EXPECT_EQUAL( "{10, 20, 30}", stack.toString());
+    EXPECT_EQUAL(stack.toString(), "{10, 20, 30}");
 }
 

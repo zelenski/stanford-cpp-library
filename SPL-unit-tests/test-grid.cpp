@@ -43,7 +43,7 @@ PROVIDED_TEST("Grid, compare") {
     testCompareOperators(grid1, grid1, EqualTo);
 
     Set<Grid<int>> sgrid {grid1, grid2, grid3, grid4};
-    EXPECT_EQUAL( "{{}, {{0, 0}, {0, 0}}, {{0, 0, 0}, {0, 0, 0}}, {{0, 0}, {0, 0}, {0, 0}}}", sgrid.toString());
+    EXPECT_EQUAL(sgrid.toString(), "{{}, {{0, 0}, {0, 0}}, {{0, 0, 0}, {0, 0, 0}}, {{0, 0}, {0, 0}, {0, 0}}}");
 }
 
 PROVIDED_TEST("Grid, forEach") {
@@ -91,7 +91,12 @@ PROVIDED_TEST("Grid, initializerList") {
     EXPECT_EQUAL( 60, grid[1][2]);
 }
 
-void fillDuring(Grid<int>& g) { for (int m : g) g.fill(0); }
+void fillDuring(Grid<int>& g) {
+    for (int m : g) {
+        (void)m;
+        g.fill(0);
+    }
+}
 
 PROVIDED_TEST("Grid, error on modify during iterate") {
     Grid<int> rowSort = {

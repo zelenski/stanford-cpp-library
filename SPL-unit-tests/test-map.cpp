@@ -77,8 +77,8 @@ PROVIDED_TEST("Map, forEach") {
 
 PROVIDED_TEST("Map, firstLast") {
     Map<std::string, int> map {{"a", 10}, {"b", 20}, {"c", 30}};
-    EXPECT_EQUAL( "a", map.firstKey());
-    EXPECT_EQUAL(  "c", map.lastKey());
+    EXPECT_EQUAL(map.firstKey(), "a");
+    EXPECT_EQUAL(map.lastKey(),  "c");
 }
 
 PROVIDED_TEST("Map, hashCode") {
@@ -99,7 +99,6 @@ PROVIDED_TEST("Map, hashCode") {
 PROVIDED_TEST("Map, initializerList") {
     std::initializer_list<std::pair<const std::string, int>> pairlist = {{"k", 60}, {"t", 70}};
     std::initializer_list<std::pair<const std::string, int>> pairlist2 = {{"b", 20}, {"e", 50}};
-    std::initializer_list<std::pair<const std::string, int>> expected;
 
     Map<std::string, int> map {{"a", 10}, {"b", 20}, {"c", 30}};
     EXPECT_EQUAL( 10, map.get("a"));
@@ -108,34 +107,34 @@ PROVIDED_TEST("Map, initializerList") {
     EXPECT_EQUAL( 3, map.size());
 
     map += {{"d", 40}, {"e", 50}};
-    expected = {{"a", 10}, {"b", 20}, {"c", 30}, {"d", 40}, {"e", 50}};
-    assertMap("after +=", expected, map);
+    std::initializer_list<std::pair<const std::string, int>> expected1 = {{"a", 10}, {"b", 20}, {"c", 30}, {"d", 40}, {"e", 50}};
+    assertMap("after +=", expected1, map);
 
     Map<std::string, int> copy = map + pairlist;
-    expected = {{"a", 10}, {"b", 20}, {"c", 30}, {"d", 40}, {"e", 50}};
-    assertMap("after + (shouldn't modify)", expected, map);
-    expected = {{"a", 10}, {"b", 20}, {"c", 30}, {"d", 40}, {"e", 50}, {"k", 60}, {"t", 70}};
+    std::initializer_list<std::pair<const std::string, int>> expected2 = {{"a", 10}, {"b", 20}, {"c", 30}, {"d", 40}, {"e", 50}};
+    assertMap("after + (shouldn't modify)", expected2, map);
+    // std::initializer_list<std::pair<const std::string, int>> expected3 = {{"a", 10}, {"b", 20}, {"c", 30}, {"d", 40}, {"e", 50}, {"k", 60}, {"t", 70}};
     // assertMap("after + copy", expected, copy);
 
     copy = map - pairlist2;
-    expected = {{"a", 10}, {"b", 20}, {"c", 30}, {"d", 40}, {"e", 50}};
-    assertMap("after - (shouldn't modify)", expected, map);
-    expected = {{"a", 10}, {"c", 30}, {"d", 40}};
-    assertMap("after - copy", expected, copy);
+    std::initializer_list<std::pair<const std::string, int>> expected4 = {{"a", 10}, {"b", 20}, {"c", 30}, {"d", 40}, {"e", 50}};
+    assertMap("after - (shouldn't modify)", expected4, map);
+    std::initializer_list<std::pair<const std::string, int>> expected5 = {{"a", 10}, {"c", 30}, {"d", 40}};
+    assertMap("after - copy", expected5, copy);
 
     copy = map * pairlist2;
-    expected = {{"a", 10}, {"b", 20}, {"c", 30}, {"d", 40}, {"e", 50}};
-    assertMap("after * (shouldn't modify)", expected, map);
-    expected = {{"b", 20}, {"e", 50}};
-    assertMap("after * copy", expected, copy);
+    std::initializer_list<std::pair<const std::string, int>> expected6 = {{"a", 10}, {"b", 20}, {"c", 30}, {"d", 40}, {"e", 50}};
+    assertMap("after * (shouldn't modify)", expected6, map);
+    std::initializer_list<std::pair<const std::string, int>> expected7 = {{"b", 20}, {"e", 50}};
+    assertMap("after * copy", expected7, copy);
 
     map -= {{"d", 40}, {"e", 50}};
-    expected = {{"a", 10}, {"b", 20}, {"c", 30}};
-    assertMap("after -=", expected, map);
+    std::initializer_list<std::pair<const std::string, int>> expected8 = {{"a", 10}, {"b", 20}, {"c", 30}};
+    assertMap("after -=", expected8, map);
 
     map *= pairlist2;
-    expected = {{"b", 20}};
-    assertMap("after *=", expected, map);
+    std::initializer_list<std::pair<const std::string, int>> expected9 = {{"b", 20}};
+    assertMap("after *=", expected9, map);
 }
 
 void addDuring(Map<std::string, int>& m) { for (auto k:m) m.put(k+k, 3); }
@@ -174,5 +173,5 @@ PROVIDED_TEST("Map, streamExtract") {
     std::istringstream stream("{2:20, 1:10, 4:40, 3:30}");
     Map<int, int> map;
     stream >> map;
-    EXPECT_EQUAL( "{1:10, 2:20, 3:30, 4:40}", map.toString());
+    EXPECT_EQUAL(map.toString(), "{1:10, 2:20, 3:30, 4:40}");
 }

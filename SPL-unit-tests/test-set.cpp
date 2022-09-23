@@ -29,7 +29,7 @@ template class stanfordcpplib::collections::GenericSet<stanfordcpplib::collectio
  * hashing show up properly.
  */
 #if 0
-void causeCompilerError(") {
+void causeCompilerError() {
     struct Bad {};
 
     Set<Bad> bad; // Should trigger a static assertion rather than a long chain of sorrows
@@ -40,7 +40,7 @@ void causeCompilerError(") {
  * We should NOT get a compiler error trying to stash things in a Set that are not
  * comparable as long as we provide a custom comparator.
  */
-static void customComparatorNoError() {
+PROVIDED_TEST("No compiler error with custom comparator on uncomparable class.") {
     struct Meh {};
 
     Set<Meh> okay([](const Meh&, const Meh&) {
@@ -92,7 +92,7 @@ PROVIDED_TEST("Set, compare") {
 
     // note: shouldn't add set3 because it is 'equal' to set2 (duplicate)
     Set<Set<int> > sset {set1, set2, set3, set4};
-    EXPECT_EQUAL( "{{}, {1, 2, 3, 4}, {1, 2, 5, 7, 8}}", sset.toString());
+    EXPECT_EQUAL(sset.toString(), "{{}, {1, 2, 3, 4}, {1, 2, 5, 7, 8}}");
 }
 
 PROVIDED_TEST("Set, customComparator") {
@@ -175,8 +175,18 @@ PROVIDED_TEST("Set, initializerList") {
     assertCollection("after *=", {10, 40}, set);
 }
 
-void addDuring(Set<int>& v) { for (int m : v) v.add(0); }
-void removeDuring(Set<int>& v) { for (int m : v) v.remove(0); }
+void addDuring(Set<int>& v) {
+    for (int m : v) {
+        (void) m;
+        v.add(0);
+    }
+}
+void removeDuring(Set<int>& v) {
+    for (int m : v) {
+        (void) m;
+        v.remove(0);
+    }
+}
 
 PROVIDED_TEST("Set, error on modify during iterate") {
     Set<int> set {1, 2, 3, 4, 1, 6, 1, 8, 2, 10};

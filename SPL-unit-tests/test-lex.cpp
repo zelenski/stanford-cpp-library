@@ -85,7 +85,7 @@ PROVIDED_TEST("Lexicon, compare") {
     testCompareOperators(lex, lex, EqualTo);
 
     Set<Lexicon> slex {lex, lex2, lex3};
-    EXPECT_EQUAL( "{{}, {\"a\", \"ab\", \"bc\"}, {\"a\", \"b\", \"c\"}}", slex.toString());
+    EXPECT_EQUAL(slex.toString(), "{{}, {\"a\", \"ab\", \"bc\"}, {\"a\", \"b\", \"c\"}}");
 }
 
 PROVIDED_TEST("Lexicon, forEach") {
@@ -121,7 +121,7 @@ PROVIDED_TEST("Lexicon, initializerList") {
     std::initializer_list<std::string> lexlist = {"sixty", "seventy"};
 
     Lexicon lex {"ten", "twenty", "thirty"};
-    EXPECT_EQUAL( "{\"ten\", \"thirty\", \"twenty\"}", lex.toString());
+    EXPECT_EQUAL(lex.toString(), "{\"ten\", \"thirty\", \"twenty\"}");
     EXPECT_EQUAL( 3, lex.size());
     EXPECT( lex.contains("ten"));
     EXPECT( lex.contains("twenty"));
@@ -130,7 +130,7 @@ PROVIDED_TEST("Lexicon, initializerList") {
     EXPECT(! lex.contains("fifty"));
 
     lex += {"forty", "fifty"};
-    EXPECT_EQUAL( "{\"fifty\", \"forty\", \"ten\", \"thirty\", \"twenty\"}", lex.toString());
+    EXPECT_EQUAL(lex.toString(), "{\"fifty\", \"forty\", \"ten\", \"thirty\", \"twenty\"}");
     EXPECT_EQUAL( 5, lex.size());
     EXPECT( lex.contains("ten"));
     EXPECT( lex.contains("twenty"));
@@ -141,7 +141,7 @@ PROVIDED_TEST("Lexicon, initializerList") {
     EXPECT(! lex.contains("seventy"));
 
     Lexicon lex2 = (lex + lexlist);
-    EXPECT_EQUAL( "{\"fifty\", \"forty\", \"ten\", \"thirty\", \"twenty\"}", lex.toString());
+    EXPECT_EQUAL(lex.toString(), "{\"fifty\", \"forty\", \"ten\", \"thirty\", \"twenty\"}");
     EXPECT_EQUAL( 5, lex.size());
     EXPECT( lex.contains("ten"));
     EXPECT( lex.contains("twenty"));
@@ -151,7 +151,7 @@ PROVIDED_TEST("Lexicon, initializerList") {
     EXPECT(! lex.contains("sixty"));
     EXPECT(! lex.contains("seventy"));
 
-    EXPECT_EQUAL( "{\"fifty\", \"forty\", \"seventy\", \"sixty\", \"ten\", \"thirty\", \"twenty\"}", lex2.toString());
+    EXPECT_EQUAL(lex2.toString(), "{\"fifty\", \"forty\", \"seventy\", \"sixty\", \"ten\", \"thirty\", \"twenty\"}");
     EXPECT_EQUAL( 7, lex2.size());
     EXPECT( lex2.contains("ten"));
     EXPECT( lex2.contains("twenty"));
@@ -162,8 +162,18 @@ PROVIDED_TEST("Lexicon, initializerList") {
     EXPECT( lex2.contains("seventy"));
 }
 
-void addDuring(Lexicon& v) { for (auto m : v) v.add("garbageword"); }
-void removeDuring(Lexicon& v) { for (auto m : v) v.remove(m); }
+void addDuring(Lexicon& v) {
+    for (auto m : v) {
+        (void) m;
+        v.add("garbageword");
+    }
+}
+void removeDuring(Lexicon& v) {
+    for (auto m : v) {
+        (void) m;
+        v.remove(m);
+    }
+}
 
 PROVIDED_TEST("Lexicon, error on modify during iterate") {
     Lexicon lex {"ten", "twenty", "thirty", "forty"};

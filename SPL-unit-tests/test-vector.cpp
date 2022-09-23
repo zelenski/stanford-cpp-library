@@ -78,7 +78,7 @@ PROVIDED_TEST("Vector comparision operators") {
     testCompareOperators(v6, v6, EqualTo);
 
     Set<Vector<int> > sv {v1, v2, v3, v4, v5, v6};
-    EXPECT_EQUAL("{{}, {1, 1, 7}, {1, 2, 4, 5}, {1, 2, 4, 5, 6, 7}, {1, 3, 1, 4, 8}, {2, 0}}", sv.toString());
+    EXPECT_EQUAL(sv.toString(), "{{}, {1, 1, 7}, {1, 2, 4, 5}, {1, 2, 4, 5, 6, 7}, {1, 3, 1, 4, 8}, {2, 0}}");
 }
 
 PROVIDED_TEST("Vector + Vector") {
@@ -255,8 +255,18 @@ PROVIDED_TEST("Vector out of bounds detection") {
     EXPECT_ERROR(v.begin() - v2.begin());
 }
 
-void addDuring(Vector<int>& v) { for (int m : v) v.add(0); }
-void removeDuring(Vector<int>& v) { for (int m : v) v.remove(0); }
+void addDuring(Vector<int>& v) {
+    for (int m : v) {
+        (void) m;
+        v.add(0);
+    }
+}
+void removeDuring(Vector<int>& v) {
+    for (int m : v) {
+        (void) m;
+        v.remove(0);
+    }
+}
 
 void modify(Vector<int> &v) {v.remove(0);}
 PROVIDED_TEST("Vector error if modify during iteration") {

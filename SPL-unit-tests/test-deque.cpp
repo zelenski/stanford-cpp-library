@@ -36,7 +36,7 @@ PROVIDED_TEST("Deque, compare") {
     testCompareOperators(deq2, deq, LessThan);
     testCompareOperators(deq, deq, EqualTo);
     Set<Deque<std::string> > sdeque {deq, deq2, deq3};
-    EXPECT_EQUAL( "{{}, {\"a\", \"ab\", \"bc\"}, {\"a\", \"b\", \"c\"}}", sdeque.toString());
+    EXPECT_EQUAL(sdeque.toString(), "{{}, {\"a\", \"ab\", \"bc\"}, {\"a\", \"b\", \"c\"}}");
 }
 
 PROVIDED_TEST("Deque, forEach") {
@@ -74,11 +74,21 @@ PROVIDED_TEST("Deque, hashCode") {
 
 PROVIDED_TEST("Deque, initializerList") {
     Deque<int> deque {10, 20, 30};
-    EXPECT_EQUAL( "{10, 20, 30}", deque.toString());
+    EXPECT_EQUAL(deque.toString(), "{10, 20, 30}");
 }
 
-void addDuring(Deque<int>& v) { for (int m : v) v.enqueueBack(0); }
-void removeDuring(Deque<int>& v) { for (int m : v) v.dequeueBack(); }
+void addDuring(Deque<int>& v) {
+    for (int m : v) {
+        (void) m;
+        v.enqueueBack(0);
+    }
+}
+void removeDuring(Deque<int>& v) {
+    for (int m : v) {
+        (void) m;
+        v.dequeueBack();
+    }
+}
 
 PROVIDED_TEST("Deque, error on modify during iterate") {
     Deque<int> deque {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
