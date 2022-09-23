@@ -12,15 +12,9 @@
 #include <testing/SimpleTest.h>
 
 
-
-PROVIDED_TEST("expect equal, should fail 42 not 17") {
-    EXPECT_EQUAL( 42, 17);
-    EXPECT_EQUAL( 42, 42);
-}
-
-PROVIDED_TEST("expect equal, should fail 42 not 17") {
-    EXPECT_EQUAL( 42, 42);
-    EXPECT_EQUAL( 42, 17);
+PROVIDED_TEST("expect equal, integer compare") {
+    EXPECT_EQUAL(42, 42);
+    EXPECT_EQUAL(0, 0);
 }
 
 PROVIDED_TEST("expect equal, pointer compare") {
@@ -53,7 +47,21 @@ PROVIDED_TEST("expect equal, mixed float/double") {
     float f = 0.3;
     double g = 0.1;
     g *= 3;
-    EXPECT_EQUAL(f, g);
+    EXPECT(f != g); // values are not exact/bitwise equal
+    EXPECT_EQUAL(f, g); // but are within fp epsilon
+}
+
+double zero = 0;
+
+PROVIDED_TEST("expect equal, inf should equal self ") {
+    EXPECT_EQUAL(1/zero, 1/zero);
+    EXPECT_EQUAL(-1/zero, 1/zero);
+    EXPECT_EQUAL(-1/zero, -1/zero);
+}
+
+PROVIDED_TEST("nan is not equal to anything even itself (HEADS UP: this test should fail)") {
+    EXPECT(zero/zero != zero/zero);
+    EXPECT_EQUAL(zero/zero, zero/zero);
 }
 
 PROVIDED_TEST("capture output, compare equal") {

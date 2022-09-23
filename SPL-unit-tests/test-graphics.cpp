@@ -35,12 +35,12 @@ PROVIDED_TEST("GOptionPane alerts, dialogs, messages") {
     GOptionPane::showMessageDialog("This would be an error alert", "Oh no", GOptionPane::MESSAGE_ERROR);
     GOptionPane::showMessageDialog("Testing special chars [*+*&}{] && || !)@(*&#)(&^%!{ \" \" \" \"}) C:\\Program Files\\Test ;,;:\", ';\"\\//\\// ( ) test 1 2 3 $a $b %a %b %1 %2 http://foo.com/! end");
 
-    bool result = GOptionPane::showConfirmDialog("Are you sure? (say yes)");
-    EXPECT_EQUAL(result, true);
-    result = GOptionPane::showConfirmDialog("All is cool? (say ok)", "I have a title", GOptionPane::CONFIRM_OK_CANCEL);
-    EXPECT_EQUAL(result, true);
-    result = GOptionPane::showConfirmDialog("This one allows cancel (do that)", "booyah", GOptionPane::CONFIRM_YES_NO_CANCEL);
-    EXPECT_EQUAL(result, false);
+    bool result = GOptionPane::showConfirmDialog("Are you sure? (say Yes)");
+    EXPECT_EQUAL(result, GOptionPane::CONFIRM_YES);
+    result = GOptionPane::showConfirmDialog("All is cool? (say OK)", "I have a title", GOptionPane::CONFIRM_OK_CANCEL);
+    EXPECT_EQUAL(result, GOptionPane::CONFIRM_OK);
+    result = GOptionPane::showConfirmDialog("This one allows Cancel (do that)", "booyah", GOptionPane::CONFIRM_YES_NO_CANCEL);
+    EXPECT_EQUAL(result, GOptionPane::CONFIRM_CANCEL);
 
     std::string input = GOptionPane::showInputDialog("Enter boo in text field:");
     EXPECT_EQUAL(input, "boo");
@@ -174,99 +174,74 @@ static void border(GCanvas* img) {
 PROVIDED_TEST("Canvas with image") {
     GWindow* gw = new GWindow;
     gw->setSize(300, 300);
-    gw->setTitle("Test");
+    gw->setTitle("Canvas Test");
 
     GButton* button1 = new GButton("Click Me 1");
-    gw->add(button1, 250, 80);
-    //GButton* button2 = new GButton("Click Me 2");
-    //gw->addToRegion(button2, "NORTH");
+    gw->addToRegion(button1, "NORTH");
+    GButton* button2 = new GButton("Click Me 2");
+    gw->addToRegion(button2, "NORTH");
 
-    GLabel* label = new GLabel("test!");
-    gw->add(label, 10, 60);
+    GLabel* label = new GLabel("this is a label");
+    gw->addToRegion(label, "SOUTH");
 
-    GCanvas* img = new GCanvas(200, 250);
-    img->setLocation(10, 80);
-    gw->add(img, 50, 50);
-    // gw->addToRegion(img, "SOUTH");
-    gw->setVisible(true);
-
-//    GCanvas* img2 = new GCanvas(20, 20);
-//    img2->fill(GCanvas::createRgbPixel(255, 0, 255));
-//    Grid<int> grid = img2->toGrid();
-//    cout << "grid of pixels before: " << grid << endl;
-//    for (int y = 4; y <= 18; y++) {
-//        for (int x = 2; x <= 9; x++) {
-//            grid[y][x] = GCanvas::createRgbPixel(0, 255, 0);
-//        }
-//    }
-//    cout << "grid of pixels after: " << grid << endl;
-//    img2->fromGrid(grid);
-//    gw->add(img2, 350, 20);
-
-    GCanvas* img3 = new GCanvas();
-    img3->load("res/stanford.png");
-    gw->add(img3, 10, 20);
+    cout << "Show canvas with image of Stanford S" << endl;
+    GCanvas* img = new GCanvas();
+    img->load("res/stanford.png");
+    gw->add(img, 10, 20);
     pause(2000);
 
-    cout << "start toGrid" << endl;
-    Grid<int> grid3 = img3->toGrid();
-    cout << "end toGrid, start rgb" << endl;
-    for (int y = 0; y < grid3.numRows(); y++) {
-        for (int x = 0; x < grid3.numCols(); x++) {
-            int red, green, blue;
-            GCanvas::getRedGreenBlue(grid3[y][x], red, green, blue);
-            grid3[y][x] = GCanvas::createRgbPixel(green, red, blue);
+    cout << "Retrieve pixels via toGrid, compare to individual pixel retrieved one by one" << endl;
+    Grid<int> grid = img->toGrid();
+    for (int y = 0; y < grid.numRows(); y++) {
+        for (int x = 0; x < grid.numCols(); x++) {
+            EXPECT_EQUAL(img->getARGB(x, y), grid[y][x]);
         }
     }
-    cout << "end rgb, start fromGrid" << endl;
-    img3->fromGrid(grid3);
-    cout << "end fromGrid" << endl;
-
+    cout << "Now replace image with its pixel copy, should not change" << endl;
+    img->fromGrid(grid);
     pause(1000);
 
-    // fill
+    std::cout << "Will resize GCanvas to 100x50, fill with magenta" << std::endl;
     img->fill(0xff00ff);  // purple
+    img->resize(100, 50);
+    border(img);
 
-    std::cout << "About to setRGB on GCanvas." << std::endl;
-    for (int y = 2; y < img->getHeight() - 2; y++) {
+    std::cout << "Now setRGB on inner pixels (one at a time, this is slow!)" << std::endl;
+    for (int y = 5; y < img->getHeight() - 5; y++) {
         for (int x = 5; x <= img->getWidth() - 5; x++) {
             img->setRGB(x, y, 0xffcc33);
         }
     }
-    std::cout << "Done setting RGB on GCanvas." << std::endl;
+    std::cout << "Done setting RGB on GCanvas pixels." << std::endl;
     border(img);
     pause(100);
 
-    std::cout << "About to resize on GCanvas." << std::endl;
-    img->resize(100, 50);
+    std::cout << "Will resize GCanvas to 80x200, fill red" << std::endl;
+    img->resize(80, 200);
+    img->fill(0xff0000);
     border(img);
-    pause(100);
+    pause(300);
 
-    std::cout << "About to resize on GCanvas." << std::endl;
-    img->resize(200, 80);
-    border(img);
-    pause(100);
+    std::cout << "Now setGrid to change on inner pixels" << std::endl;
+    grid = img->toGrid();
 
-    std::cout << "About to setRGB on GCanvas." << std::endl;
-    for (int y = 10; y < img->getHeight() - 10; y++) {
-        for (int x = 10; x <= img->getWidth() - 10; x++) {
-            img->setRGB(x, y, 0xff33cc);
+    for (int y = 5; y < img->getHeight() - 5; y++) {
+        for (int x = 5; x <= img->getWidth() - 5; x++) {
+            grid[y][x] = 0xffcc33;
         }
     }
+    img->setPixels(grid);
     border(img);
+    pause(1000);
 
     std::cout << "About to remove others" << std::endl;
-    pause(200);
     gw->remove(label);
     gw->remove(button1);
-    //gw->removeFromRegion(button2, "NORTH");
-    pause(200);
+    gw->remove(button2);
+    pause(300);
 
     std::cout << "About to remove GCanvas." << std::endl;
-    pause(200);
     gw->remove(img);
-    // gw->removeFromRegion(img, "SOUTH");
-    pause(200);
     std::cout << "Test complete." << std::endl;
     std::cout << std::endl;
 }

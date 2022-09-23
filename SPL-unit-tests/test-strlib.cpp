@@ -36,18 +36,15 @@ PROVIDED_TEST("Conversions between bool and string") {
 }
 
 PROVIDED_TEST("Conversions between char and string") {
-    Vector<char> inA = {'A', 'a', '0', '?', '\t', '\n'};
-    Vector<string> outA = {"A", "a", "0", "?", "\t", "\n"};
+    Vector<char> chars = {'A', 'a', '0', '?', '\t', '\n'};
+    Vector<string> strs = {"A", "a", "0", "?", "\t", "\n"};
 
-    for (int i = 0; i < inA.size(); i++) {
-        EXPECT_EQUAL(charToString(inA[i]), outA[i]);
+    for (int i = 0; i < chars.size(); i++) {
+        EXPECT_EQUAL(charToString(chars[i]), strs[i]);
     }
 
-    Vector<string> inB = {"A", "  A  ", "a", "0", "?"}; // "\t" and "\n" will cause an error
-    Vector<char> outB = {'A', 'A', 'a', '0', '?'};
-
-    for (int i = 0; i < inB.size(); i++) {
-        EXPECT_EQUAL(stringToChar(inB[i]), outB[i]);
+    for (int i = 0; i < strs.size(); i++) {
+        EXPECT_EQUAL(stringToChar(strs[i]), chars[i]);
     }
 
     Vector<string> inError = {"", "ABC", "123"};
@@ -92,7 +89,7 @@ PROVIDED_TEST("Checking equality ignoring case") {
 }
 
 PROVIDED_TEST("Conversions between string and integer") {
-    Vector<int> inA = {0, 1, 106, -55};
+    Vector<int> inA =     {0,    1,   106,  -55};
     Vector<string> outA = {"0", "1", "106", "-55"};
 
     for (int i = 0; i < inA.size(); i++) {
@@ -100,7 +97,7 @@ PROVIDED_TEST("Conversions between string and integer") {
     }
 
     Vector<string> inB = {"0", "+1", "77  ", "  333", "-4", "-59", "0123", "-045"};
-    Vector<int> outB = {0, 1, 77, 333, -4, -59, 123, -45};
+    Vector<int> outB =   { 0,   1,    77,      333,    -4,   -59,    123,   -45};
 
     for (int i = 0; i < inB.size(); i++) {
         EXPECT_EQUAL(stringToInteger(inB[i]), outB[i]);
@@ -117,7 +114,7 @@ PROVIDED_TEST("Conversions between string and integer") {
 }
 
 PROVIDED_TEST("Conversions between string and real") {
-    Vector<double> inA = {0, 0.0, 13.7, -81.9};
+    Vector<double> inA = {  0, 0.0,   13.7, -81.9};
     Vector<string> outA = {"0", "0", "13.7", "-81.9"};
 
     for (int i = 0; i < inA.size(); i++) {
@@ -125,7 +122,7 @@ PROVIDED_TEST("Conversions between string and real") {
     }
 
     Vector<string> inB = {"0.0", "+13.7", "-81.9", "77  ", "  333", "0123.0", "-045"};
-    Vector<double> outB = {0, 13.7, -81.9, 77, 333, 123.0, -45};
+    Vector<double> outB = {0,      13.7,   -81.9,   77,       333,    123.0,   -45};
 
     for (int i = 0; i < inB.size(); i++) {
         EXPECT_EQUAL(stringToReal(inB[i]), outB[i]);
@@ -235,19 +232,13 @@ PROVIDED_TEST("Checking valid conversion from string to real") {
 }
 
 PROVIDED_TEST("Joining vector of strings with specified delimiter") {
-    Vector<string> inA = {};
-    Vector<string> inB = {"one"};
-    Vector<string> inC = {"me", "myself", "i"};
-    Vector<string> inD = {"there are", "7", "words in this", "vector!"};
-    Vector<string> inE = {"", "\n", "", "\t", ""};
-
-    EXPECT_EQUAL(stringJoin(inA, " "), "");
-    EXPECT_EQUAL(stringJoin(inB, "\n"), "one");
-    EXPECT_EQUAL(stringJoin(inC, ""), "memyselfi");
-    EXPECT_EQUAL(stringJoin(inC, "AND"), "meANDmyselfANDi");
-    EXPECT_EQUAL(stringJoin(inD, "!"), "there are!7!words in this!vector!");
-    EXPECT_EQUAL(stringJoin(inE, "8"), "8\n88\t8");
-    EXPECT_EQUAL(stringJoin(inE, "\n"), "\n\n\n\n\t\n");
+    EXPECT_EQUAL(stringJoin({}, " "), "");
+    EXPECT_EQUAL(stringJoin({"one"}, "\n"), "one");
+    EXPECT_EQUAL(stringJoin({"me", "myself", "i"}, ""), "memyselfi");
+    EXPECT_EQUAL(stringJoin({"me", "myself", "i"}, "AND"), "meANDmyselfANDi");
+    EXPECT_EQUAL(stringJoin( {"there are", "7", "words in this", "vector!"}, "!"), "there are!7!words in this!vector!");
+    EXPECT_EQUAL(stringJoin({"", "\n", "", "\t", ""}, "8"), "8\n88\t8");
+    EXPECT_EQUAL(stringJoin({"", "\n", "", "\t", ""}, "\n"), "\n\n\n\n\t\n");
 }
 
 PROVIDED_TEST("Replacing instances of a substring with a new substring") {
@@ -262,20 +253,19 @@ PROVIDED_TEST("Replacing instances of a substring with a new substring") {
 }
 
 PROVIDED_TEST("Splitting a string into a vector of strings given delimiter") {
-    Vector<string> outA = {};
-    Vector<string> outB = {""};
-    Vector<string> outC = {"one"};
-    Vector<string> outD = {"", "", ""};
-    Vector<string> outE = {"me", "myself", "i"};
-    Vector<string> outF = {"there are", "7", "words in this", "vector"};
-
-    EXPECT_EQUAL(stringSplit("", " "), outA);
-    EXPECT_EQUAL(stringSplit(" ", " "), outB);
-    EXPECT_EQUAL(stringSplit("one\n", "\n"), outC);
-    EXPECT_EQUAL(stringSplit("one", "I do not exist"), outC);
-    EXPECT_EQUAL(stringSplit("mememe", "me"), outD);
-    EXPECT_EQUAL(stringSplit("meANDmyselfANDi", "AND"), outE);
-    EXPECT_EQUAL(stringSplit("there are!7!words in this!vector", "!"), outF);
+    EXPECT_EQUAL(stringSplit("", " "),  {});
+    EXPECT_EQUAL(stringSplit("one\n", "\n"),  {"one"});
+    EXPECT_EQUAL(stringSplit("one", "I do not exist"),  {"one"});
+    EXPECT_EQUAL(stringSplit("meANDmyselfANDi", "AND"),  {"me", "myself", "i"});
+    EXPECT_EQUAL(stringSplit("there are!7!words in this!vector", "!"), {"there are", "7", "words in this", "vector"});
+    EXPECT_EQUAL(stringSplit("Hi there  Jim!", " "),  {"Hi", "there", "Jim!"});
+    // note adjacent delimiters coalesced (no empty tokens)
+    EXPECT_EQUAL(stringSplit("one*two*three", "*"), {"one", "two", "three"});
+    EXPECT_EQUAL(stringSplit("one*two*three*", "*"), {"one", "two", "three"});
+    EXPECT_EQUAL(stringSplit("*one*two*three", "*"), {"one", "two", "three"});
+    EXPECT_EQUAL(stringSplit("*one*two*three*", "*"), {"one", "two", "three"});
+    EXPECT_EQUAL(stringSplit("**one**two**three**", "*"), {"one", "two", "three"});
+    EXPECT_EQUAL(stringSplit("***", "*"),  {});
 }
 
 PROVIDED_TEST("Conversions between uppercase and lowercase") {
