@@ -23,14 +23,12 @@ PROVIDED_TEST("Conversions between bool and string") {
 
     /* Conversion from string to bool */
     EXPECT_EQUAL(true, stringToBool("true"));
-    EXPECT_EQUAL(true, stringToBool("   true   "));
     EXPECT_EQUAL(true, stringToBool("1"));
-//    EXPECT_EQUAL(true, stringToBool("  1 ")); // this test will cause an error
 
     EXPECT_EQUAL(false, stringToBool("false"));
     EXPECT_EQUAL(false, stringToBool("0"));
 
-    EXPECT_ERROR(stringToBool("t r u e"));
+    EXPECT_ERROR(stringToBool("TRUE"));
     EXPECT_ERROR(stringToBool("falsey"));
     EXPECT_ERROR(stringToBool("001"));
 }

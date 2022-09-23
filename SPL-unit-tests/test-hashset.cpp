@@ -125,8 +125,8 @@ PROVIDED_TEST("HashSet, initializerList") {
 }
 
 
-void addDuring(HashSet<int>& v) { for (int m : v) v.add(m); }
-void removeDuring(HashSet<int>& v) { for (int m : v) v.remove(m); }
+void addDuring(HashSet<int>& v) { for (int m : v) v.add(0); }
+void removeDuring(HashSet<int>& v) { for (int m : v) v.remove(0); }
 
 PROVIDED_TEST("HashSet, error on modify during iterate") {
     HashSet<int> set {1, 2, 3, 4, 1, 6, 1, 8, 2, 10};

@@ -35,7 +35,7 @@ PROVIDED_TEST("GOptionPane alerts, dialogs, messages") {
     GOptionPane::showMessageDialog("This would be an error alert", "Oh no", GOptionPane::MESSAGE_ERROR);
     GOptionPane::showMessageDialog("Testing special chars [*+*&}{] && || !)@(*&#)(&^%!{ \" \" \" \"}) C:\\Program Files\\Test ;,;:\", ';\"\\//\\// ( ) test 1 2 3 $a $b %a %b %1 %2 http://foo.com/! end");
 
-    bool result = GOptionPane::showConfirmDialog("Are you sure? (say Yes)");
+    auto result = GOptionPane::showConfirmDialog("Are you sure? (say Yes)");
     EXPECT_EQUAL(result, GOptionPane::CONFIRM_YES);
     result = GOptionPane::showConfirmDialog("All is cool? (say OK)", "I have a title", GOptionPane::CONFIRM_OK_CANCEL);
     EXPECT_EQUAL(result, GOptionPane::CONFIRM_OK);
@@ -202,36 +202,34 @@ PROVIDED_TEST("Canvas with image") {
     pause(1000);
 
     std::cout << "Will resize GCanvas to 100x50, fill with magenta" << std::endl;
-    img->fill(0xff00ff);  // purple
+    img->fill(0xff00ff);  // magenta
     img->resize(100, 50);
     border(img);
 
     std::cout << "Now setRGB on inner pixels (one at a time, this is slow!)" << std::endl;
-    for (int y = 5; y < img->getHeight() - 5; y++) {
-        for (int x = 5; x <= img->getWidth() - 5; x++) {
-            img->setRGB(x, y, 0xffcc33);
+    for (int y = 0; y < img->getHeight()/2; y++) {
+        for (int x = 0; x < img->getWidth()/2; x++) {
+            img->setRGB(x + img->getWidth()/4, y + img->getHeight()/4, 0xffcc33);
         }
     }
     std::cout << "Done setting RGB on GCanvas pixels." << std::endl;
-    border(img);
     pause(100);
 
     std::cout << "Will resize GCanvas to 80x200, fill red" << std::endl;
     img->resize(80, 200);
     img->fill(0xff0000);
-    border(img);
     pause(300);
 
     std::cout << "Now setGrid to change on inner pixels" << std::endl;
     grid = img->toGrid();
 
-    for (int y = 5; y < img->getHeight() - 5; y++) {
-        for (int x = 5; x <= img->getWidth() - 5; x++) {
-            grid[y][x] = 0xffcc33;
+    for (int y = 0; y < img->getHeight()/2; y++) {
+        for (int x = 0; x < img->getWidth()/2; x++) {
+            grid[y + img->getHeight()/4][x + img->getWidth()/4] = 0xffcc33;
         }
     }
+
     img->setPixels(grid);
-    border(img);
     pause(1000);
 
     std::cout << "About to remove others" << std::endl;
