@@ -114,7 +114,11 @@ GridLocationRange::GridLocationRangeIterator GridLocationRange::begin() const {
 }
 
 bool GridLocationRange::contains(const GridLocation& loc) const {
-    return _start <= loc && loc <= _end;
+    /* The location is in range if it's between the relevant
+     * rows and columns.
+     */
+    return _start.row <= loc.row && _start.col <= loc.col &&
+           _end.row   >= loc.row && _end.col   >= loc.col;
 }
 
 GridLocationRange::GridLocationRangeIterator GridLocationRange::end() const {
@@ -134,7 +138,10 @@ int GridLocationRange::endRow() const {
 }
 
 bool GridLocationRange::isEmpty() const {
-    return _start > _end;
+    /* The range is empty if either the start row or the
+     * start column exceeds the end row or end column.
+     */
+    return _start.row > _end.row || _start.col > _end.col;
 }
 
 bool GridLocationRange::isRowMajor() const {

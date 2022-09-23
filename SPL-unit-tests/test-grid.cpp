@@ -51,11 +51,34 @@ PROVIDED_TEST("Grid, forEach") {
     grid.fill(42);
     grid[2][0] = 17;
     grid[3][1] = 0;
+
+    /* Version 1: Range-based for loop. */
     Queue<int> expected {42, 42, 42, 42, 17, 42, 42, 0};
     for (int n : grid) {
         int exp = expected.dequeue();
         EXPECT_EQUAL( exp, n);
     }
+
+    /* Make sure we snagged everything. */
+    EXPECT(expected.isEmpty());
+
+    /* Version 2: Explicit .locations() loop. */
+    expected = {42, 42, 42, 42, 17, 42, 42, 0};
+    Queue<GridLocation> locs = { {0, 0}, {0, 1}, {1, 0}, {1, 1}, {2, 0}, {2, 1}, {3, 0}, {3, 1} };
+    for (GridLocation loc: grid.locations()) {
+        EXPECT_EQUAL(loc, locs.dequeue());
+        EXPECT_EQUAL(grid[loc], expected.dequeue());
+    }
+    EXPECT(expected.isEmpty());
+
+    /* Version 3: .locations() loop in col-major order. */
+    expected = {42, 42, 17, 42, 42, 42, 42, 0};
+    locs = { {0, 0}, {1, 0}, {2, 0}, {3, 0}, {0, 1}, {1, 1}, {2, 1}, {3, 1} };
+    for (GridLocation loc: grid.locations(false)) {
+        EXPECT_EQUAL(loc, locs.dequeue());
+        EXPECT_EQUAL(grid[loc], expected.dequeue());
+    }
+    EXPECT(expected.isEmpty());
 }
 
 PROVIDED_TEST("Grid, access corners") {
@@ -143,4 +166,67 @@ PROVIDED_TEST("Grid, randomElement") {
     for (const std::string& s : list) {
         EXPECT(counts[s] > 0);
     }
+}
+
+PROVIDED_TEST("Grid<T>, locations() works on an empty Grid.") {
+    Grid<int> empty;
+    GridLocationRange range;
+
+    /* 0 x 0 */
+    empty = Grid<int>(0, 0);
+    range = empty.locations();
+    EXPECT_EQUAL(std::distance(range.begin(), range.end()), 0);
+
+    /* 0 x N */
+    empty = Grid<int>(0, 137);
+    range = empty.locations();
+    EXPECT_EQUAL(std::distance(range.begin(), range.end()), 0);
+
+    /* N x 0 */
+    empty = Grid<int>(137, 0);
+    range = empty.locations();
+    EXPECT_EQUAL(std::distance(range.begin(), range.end()), 0);
+}
+
+PROVIDED_TEST("GridLocationRange, contains") {
+    GridLocationRange range(1, 1, 2, 2);
+    EXPECT(range.contains({1, 1}));
+    EXPECT(range.contains({1, 2}));
+    EXPECT(range.contains({2, 1}));
+    EXPECT(range.contains({2, 2}));
+
+    EXPECT(!range.contains({1, 0}));
+    EXPECT(!range.contains({1, 3}));
+    EXPECT(!range.contains({2, 0}));
+    EXPECT(!range.contains({2, 3}));
+    EXPECT(!range.contains({0, 1}));
+    EXPECT(!range.contains({0, 2}));
+    EXPECT(!range.contains({3, 1}));
+    EXPECT(!range.contains({3, 2}));
+    EXPECT(!range.contains({0, 0}));
+    EXPECT(!range.contains({0, 3}));
+    EXPECT(!range.contains({3, 0}));
+    EXPECT(!range.contains({3, 3}));
+
+    /* Now, try this with empty ranges. */
+    range = GridLocationRange(1, 1, 0, 1); // No rows
+    EXPECT(!range.contains({0, 0}));
+    EXPECT(!range.contains({0, 1}));
+    EXPECT(!range.contains({1, 0}));
+    EXPECT(!range.contains({1, 1}));
+    EXPECT(range.isEmpty());
+
+    range = GridLocationRange(1, 1, 1, 0); // No columns
+    EXPECT(!range.contains({0, 0}));
+    EXPECT(!range.contains({0, 1}));
+    EXPECT(!range.contains({1, 0}));
+    EXPECT(!range.contains({1, 1}));
+    EXPECT(range.isEmpty());
+
+    range = GridLocationRange(1, 1, 0, 0); // No rows, columns
+    EXPECT(!range.contains({0, 0}));
+    EXPECT(!range.contains({0, 1}));
+    EXPECT(!range.contains({1, 0}));
+    EXPECT(!range.contains({1, 1}));
+    EXPECT(range.isEmpty());
 }
