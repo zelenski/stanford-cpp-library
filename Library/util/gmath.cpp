@@ -24,6 +24,8 @@ extern const double E  = 2.71828182845904523536;
 // http://stackoverflow.com/questions/4548004/how-to-correctly-and-standardly-compare-floats
 template<typename T>
 bool withinEpsilon(T f1, T f2) {
+    if (std::isinf(f1) || std::isinf(f2)) return std::isinf(f1) && std::isinf(f2);
+    if (std::isnan(f1) || std::isnan(f2)) return false;
     T larger = std::fmax(std::fabs(f1), std::fabs(f2));
     T tolerance = std::numeric_limits<T>::epsilon() * larger;
     return std::fabs(f1 - f2) <= tolerance;

@@ -81,6 +81,9 @@ GOptionPane::ConfirmResult GOptionPane::showConfirmDialog(QWidget* parent,
                 buttons,
                 defaultButton);
         switch (dialogResult) {
+            case QMessageBox::Ok:
+                confirmResult = GOptionPane::ConfirmResult::CONFIRM_OK;
+                break;
             case QMessageBox::Yes:
                 confirmResult = GOptionPane::ConfirmResult::CONFIRM_YES;
                 break;

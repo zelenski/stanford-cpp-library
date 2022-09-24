@@ -33,7 +33,7 @@ namespace version {
             "<br>"
             "Libraries originally authored by Eric Roberts.<br>"
             "Updates from Marty Stepp, Keith Schwarz, and Julie Zelenski.<br>"
-            "&copy; Stanford University &bull; 2003-2021.";
+            "&copy; Stanford University &bull; 2003-2022.";
     }
 
     std::string getLibraryVersion()
