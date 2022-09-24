@@ -63,10 +63,10 @@ from dumper import Children, SubItem
 # ######################## Your code below #######################
 
 # @author Jeremy Barenholtz 2020
+# @author Julie Zelenski, last update Fall 2022 (std::string on M1 mac)
 #
 # Debugging helpers for the CS106B classes (Vector, Stack, Set, Map, etc.)
 # Some code adopted from stdtypes.py distributed with Qt Creator
-# Tweaked some by Julie Zelenski for Fall quarter 2020
 
 from functools import partial
 
