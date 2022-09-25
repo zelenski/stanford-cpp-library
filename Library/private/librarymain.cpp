@@ -20,7 +20,7 @@ int studentMain();
 int libraryMain(int argc, char** argv)
 {
     stanfordcpplib::initializeLibrary(argc, argv);
-#ifdef SPL_HEADLESS_MODE
+#if (SPL_HEADLESS_MODE || __DONT_ENABLE_QT_GRAPHICAL_CONSOLE)
     studentMain();
 #else
     QtGui::instance()->startBackgroundEventLoop(studentMain);
