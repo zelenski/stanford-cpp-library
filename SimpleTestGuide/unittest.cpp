@@ -1,4 +1,4 @@
-#include "testing/SimpleTest.h"
+#include "SimpleTest.h"
 #include "strlib.h"
 #include "set.h"
 using namespace std;

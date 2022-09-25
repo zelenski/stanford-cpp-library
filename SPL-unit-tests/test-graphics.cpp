@@ -20,7 +20,7 @@
 #include <iomanip>
 #include <iostream>
 #include <string>
-#include "testing/SimpleTest.h"
+#include "SimpleTest.h"
 using namespace std;
 
 PROVIDED_TEST("File Dialog") {

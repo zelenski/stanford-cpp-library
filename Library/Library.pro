@@ -17,7 +17,7 @@ REQUIRES_QT_VERSION =   6.1
 #       Gather files                                                          #
 ###############################################################################
 
-LIB_SUBDIRS         =   collections console graphics io system util
+LIB_SUBDIRS         =   collections console graphics io system util testing
 
 for(dir, LIB_SUBDIRS) {
     PUBLIC_HEADERS  +=  $$files($${dir}/*.h)

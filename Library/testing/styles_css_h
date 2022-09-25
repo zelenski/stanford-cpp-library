@@ -1,3 +1,16 @@
+#pragma once
+
+// create raw string literal from file contents & build into library
+// (removes dependency on filesystem)
+// this is default stylesheet used by SimpleTest
+//
+// SimpleTest also looks for stylesheet in local project dir
+// and uses that preferentially. This allows student to customize
+// if needed/preferred
+
+static std::string gDefaultStylesheet = R"(
+
+
 /*
  * File: styles.css
  *
@@ -34,3 +47,6 @@ pre {
     font-size: medium;
     margin: 0;
 }
+
+
+)";

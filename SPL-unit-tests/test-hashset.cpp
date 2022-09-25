@@ -8,7 +8,7 @@
 #include "map.h"
 #include "queue.h"
 #include "common.h"
-#include "testing/SimpleTest.h"
+#include "SimpleTest.h"
 #include <initializer_list>
 #include <iostream>
 #include <sstream>

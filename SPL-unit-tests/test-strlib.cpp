@@ -6,7 +6,7 @@
  * @author Cathy Zhang Spring 2020
  */
 
-#include "testing/SimpleTest.h"
+#include "SimpleTest.h"
 #include <string>
 #include "strlib.h"
 using namespace std;

@@ -6,7 +6,7 @@
 #include "urlstream.h"
 #include <iostream>
 #include <string>
-#include "testing/SimpleTest.h"
+#include "SimpleTest.h"
 
 
 PROVIDED_TEST("download url using iurlstream") {

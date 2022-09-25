@@ -1,5 +1,5 @@
 #include <string>
-#include "testing/SimpleTest.h"
+#include "SimpleTest.h"
 #include "vector.h"
 using namespace std;
 
