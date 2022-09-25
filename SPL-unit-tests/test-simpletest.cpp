@@ -4,12 +4,12 @@
 
 
 #include "common.h"
-#include "testing/SimpleTest.h"
+#include "SimpleTest.h"
 #include "ioutils.h"
 #include <iomanip>
 #include <iostream>
 #include <string>
-#include <testing/SimpleTest.h>
+#include <SimpleTest.h>
 
 
 PROVIDED_TEST("expect equal, integer compare") {

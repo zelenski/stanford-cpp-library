@@ -21,6 +21,7 @@
 #include <QScrollBar>
 #include "simpio.h"
 #include "SimpleTest.h"
+#include "styles_css_h"
 using namespace std;
 
 static Vector<string> gDetails;
@@ -271,8 +272,12 @@ namespace SimpleTest {
 
             window->setVisible(true);
             window->requestFocus();
-            // student can customize display by editing the stylesheet
-            readEntireFile("testing/styles.css", stylesheet);
+            // student can customize by provided stylesheet in project directory
+            string localFile = "simpletest.css";
+            if (fileExists(localFile))
+                readEntireFile(localFile, stylesheet);
+            else
+                stylesheet = gDefaultStylesheet;
         }
 
         /* Show everything so there's some basic data available. */

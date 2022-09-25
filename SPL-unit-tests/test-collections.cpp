@@ -23,7 +23,7 @@
 #include "stack.h"
 #include "vector.h"
 #include "common.h"
-#include "testing/SimpleTest.h"
+#include "SimpleTest.h"
 #include <iostream>
 #include <sstream>
 #include <string>

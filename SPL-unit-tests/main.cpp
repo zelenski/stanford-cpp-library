@@ -1,6 +1,6 @@
 #include "console.h"
 #include <string>
-#include "testing/SimpleTest.h"
+#include "SimpleTest.h"
 using namespace std;
 
 int main()

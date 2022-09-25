@@ -10,7 +10,7 @@
 #include "vector.h"
 #include "console.h"
 #include "linkedlist.h"
-#include "testing/SimpleTest.h"
+#include "SimpleTest.h"
 using namespace std;
 
 template <typename Collection> void readFromString(Collection& coll, string s)

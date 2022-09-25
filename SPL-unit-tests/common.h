@@ -13,7 +13,7 @@
 #include <string>
 #include <utility>
 #include "set.h"
-#include "testing/SimpleTest.h"
+#include "SimpleTest.h"
 
 
 // for testing collections with non- ==, < elements

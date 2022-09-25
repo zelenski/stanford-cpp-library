@@ -6,7 +6,7 @@
 #include "hashset.h"
 #include "vector.h"
 #include "common.h"
-#include "testing/SimpleTest.h"
+#include "SimpleTest.h"
 #include <numeric>
 
 /* Force instantiation of Vector on a few types to make sure we didn't miss anything.

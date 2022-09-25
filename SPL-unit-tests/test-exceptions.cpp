@@ -9,7 +9,7 @@
 #include "strlib.h"
 #include "gthread.h"
 #include "exceptions.h"
-#include "testing/SimpleTest.h"
+#include "SimpleTest.h"
 
 using namespace std;
 

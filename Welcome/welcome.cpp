@@ -11,6 +11,7 @@
 #include "queue.h"
 #include "simpio.h"
 #include "gwindow.h"
+#include "SimpleTest.h"
 using namespace std;
 
 
@@ -42,4 +43,9 @@ int main()
     string name = getLine("What is your name?");
     welcomeAlert(name);
     return 0;
+}
+
+// Confirm SimpleTest macros are available and compile
+PROVIDED_TEST("SimpleTest of addition") {
+    EXPECT_EQUAL(1 + 2, 3);
 }
