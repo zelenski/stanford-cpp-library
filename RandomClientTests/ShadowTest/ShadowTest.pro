@@ -1,12 +1,12 @@
 ###############################################################################
 # Project file for CS106B/X student program
 #
-# @version Fall Quarter 2021 for Qt 6
+# @version Fall Quarter 2022 for Qt 6
 # @author Julie Zelenski
 #   build client program using installed static library
 ###############################################################################
 
-SPL_VERSION = 2021.1
+SPL_VERSION = 2022.1
 SPL_URL = https://web.stanford.edu/dept/cs_edu/qt
 
 TEMPLATE    =   app
