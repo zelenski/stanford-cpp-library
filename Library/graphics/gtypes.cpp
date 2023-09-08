@@ -207,6 +207,11 @@ int hashCode(const GPoint& pt) {
  * of the individual words.
  */
 
+GRectangle::GRectangle()
+        : GRectangle(0, 0, 0, 0) {
+    // empty
+}
+
 GRectangle::GRectangle(double xVal, double yVal, double w, double h)
         : x(xVal),
           y(yVal),

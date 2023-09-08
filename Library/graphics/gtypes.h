@@ -325,6 +325,11 @@ public:
     GRectangle(const GPoint& p, const GDimension& size);
 
     /**
+     * Creates a <code>GRectangle</code> object with zero position and size.
+     */
+    GRectangle();
+
+    /**
      * Returns <code>true</code> if the rectangle contains the given point.
      */
     bool contains(double x, double y) const;
