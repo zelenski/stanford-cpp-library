@@ -257,7 +257,7 @@ public:
      * whose value is set to the default for the value type.
      */
     ValueType& operator [](const KeyType& key);
-    ValueType operator [](const KeyType& key) const;
+    const ValueType operator [](const KeyType& key) const;
 
     /*
      * Operator: ==
@@ -553,7 +553,7 @@ ValueType& Map<KeyType, ValueType>::operator [](const KeyType& key) {
 }
 
 template <typename KeyType, typename ValueType>
-ValueType Map<KeyType, ValueType>::operator [](const KeyType& key) const {
+const ValueType Map<KeyType, ValueType>::operator [](const KeyType& key) const {
     return get(key);
 }
 
