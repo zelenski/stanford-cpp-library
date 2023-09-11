@@ -1,8 +1,8 @@
 /*
  * File: gcolorchooser.cpp
  * -----------------------
- * This file implements the operations declared in the gfilechooser.h file.
- * See gfilechooser.h for documentation of each member.
+ * This file implements the operations declared in the gcolorchooser.h file.
+ * See gcolorchooser.h for documentation of each member.
  * 
  * @author Marty Stepp
  * @version 2018/09/07
