@@ -377,17 +377,17 @@ Vector<std::string> stringSplit(const std::string& str, const std::string& delim
     int count = 0;
     size_t index = 0;
     while (limit < 0 || count < limit) {
-        index = str2.find(delimiter);
-        if (index == std::string::npos) {
+        size_t found = str2.find(delimiter, index);
+        if (found == std::string::npos) {
             break;
         }
         // don't add empty token, coalesce adjacent/leading delimiters
-        if (index != 0) result.add(str2.substr(0, index));
-        str2.erase(str2.begin(), str2.begin() + index + delimiter.length());
+        if (found != index) result.add(str2.substr(index, found - index));
+        index = found + delimiter.length();
         count++;
     }
-    if ((int) str2.length() > 0) {
-        result.add(str2);
+    if ((int) str2.length() > index) {
+        result.add(str2.substr(index));
     }
 
     return result;
