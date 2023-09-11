@@ -134,30 +134,6 @@ std::string integerToString(int n, int radix = 10);
 std::string longToString(long n, int radix = 10);
 
 /**
- * Inserts spaces at the start of the given string until it is at least
- * the given length.
- * You can optionally pass a fill character (other than space) as a third parameter.
- *
- * Note that if you are printing strings and want your output to line up
- * at a given number of characters, you may be better served using the built-in
- * C++ ostream manipulators such as setw(int), left, and right, as defined in
- * the iomanip library.
- */
-std::string padLeft(const std::string& s, int length, char fill = ' ');
-
-/**
- * Inserts spaces at the end of the given string until it is at least
- * the given length.
- * You can optionally pass a fill character (other than space) as a third parameter.
- *
- * Note that if you are printing strings and want your output to line up
- * at a given number of characters, you may be better served using the built-in
- * C++ ostream manipulators such as setw(int), left, and right, as defined in
- * the iomanip library.
- */
-std::string padRight(const std::string& s, int length);
-
-/**
  * Returns a hexadecimal string for the given pointer, such as "0x3f0427b".
  * Returns "nullptr" if p is a null pointer.
  */
@@ -321,7 +297,7 @@ Vector<std::string> stringSplit(const std::string& str, char delimiter, int limi
  * Returns a vector whose elements are strings formed by splitting the
  * given string 'str' by the given separator text.
  * Any adjacent separators are coalesced.
- * For example, splitting "Hi there    Jim!" on delimiter " " returns
+ * For example, splitting "Hi_*_there_*__*_Jim!" on delimiter "_*_" returns
  * {"Hi", "there", "Jim!"}.
  */
 Vector<std::string> stringSplit(const std::string& str, const std::string& delimiter, int limit = -1);

@@ -250,8 +250,10 @@ PROVIDED_TEST("Replacing instances of a substring with a new substring") {
     EXPECT_EQUAL(stringReplace("I love dogs", "I dislike dogs", "I like dogs"), "I love dogs");
 }
 
-PROVIDED_TEST("Splitting a string into a vector of strings given delimiter") {
+PROVIDED_TEST("Splitting a string into a vector of strings given single char delimiter") {
     EXPECT_EQUAL(stringSplit("", " "),  {});
+    EXPECT_EQUAL(stringSplit(" ", ' '), {});
+    EXPECT_EQUAL(stringSplit("     ", ' '), {});
     EXPECT_EQUAL(stringSplit("one\n", "\n"),  {"one"});
     EXPECT_EQUAL(stringSplit("one", "I do not exist"),  {"one"});
     EXPECT_EQUAL(stringSplit("meANDmyselfANDi", "AND"),  {"me", "myself", "i"});
@@ -264,6 +266,27 @@ PROVIDED_TEST("Splitting a string into a vector of strings given delimiter") {
     EXPECT_EQUAL(stringSplit("*one*two*three*", "*"), {"one", "two", "three"});
     EXPECT_EQUAL(stringSplit("**one**two**three**", "*"), {"one", "two", "three"});
     EXPECT_EQUAL(stringSplit("***", "*"),  {});
+}
+
+PROVIDED_TEST("Splitting a string into a vector of strings given multi-char delimiter") {
+    EXPECT_EQUAL(stringSplit("AexBexC", "ex"), {"A", "B", "C"});
+    EXPECT_EQUAL(stringSplit("exAexexBexCex", "ex"), {"A", "B", "C"});
+    EXPECT_EQUAL(stringSplit("ex", "ex"), {});
+    EXPECT_EQUAL(stringSplit("exexex", "ex"), {});
+    EXPECT_EQUAL(stringSplit("", "ex"), {});
+    EXPECT_EQUAL(stringSplit("eexx", "ex"), {"e", "x"});
+    EXPECT_EQUAL(stringSplit("A--B--C", "--"), {"A", "B", "C"});
+    EXPECT_EQUAL(stringSplit("-A--B---C-", "--"), {"-A", "B", "-C-"});
+    EXPECT_EQUAL(stringSplit("-A--B---C-", "--"), {"-A", "B", "-C-"});
+}
+
+PROVIDED_TEST("stringSplit should run in O(N) time where N is length of input string") {
+    string cur = "x ";
+    for (int i = 0; i < 13; i++) cur += cur; // start @ len 16K
+    for (int i = 0; i < 7; i++) { // end @ len 1M
+        TIME_OPERATION(cur.length(), stringSplit(cur, " "));
+        cur += cur;
+    }
 }
 
 PROVIDED_TEST("Conversions between uppercase and lowercase") {
