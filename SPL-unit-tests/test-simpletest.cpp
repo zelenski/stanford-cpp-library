@@ -9,7 +9,6 @@
 #include <iomanip>
 #include <iostream>
 #include <string>
-#include <SimpleTest.h>
 
 
 PROVIDED_TEST("expect equal, integer compare") {
@@ -51,7 +50,7 @@ PROVIDED_TEST("expect equal, mixed float/double") {
     EXPECT_EQUAL(f, g); // but are within fp epsilon
 }
 
-double zero = 0;
+static double zero = 0;
 
 PROVIDED_TEST("expect equal, inf should equal self ") {
     EXPECT_EQUAL(1/zero, 1/zero);
