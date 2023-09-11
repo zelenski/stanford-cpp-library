@@ -1,0 +1,192 @@
+<html>
+<head>
+<title>random.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="img/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>libcs106</code> library, Academic Year 2023-24
+</div></td>
+</tr></table>
+<hr>
+<h1 class=header><code>random.h</code></h1>
+This file exports functions for generating pseudorandom numbers.
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Functions</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:randomBool">randomBool()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> or <code>false</code> with 50% probability.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:randomChance">randomChance(<var>p</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns <code>true</code> with the probability indicated by <code>p</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:randomColor">randomColor()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns a random RGB color as an integer such as <code>0xff00ff</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:randomColorString">randomColorString()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns a random RGB color as a string such as <code>"#ff00ff"</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:randomElement">randomElement(<var>grid</var>)</a>&nbsp;<br>
+	<a href="#Function:randomElement">randomElement(<var>list</var>)</a>&nbsp;<br>
+	<a href="#Function:randomElement">randomElement(<var>set</var>)</a>&nbsp;
+	<a href="#Function:randomElement">randomElement(<var>v</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns a randomly chosen element from the given collection.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:randomInteger">randomInteger(<var>low</var>,&nbsp;<var>high</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns a random integer in the range <code>low</code> to <code>high</code>, inclusive.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:randomKey">randomKey(<var>map</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns a randomly chosen key from the given map.</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:randomReal">randomReal(<var>low</var>,&nbsp;<var>high</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns a random real number in the half-open interval [<code>low</code>&nbsp;..&nbsp;<code>high</code>).</td></tr>
+<tr><td class=indexKey><nobr><a href="#Function:setRandomSeed">setRandomSeed(<var>seed</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Sets the internal random number seed to the specified value.</td></tr>
+</table>
+
+<h2>Function detail</h2>
+<hr>
+
+<a name="Function:randomBool"></a>
+<pre class=detailCode>
+bool randomBool();
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> or <code>false</code> with 50% probability each.
+This is equivalent to calling <code>randomChance(0.5)</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (randomBool()) ...
+</pre>
+<hr>
+
+<a name="Function:randomChance"></a>
+<pre class=detailCode>
+bool randomChance(double p);
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> with the probability indicated by <code>p</code>.
+The argument <code>p</code> must be a floating-point number between
+0 (never) and 1 (always).  For example, calling
+<code>randomChance(.30)</code> returns <code>true</code> 30 percent
+of the time.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (randomChance(p)) ...
+</pre>
+<hr>
+
+<a name="Function:randomColor"></a>
+<pre class=detailCode>
+int randomColor();
+</pre>
+<div class=detailHTML>
+Returns a random RGB color as an integer such as <code>0xff00ff</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int color = randomColor();
+</pre>
+
+<hr>
+<a name="Function:randomColorString"></a>
+<pre class=detailCode>
+string randomColorString();
+</pre>
+<div class=detailHTML>
+Returns a random RGB color as a string such as <code>"#ff00ff"</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string color = randomColorString();
+</pre>
+
+<hr>
+
+<a name="Function:randomElement"></a>
+<pre class=detailCode>
+template &lt;typename T&gt;
+const T&amp; randomElement(const Grid&lt;T&gt;&amp; grid)
+
+template &lt;typename T&gt;
+const T&amp; randomElement(const HashSet&lt;T&gt;&amp; set)
+
+template &lt;typename T&gt;
+const T&amp; randomElement(const LinkedList&lt;T&gt;&amp; list)
+
+template &lt;typename T&gt;
+const T&amp; randomElement(const Set&lt;T&gt;&amp; set)
+
+template &lt;typename T&gt;
+const T&amp; randomElement(const SparseGrid&lt;T&gt;&amp; grid)
+
+template &lt;typename T&gt;
+const T&amp; randomElement(const Vector&lt;T&gt;&amp; v)
+</pre>
+<div class=detailHTML>
+Returns a randomly chosen element of the given collection.
+Throws an error if the collection is empty.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+element = randomElement(v);
+</pre>
+
+<hr>
+
+<a name="Function:randomInteger"></a>
+<pre class=detailCode>
+int randomInteger(int low, int high);
+</pre>
+<div class=detailHTML>
+Returns a random integer in the range <code>low</code> to
+<code>high</code>, inclusive.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int n = randomInteger(low, high);
+</pre>
+<hr>
+
+<a name="Function:randomKey"></a>
+<pre class=detailCode>
+template &lt;typename K, typename V&gt;
+K randomKey(const HashMap&lt;K, V&gt;&amp; map)
+
+template &lt;typename K, typename V&gt;
+K randomKey(const Map&lt;K, V&gt;&amp; map)
+</pre>
+<div class=detailHTML>
+Returns a randomly chosen key of the given map.
+Throws an error if the map is empty.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+key = randomKey(map);
+</pre>
+
+<hr>
+
+<a name="Function:randomReal"></a>
+<pre class=detailCode>
+double randomReal(double low, double high);
+</pre>
+<div class=detailHTML>
+Returns a random real number in the half-open interval
+[<code>low</code>&nbsp;..&nbsp;<code>high</code>).  A half-open
+interval includes the first endpoint but not the second, which
+means that the result is always greater than or equal to
+<code>low</code> but strictly less than <code>high</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+double d = randomReal(low, high);
+</pre>
+<hr>
+
+<a name="Function:setRandomSeed"></a>
+<pre class=detailCode>
+void setRandomSeed(int seed);
+</pre>
+<div class=detailHTML>
+Sets the internal random number seed to the specified value.  You
+can use this function to set a specific starting point for the
+pseudorandom sequence or to ensure that program behavior is
+repeatable during the debugging phase.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+setRandomSeed(seed);
+</pre>
+<hr>
+</table>
+</body>
+</html>

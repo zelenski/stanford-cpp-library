@@ -1,0 +1,122 @@
+<html>
+<head>
+<title>simpio.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="img/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>libcs106</code> library, Academic Year 2023-24
+</div></td>
+</tr></table>
+
+<hr>
+<h1 class=header><code>simpio.h</code></h1>
+This file exports a set of functions that simplify input/output
+operations in C++ and provide some error-checking on user input.
+<table class=index width=100%>
+<tr><td class=indexHead colspan=2>Functions</td>
+</tr>
+<tr>
+    <td class=indexKey><nobr><a href="#Function:getInteger">getInteger(<var>prompt</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Reads a complete line from user input and scans it as an integer.</td>
+</tr>
+<tr>
+    <td class=indexKey><nobr><a href="#Function:getLine">getLine(<var>prompt</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Reads a line of text from user input and returns that line as a string.</td>
+</tr>
+<tr>
+    <td class=indexKey><nobr><a href="#Function:getReal">getReal(<var>prompt</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Reads a complete line from user input and scans it as a floating-point number.</td>
+</tr>
+<tr>
+    <td class=indexKey><nobr><a href="#Function:getYesOrNo">getYesOrNo(<var>prompt</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Reads a complete line from user input and treats it as a yes-or-no answer to a question, returning a boolean value of <code>true</code> for yes and <code>false</code> for no.</td></tr>
+</table>
+<h2>Function detail</h2>
+
+<hr>
+<a name="Function:getInteger"></a>
+<pre class=detailCode>
+int getInteger(string prompt = "", string reprompt = "");
+</pre>
+<div class=detailHTML>
+Reads a complete line from user input and scans it as an
+integer. If supplied, the optional
+<code>prompt</code> string is printed before reading the value.
+
+<p>If the scan succeeds, the integer value is returned. If
+the argument is not a legal integer or if extraneous characters
+(other than whitespace) appear in the string, the user is given
+a chance to reenter the value. The optional <code>reprompt</code> message is
+displayed before asking the user to reenter an illegal value.
+If no reprompt argument is given, the message defaults to "Illegal integer format. Try again.".
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int age = getInteger("Please enter your age:");
+</pre>
+
+<hr>
+<a name="Function:getReal"></a>
+<pre class=detailCode>
+double getReal(string prompt = "", string reprompt = "");
+</pre>
+<div class=detailHTML>
+Reads a complete line from user input and scans it as a
+floating-point number. If supplied, the
+optional <code>prompt</code> string is printed before reading the value.
+
+<p>If the scan succeeds, the floating-point
+value is returned.  If the input is not a legal number or if
+extraneous characters (other than whitespace) appear in the string,
+the user is given a chance to reenter the value. The optional <code>reprompt</code> message is
+displayed before asking the user to reenter an illegal value.
+If no reprompt argument is given, the message defaults to "Illegal numeric format. Try again.".
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+double price = getReal("Enter the item price:");
+</pre>
+
+<hr>
+<a name="Function:getLine"></a>
+<pre class=detailCode>
+string getLine(string prompt = "");
+</pre>
+<div class=detailHTML>
+Reads a line of text from user input and returns that line
+as a string.  The newline character that terminates the input is
+not stored as part of the return value.  If the user only enters
+a newline, the return value is the empty string. If supplied, the optional
+<code>prompt</code> string is printed before reading the value.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string line = getLine("What is your name?");
+</pre>
+
+<hr>
+<a name="Function:getYesOrNo"></a>
+<pre class=detailCode>
+bool getYesOrNo(string prompt = "", string reprompt = "");
+</pre>
+<div class=detailHTML>
+Reads a complete line from user input and treats it as a yes-or-no answer to a question.  Returns <code>true</code> if the line typed begins with a 'y' or 'Y', and returns <code>false</code> if it begins with a 'n' or 'N'.  If supplied, the optional <code>prompt</code> string is printed before reading the value.
+
+<p>If the user's input is not a valid Y or N response, they are asked to reenter.
+The optional <code>reprompt</code> message is
+displayed before asking the user to reenter an illegal value.
+If no reprompt argument is given, the message defaults to "Please type a word that starts with 'Y' or 'N'.".
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (getYesOrNo("Do you want to play another round?")) { ...
+</pre>
+
+<hr>
+</table>
+</body>
+</html>

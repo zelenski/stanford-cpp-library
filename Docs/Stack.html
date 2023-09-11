@@ -1,0 +1,270 @@
+<html>
+<head>
+<title>Stack</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="img/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>libcs106</code> library, Academic Year 2023-24
+</div></td>
+</tr></table>
+<hr>
+<div class=include>#include "stack.h"</div>
+<h1 class=header><code>class Stack&lt;<var>ValueType</var>&gt;</code></h1>
+This class models a linear structure called a <b><i>stack</i></b>
+in which values are added and removed only from one end.
+This discipline gives rise to a last-in/first-out behavior (LIFO)
+that is the defining feature of stacks.  The fundamental stack
+operations are <code>push</code> (add to top) and <code>pop</code>
+(remove from top). Both of these operations run in O(1) time.
+
+<p>Stacks do not allow access to elements by index, nor can you iterate
+through the elements using the range-based for loop.
+
+<table class=index width=100%>
+	<tr>
+		<td class=indexHead colspan=3>Constructor</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Constructor:Stack">Stack()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Initializes a new empty stack.</td>
+	</tr>
+	<tr>
+		<td class=indexHead colspan=3>Methods</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:clear">clear()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Removes all elements from this stack.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:equals">equals(<var>stack</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Returns <code>true</code> if the two stacks contain the same elements in the same order.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:isEmpty">isEmpty()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Returns <code>true</code> if this stack contains no elements.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:peek">peek()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Returns the element on top of this stack, without removing it.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:pop">pop()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Removes the element on top of this stack and returns it.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:push">push(<var>value</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Adds <code>value</code> onto this stack.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:size">size()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Returns the number of values in this stack.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:toString">toString()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Returns a printable string representation of this stack.</td>
+	</tr>
+	<tr>
+		<td class=indexHead colspan=3>Operators</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:=="><var>stack1</var> == <var>stack2</var></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Returns <code>true</code> if <code>stack1</code> and <code>stack2</code> contain the same elements.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:!="><var>stack1</var> != <var>stack2</var></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Returns <code>true</code> if <code>stack1</code> and <code>stack2</code> are different.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:<<"><var>ostream</var>&nbsp;&lt;&lt;&nbsp;<var>stack</var></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Outputs the contents of the stack to the given output stream.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:>>"><var>istream</var>&nbsp;&gt;&gt;&nbsp;<var>stack</var></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Reads the contents of the given input stream into the stack.</td>
+	</tr>
+</table>
+
+<h2>Constructor detail</h2>
+
+<hr>
+<a name="Constructor:Stack"></a>
+<pre class=detailCode>
+Stack();
+</pre>
+<div class=detailHTML>
+Initializes a new empty stack. You may also optionally provide an initializer
+list of values. The newly created stack will contain those values listed left-to-right
+in order from bottom of the stack to top of stack.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+Stack&lt;ValueType&gt; stack;
+Stack&lt;ValueType&gt; stack = { bottomValue, middleValue, topValue };
+
+</pre>
+
+<hr>
+</table>
+<h2>Method detail</h2>
+
+<hr>
+<a name="Method:clear"></a>
+<pre class=detailCode>
+void clear();
+</pre>
+<div class=detailHTML>
+Removes all elements from this stack.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+stack.clear();
+</pre>
+
+<hr>
+<a name="Method:equals"></a>
+<pre class=detailCode>
+bool equals(const Stack&amp; stack) const;
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the two stacks contain the exact same element values in the same order.
+Identical in behavior to the <code>==</code> operator.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (stack1.equals(stack2)) ...
+</pre>
+
+<hr>
+<a name="Method:isEmpty"></a>
+<pre class=detailCode>
+bool isEmpty() const;
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if this stack contains no elements.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (stack.isEmpty()) ...
+</pre>
+
+<hr>
+<a name="Method:peek"></a>
+<pre class=detailCode>
+const ValueType& peek() const;
+</pre>
+<div class=detailHTML>
+Returns the element on top of this stack, without removing
+it.  If the stack is empty, this function signals an error.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+ValueType top = stack.peek();
+</pre>
+
+<hr>
+<a name="Method:pop"></a>
+<pre class=detailCode>
+ValueType pop();
+</pre>
+<div class=detailHTML>
+Removes the element from top of this stack and returns it. If the stack is empty, this function signals an error.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+ValueType top = stack.pop();
+</pre>
+
+<hr>
+<a name="Method:push"></a>
+<pre class=detailCode>
+void push(const ValueType& value);
+</pre>
+<div class=detailHTML>
+Adds the specified value onto this stack.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+stack.push(value);
+</pre>
+
+<hr>
+<a name="Method:size"></a>
+<pre class=detailCode>
+int size() const;
+</pre>
+<div class=detailHTML>
+Returns the number of values in this stack.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int n = stack.size();
+</pre>
+
+<hr>
+<a name="Method:toString"></a>
+<pre class=detailCode>
+string toString() const;
+</pre>
+<div class=detailHTML>
+Returns a printable string representation of this stack. The elements listed from left-to-right from the bottom of the stack to the top, such as <code>&quot;{value1, value2, value3}&quot;</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string str = stack.toString();
+</pre>
+
+<hr>
+<a name="Operator:<<"></a>
+<pre class=detailCode>
+ostream&amp; operator&lt;&lt;(const Stack&amp; stack);
+</pre>
+Outputs the contents of <code>stack</code> to the given output stream.
+The output is in the form <code>{value1, value2, value3}</code>
+where elements are listed left-to-right from the bottom of the stack to the top.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+cout << stack << endl;
+</pre>
+
+
+<hr>
+<a name="Operator:>>"></a>
+<pre class=detailCode>
+istream&amp; operator&gt;&gt;(Stack&amp; stack);
+</pre>
+Reads the contents of the given input stream into <code>stack</code>. Any previous
+contents of the stack are replaced.
+The input is expected to be in the form <code>{value1, value2, value3}</code>
+where elements are listed left-to-right from the bottom of the stack to the top. If unable to read a proper
+stack from the stream, the operation results in a stream fail state.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (infile >> stack) ...
+</pre>
+
+
+<hr>
+</table>
+</body>
+</html>

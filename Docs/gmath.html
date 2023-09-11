@@ -1,0 +1,144 @@
+<html>
+<head>
+<title>gmath.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="img/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>libcs106</code> library, Academic Year 2023-24
+</div></td>
+</tr></table>
+<hr>
+<h1 class="header"><code>gmath.h</code></h1>
+This file exports several functions for working with graphical
+geometry along with the mathematical constants <code>PI</code>
+and <code>E</code>.
+<table class="index" width="100%">
+<tbody><tr><td class="indexHead" colspan="2">Constants</td>
+</tr>
+<tr>
+    <td class="indexKey"><nobr>E&nbsp;</nobr></td><td class="indexSynopsis" width="100%">The mathematical constant e, which is the base of natural logarithms.</td>
+</tr>
+<tr>
+    <td class="indexKey"><nobr>PI&nbsp;</nobr></td><td class="indexSynopsis" width="100%">The mathematical constant pi, which is the ratio of the circumference of a circle to its diameter.</td>
+</tr>
+<tr>
+    <td class="indexHead" colspan="2">Functions</td>
+</tr>
+<tr>
+    <td class="indexKey"><nobr><a href="#Function:cosDegrees">cosDegrees(<var>angle</var>)</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">Returns the trigonometric cosine of <code>angle</code>, which is expressed in degrees.</td>
+</tr>
+<tr>
+    <td class="indexKey"><nobr><a href="#Function:sinDegrees">sinDegrees(<var>angle</var>)</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">Returns the trigonometric sine of <code>angle</code>, which is expressed in degrees.</td>
+</tr>
+<tr>
+    <td class="indexKey"><nobr><a href="#Function:tanDegrees">tanDegrees(<var>angle</var>)</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">Returns the trigonometric tangent of <code>angle</code>, which is expressed in degrees.</td>
+</tr>
+<tr>
+    <td class="indexKey"><nobr><a href="#Function:toDegrees">toDegrees(<var>radians</var>)</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">Converts an angle from radians to degrees.</td>
+</tr>
+<tr>
+    <td class="indexKey"><nobr><a href="#Function:toRadians">toRadians(<var>degrees</var>)</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">Converts an angle from degrees to radians.</td>
+</tr>
+<tr>
+    <td class="indexKey"><nobr><a href="#Function:vectorAngle">vectorAngle(<var>pt</var>)</a><br>
+<a href="#Function:vectorAngle">vectorAngle(<var>x</var>,&nbsp;<var>y</var>)</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">Returns the angle in degrees from the origin to the specified point.</td>
+</tr>
+<tr>
+    <td class="indexKey"><nobr><a href="#Function:vectorDistance">vectorDistance(<var>pt</var>)</a><br>
+<a href="#Function:vectorDistance">vectorDistance(<var>x</var>,&nbsp;<var>y</var>)</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">Computes the distance between the origin and the specified point.</td></tr>
+</tbody></table>
+<h2>Function detail</h2>
+
+<hr>
+
+
+<a name="Function:sinDegrees"></a>
+<pre class="detailCode">double sinDegrees(double angle);
+</pre>
+<div class="detailHTML">
+Returns the trigonometric sine of <code>angle</code>, which is
+expressed in degrees.
+<p>Usage:<br>
+</p></div>
+<pre class="usageCode">double sine = sinDegrees(angle);
+</pre>
+
+<hr>
+<a name="Function:cosDegrees"></a>
+<pre class="detailCode">double cosDegrees(double angle);
+</pre>
+<div class="detailHTML">
+Returns the trigonometric cosine of <code>angle</code>, which is
+expressed in degrees.
+<p>Usage:<br>
+</p></div>
+<pre class="usageCode">double cosine = cosDegrees(angle);
+</pre>
+
+<hr>
+<a name="Function:tanDegrees"></a>
+<pre class="detailCode">double tanDegrees(double angle);
+</pre>
+<div class="detailHTML">
+Returns the trigonometric tangent of <code>angle</code>, which is
+expressed in degrees.
+<p>Usage:<br>
+</p></div>
+<pre class="usageCode">double tangent = tanDegrees(angle);
+</pre>
+<hr>
+<a name="Function:toDegrees"></a>
+<pre class="detailCode">double toDegrees(double radians);
+</pre>
+<div class="detailHTML">
+Converts an angle from radians to degrees.
+<p>Usage:<br>
+</p></div>
+<pre class="usageCode">double degrees = toDegrees(radians);
+</pre>
+<hr>
+<a name="Function:toRadians"></a>
+<pre class="detailCode">double toRadians(double degrees);
+</pre>
+<div class="detailHTML">
+Converts an angle from degrees to radians.
+<p>Usage:<br>
+</p></div>
+<pre class="usageCode">double radians = toRadians(degrees);
+</pre>
+<hr>
+<a name="Function:vectorDistance"></a>
+<pre class="detailCode">double vectorDistance(const GPoint &amp; pt);
+double vectorDistance(double x, double y);
+</pre>
+<div class="detailHTML">
+Computes the distance between the origin and the specified point.
+<p>Usage:<br>
+</p></div>
+<pre class="usageCode">double r = vectorDistance(pt);
+double r = vectorDistance(x, y);
+</pre>
+<hr>
+<a name="Function:vectorAngle"></a>
+<pre class="detailCode">double vectorAngle(const GPoint &amp; pt);
+double vectorAngle(double x, double y);
+</pre>
+<div class="detailHTML">
+Returns the angle in degrees from the origin to the specified point.
+This function takes account of the fact that the graphics coordinate
+system is flipped in the <i>y</i> direction from the traditional
+Cartesian plane.
+<p>Usage:<br>
+</p></div>
+<pre class="usageCode">double angle = vectorAngle(pt);
+double angle = vectorAngle(x, y);
+</pre>
+
+<hr>
+
+
+</body></html>

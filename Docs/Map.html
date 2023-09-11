@@ -1,0 +1,560 @@
+<html>
+<head>
+<title>Map</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="img/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>libcs106</code> library, Academic Year 2023-24
+</div></td>
+</tr></table>
+<hr>
+<div class=include>#include "map.h"</div>
+<h1 class=header><code>class Map&lt;<var>KeyType</var>,&nbsp;<var>ValueType</var>&gt;</code></h1>
+This class maintains an association between <b><i>keys</i></b> and
+<b><i>values</i></b>.  The types used for keys and values are
+specified using templates, which makes it possible to use
+this structure with any data type.
+
+<p>The map uses a binary search tree (BST) structure internally.
+Because of this choice of internal representation, the <code>KeyType</code> for the keys stored in a <code>Map</code> must define a natural ordering through a <a target="_blank" href="http://www.cplusplus.com/reference/functional/less/"><code>less</code> function</a> and/or <code>&lt;</code> operator so that the keys can be compared and ordered.  The <code>ValueType</code> does not need to provide any such natural ordering. The range-based for loop will iterate over the map keys in sorted order.  The Map operations to add/access/remove an entry run in O(logN) time.
+.
+
+<table class=index width=100%>
+	<tr>
+		<td class=indexHead colspan=3>Constructor</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Constructor:Map">Map()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Initializes a new empty map that associates keys and values of the specified types.</td>
+	</tr>
+	<tr>
+		<td class=indexHead colspan=2>Methods</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:clear">clear()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Removes all entries from this map.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:containsKey">containsKey(<var>key</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(log N)</td>
+		<td class=indexSynopsis width=100%>Returns <code>true</code> if there is an entry for <code>key</code> in this map.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:equals">equals(<var>map</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Returns <code>true</code> if the two maps contain the same entries.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:firstKey">firstKey()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(log N)</td>
+		<td class=indexSynopsis width=100%>Returns the first key in this map in the order established by a for-each loop.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:get">get(<var>key</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(log N)</td>
+		<td class=indexSynopsis width=100%>Returns the value associated with <code>key</code> in this map.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:isEmpty">isEmpty()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Returns <code>true</code> if this map contains no entries.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:keys">keys()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Returns a <code>Vector</code> copy of all keys in this map.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:lastKey">lastKey()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(log N)</td>
+		<td class=indexSynopsis width=100%>Returns the last value in this map in the order established by a for-each loop.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:mapAll">mapAll(<var>fn</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Iterates through the map entries and calls <code>fn(key, value)</code> for each one.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:put">put(<var>key</var>,&nbsp;<var>value</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(log N)</td>
+		<td class=indexSynopsis width=100%>Associates <code>key</code> with <code>value</code> in this map.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:remove">remove(<var>key</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(log N)</td>
+		<td class=indexSynopsis width=100%>Removes any entry for <code>key</code> from this map.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:size">size()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Returns the number of entries in this map.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:toString">toString()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Returns a printable string representation of this map.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:values">values()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Returns a <code>Vector</code> copy of all values in this map.</td>
+	</tr>
+	<tr>
+		<td class=indexHead colspan=3>Operators</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:foreach">for (KeyType key : map)&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Iterates through the keys in a map.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:[]"><var>map</var>[<var>key</var>]</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(log N)</td>
+		<td class=indexSynopsis width=100%>Selects the value associated with <code>key</code>.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:=="><var>map1</var> == <var>map1</var></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Returns <code>true</code> if <code>map1</code> and <code>map2</code> contain the same entries.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:!="><var>map1</var> != <var>map2</var></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Returns <code>true</code> if <code>map1</code> and <code>map2</code> are different.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:+"><var>map1</var> + <var>map2</var></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(NlogN)</td>
+		<td class=indexSynopsis width=100%>Creates a new map which contains all <code>map1</code> entries added to all <code>map2</code> entries.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:+="><var>map1</var> += <var>map2</var></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(NlogN)</td>
+		<td class=indexSynopsis width=100%>Adds all <code>map2</code> entries to <code>map1</code>.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:-"><var>map1</var> - <var>map2</var></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(NlogN)</td>
+		<td class=indexSynopsis width=100%>Creates a new map which contains all <code>map1</code> entries minus all <code>map2</code> entries.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:-="><var>map1</var> -= <var>map2</var></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(NlogN)</td>
+		<td class=indexSynopsis width=100%>Removes all <code>map2</code> entries from <code>map1</code>.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:*"><var>map1</var> * <var>map2</var></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(NlogN)</td>
+		<td class=indexSynopsis width=100%>Creates a new map which contains all entries that appear in both <code>map1</code> and <code>map2</code>.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:*="><var>map1</var> *= <var>map2</var></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(NlogN)</td>
+		<td class=indexSynopsis width=100%>Removes any entries from <code>map1</code> that are not present in <code>map2</code>.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:<<"><var>ostream</var>&nbsp;&lt;&lt;&nbsp;<var>map</var></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Outputs the contents of the map to the given output stream.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:>>"><var>istream</var>&nbsp;&gt;&gt;&nbsp;<var>map</var></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N log N)</td>
+		<td class=indexSynopsis width=100%>Reads the contents of the given input stream into the map.</td>
+	</tr>
+</table>
+
+<h2>Constructor detail</h2>
+
+<hr>
+<a name="Constructor:Map"></a>
+<pre class=detailCode>
+Map();
+</pre>
+<div class=detailHTML>
+Initializes a new empty map that associates keys and values of the
+specified types. You may also optionally provide an initializer list of key-value pairs. The newly created map will contain those entries.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+Map&lt;KeyType, ValueType&gt; map;
+Map&lt;KeyType, ValueType&gt; map = {{ k1, v1}, { k2, v2 }};
+
+</pre>
+<hr>
+</table>
+
+<h2>Method detail</h2>
+
+<hr>
+<a name="Method:clear"></a>
+<pre class=detailCode>
+void clear();
+</pre>
+<div class=detailHTML>
+Removes all entries from this map.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+map.clear();
+</pre>
+
+<hr>
+<a name="Method:containsKey"></a>
+<pre class=detailCode>
+bool containsKey(const KeyType& key) const;
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if there is an entry for <code>key</code>
+in this map.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (map.containsKey(key)) ...
+</pre>
+
+<hr>
+<a name="Method:equals"></a>
+<pre class=detailCode>
+bool equals(const Map&amp; map) const;
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the two maps contain exactly the same key/value pairs.
+Identical in behavior to the <code>==</code> operator.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (map1.equals(map2)) ...
+</pre>
+
+<hr>
+<a name="Method:firstKey"></a>
+<pre class=detailCode>
+KeyType firstKey() const;
+</pre>
+<div class=detailHTML>
+Returns the first key in the map in the order established by
+a for-each loop.  If map is empty, <code>firstKey</code>
+signals an error.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+KeyType first = map.firstKey();
+</pre>
+
+
+<hr>
+<a name="Method:get"></a>
+<pre class=detailCode>
+ValueType get(const KeyType&amp; key) const;
+</pre>
+<div class=detailHTML>
+Returns the value associated with <code>key</code> in this map.
+If <code>key</code> is not found, <code>get</code> returns the
+default value for <code>ValueType</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+ValueType value = map.get(key);
+</pre>
+
+<hr>
+<a name="Method:isEmpty"></a>
+<pre class=detailCode>
+bool isEmpty() const;
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if this map contains no entries.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (map.isEmpty()) ...
+</pre>
+
+<hr>
+<a name="Method:keys"></a>
+<pre class=detailCode>
+Vector&lt;KeyType&gt; keys() const;
+</pre>
+<div class=detailHTML>
+Returns a <code>Vector</code> copy of all keys in this map.
+The keys will appear in the same order that a for-each loop over the map would produce them.
+Because a map cannot contain duplicate keys, the elements of the vector will be unique.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+Vector&lt;KeyType&gt; keys = map.keys();
+</pre>
+
+<hr>
+<a name="Method:lastKey"></a>
+<pre class=detailCode>
+KeyType lastKey() const;
+</pre>
+<div class=detailHTML>
+Returns the last key in the map in the order established by
+a for-each loop.  If map is empty, <code>lastKey</code>
+signals an error.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+KeyType last = map.lastKey();
+</pre>
+
+
+<hr>
+<a name="Method:mapAll"></a>
+<pre class=detailCode>
+void mapAll(std::function&lt;void (const KeyType&amp;, const ValueType&amp;)&gt; fn) const;
+</pre>
+<div class=detailHTML>
+Iterates through the map entries and calls <code>fn(key, value)</code>
+for each one.  The keys are processed in ascending order, as defined
+by the comparison function.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+map.mapAll(fn);
+</pre>
+
+<hr>
+<a name="Method:put"></a>
+<pre class=detailCode>
+void put(const KeyType& key, const ValueType& value);
+</pre>
+<div class=detailHTML>
+Associates <code>key</code> with <code>value</code> in this map.
+Any previous value associated with <code>key</code> is replaced
+by the new value.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+map.put(key, value);
+</pre>
+
+<hr>
+<a name="Method:remove"></a>
+<pre class=detailCode>
+void remove(const KeyType& key);
+</pre>
+<div class=detailHTML>
+Removes any entry for <code>key</code> from this map.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+map.remove(key);
+</pre>
+
+<hr>
+<a name="Method:size"></a>
+<pre class=detailCode>
+int size() const;
+</pre>
+<div class=detailHTML>
+Returns the number of entries in this map.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int nEntries = map.size();
+</pre>
+
+<hr>
+<a name="Method:toString"></a>
+<pre class=detailCode>
+string toString() const;
+</pre>
+<div class=detailHTML>
+Returns a printable string representation of this map. such as <code>&quot;{k1:v1, k2:v2, k3:v3}&quot;</code>.
+The key/value pairs will be listed in ascending order by key.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string str = map.toString();
+</pre>
+
+<hr>
+<a name="Method:values"></a>
+<pre class=detailCode>
+Vector&lt;ValueType&gt; values() const;
+</pre>
+<div class=detailHTML>
+Returns a <code>Vector</code> copy of all values in this map.
+The values will appear in the same order that a for-each loop over the map would produce them.
+A map can contain duplicate values, so the elements of the vector are not guaranteed to be unique.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+Vector&lt;ValueType&gt; values = map.values();
+</pre>
+
+<hr>
+</table>
+<h2>Operator detail</h2>
+
+<hr>
+<a name="Operator:foreach"></a>
+<pre class=detailCode>
+for (KeyType key : map)
+</pre>
+<div class=detailHTML>
+The range-based for loop can be used to iterate through the elements in a collection. The iteration accesses map keys in ascending order. An error is signaled if you attempt to add/remove elements from a collection while iterating over it.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+for (KeyType key : map) {
+	cout << key << " = " << map[key] << endl;
+}
+
+</pre>
+
+
+<hr>
+<a name="Operator:[]"></a>
+<pre class=detailCode>
+ValueType&amp; operator[](const KeyType& key);
+ValueType operator[](const KeyType& key) const;
+</pre>
+<div class=detailHTML>
+Selects the value associated with <code>key</code>.  This syntax
+makes it easy to think of a map as an "associative array"
+indexed by the key type.  If <code>key</code> is already present
+in the map, this function returns a reference to its associated
+value.  If key is not present in the map, a new entry is created
+whose value is set to the default for the value type.
+
+<p>Note: <code>get</code> and <code>operator[]</code> have a small
+but significant difference when used to retrieve the value for a key
+not contained in the map. Both expressions return the default
+value, but accessing <code>map[key]</code> adds this new entry
+to the map while <code>map.get(key)</code> does not.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+map[key]
+</pre>
+
+<hr>
+<a name="Operator:+"></a>
+<pre class=detailCode>
+Map operator+(const Map&amp; map2) const;
+</pre>
+<div class=detailHTML>
+Creates a new map which combines the entries from <code>map1</code> and <code>map2</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+map1 + map2
+</pre>
+
+<hr>
+<a name="Operator:*"></a>
+<pre class=detailCode>
+Map operator*(const Map&amp; map2) const;
+</pre>
+<div class=detailHTML>
+Creates a new map which contains those entries that appear in both <code>map1</code> and <code>map2</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+map1 * map2
+</pre>
+
+<hr>
+<a name="Operator:-"></a>
+<pre class=detailCode>
+Map operator-(const Map&amp; map2) const;
+</pre>
+<div class=detailHTML>
+Creates a new map which is the difference of the entries in <code>map1</code> minus those in <code>map2</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+map1 - map2
+</pre>
+
+<hr>
+<a name="Operator:+="></a>
+<pre class=detailCode>
+Map&amp; operator+=(const Map&amp; map2);
+</pre>
+<div class=detailHTML>
+Adds all of the entries from <code>map2</code> to <code>map1</code>.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+map1 += map2;
+</pre>
+
+<hr>
+<a name="Operator:*="></a>
+<pre class=detailCode>
+Map&amp; operator*=(const Map&amp; map2);
+</pre>
+<div class=detailHTML>
+Removes any entries from <code>map1</code> that are not present in
+<code>map2</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+map1 *= map2;
+</pre>
+
+<hr>
+<a name="Operator:-="></a>
+<pre class=detailCode>
+Map&amp; operator-=(const Map&amp; map2);
+</pre>
+<div class=detailHTML>
+Removes the entries in <code>map2</code> from <code>map1</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+map1 -= map2;
+</pre>
+
+<hr>
+<a name="Operator:<<"></a>
+<pre class=detailCode>
+ostream&amp; operator&lt;&lt;(const Map&amp; map);
+</pre>
+Outputs the contents of <code>map</code> to the given output stream.
+The output is in the form <code>{k1:v1, k2:v2, k3:v3}</code>. The entries
+will be listed in ascending order of key.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+cout << map << endl;
+</pre>
+
+
+<hr>
+<a name="Operator:>>"></a>
+<pre class=detailCode>
+istream&amp; operator&gt;&gt;(Map&amp; map);
+</pre>
+Reads the contents of the given input stream into <code>map</code>. Any previous
+contents of the map are replaced.
+The input is expected to be in the form <code>{k1:v1, k2:v2, k3:v3}</code>. If unable to read a proper
+map from the stream, the operation results in a stream fail state.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (infile >> map) ...
+</pre>
+
+
+<hr>
+</table>
+</body>
+</html>

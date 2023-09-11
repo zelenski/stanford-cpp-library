@@ -1,0 +1,237 @@
+<html>
+<head>
+<title>GridLocationRange</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="img/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>libcs106</code> library, Academic Year 2023-24
+</div></td>
+</tr></table>
+<hr>
+<div class=include>#include "gridlocation.h"</div>
+<h1 class=header><code>class GridLocationRange</code></h1>
+This class represents a two-dimensional rectangular ange of grid locations that can be looped over.
+<BR>
+<BR>
+Common usage patterns:
+<pre>GridLocationRange range(0, 0, 10, 5);
+for (GridLocation loc : range) {
+    cout << loc << endl; // print location itself
+}
+</pre>
+ The <code>locations()</code> method of the <code>Grid</code> class returns a <code>GridLocationRange</code> for the entire grid.
+ <pre>
+for (GridLocation loc : grid.locations()) {
+    cout << grid[loc] << endl; // access grid element at each location and print it
+}
+</pre>
+
+<table class=index width=100%>
+    <td class=indexHead colspan=2>Constructor</td>
+</tr>
+<tr>
+    <td class=indexKey><nobr><a href="#Constructor:GridLocationRange">GridLocationRange(<var>startLocation</var>,&nbsp;<var>endLocation</var>)</a><br>
+<a href="#Constructor:GridLocationRange">GridLocationRange(<var>startRow</var>,&nbsp;<var>startCol</var>,&nbsp;<var>endRow</var>,&nbsp;<var>endCol</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Creates a <code>GridLocationRange</code> with the specified boundaries.</td>
+</tr>
+<tr>
+    <td class=indexHead colspan=2>Methods</td>
+</tr>
+<tr>
+    <td class=indexKey><nobr><a href="#Method:contains">contains(loc)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns true if <code>loc</code> is contained in this range.</td></tr>
+    <td class=indexKey><nobr><a href="#Method:endCol">endCol()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the last column in this range, inclusive.</td></tr>
+    <td class=indexKey><nobr><a href="#Method:endLocation">endLocation()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the last row/column location in this range, inclusive.</td></tr>
+    <td class=indexKey><nobr><a href="#Method:endRow">endRow()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the last row in this range, inclusive.</td></tr>
+    <td class=indexKey><nobr><a href="#Method:isEmpty">isEmpty()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns true if this range contains no rows or columns.</td></tr>
+    <td class=indexKey><nobr><a href="#Method:startCol">startCol()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the first column in this range, inclusive.</td></tr>
+    <td class=indexKey><nobr><a href="#Method:startLocation">startLocation()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the first row/column location in this range, inclusive.</td></tr>
+    <td class=indexKey><nobr><a href="#Method:startRow">startRow()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns the first row in this range, inclusive.</td></tr>
+    <td class=indexKey><nobr><a href="#Method:toString">toString()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns a printable string representation of this range.</td></tr>
+
+    <td class=indexHead colspan=3>Operators</td>
+</tr>
+<tr>
+    <td class=indexKey><nobr><a href="#Operator:<<"><var>ostream</var>&nbsp;&lt;&lt;&nbsp;<var>range</var></a></nobr></td>
+    <td class=indexSynopsis width=100%>Outputs a range to the given output stream.</td>
+</tr>
+<tr>
+    <td class=indexKey><nobr><a href="#Operator:<<"><var>istream</var>&nbsp;&gt;&gt;&nbsp;<var>range</var></a></nobr></td>
+    <td class=indexSynopsis width=100%>Reads a range from the given input stream.</td>
+</tr>
+</table>
+<h2>Constructor detail</h2>
+<hr>
+<a name="Constructor:GridLocationRange"></a>
+<pre class=detailCode>
+GridLocationRange(int startRow, int startCol, int endRow, int endCol);
+GridLocationRange(GridLocation startLocation, GridLocation endLocation);
+</pre>
+</table>
+
+<div class=detailHTML>
+Creates a <code>GridLocationRange</code> object with the specified boundaries. The range of locations extends from the corner at <code>(startRow, startCol)</code> to the corner at <code>(endRow, endCol)</code> inclusive.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+GridLocationRange row(0, 0, 10, 0);
+GridLocationRange box(2, 3, 7, 9);
+GridLocationRange byCorners(GridLocation(2, 3), GridLocation(7, 9));
+
+GridLocationRange range;  // no arguments initializes to default 0,0,0,0
+range = GridLocationRange(0, 0, 5, 5); // set range to have new boundaries
+</pre>
+
+
+<h2>Method detail</h2>
+<hr>
+<a name="Method:contains"></a>
+<pre class=detailCode>
+bool contains(GridLocation loc) const;
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the specified location is contained in this range.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (range.contains(loc)) ...
+</pre>
+
+<hr>
+<a name="Method:isEmpty"></a>
+<pre class=detailCode>
+bool isEmpty() const;
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if this range contains no rows or columns.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (range.isEmpty()) ...
+</pre>
+
+<hr>
+<a name="Method:endCol"></a>
+<pre class=detailCode>
+int endCol() const;
+</pre>
+<div class=detailHTML>
+Returns the last column in this range.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int last = range.endCol();
+</pre>
+
+<hr>
+<a name="Method:endLocation"></a>
+<pre class=detailCode>
+GridLocation endLocation() const;
+</pre>
+<div class=detailHTML>
+Returns the last row/column location in this range.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+GridLocation last = range.endLocation();
+</pre>
+
+<hr>
+<a name="Method:endRow"></a>
+<pre class=detailCode>
+int endRow() const;
+</pre>
+<div class=detailHTML>
+Returns the last row in this range.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int last = range.endRow();
+</pre>
+
+<hr>
+<a name="Method:startCol"></a>
+<pre class=detailCode>
+int startCol() const;
+</pre>
+<div class=detailHTML>
+Returns the first column in this range.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int first = range.startCol();
+</pre>
+
+
+<hr>
+<a name="Method:startLocation"></a>
+<pre class=detailCode>
+GridLocation startLocation() const;
+</pre>
+<div class=detailHTML>
+Returns the first row/column location in this range.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+GridLocation first = range.startLocation();
+</pre>
+
+<hr>
+<a name="Method:startRow"></a>
+<pre class=detailCode>
+int startRow() const;
+</pre>
+<div class=detailHTML>
+Returns the first row in this range.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int first = range.startRow();
+</pre>
+
+<hr>
+<a name="Method:toString"></a>
+<pre class=detailCode>
+string toString() const;
+</pre>
+<div class=detailHTML>
+Returns a printable string for this <code>GridLocationRange</code> in the form
+<code>"r5c8...r6c9"</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string str = range.toString();
+</pre>
+
+<hr>
+<a name="Operator:<<"></a>
+<pre class=detailCode>
+ostream&amp; operator&lt;&lt;(const GridLocationRange&amp; range);
+</pre>
+Outputs the <code>GridLocationRange</code> to the given output stream.
+The output is in the form <code>r5c8...r6c9</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+cout << range << endl;
+</pre>
+
+<hr>
+<a name="Operator:>>"></a>
+<pre class=detailCode>
+istream&amp; operator&gt;&gt;(GridLocationRange&amp; range);
+</pre>
+Reads a <code>GridLocationRange</code> from the given input stream.
+The input is expected to be in the form <code>r5c8...r6c9</code>. If unable to read a proper
+range from the stream, the operation results in a stream fail state.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (infile >> range) ...
+</pre>
+
+</table>
+</body>
+</html>

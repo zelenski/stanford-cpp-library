@@ -1,0 +1,466 @@
+<html>
+<head>
+<title>strlib.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="img/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>libcs106</code> library, Academic Year 2023-24
+</div></td>
+</tr></table>
+<hr>
+<h1 class="header"><code>strlib.h</code></h1>
+This file exports several useful string functions that are not
+included in the C++ string library. It also includes some functions that
+effectively re-write standard C++ string functions, in order to provide that
+same funtionality in a simpler or safer formulation.
+<table class="index" width="100%">
+<tbody><tr><td class="indexHead" colspan="2">Functions</td></tr>
+
+<tr><td class="indexKey"><nobr><a href="#Function:boolToString">boolToString(<var>b</var>)</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">Converts a boolean value into the corresponding string form.</td>
+</tr>
+<tr>
+	<td class="indexKey"><nobr><a href="#Function:charToInteger">charToInteger(<var>c</var>)</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">Converts a digit character into the corresponding integer.</td>
+</tr>
+<tr>
+	<td class="indexKey"><nobr><a href="#Function:charToString">charToString(<var>c</var>)</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">Converts a character value into the corresponding string form.</td>
+</tr>
+<tr>
+	<td class="indexKey"><nobr><a href="#Function:endsWith">endsWith(<var>str</var>,&nbsp;<var>suffix</var>)</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">Returns <code>true</code> if the string <code>str</code> ends with the specified suffix, which may be either a string or a character.</td>
+</tr>
+<tr>
+	<td class="indexKey"><nobr><a href="#Function:equalsIgnoreCase">equalsIgnoreCase(<var>s1</var>,&nbsp;<var>s2</var>)</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">Returns <code>true</code> if <code>s1</code> and <code>s2</code> are equal discounting differences in case.</td>
+</tr>
+<tr>
+	<td class="indexKey"><nobr><a href="#Function:integerToString">integerToString(<var>n</var>)</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">Converts an integer into the corresponding string of digits.</td>
+</tr>
+<tr>
+	<td class="indexKey"><nobr><a href="#Function:realToString">realToString(<var>d</var>)</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">Converts a floating-point number into the corresponding string form.</td>
+</tr>
+<tr>
+	<td class="indexKey"><nobr><a href="#Function:startsWith">startsWith(<var>str</var>,&nbsp;<var>prefix</var>)</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">Returns <code>true</code> if the string <code>str</code> starts with the specified prefix, which may be either a string or a character.</td>
+</tr>
+<tr>
+	<td class="indexKey"><nobr><a href="#Function:stringContains">stringContains(<var>str</var>,&nbsp;<var>substr</var>)</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">Returns whether the given substring can be found in the given string.</td>
+</tr>
+<tr>
+	<td class="indexKey"><nobr><a href="#Function:stringIndexOf">stringIndexOf(<var>str</var>,&nbsp;<var>substr</var>)</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">Returns the index of the start of the first occurrence of the given substring in the given string.</td>
+</tr>
+<tr>
+	<td class="indexKey"><nobr><a href="#Function:stringIsInteger">stringIsInteger(<var>str</var>)</a>&nbsp;<br>
+<a href="#Function:stringIsInteger">stringIsInteger(<var>str</var>, <var>radix</var>)</a></nobr></td><td class="indexSynopsis" width="100%">Returns whether the given string can be successfully converted into an integer.</td>
+</tr>
+<tr>
+	<td class="indexKey"><nobr><a href="#Function:stringIsReal">stringIsReal(<var>str</var>)</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">Returns whether the given string can be successfully converted into a real number.</td>
+</tr>
+<tr>
+	<td class="indexKey"><nobr><a href="#Function:stringJoin">stringJoin(<var>v</var>,&nbsp;<var>delimiter</var>)</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">Concatenates the given vector of strings into a single string using the given separator.</td>
+</tr>
+<tr>
+	<td class="indexKey"><nobr><a href="#Function:stringLastIndexOf">stringLastIndexOf(<var>str</var>,&nbsp;<var>substr</var>)</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">Returns the index of the start of the last occurrence of the given substring in the given string.</td>
+</tr>
+<tr>
+	<td class="indexKey"><nobr><a href="#Function:stringReplace">stringReplace(<var>str</var>,&nbsp;<var>old</var>,&nbsp;<var>new</var>)</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">Returns a new string with all occurrences of <var>old</var> changed into <var>new</var>.</td>
+</tr>
+<tr>
+	<td class="indexKey"><nobr><a href="#Function:stringSplit">stringSplit(<var>str</var>,&nbsp;<var>delimiter</var>)</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">Breaks apart the given string using the given separator.</td>
+</tr>
+<tr>
+	<td class="indexKey"><nobr><a href="#Function:stringToBool">stringToBool(<var>str</var>)</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">Converts a string representing a boolean value into its corresponding value.</td>
+</tr>
+<tr>
+	<td class="indexKey"><nobr><a href="#Function:stringToChar">stringToChar(<var>str</var>)</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">Converts a single-character string into its corresponding char value.</td>
+</tr>
+<tr>
+	<td class="indexKey"><nobr><a href="#Function:stringToInteger">stringToInteger(<var>str</var>)</a><br>
+<a href="#Function:stringToInteger">stringToInteger(<var>str</var>, <var>radix</var>)</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">Converts a string of digits into an integer.</td>
+</tr>
+<tr>
+	<td class="indexKey"><nobr><a href="#Function:stringToReal">stringToReal(<var>str</var>)</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">Converts a string representing a real number into its corresponding value.</td>
+</tr>
+<tr>
+	<td class="indexKey"><nobr><a href="#Function:toLowerCase">toLowerCase(<var>str</var>)</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">Returns a new string in which all uppercase characters have been converted into their lowercase equivalents.</td>
+</tr>
+<tr>
+	<td class="indexKey"><nobr><a href="#Function:toUpperCase">toUpperCase(<var>str</var>)</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">Returns a new string in which all lowercase characters have been converted into their uppercase equivalents.</td>
+</tr>
+<tr>
+	<td class="indexKey"><nobr><a href="#Function:trim">trim(<var>str</var>)</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">Returns a new string after removing any whitespace characters from the beginning and end of the argument.</td>
+</tr>
+<tr>
+	<td class="indexKey"><nobr><a href="#Function:trimEnd">trimEnd(<var>str</var>)</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">Returns a new string after removing any whitespace characters from the end of the argument.</td>
+</tr>
+<tr>
+	<td class="indexKey"><nobr><a href="#Function:trimStart">trimStart(<var>str</var>)</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">Returns a new string after removing any whitespace characters from the beginning of the argument.</td>
+</tr>
+<tr>
+	<td class="indexKey"><nobr><a href="#Function:urlDecode">urlDecode(<var>str</var>)</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">Returns a URL-decoded version of the given string.</td>
+</tr>
+<tr>
+	<td class="indexKey"><nobr><a href="#Function:urlEncode">urlEncode(<var>str</var>)</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">Returns a URL-encoded version of the given string.</td></tr>
+</tbody></table>
+
+<h2>Function detail</h2>
+
+<hr>
+<a name="Function:integerToString"></a>
+<pre class="detailCode">string integerToString(int n);
+</pre>
+<div class="detailHTML">
+Converts an integer into the corresponding string of digits.
+For example, calling <code>integerToString(123)</code> returns
+the string <code>"123"</code>.
+<p>Usage:<br>
+</p></div>
+<pre class="usageCode">string s = integerToString(n);
+</pre>
+
+<hr>
+<a name="Function:stringToInteger"></a>
+<pre class="detailCode">int stringToInteger(string str);
+int stringToInteger(string str, int radix);
+</pre>
+<div class="detailHTML">
+Converts a string of digits into an integer.  If the string is not a
+legal integer or contains extraneous characters other than whitespace,
+<code>stringToInteger</code> calls <code>error</code> with an
+appropriate message.
+The function accepts an optional radix (base); for example,
+<code>stringToInteger("234", 16)</code> assumes that the string is in base-16 and
+returns 2*16*16 + 3*16 + 4 = 564.
+<p>Usage:<br>
+</p></div>
+<pre class="usageCode">int n = stringToInteger(str);
+int n2 = stringToInteger(str, radix);
+</pre>
+
+
+<hr>
+<a name="Function:stringIsInteger"></a>
+<pre class="detailCode">bool stringIsInteger(string str);
+bool stringIsInteger(string str, int radix);
+</pre>
+<div class="detailHTML">
+Returns <code>true</code> if the given string can be successfully converted into an integer; that is, if it consists of digits and an optional +/- sign at the front.
+It can be useful to call this function before calling <code>stringToInteger</code> to make sure that the conversion will not fail.
+Optionally accepts a radix (base) parameter if base-10 is not desired.
+<p>Usage:<br>
+</p></div>
+<pre class="usageCode">if (stringIsInteger(str)) { ...
+</pre>
+
+
+<hr>
+<a name="Function:stringIsReal"></a>
+<pre class="detailCode">bool stringIsReal(string str);
+</pre>
+<div class="detailHTML">
+Returns <code>true</code> if the given string can be successfully converted into a real number; that is, if it consists of digits, an optional decimal point, an optional +/- sign at the front, and so on.
+It can be useful to call this function before calling <code>stringToReal</code> to make sure that the conversion will not fail.
+<p>Usage:<br>
+</p></div>
+<pre class="usageCode">if (stringIsReal(str)) { ...
+</pre>
+
+
+<hr>
+<a name="Function:realToString"></a>
+<pre class="detailCode">string realToString(double d);
+</pre>
+<div class="detailHTML">
+Converts a floating-point number into the corresponding string form.
+For example, calling <code>realToString(23.45)</code> returns
+the string <code>"23.45"</code>.
+<p>Usage:<br>
+</p></div>
+<pre class="usageCode">string s = realToString(d);
+</pre>
+<hr>
+<a name="Function:stringToReal"></a>
+<pre class="detailCode">double stringToReal(string str);
+</pre>
+<div class="detailHTML">
+Converts a string representing a real number into its corresponding
+value.  If the string is not a legal floating-point number or contains
+extraneous characters other than whitespace, <code>stringToReal</code>
+calls <code>error</code> with an appropriate message.
+<p>Usage:<br>
+</p></div>
+<pre class="usageCode">double d = stringToReal(str);
+</pre>
+<hr>
+<a name="Function:boolToString"></a>
+<pre class="detailCode">string boolToString(bool b);
+</pre>
+<div class="detailHTML">
+Converts a boolean value into the corresponding string form.
+For example, calling <code>boolToString(true)</code> returns
+the string <code>"true"</code>.
+<p>Usage:<br>
+</p></div>
+<pre class="usageCode">string s = boolToString(b);
+</pre>
+
+
+<hr>
+<a name="Function:stringToBool"></a>
+<pre class="detailCode">bool stringToBool(string str);
+</pre>
+<div class="detailHTML">
+Converts a string representing a boolean value into its corresponding
+value.  The only values recognized are the string literals <code>"true"</code> or <code>"false"</code>.
+If the string is not <code>"true"</code> or <code>"false"</code> or contains
+extraneous characters other than whitespace, <code>stringToBool</code>
+calls <code>error</code> with an appropriate message.
+<p>Usage:<br>
+</p></div>
+<pre class="usageCode">bool b = stringToBool(str);
+</pre>
+
+<hr>
+<a name="Function:charToInteger"></a>
+<pre class="detailCode">int charToInteger(char c);
+</pre>
+<div class="detailHTML">
+Converts a digit character into the corresponding integer.
+For example, <code>charToInteger('3')</code> returns the int 3.
+ If the character is not a valid digit character '0' through '9', <code>charToInteger</code> calls <code>error</code>.
+
+<p>Usage:<br>
+</p></div>
+<pre class="usageCode">int n = charToInteger(c);
+</pre>
+
+<hr>
+<a name="Function:charToString"></a>
+<pre class="detailCode">string charToString(char c);
+</pre>
+<div class="detailHTML">
+Converts a character into the corresponding string form.
+For example, calling <code>charToString('Q')</code> returns
+the string <code>"Q"</code>.
+<p>Usage:<br>
+</p></div>
+<pre class="usageCode">string s = charToString(c);
+</pre>
+
+
+<hr>
+<a name="Function:stringTochar"></a>
+<pre class="detailCode">char stringToChar(string str);
+</pre>
+<div class="detailHTML">
+Converts a single-character string into its corresponding <code>char</code>
+value.  Typically you can just write <code>str[0]</code> to access the
+first character of a string; this function is merely provided for consistency
+with the other type-conversion functions.
+
+If the string is not exactly 1 character in length or contains
+extraneous characters other than whitespace, <code>stringTochar</code>
+calls <code>error</code> with an appropriate message.
+<p>Usage:<br>
+</p></div>
+<pre class="usageCode">char c = stringToChar(str);
+</pre>
+
+
+<hr>
+<a name="Function:stringContains"></a>
+<pre class="detailCode">bool stringContains(string str, string substr);
+</pre>
+<div class="detailHTML">
+Returns <code>true</code> if the given substring can be found within the given string.
+<p>Usage:<br>
+</p></div>
+<pre class="usageCode">if (stringContains(str, substr)) { ...
+</pre>
+
+
+<hr>
+<a name="Function:stringReplace"></a>
+<pre class="detailCode">string stringReplace(string str, string old, string replacement);
+</pre>
+<div class="detailHTML">
+Returns a new string that is the same as <code>str</code> but with all occurrences of <code>old</code> changed into <code>replacement</code>.
+<p>Usage:<br>
+</p></div>
+<pre class="usageCode">string s = stringReplace(s, "foo", "bar");
+</pre>
+
+
+<hr>
+<a name="Function:toUpperCase"></a>
+<pre class="detailCode">string toUpperCase(string str);
+</pre>
+<div class="detailHTML">
+Returns a new string in which all lowercase characters have been converted
+into their uppercase equivalents.
+<p>Usage:<br>
+</p></div>
+<pre class="usageCode">string s = toUpperCase(str);
+</pre>
+<hr>
+<a name="Function:toLowerCase"></a>
+<pre class="detailCode">string toLowerCase(string str);
+</pre>
+<div class="detailHTML">
+Returns a new string in which all uppercase characters have been converted
+into their lowercase equivalents.
+<p>Usage:<br>
+</p></div>
+<pre class="usageCode">string s = toLowerCase(str);
+</pre>
+<hr>
+<a name="Function:equalsIgnoreCase"></a>
+<pre class="detailCode">bool equalsIgnoreCase(string s1, string s2);
+</pre>
+<div class="detailHTML">
+Returns <code>true</code> if <code>s1</code> and <code>s2</code> are
+equal discounting differences in case.
+<p>Usage:<br>
+</p></div>
+<pre class="usageCode">if (equalsIgnoreCase(s1, s2)) ...
+</pre>
+<hr>
+<a name="Function:startsWith"></a>
+<pre class="detailCode">bool startsWith(string str, string prefix);
+bool startsWith(string str, char prefix);
+</pre>
+<div class="detailHTML">
+Returns <code>true</code> if the string <code>str</code> starts with
+the specified prefix, which may be either a string or a character.
+<p>Usage:<br>
+</p></div>
+<pre class="usageCode">if (startsWith(str, prefix)) ...
+</pre>
+<hr>
+<a name="Function:endsWith"></a>
+<pre class="detailCode">bool endsWith(string str, string suffix);
+bool endsWith(string str, char suffix);
+</pre>
+<div class="detailHTML">
+Returns <code>true</code> if the string <code>str</code> ends with
+the specified suffix, which may be either a string or a character.
+<p>Usage:<br>
+</p></div>
+<pre class="usageCode">if (endsWith(str, suffix)) ...
+</pre>
+<hr>
+<a name="Function:trim"></a>
+<pre class="detailCode">string trim(string str);
+</pre>
+<div class="detailHTML">
+Returns a new string after removing any whitespace characters
+from the beginning and end of the argument.
+<p>Usage:<br>
+</p></div>
+<pre class="usageCode">string trimmed = trim(str);
+</pre>
+<hr>
+<a name="Function:trimEnd"></a>
+<pre class="detailCode">string trimEnd(string str);
+</pre>
+<div class="detailHTML">
+Returns a new string after removing any whitespace characters
+from the end of the argument.
+<p>Usage:<br>
+</p></div>
+<pre class="usageCode">string trimmed = trimEnd(str);
+</pre>
+<hr>
+<a name="Function:trimStart"></a>
+<pre class="detailCode">string trimStart(string str);
+</pre>
+<div class="detailHTML">
+Returns a new string after removing any whitespace characters
+from the beginning of the argument.
+<p>Usage:<br>
+</p></div>
+<pre class="usageCode">string trimmed = trimStart(str);
+</pre>
+
+<hr>
+
+<a name="Function:stringIndexOf"></a>
+<pre class="detailCode">int stringIndexOf(string s, string substring);
+</pre>
+<div class="detailHTML">
+Returns the index of the start of the first occurrence of the given substring in <code>s</code>, if it occurs in <code>s</code>.
+If it does not occur, returns <code>-1</code>.
+This function is very similar to <code>string.find</code>, but <code>find</code> returns <code>string::npos</code> when the string is not found.
+<p>Usage:<br>
+</p></div>
+<pre class="usageCode">int index = stringIndexOf(s, sub);
+</pre>
+
+<hr>
+<a name="Function:stringLastIndexOf"></a>
+<pre class="detailCode">int stringLastIndexOf(string s, string substring);
+</pre>
+<div class="detailHTML">
+Returns the index of the start of the last occurrence of the given substring in <code>s</code>, if it occurs in <code>s</code>.
+If it does not occur, returns <code>-1</code>.
+This function is very similar to <code>string.rfind</code>, but <code>find</code> returns <code>string::npos</code> when the string is not found.
+<p>Usage:<br>
+</p></div>
+<pre class="usageCode">int index = stringLastIndexOf(s, sub);
+</pre>
+
+
+<hr>
+<a name="Function:stringSplit"></a>
+<pre class="detailCode">Vector&lt;string&gt; stringSplit(string str, string delimiter);
+</pre>
+<div class="detailHTML">
+Returns a Vector whose elements are strings formed by splitting the given string by the given delimiter.
+Any adjacent delimiters are coalesced. For example, splitting <code>"Hi&nbsp;there&nbsp;&nbsp;&nbsp;Jim!"</code> on delimter <code>"&nbsp;"</code> returns <code>{"Hi", "there", "Jim!"}</code>.
+<p>Usage:<br>
+</p></div>
+<pre class="usageCode">Vector&lt;string&gt; v = stringSplit(str, delimiter);
+</pre>
+
+
+<hr>
+<a name="Function:stringJoin"></a>
+<pre class="detailCode">string stringJoin(const Vector&lt;string&gt;&amp; v, string delimiter = "\n");
+</pre>
+<div class="detailHTML">
+Combines the elements of the given Vector into a single string, with the given delimiter separating neighboring elements, and returns it.
+For example, joining the elements of the vector <code>{"Hi", "there", "", "Jim"}</code> with the delimiter <code>"-"</code> returns <code>"Hi-there--Jim"</code>.
+<p>Usage:<br>
+</p></div>
+<pre class="usageCode">string s = stringJoin(v, delimiter);
+</pre>
+
+<hr>
+<a name="Function:urlDecode"></a>
+<pre class="detailCode">string urlDecode(string value);
+</pre>
+<div class="detailHTML">
+Returns a URL-decoded version of the given string, where any %xx character codes are converted back to the equivalent characters.
+<p>Usage:<br>
+</p></div>
+<pre class="usageCode">string s = urlDecode(value);
+</pre>
+
+<hr>
+<a name="Function:urlEncode"></a>
+<pre class="detailCode">string urlEncode(string value);
+</pre>
+<div class="detailHTML">
+Returns a URL-encoded version of the given string, where most non- alphabetic characters are replaced by %xx character codes.
+<p>Usage:<br>
+</p></div>
+<pre class="usageCode">string s = urlEncode(value);
+</pre>
+
+
+<hr>
+
+
+
+
+</body></html>

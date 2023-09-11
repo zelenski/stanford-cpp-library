@@ -1,0 +1,478 @@
+<html>
+<head>
+<title>Vector</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="img/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>libcs106</code> library, Academic Year 2023-24
+</div></td>
+</tr></table>
+<hr>
+<div class=include>#include "vector.h"</div>
+<h1 class=header><code>class Vector&lt;<var>ValueType</var>&gt;</code></h1>
+This class stores an ordered list of values similar to an array.
+It supports traditional array selection using square brackets, as well as inserting and removing elements.  Operations that access elements by index run in O(1) time. Operations, such
+as insert and remove, that must rearrange elements run in O(N) time.
+
+<table class=index width=100%>
+	<tr><td class=indexHead colspan=3>Constructor</td></tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Constructor:Vector">Vector()</a></nobr></td>
+		<td class="bigoh">O(1)</td><td class=indexSynopsis width=100%>Initializes a new empty vector.</td></tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Constructor:Vector">Vector(<var>n</var>,&nbsp;<var>value</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Initializes a new vector storing <em>n</em> copies of the given value.</td>
+	</tr>
+	<tr>
+		<td class=indexHead colspan=3>Methods</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:add">add(<var>value</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Adds a new value to the end of this vector.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:clear">clear()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Removes all elements from this vector.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:equals">equals(<var>vec</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Returns <code>true</code> if the two vectors contain the same elements in the same order.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:get">get(<var>index</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Returns the element at the specified index in this vector.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:insert">insert(<var>index</var>,&nbsp;<var>value</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Inserts <code>value</code> into this vector at the specified index.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:isEmpty">isEmpty()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Returns <code>true</code> if this vector contains no elements.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:mapAll">mapAll(<var>fn</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Calls the specified function on each element of this vector in order of ascending index.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:remove">remove(<var>index</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Removes the element at the specified index from this vector.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:set">set(<var>index</var>,&nbsp;<var>value</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Replaces the element at the specified index in this vector with <code>value</code>.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:size">size()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Returns the number of elements in this vector.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:sort">sort()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(NlogN)</td>
+		<td class=indexSynopsis width=100%>Rearranges the elements in this vector into sorted order.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:subList">subList(<var>start</var>, <var>length</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Returns a new vector containing elements from a sub-range of this vector.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:toString">toString()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Returns a printable string representation of this vector.</td>
+	</tr>
+	<tr>
+		<td class=indexHead colspan=3>Operators</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:foreach">for (ValueType elem : vec)&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Iterates through the elements in a vector in order of ascending index.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:[]"><var>vec</var>[<var>index</var>]</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Overloads <code>[]</code> to select elements from this vector.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:+"><var>vec1</var>&nbsp;+&nbsp;<var>vec2</var></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Concatenates two vectors.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:+="><var>vec1</var>&nbsp;+=&nbsp;<var>vec2</var>;</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Adds all of the elements from <code>vec2</code> to <code>vec1</code>.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:+="><var>vec</var>&nbsp;+=&nbsp;<var>value</var>;</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Adds the single specified value to <code>vec</code>.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:,"><var>vec</var>&nbsp;+=&nbsp;<var>a</var>,&nbsp;<var>b</var>,&nbsp;<var>c</var>;</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Adds multiple individual values to <code>vec</code>.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:=="><var>vec1</var> == <var>vec2</var></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Returns <code>true</code> if <code>vec1</code> and <code>vec2</code> contain the same elements.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:!="><var>vec1</var> != <var>vec2</var></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Returns <code>true</code> if <code>vec1</code> and <code>vec2</code> are different.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:<<"><var>ostream</var>&nbsp;&lt;&lt;&nbsp;<var>vec</var></a></nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Outputs the contents of the vector to the given output stream.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:<<"><var>istream</var>&nbsp;&gt;&gt;&nbsp;<var>vec</var></a></nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Reads the contents of the given input stream into the vector.</td>
+	</tr>
+</table>
+
+<h2>Constructor detail</h2>
+
+<hr>
+<a name="Constructor:Vector"></a>
+<pre class=detailCode>
+Vector();
+Vector(int n, ValueType value = ValueType());
+</pre>
+<div class=detailHTML>
+Initializes a new vector.  The default constructor creates an
+empty vector.  The second form creates an array with <code>n</code>
+elements, each of which is initialized to <code>value</code>;
+if <code>value</code> is missing, the elements are initialized
+to the default value for the type. You may also provide an initializer
+list of values. The newly created vector will contain those values in order.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+Vector&lt;ValueType&gt; vec;
+Vector&lt;ValueType&gt; vec(n, value);
+Vector&lt;ValueType&gt; vec = { value1, value2, value3 };
+</pre>
+
+<hr>
+</table>
+<h2>Method detail</h2>
+
+<hr>
+<a name="Method:add"></a>
+<pre class=detailCode>
+void add(const ValueType& value);
+</pre>
+<div class=detailHTML>
+Adds a new value to the end of this vector.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+vec.add(value);
+</pre>
+
+<hr>
+<a name="Method:clear"></a>
+<pre class=detailCode>
+void clear();
+</pre>
+<div class=detailHTML>
+Removes all elements from this vector.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+vec.clear();
+</pre>
+
+<hr>
+<a name="Method:equals"></a>
+<pre class=detailCode>
+bool equals(const Vector&amp; v) const;
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the two vectors contain exactly the same element values in the same order.
+Identical in behavior to the <code>==</code> operator.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (vec1.equals(vec2)) ...
+</pre>
+
+<hr>
+<a name="Method:get"></a>
+<pre class=detailCode>
+const ValueType&amp; get(int index) const;
+</pre>
+<div class=detailHTML>
+Returns the element at the specified index in this vector.  This
+method signals an error if the index is not in the array range.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+ValueType val = vec.get(index);
+</pre>
+
+<hr>
+<a name="Method:insert"></a>
+<pre class=detailCode>
+void insert(int index, const ValueType& value);
+</pre>
+<div class=detailHTML>
+Inserts a new value into this vector at the specified index.
+All subsequent elements are shifted one position to the right.  This
+method signals an error if the index is outside the range from 0
+up to and including the length of this vector.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+vec.insert(0, value);
+</pre>
+
+<hr>
+<a name="Method:isEmpty"></a>
+<pre class=detailCode>
+bool isEmpty() const;
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if this vector contains no elements.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (vec.isEmpty()) ...
+</pre>
+
+<hr>
+<a name="Method:mapAll"></a>
+<pre class=detailCode>
+void mapAll(std::function&lt;void (const ValueType&amp;)&gt; fn) const;
+</pre>
+<div class=detailHTML>
+Calls the specified function on each element of this vector in
+order of ascending index.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+vec.mapAll(fn);
+</pre>
+
+<hr>
+<a name="Method:remove"></a>
+<pre class=detailCode>
+ValueType remove(int index);
+</pre>
+<div class=detailHTML>
+Removes the element at the specified index from this vector and returns it.
+All subsequent elements are shifted one position to the left.  This
+method signals an error if the index is outside the array range.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+ValueType val = vec.remove(index);
+</pre>
+
+<hr>
+<a name="Method:set"></a>
+<pre class=detailCode>
+void set(int index, const ValueType& value);
+</pre>
+<div class=detailHTML>
+Replaces the element at the specified index in this vector with
+a new value.  The previous value at that index is overwritten.
+This method signals an error if the index is not in the array range.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+vec.set(index, value);
+</pre>
+
+<hr>
+<a name="Method:size"></a>
+<pre class=detailCode>
+int size() const;
+</pre>
+<div class=detailHTML>
+Returns the number of elements in this vector.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int nElems = vec.size();
+</pre>
+
+<hr>
+<a name="Method:sort"></a>
+<pre class=detailCode>
+void sort();
+</pre>
+<div class=detailHTML>
+Rearrange the elements in this vector into sorted order. Elements are compared using the < operator. In sorted order, the minimum element is placed at index 0; the maximum is at index size()-1.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+vec.sort();
+</pre>
+
+<hr>
+<a name="Method:subList"></a>
+<pre class=detailCode>
+Vector subList(int start, int length) const;
+Vector subList(int start) const;
+</pre>
+<div class=detailHTML>
+Returns a new vector containing elements from a sub-range of this vector. If only one argument is given, the sub-range length is to the end of this vector.
+For example, the call of subList(2, 4) would return a new vector containing elements 2-5 of the original vector in its indexes 0-3.
+Throws an error if the range [start, start+length) is not contained within the range [0, size()].
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+Vector&lt;ValueType&gt; sub = vec.subList(start, length);
+</pre>
+
+<hr>
+<a name="Method:toString"></a>
+<pre class=detailCode>
+string toString() const;
+</pre>
+<div class=detailHTML>
+Returns a printable string representation of this vector, such as <code>&quot;{value1, value2, value3}&quot;</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string str = vec.toString();
+</pre>
+
+<hr>
+</table>
+<h2>Operator detail</h2>
+
+<hr>
+<a name="Operator:foreach"></a>
+<pre class=detailCode>
+for (ValueType elem : vec)
+for (ValueType& elem : vec)
+</pre>
+<div class=detailHTML>
+The range-based for loop can be used to iterate through the elements in a collection. The iteration accesses vector elements in order of ascending index. An error is signaled if you attempt to add/remove elements from a collection while iterating over it.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+for (ValueType elem : vec) {
+	cout << elem << endl;
+}
+
+for (ValueType& elem : vec) { // if reference type, elements are mutable
+	elem *= 2;
+}
+</pre>
+
+<hr>
+<a name="Operator:[]"></a>
+<pre class=detailCode>
+ValueType&amp; operator[](int index);
+const ValueType&amp; operator[](int index) const;
+</pre>
+<div class=detailHTML>
+Overloads <code>[]</code> to select elements from this vector.
+This extension enables the use of traditional array notation to
+get or set individual elements.  This method signals an error if
+the index is outside the array range.  The file supports two
+versions of this operator, one for <code>const</code> vectors and
+one for mutable vectors.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+vec[index]
+</pre>
+
+<hr>
+<a name="Operator:+"></a>
+<pre class=detailCode>
+Vector operator+(const Vector&amp; vec2) const;
+</pre>
+<div class=detailHTML>
+Concatenates two vectors.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+vec1 + vec2
+</pre>
+
+<hr>
+<a name="Operator:+="></a>
+<pre class=detailCode>
+Vector&amp; operator+=(const Vector&amp; vec2);
+Vector&amp; operator+=(ValueType value);
+</pre>
+<div class=detailHTML>
+Adds all of the elements from <code>vec2</code> (or the single
+specified value) to <code>vec1</code>.  As a convenience, the
+<code>Vector</code> package also overloads the comma operator so
+that it is possible to initialize a vector like this:
+
+<pre>
+   Vector&lt;int&gt; digits;
+   digits += 0, 1, 2, 3, 4, 5, 6, 7, 8, 9;
+</pre>
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+vec1 += vec2;
+vec1 += value;
+</pre>
+
+<hr>
+<a name="Operator:<<"></a>
+<pre class=detailCode>
+ostream&amp; operator&lt;&lt;(const Vector&amp; vec);
+</pre>
+Outputs the contents of <code>vec</code> to the given output stream.
+The output is in the form <code>{value1, value2, value3}</code>
+where elements are listed in order of ascending index.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+cout << vec << endl;
+</pre>
+
+<hr>
+<a name="Operator:>>"></a>
+<pre class=detailCode>
+istream&amp; operator&gt;&gt;(Vector&amp; vec);
+</pre>
+Reads the contents of the given input stream into <code>vec</code>. Any previous
+contents of the vector are replaced.
+The input is expected to be in the form <code>{value1, value2, value3}</code>
+where elements are listed in order of ascending index. If unable to read a proper
+vector from the stream, the operation results in a stream fail state.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (infile >> vec) ...
+</pre>
+
+<hr>
+</table>
+</body>
+</html>

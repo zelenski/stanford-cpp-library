@@ -1,0 +1,81 @@
+<html><head>
+<title>GPoint</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css">
+
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="img/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>libcs106</code> library, Academic Year 2023-24
+</div></td>
+</tr></table>
+<hr>
+<div class="include">#include "gtypes.h"</div>
+<h1 class="header"><code>struct GPoint</code></h1>
+This struct contains two real-valued fields, <code>x</code> and <code>y</code>.  It is used to
+represent a location on the graphics plane.
+<table class="index" width="100%"><tbody>
+    <tr><td class=indexHead colspan=2>Fields</td>
+    </tr>
+    <tr>
+        <td class=indexKey><nobr>x<br></nobr></td><td class=indexSynopsis>&nbsp;</td>
+    </tr>
+    <tr>
+        <td class=indexKey><nobr>y<br></nobr></td><td class=indexSynopsis>&nbsp;</td>
+    </tr>
+
+<tr><td class="indexHead" colspan="2">Constructor</td>
+</tr>
+<tr>
+    <td class="indexKey"><nobr><a href="#Constructor:GPoint">GPoint()</a><br><a href="#Constructor:GPoint">GPoint(x,&nbsp;y)</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">Creates a <code>GPoint</code> object with the specified <code>x</code> and <code>y</code> coordinates.</td>
+</tr>
+<tr>
+    <td class="indexHead" colspan="2">Methods</td>
+</tr>
+<tr>
+    <tr>
+        <td class=indexKey><nobr><a href="#Method:toString">toString()</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Returns a printable string representation of this <code>GPoint</code>.</td></tr>
+
+    </tr>
+</tbody></table>
+<h2>Constructor detail</h2>
+<hr>
+<a name="Constructor:GPoint"></a>
+<pre class="detailCode">GPoint();
+GPoint(double x, double y);
+</pre>
+<div class="detailHTML">
+Creates a <code>GPoint</code> object with the specified <code>x</code>
+and <code>y</code> coordinates.  If the coordinates are not supplied,
+the default constructor sets these fields to 0. The GPoint fields <code>x</code> and
+<code>y</code> can also directly accessed using dot notation.
+<p>Usage:<br>
+</p></div>
+<pre class="usageCode">GPoint origin;
+GPoint pt(x, y);
+
+pt.x = 44.5;
+if (pt.x < pt.y) ...
+</pre>
+
+<hr>
+<h2>Method detail</h2>
+
+<hr>
+<a name="Method:toString"></a>
+<pre class="detailCode">string toString() const;
+</pre>
+<div class="detailHTML">
+Converts the <code>GPoint</code> to a string in the form
+<code>"(</code><i>x</i><code>,</code>&nbsp;<i>y</i><code>)"</code>.
+<p>Usage:<br>
+</p></div>
+<pre class="usageCode">string str = pt.toString();
+</pre>
+
+<hr>
+
+
+</body></html>

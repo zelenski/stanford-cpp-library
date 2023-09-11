@@ -1,0 +1,614 @@
+<html>
+<head>
+<title>HashSet</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="img/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>libcs106</code> library, Academic Year 2023-24
+</div></td>
+</tr></table>
+<hr>
+<div class=include>#include "hashset.h"</div>
+<h1 class=header><code>class HashSet&lt;<var>ValueType</var>&gt;</code></h1>
+This class stores a collection of distinct elements.
+
+This class implements an efficient abstraction for storing sets
+of distinct elements.  This class is identical to the <code>Set</code>
+class except for the fact that it uses a hash table as its underlying
+representation.  The advantage of the <code>HashSet</code> class is that
+it operates in constant time, as opposed to the <i>O</i>(log <i>N</i>)
+time for the <code>Set</code> class.  The disadvantage of
+<code>HashSet</code> is that range-based for loops and other iteration patterns
+will access the elements in an unpredictable and seemingly random order.
+The HashSet operations to add/access/remove an element run in O(1) time.
+
+<table class=index width=100%>
+	<tr>
+		<td class=indexHead colspan=3>Constructor</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Constructor:HashSet">HashSet()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Initializes a new HashSet of the specified element type.</td>
+	</tr>
+	<tr>
+		<td class=indexHead colspan=3>Methods</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:add">add(<var>value</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Adds an element to this HashSet, if it was not already there.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:clear">clear()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Removes all elements from this HashSet.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:contains">contains(<var>value</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Returns <code>true</code> if the specified value is in this HashSet.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:difference">difference(<var>otherSet</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Subtracts <code>otherSet</code> from this HashSet. The difference removes those elements that appear in <code>otherSet</code>.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:equals">equals(<var>set</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Returns <code>true</code> if the two sets contain the same elements.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:first">first()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Returns the first value in this HashSet in the order established by a for-each loop.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:intersect">intersect(<var>otherSet</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Intersects <code>otherSet</code> with this HashSet. The intersection retains only those elements also contained in <code>otherSet</code>.</td>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:isEmpty">isEmpty()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Returns <code>true</code> if this HashSet contains no elements.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:isSubsetOf">isSubsetOf(<var>otherSet</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Returns <code>true</code> if this HashSet is a subset of <code>otherSet</code>.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:isSupersetOf">isSupersetOf(<var>otherSet</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Returns <code>true</code> if this HashSet is a superset of <code>otherSet</code>.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:last">last()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Returns the last value in this HashSet in the order established by a for-each loop.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:mapAll">mapAll(<var>fn</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Calls <code>fn(value)</code> for each element of this HashSet.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:remove">remove(<var>value</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Removes an element from this HashSet.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:size">size()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Returns the number of elements in this HashSet.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:toString">toString()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Returns a printable string representation of this set.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:unionWith">unionWith(<var>otherSet</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Unions <code>otherSet</code> with this HashSet. The union adds all elements from <code>otherSet</code>.</td>
+	</tr>
+	<tr>
+		<td class=indexHead colspan=3>Operators</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:foreach">for (ValueType elem : set)&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Iterates through the elements in a set.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:=="><var>set1</var> == <var>set2</var></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Evaluates to <code>true</code> if <code>set1</code> and <code>set2</code> contain the same elements.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:!="><var>set1</var> != <var>set2</var></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Evaluates to <code>true</code> if <code>set1</code> and <code>set2</code> are different.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:+"><var>set1</var> + <var>set2</var></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Creates a new set which is the union of <code>set1</code> with <code>set2</code>.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:+"><var>set</var> + <var>value</var></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Creates a new set which is the union of <code>set</code> with the single <code>value</code>.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:+="><var>set1</var> += <var>set2</var></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Adds all of the elements from <code>set2</code> to <code>set1</code>.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:+="><var>set</var> += <var>value</var></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Adds the single <code>value</code> to <code>set</code>.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:-"><var>set1</var> - <var>set2</var></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Creates a new set which is the difference of <code>set1</code> minus <code>set2</code>.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:-"><var>set</var> - <var>value</var></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Creates a new set which is the difference of <code>set</code> minus the single <code>value</code>.
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:-="><var>set1</var> -= <var>set2</var></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Removes the elements of <code>set2</code> from <code>set1</code>.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:-="><var>set</var> -= <var>value</var></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Removes the single <code>value</code> from <code>set</code>.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:*"><var>set1</var> * <var>set2</var></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Creates a new set which is the intersection of <code>set1</code> and <code>set2</code>.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:*="><var>set1</var> *= <var>set2</var></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Removes any elements from <code>set1</code> that are not present in <code>set2</code>.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:<<"><var>ostream</var>&nbsp;&lt;&lt;&nbsp;<var>set</var></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Outputs the contents of <code>set</code> to the given output stream.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:>>"><var>istream</var>&nbsp;&gt;&gt;&nbsp;<var>set</var></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N 1)</td>
+		<td class=indexSynopsis width=100%>Reads the contents of the given input stream into <code>set</code>.</td>
+	</tr>
+</table>
+
+<h2>Constructor detail</h2>
+
+<hr>
+<a name="Constructor:HashSet"></a>
+<pre class=detailCode>
+HashSet();
+</pre>
+<div class=detailHTML>
+Creates an empty HashSet of the specified element type. You may also optionally provide an initializer list of values. The newly created set will contain those values.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+HashSet&lt;ValueType&gt; set;
+HashSet&lt;ValueType&gt; set = { value1, value2, value3 };
+</pre>
+
+<hr>
+</table>
+<h2>Method detail</h2>
+
+<hr>
+<a name="Method:add"></a>
+<pre class=detailCode>
+void add(const ValueType& value);
+</pre>
+<div class=detailHTML>
+Adds an element to this HashSet, if it was not already there.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+set.add(value);
+</pre>
+
+<hr>
+<a name="Method:clear"></a>
+<pre class=detailCode>
+void clear();
+</pre>
+<div class=detailHTML>
+Removes all elements from this HashSet.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+set.clear();
+</pre>
+
+<hr>
+<a name="Method:contains"></a>
+<pre class=detailCode>
+bool contains(const ValueType& value) const;
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the specified value is in this HashSet.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (set.contains(value)) ...
+</pre>
+
+<hr>
+<a name="Method:difference"></a>
+<pre class=detailCode>
+HashSet& difference(const HashSet&amp; set2);
+</pre>
+<div class=detailHTML>
+Removes from this HashSet all elements that are present in <code>set2</code>. Returns a reference to this HashSet, which has been modified in place. If you want a new HashSet, consider <code><a href="#Operator:-">set1 - set2</a></code> instead.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+set1.difference(set2);
+</pre>
+<hr>
+<a name="Method:equals"></a>
+<pre class=detailCode>
+bool equals(const HashSet&amp; set2) const;
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the two HashSets contain exactly the same element values.
+Identical in behavior to the <code>==</code> operator.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (set1.equals(set2)) ...
+</pre>
+
+<hr>
+<a name="Method:first"></a>
+<pre class=detailCode>
+ValueType first() const;
+</pre>
+<div class=detailHTML>
+Returns the first value in the HashSet in the order established by
+a for-each loop.  If the HashSet is empty, <code>first</code>
+signals an error.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+ValueType value = set.first();
+</pre>
+
+<hr>
+<a name="Method:intersect"></a>
+<pre class=detailCode>
+HashSet& intersect(const HashSet&amp; set2);
+</pre>
+<div class=detailHTML>
+Removes from this HashSet all elements that are not present in <code>set2</code>. Returns a reference to this HashSet, which has been modified in place. If you want a new HashSet, consider <code><a href="#Operator:*">set1 * set2</a></code> instead.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+set1.intersect(set2);
+</pre>
+
+<hr>
+<a name="Method:isEmpty"></a>
+<pre class=detailCode>
+bool isEmpty() const;
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if this HashSet contains no elements.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (set.isEmpty()) ...
+</pre>
+
+<hr>
+<a name="Method:isSubsetOf"></a>
+<pre class=detailCode>
+bool isSubsetOf(const HashSet&amp; set2) const;
+</pre>
+<div class=detailHTML>
+Returns
+<code>true</code> if every element of this HashSet is
+contained in <code>set2</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (set1.isSubsetOf(set2)) ...
+</pre>
+
+<hr>
+<a name="Method:isSupersetOf"></a>
+<pre class=detailCode>
+bool isSupersetOf(const HashSet&amp; set2) const;
+</pre>
+<div class=detailHTML>
+Returns
+<code>true</code> if every element of <code>set2</code> is
+contained in this HashSet.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (set1.isSupersetOf(set2)) ...
+</pre>
+
+
+<hr>
+<a name="Method:last"></a>
+<pre class=detailCode>
+ValueType last() const;
+</pre>
+<div class=detailHTML>
+Returns the last value in the HashSet in the order established by
+a for-each loop.  If HashSet is empty, <code>last</code>
+signals an error.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+ValueType value = set.last();
+</pre>
+
+
+<hr>
+<a name="Method:mapAll"></a>
+<pre class=detailCode>
+void mapAll(std::function&lt;void (const ValueType&amp;)&gt; fn) const;
+</pre>
+<div class=detailHTML>
+Iterates through the elements of the HashSet and calls <code>fn(value)</code>
+for each one.  The elements are processed in unpredictable order.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+set.mapAll(fn);
+</pre>
+
+
+<hr>
+<a name="Method:remove"></a>
+<pre class=detailCode>
+void remove(const ValueType& value);
+</pre>
+<div class=detailHTML>
+Removes an element from this HashSet.  If the value was not
+contained in the HashSet, there is no error and the HashSet
+remains unchanged.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+set.remove(value);
+</pre>
+
+<hr>
+<a name="Method:size"></a>
+<pre class=detailCode>
+int size() const;
+</pre>
+<div class=detailHTML>
+Returns the number of elements in this HashSet.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+count = set.size();
+</pre>
+
+<hr>
+<a name="Method:toString"></a>
+<pre class=detailCode>
+string toString() const;
+</pre>
+<div class=detailHTML>
+Returns a printable string representation of this HashSet, such as <code>&quot;{value1, value2, value3}&quot;</code>.
+The values are listed in unpredictable order.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string str = set.toString();
+</pre>
+
+<hr>
+<a name="Method:unionWith"></a>
+<pre class=detailCode>
+HashSet& unionWith(const HashSet&amp; set2);
+</pre>
+<div class=detailHTML>
+Adds to this HashSet all elements from <code>set2</code>. Returns a reference to this HashSet, which has been modified in place. If you want a new HashSet, consider <code><a href="#Operator:+">set1 + set2</a></code> instead.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+set1.unionWith(set2);
+</pre>
+
+<hr>
+</table>
+<h2>Operator detail</h2>
+
+<hr>
+<a name="Operator:foreach"></a>
+<pre class=detailCode>
+for (ValueType elem : set)
+</pre>
+<div class=detailHTML>
+The range-based for loop can be used to iterate through the elements in a collection. The elements in a HashSet are accessed in unpredictable order. An error is signaled if you attempt to add/remove elements from a collection while iterating over it.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+for (ValueType elem : set) {
+	cout << elem << endl;
+}
+</pre>
+
+
+<hr>
+<a name="Operator:=="></a>
+<pre class=detailCode>
+bool operator==(const HashSet&amp; set2) const;
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if <code>set1</code> and <code>set2</code>
+contain the same elements.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+set1 == set2
+</pre>
+
+<hr>
+<a name="Operator:!="></a>
+<pre class=detailCode>
+bool operator!=(const HashSet&amp; set2) const;
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if <code>set1</code> and <code>set2</code>
+are different.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+set1 != set2
+</pre>
+
+<hr>
+<a name="Operator:+"></a>
+<pre class=detailCode>
+HashSet operator+(const HashSet&amp; set2) const;
+HashSet operator+(const ValueType& element) const;
+</pre>
+<div class=detailHTML>
+Creates a new HashSet which is the union of <code>set1</code> with <code>set2</code> (or with the single <code>value</code>).
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+set1 + set2
+set1 + value
+</pre>
+
+<hr>
+<a name="Operator:*"></a>
+<pre class=detailCode>
+HashSet operator*(const HashSet&amp; set2) const;
+</pre>
+<div class=detailHTML>
+Creates a new HashSet which is the intersection of <code>set1</code> and <code>set2</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+set1 * set2
+</pre>
+
+<hr>
+<a name="Operator:-"></a>
+<pre class=detailCode>
+HashSet operator-(const HashSet&amp; set2) const;
+HashSet operator-(const ValueType& element) const;
+</pre>
+<div class=detailHTML>
+Creates a new HashSet which is the difference of <code>set1</code> minus <code>set2</code> (or minus the single <code>value</code>).
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+set1 - set2
+set1 - value
+</pre>
+
+<hr>
+<a name="Operator:+="></a>
+<pre class=detailCode>
+HashSet&amp; operator+=(const HashSet&amp; set2);
+HashSet&amp; operator+=(const ValueType& value);
+</pre>
+<div class=detailHTML>
+Adds all of the elements from <code>set2</code> (or the single <code>value</code>) to <code>set1</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+set1 += set2;
+set1 += value;
+</pre>
+
+<hr>
+<a name="Operator:*="></a>
+<pre class=detailCode>
+HashSet&amp; operator*=(const HashSet&amp; set2);
+</pre>
+<div class=detailHTML>
+Removes any elements from <code>set1</code> that are not present in
+<code>set2</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+set1 *= set2;
+</pre>
+
+<hr>
+<a name="Operator:-="></a>
+<pre class=detailCode>
+HashSet&amp; operator-=(const HashSet&amp; set2);
+HashSet&amp; operator-=(const ValueType& value);
+</pre>
+<div class=detailHTML>
+Removes the elements from <code>set2</code> (or the single <code>value</code>) from <code>set1</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+set1 -= set2;
+set1 -= value;
+</pre>
+
+<hr>
+<a name="Operator:<<"></a>
+<pre class=detailCode>
+ostream&amp; operator&lt;&lt;(const HashSet&amp; set);
+</pre>
+Outputs the contents of <code>set</code> to the given output stream.
+The output is in the form <code>{value1, value2, value3}</code>
+where elements are listed in unpredictable order.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+cout << set << endl;
+</pre>
+
+
+<hr>
+<a name="Operator:>>"></a>
+<pre class=detailCode>
+istream&amp; operator&gt;&gt;(HashSet&amp; set);
+</pre>
+Reads the contents of the given input stream into <code>set</code>. Any previous
+contents of the set are replaced.
+The input is expected to be in the form <code>{value1, value2, value3}</code>. If unable to read a proper
+set from the stream, the operation results in a stream fail state.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (infile >> set) ...
+</pre>
+
+<hr>
+</table>
+</body>
+</html>

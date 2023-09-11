@@ -1,0 +1,321 @@
+<html>
+<head>
+<title>PriorityQueue</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="img/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>libcs106</code> library, Academic Year 2023-24
+</div></td>
+</tr></table>
+<hr>
+<div class=include>#include "priorityqueue.h"</div>
+<h1 class=header><code>class PriorityQueue&lt;<var>ValueType</var>&gt;</code></h1>
+This class models a structure called a <b><i>priority&nbsp;queue</i></b>
+in which values are processed in order of priority.  As in conventional
+English usage, lower priority numbers correspond to more urgent
+priorities, so that a priority 1 item takes precedence over a
+priority 2 item.
+
+The fundamental priority queue operations are <code>enqueue</code> (add value with assigned priority)
+and <code>dequeue</code> (remove value with most urgent priority). Both of these operations run in O(logN) time.
+
+<p>Priority queues do not allow access to elements by index, nor can you iterate
+through the elements using the range-based for loop.
+
+<table class=index width=100%>
+	<tr>
+		<td class=indexHead colspan=3>Constructor</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Constructor:PriorityQueue">PriorityQueue()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Initializes a new priority queue, which is initially empty.</td>
+	</tr>
+	<tr>
+		<td class=indexHead colspan=3>Methods</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:changePriority">changePriority(<var>value</var>,&nbsp;<var>newPriority</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Reassigns the priority of an existing value in the priority queue.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:clear">clear()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Removes all elements from the priority queue.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:dequeue">dequeue()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(log N)</td>
+		<td class=indexSynopsis width=100%>Removes and returns the frontmost (most urgent) value.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:enqueue">enqueue(<var>value</var>,&nbsp;<var>priority</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(log N)</td>
+		<td class=indexSynopsis width=100%>Adds <code>value</code> to the priority queue with the specified priority.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:equals">equals(<var>pq</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N log N)</td>
+		<td class=indexSynopsis width=100%>Returns <code>true</code> if the two priority queues contain the same elements with the same priorities.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:isEmpty">isEmpty()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Returns <code>true</code> if the priority queue contains no elements.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:peek">peek()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Returns the value of the frontmost (most urgent) element, without removing it.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:peekPriority">peekPriority()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Returns the priority of the frontmost (most urgent) element, without removing it.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:size">size()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Returns the number of values in the priority queue.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:toString">toString()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Returns a printable string representation of the priority queue.</td>
+	</tr>
+	<tr>
+		<td class=indexHead colspan=3>Operators</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:=="><var>pq1</var> == <var>pq1</var></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N log N)</td>
+		<td class=indexSynopsis width=100%>Returns <code>true</code> if <code>pq1</code> and <code>pq2</code> contain the same elements.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:!="><var>pq1</var> != <var>pq2</var></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N log N)</td>
+		<td class=indexSynopsis width=100%>Returns <code>true</code> if <code>pq1</code> and <code>pq2</code> have different contents.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:<<"><var>ostream</var>&nbsp;&lt;&lt;&nbsp;<var>pq</var></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Outputs the contents of the priority queue to the given output stream.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:>>"><var>istream</var>&nbsp;&gt;&gt;&nbsp;<var>pq</var></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(NlogN)</td>
+		<td class=indexSynopsis width=100%>Reads the contents of the given input stream into the priority queue.</td>
+	</tr>
+</table>
+
+<h2>Constructor detail</h2>
+
+<hr>
+<a name="Constructor:PriorityQueue"></a>
+<pre class=detailCode>
+PriorityQueue();
+</pre>
+<div class=detailHTML>
+Initializes a new priority queue, which is initially empty.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+PriorityQueue&lt;ValueType&gt; pq;
+</pre>
+
+<hr>
+</table>
+<h2>Method detail</h2>
+
+<hr>
+<a name="Method:changePriority"></a>
+<pre class=detailCode>
+void changePriority(ValueType value, double newPriority);
+</pre>
+<div class=detailHTML>
+Re-assigns <code>value</code> to the specified <code>newPriority</code>,
+which must be at least as urgent as (&le;) the value's previous
+priority.
+<p>This function raises an error if the value is not present in this priority queue or if the
+new priority passed is not at least as urgent as its current priority.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+pq.changePriority(value, newPriority);
+</pre>
+
+<hr>
+<a name="Method:clear"></a>
+<pre class=detailCode>
+void clear();
+</pre>
+<div class=detailHTML>
+Removes all elements from the priority queue.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+pq.clear();
+</pre>
+
+<hr>
+<a name="Method:dequeue"></a>
+<pre class=detailCode>
+ValueType dequeue();
+</pre>
+<div class=detailHTML>
+Removes and returns the frontmost value from the priority queue. The value
+with the most urgent priority is frontmost. If multiple
+entries in the queue have the same priority, those values are
+dequeued in the <bold>reverse</bold> order in which they were enqueued.
+<p>This function throws an error if the queue is empty.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+ValueType front = pq.dequeue();
+</pre>
+
+<hr>
+<a name="Method:enqueue"></a>
+<pre class=detailCode>
+void enqueue(const ValueType& value, double priority);
+</pre>
+<div class=detailHTML>
+Adds <code>value</code> to the queue with the specified priority.
+Lower priority numbers correspond to more urgent priorities, which
+means that all priority 1 elements are dequeued before any
+priority 2 elements.
+<p>Negative priorities are allowed and are not treated differently from other values.
+That is, a priority of -1 comes before one of 0, which comes before 1, 2, 3, etc.
+<p>This function throws an error if NaN (not-a-number) is passed as the priority.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+pq.enqueue(value, priority);
+</pre>
+
+<hr>
+<a name="Method:equals"></a>
+<pre class=detailCode>
+bool equals(const PriorityQueue&amp; pq) const;
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the two queues contain exactly the same element values with the same priorities.
+Identical in behavior to the <code>==</code> operator.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (pq.equals(pq2)) ...
+</pre>
+
+<hr>
+<a name="Method:isEmpty"></a>
+<pre class=detailCode>
+bool isEmpty() const;
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the priority queue contains no elements.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (pq.isEmpty()) ...
+</pre>
+
+<hr>
+<a name="Method:peek"></a>
+<pre class=detailCode>
+const ValueType& peek() const;
+</pre>
+<div class=detailHTML>
+Returns the value of the frontmost element, without removing it.
+In a priority queue, the value with the most urgent priority is frontmost.
+<p>This function throws an error if the queue is empty.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+ValueType front = pq.peek();
+</pre>
+
+<hr>
+<a name="Method:peekPriority"></a>
+<pre class=detailCode>
+double peekPriority() const;
+</pre>
+<div class=detailHTML>
+Returns the priority of the frontmost element, without removing it.
+In a priority queue, the value with the most urgent priority is frontmost.
+<p>This function throws an error if the queue is empty.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+double priority = pq.peekPriority();
+</pre>
+
+<hr>
+<a name="Method:size"></a>
+<pre class=detailCode>
+int size() const;
+</pre>
+<div class=detailHTML>
+Returns the number of values in the priority queue.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int n = pq.size();
+</pre>
+
+<hr>
+<a name="Method:toString"></a>
+<pre class=detailCode>
+string toString() const;
+</pre>
+<div class=detailHTML>
+Returns a printable string representation of the elements in the priority queue. The format is a list of priority-value pairs <code>&quot;{pri1:value1, pri2:value2, pri3:value3}&quot;</code>.
+The order of elements in the list is unpredictable.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string str = pq.toString();
+</pre>
+
+<hr>
+<a name="Operator:<<"></a>
+<pre class=detailCode>
+ostream&amp; operator&lt;&lt;(const PriorityQueue&amp; pq);
+</pre>
+Outputs the contents of <code>pq</code> to the given output stream.
+The format is the same as specified by <code>toString</code>.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+cout << queue << endl;
+</pre>
+
+
+<hr>
+<a name="Operator:>>"></a>
+<pre class=detailCode>
+istream&amp; operator&gt;&gt;(PriorityQueue&amp; pq);
+</pre>
+Reads the contents of the given input stream into <code>pq</code>. Any previous
+contents of the priority queue are replaced.
+The input is expected to be in the form <code>{pri1:value1, pri2:value2}</code>
+where the elements can be listed in any order. If unable to read a proper
+priority queue from the stream, the operation results in a stream fail state.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (infile >> queue) ...
+</pre>
+
+
+<hr>
+</table>
+</body>
+</html>

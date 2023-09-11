@@ -1,0 +1,269 @@
+<html>
+<head>
+<title>Queue</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="img/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>libcs106</code> library, Academic Year 2023-24
+</div></td>
+</tr></table>
+<hr>
+<div class=include>#include "queue.h"</div>
+<h1 class=header><code>class Queue&lt;<var>ValueType</var>&gt;</code></h1>
+This class models a linear structure called a <b><i>queue</i></b>
+in which values are added at one end and removed from the other.
+This discipline gives rise to a first-in/first-out behavior (FIFO)
+that is the defining feature of queues.
+The fundamental queue operations are <code>enqueue</code> (add to back)
+and <code>dequeue</code> (remove from front). Both of these operations run in O(1) time.
+
+<p>Queues do not allow access to elements by index, nor can you iterate
+through the elements using the range-based for loop.
+
+<table class=index width=100%>
+	<tr>
+		<td class=indexHead colspan=3>Constructor</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Constructor:Queue">Queue()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Initializes a new empty queue.</td>
+	</tr>
+	<tr>
+		<td class=indexHead colspan=3>Methods</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:clear">clear()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Removes all elements from the queue.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:dequeue">dequeue()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Removes and returns the frontmost element in the queue.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:enqueue">enqueue(<var>value</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Adds <code>value</code> to the back of the queue.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:equals">equals(<var>q</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Returns <code>true</code> if the two queues contain the same elements in the same order.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:isEmpty">isEmpty()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Returns <code>true</code> if the queue contains no elements.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:peek">peek()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Returns the frontmost element in the queue, without removing it.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:size">size()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Returns the number of values in the queue.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:toString">toString()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Returns a printable string representation of this queue.</td>
+	<tr>
+
+	<tr>
+		<td class=indexHead colspan=3>Operators</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:=="><var>queue1</var> == <var>queue1</var></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Returns <code>true</code> if <code>queue1</code> and <code>queue2</code> contain the same elements.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:!="><var>queue1</var> != <var>queue2</var></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Returns <code>true</code> if <code>queue1</code> and <code>queue2</code> are different.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:<<"><var>ostream</var>&nbsp;&lt;&lt;&nbsp;<var>queue</var></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Outputs the contents of the queue to the given output stream.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:>>"><var>istream</var>&nbsp;&gt;&gt;&nbsp;<var>queue</var></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Reads the contents of the given input stream into the queue.</td>
+	</tr>
+</table>
+
+<h2>Constructor detail</h2>
+
+<hr>
+<a name="Constructor:Queue"></a>
+<pre class=detailCode>
+Queue();
+</pre>
+<div class=detailHTML>
+Initializes a new empty queue. You may also optionally provide an initializer
+list of values. The newly created queue will contain those values listed left-to-right
+in order from front of the queue to the back.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+Queue&lt;ValueType&gt; queue;
+Queue&lt;ValueType&gt; queue = { frontValue, middleValue, backValue };
+</pre>
+
+<hr>
+</table>
+<h2>Method detail</h2>
+
+<hr>
+<a name="Method:clear"></a>
+<pre class=detailCode>
+void clear();
+</pre>
+<div class=detailHTML>
+Removes all elements from the queue.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+queue.clear();
+</pre>
+
+<hr>
+<a name="Method:dequeue"></a>
+<pre class=detailCode>
+ValueType dequeue();
+</pre>
+<div class=detailHTML>
+Removes and returns the frontmost element in the queue. If the queue is empty, this function signals an error.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+ValueType first = queue.dequeue();
+</pre>
+
+<hr>
+<a name="Method:enqueue"></a>
+<pre class=detailCode>
+void enqueue(const ValueType& value);
+</pre>
+<div class=detailHTML>
+Adds <code>value</code> to the back of the queue.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+queue.enqueue(value);
+</pre>
+
+<hr>
+<a name="Method:equals"></a>
+<pre class=detailCode>
+bool equals(const Queue&amp; queue) const;
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the two queues contain exactly the same values in the same order.
+Identical in behavior to the <code>==</code> operator.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (queue1.equals(queue2)) ...
+</pre>
+
+<hr>
+<a name="Method:isEmpty"></a>
+<pre class=detailCode>
+bool isEmpty() const;
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if the queue contains no elements.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (queue.isEmpty()) ...
+</pre>
+
+<hr>
+<a name="Method:peek"></a>
+<pre class=detailCode>
+const ValueType& peek() const;
+</pre>
+<div class=detailHTML>
+Returns the frontmost element in the queue, without removing it. If the queue is empty, this function signals an error.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+ValueType first = queue.peek();
+</pre>
+
+<hr>
+<a name="Method:size"></a>
+<pre class=detailCode>
+int size() const;
+</pre>
+<div class=detailHTML>
+Returns the number of values in the queue.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int n = queue.size();
+</pre>
+
+<hr>
+<a name="Method:toString"></a>
+<pre class=detailCode>
+string toString() const;
+</pre>
+<div class=detailHTML>
+Returns a printable string representation of this queue. The elements are listed left-to-right from the front of the queue to the back, such as <code>&quot;{value1, value2, value3}&quot;</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string str = queue.toString();
+</pre>
+
+<hr>
+<a name="Operator:<<"></a>
+<pre class=detailCode>
+ostream&amp; operator&lt;&lt;(const Queue&amp; queue);
+</pre>
+Outputs the contents of <code>queue</code> to the given output stream.
+The output is in the form <code>{value1, value2, value3}</code>
+where elements are listed left-to-right from the front of the queue to the back.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+cout << queue << endl;
+</pre>
+
+
+<hr>
+<a name="Operator:>>"></a>
+<pre class=detailCode>
+istream&amp; operator&gt;&gt;(Queue&amp; queue);
+</pre>
+Reads the contents of the given input stream into <code>queue</code>. Any previous
+contents of the queue are replaced.
+The input is expected to be in the form <code>{value1, value2, value3}</code>
+where elements are listed left-to-right from the front of the queue to the back. If unable to read a proper
+queue from the stream, the operation results in a stream fail state.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (infile >> queue) ...
+</pre>
+
+
+<hr>
+</table>
+</body>
+</html>

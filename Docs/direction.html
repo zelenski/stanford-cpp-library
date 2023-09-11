@@ -1,0 +1,103 @@
+<html>
+<head>
+<title>direction.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="img/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>libcs106</code> library, Academic Year 2023-24
+</div></td>
+</tr></table>
+
+<hr>
+<h1 class="header"><code>direction.h</code></h1>
+This file exports an enumerated type called <code>Direction</code>
+whose elements are the four compass points: <code>NORTH</code>,
+<code>EAST</code>, <code>SOUTH</code>, and <code>WEST</code>.
+<table class="index" width="100%">
+<tbody><tr><td class="indexHead" colspan="2">Type</td>
+</tr>
+<tr>
+    <td class="indexKey"><nobr><a href="#Type:Direction">Direction</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">This enumerated type is used to represent the four compass directions.</td>
+</tr>
+<tr>
+    <td class="indexHead" colspan="2">Functions</td>
+</tr>
+<tr>
+    <td class="indexKey"><nobr><a href="#Function:directionToString">directionToString(<var>dir</var>)</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">Returns the name of the direction as a string.</td>
+</tr>
+<tr>
+    <td class="indexKey"><nobr><a href="#Function:leftFrom">leftFrom(<var>dir</var>)</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">Returns the direction that is to the left of the argument.</td>
+</tr>
+<tr>
+    <td class="indexKey"><nobr><a href="#Function:opposite">opposite(<var>dir</var>)</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">Returns the direction that is opposite to the argument.</td>
+</tr>
+<tr>
+    <td class="indexKey"><nobr><a href="#Function:rightFrom">rightFrom(<var>dir</var>)</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">Returns the direction that is to the right of the argument.</td></tr>
+</tbody></table>
+<h2>Type detail</h2>
+
+<hr>
+<a name="Type:Direction"></a>
+<pre class="detailCode">enum Direction { NORTH, EAST, SOUTH, WEST };
+</pre>
+<div class="detailHTML">
+This enumerated type is used to represent the four compass directions.
+</div>
+
+<hr>
+
+<h2>Function detail</h2>
+
+<hr>
+<a name="Function:leftFrom"></a>
+<pre class="detailCode">Direction leftFrom(Direction dir);
+</pre>
+<div class="detailHTML">
+Returns the direction that is to the left of the argument.
+<p>Usage:<br>
+</p></div>
+<pre class="usageCode">Direction newdir = leftFrom(dir);
+</pre>
+
+<hr>
+<a name="Function:rightFrom"></a>
+<pre class="detailCode">Direction rightFrom(Direction dir);
+</pre>
+<div class="detailHTML">
+Returns the direction that is to the right of the argument.
+<p>Usage:<br>
+</p></div>
+<pre class="usageCode">Direction newdir = rightFrom(dir);
+</pre>
+
+<hr>
+<a name="Function:opposite"></a>
+<pre class="detailCode">Direction opposite(Direction dir);
+</pre>
+<div class="detailHTML">
+Returns the direction that is opposite to the argument.
+<p>Usage:<br>
+</p></div>
+<pre class="usageCode">Direction newdir = opposite(dir);
+</pre>
+
+<hr>
+<a name="Function:directionToString"></a>
+<pre class="detailCode">string directionToString(Direction dir);
+</pre>
+<div class="detailHTML">
+Returns the name of the direction as a string.
+<p>Usage:<br>
+</p></div>
+<pre class="usageCode">string str = directionToString(dir);
+</pre>
+
+<hr>
+
+
+
+</body></html>

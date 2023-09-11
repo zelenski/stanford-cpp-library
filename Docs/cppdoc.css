@@ -1,0 +1,132 @@
+body, h1, h2, h3, h4, h5, h6 {
+	font-family:"Candara", "Calibri", "Helvetica Neue", "Helvetica", "Arial", "sans-serif";
+}
+
+body {
+	font-size:100%;
+}
+
+h1 {
+	font-size:1.5em;
+	font-weight: 700;
+}
+
+h2 {
+	font-size:1.4em;
+	font-weight: 700;
+	margin-bottom:0px;
+}
+
+.header {
+	font-size:125%;
+}
+
+.new {
+	color: #cc0000;
+	font-weight: 700;
+}
+
+pre, code, .code, .indexKey, .include, .detailCode, .usageCode {
+	font-family: Consolas, Inconsolata, "Lucida Console", Menlo, Courier, monospace;
+	font-weight: 700;
+}
+
+.comment {
+	color:blue;
+}
+
+.deprecated,
+.deprecated * {
+	background-color: #e0e0e0 !important;
+	color: #aaa !important;
+}
+
+.detailCode {
+	padding:0px;
+}
+
+.detailHTML {
+	font-size:1em;
+	margin-left:20px;
+}
+
+.it {
+	font-weight:normal;
+	font-style:italic;
+	font-size:90%;
+}
+
+.banner {
+	border:0;
+}
+
+.bannerText {
+	font-size:1.6em;
+	font-weight:bold;
+}
+
+.index {
+	border-collapse:collapse;
+	margin-top:1px;
+}
+
+.index tr, .index td {
+	border-color: #9eadc0;
+}
+
+.index tr:nth-child(2N) {
+	background-color: #f6f6f6;
+}
+
+.index tbody tr:hover {
+	background-color: #ffffee !important;
+}
+
+.index td.bigoh {
+	border:1px solid #9eadc0;
+	vertical-align: top;
+	white-space: nowrap;
+	text-align: center;
+	font-weight: 500;
+}
+
+.indexHead {
+	font-size:1.4em;
+	font-weight:bold;
+	padding-top:1em;
+}
+
+.indexKey {
+	border:1px solid black;
+	padding:3px 5px;
+	font-size:95%;
+	vertical-align: top;
+}
+
+.indexKey var {
+	font-style: italic;
+}
+
+.indexSynopsis {
+	border:1px solid black;
+	padding:3px 5px;
+	vertical-align: top;
+}
+
+.inset {
+	margin-left:36px;
+}
+
+.usageCode {
+	font-size:95%;
+	margin-left:40px;
+}
+
+.since {
+	background-color: #ffffee;
+	border: 1px dotted #bbbbff;
+	color: #555;
+	font-size: 85%;
+	font-style: italic;
+	padding: 0.2em 0.5em;
+}

@@ -1,0 +1,134 @@
+<html>
+<head>
+<title>time.h</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="img/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>libcs106</code> library, Academic Year 2023-24
+</div></td>
+</tr></table>
+
+<hr>
+<div class="include">#include "timer.h"</div>
+<h1 class="header"><code>class Timer</code></h1>
+This class implements a simple start/stop timer that can tell you how much time has elapsed since it was started.
+Typical usage of this class looks like this:
+
+<pre>   Timer tim;
+   tim.start();
+   ... run some code that takes a while ...
+   tim.stop();
+   cout &lt;&lt; "The code took " &lt;&lt; tim.elapsed() &lt;&lt; "ms to finish." &lt;&lt; endl;
+</pre>
+
+<table class="index" width="100%">
+<tbody><tr><td class="indexHead" colspan="2">Constructor</td>
+</tr>
+<tr>
+   <td class="indexKey"><nobr><a href="#Constructor:Timer">Timer()</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">Creates a timer object that has not yet been started.</td>
+</tr>
+<tr>
+   <td class="indexKey"><nobr><a href="#Constructor:Timer2">Timer(<var>autostart</var>)</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">Creates a timer object and optionally starts it.</td>
+</tr>
+<tr>
+   <td class="indexHead" colspan="2">Methods</td>
+</tr>
+<tr>
+   <td class="indexKey"><nobr><a href="#Method:elapsed">elapsed()</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">Returns the number of milliseconds since the timer was started.</td>
+</tr>
+<tr>
+   <td class="indexKey"><nobr><a href="#Method:isStarted">isStarted()</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">Returns whether the timer has been started.</td>
+</tr>
+<tr>
+   <td class="indexKey"><nobr><a href="#Method:start">start()</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">Starts the timer.</td>
+</tr>
+<tr>
+   <td class="indexKey"><nobr><a href="#Method:stop">stop()</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">Stops the timer.</td></tr>
+</tbody></table>
+
+<h2>Constructor detail</h2>
+
+<hr>
+<a name="Constructor:Timer"></a>
+<pre class="detailCode">Timer();
+</pre>
+<div class="detailHTML">
+Creates a timer object that has not yet been started.
+You can start it afterward by calling its <code>start</code> function.
+<p>Usage:<br>
+</p></div>
+<pre class="usageCode">Timer timer();
+</pre>
+
+<hr>
+<a name="Constructor:Timer2"></a>
+<pre class="detailCode">Timer(bool autostart);
+</pre>
+<div class="detailHTML">
+Creates a timer object and optionally starts it, if <code>true</code> is passed.
+<p>Usage:<br>
+</p></div>
+<pre class="usageCode">Timer timer(true);   // timer will start immediately
+</pre>
+
+<hr>
+
+
+<h2>Method detail</h2>
+
+<hr>
+<a name="Method:elapsed"></a>
+<pre class="detailCode">long elapsed();
+</pre>
+<div class="detailHTML">
+Returns the number of milliseconds since the last time <code>start</code> was called.
+If the timer is still active (if <code>stop</code> has not been called), this number will be continually growing as time passes.
+If <code>stop</code> has already been called, this function will return the number of milliseconds between when <code>start</code> was called and when <code>stop</code> was called.
+Returns 0 if the timer was never started.
+<p>Usage:<br>
+</p></div>
+<pre class="usageCode">long elapsedMS = timer.elapsed();
+</pre>
+
+<hr>
+<a name="Method:isStarted"></a>
+<pre class="detailCode">bool isStarted();
+</pre>
+<div class="detailHTML">
+Returns <code>true</code> if this timer has been started and has not yet been stopped.
+<p>Usage:<br>
+</p></div>
+<pre class="usageCode">if (timer.isStarted()) { ...
+</pre>
+
+<hr>
+<a name="Method:start"></a>
+<pre class="detailCode">void start();
+</pre>
+<div class="detailHTML">
+Starts the timer.  The timer will capture the current time and remember it so that when you later call <code>stop</code> or <code>elapsed</code>, the amount of time will be relative to this start time.
+<p>Usage:<br>
+</p></div>
+<pre class="usageCode">timer.start();
+</pre>
+
+<hr>
+<a name="Method:stop"></a>
+<pre class="detailCode">void stop();
+</pre>
+<div class="detailHTML">
+Stops the timer.  After stopping the timer, future calls to <code>elapsed</code> will return the number of milliseconds between when <code>start</code> was called and when <code>stop</code> was called.
+<p>Usage:<br>
+</p></div>
+<pre class="usageCode">timer.stop();
+</pre>
+
+<hr>
+
+
+
+</body></html>

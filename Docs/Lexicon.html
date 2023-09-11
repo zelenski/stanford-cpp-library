@@ -1,0 +1,235 @@
+<html>
+<head>
+<title>Lexicon</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="img/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>libcs106</code> library, Academic Year 2023-24
+</div></td>
+</tr></table>
+<hr>
+<div class=include>#include "lexicon.h"</div>
+<h1 class=header><code>class Lexicon</code></h1>
+This class is used to represent a <b><i>lexicon,</i></b> or word list.
+The main difference between a lexicon and a dictionary is that
+a lexicon does not provide any mechanism for storing definitions;
+the lexicon contains only words, with no associated information.
+It is therefore similar to a set of strings, but with a different
+internal representation.  The <code>Lexicon</code>
+class supports efficient lookup operations for words and prefixes.
+
+<p>
+	This version of <code>Lexicon</code> is implemented internally using a data structure called a <em>prefix tree</em> or <em>trie</em> (pronounced "try"), which allows for efficient prefix and word searching.
+	Some runtimes below are expressed in terms of "W" where W represents the length of the word being added.
+</p>
+
+<table class=index width=100%>
+	<tr>
+		<td class=indexHead colspan=3>Constructor</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Constructor:Lexicon">Lexicon()</a></nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Initializes a new empty lexicon.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Constructor:Lexicon">Lexicon(<var>filename</var>)</a>&nbsp;<br>
+			<a href="#Constructor:Lexicon">Lexicon(<var>istream</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(WN)</td>
+		<td class=indexSynopsis width=100%>Initializes a new lexicon that reads words from the given file or input stream.</td>
+	</tr>
+	<tr>
+		<td class=indexHead colspan=3>Methods</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:contains">contains(<var>word</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(W)</td>
+		<td class=indexSynopsis width=100%>Returns <code>true</code> if <code>word</code> is contained in the lexicon.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:containsPrefix">containsPrefix(<var>prefix</var>)</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(W)</td>
+		<td class=indexSynopsis width=100%>Returns true if any words in the lexicon begin with <code>prefix</code>.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:size">size()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Returns the number of words contained in the lexicon.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Method:toString">toString()</a>&nbsp;</nobr></td>
+		<td class="bigoh">O(1)</td>
+		<td class=indexSynopsis width=100%>Returns a printable string representation of this lexicon.</td>
+	</tr>
+	<tr>
+		<td class=indexHead colspan=3>Operators</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:foreach">for (string word : lex)&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Iterates through the words in a lexicon in alphabetical order.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:<<"><var>ostream</var>&nbsp;&lt;&lt;&nbsp;<var>lex</var></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Outputs the contents of the lexicon to the given output stream.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:>>"><var>istream</var>&nbsp;&gt;&gt;&nbsp;<var>lex</var></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(WN)</td>
+		<td class=indexSynopsis width=100%>Reads the contents of the given input stream into the lexicon.</td>
+	</tr>
+</table>
+
+<h2>Constructor detail</h2>
+<hr>
+<a name="Constructor:Lexicon"></a>
+<pre class=detailCode>
+Lexicon();
+Lexicon(istream&amp; input);
+Lexicon(string filename);
+</pre>
+<div class=detailHTML>
+Initializes a new lexicon.  The default constructor creates an empty
+lexicon.  The second form reads in the contents of the lexicon from
+the specified data file or stream.
+The data file must be in one of two formats:
+(1) a space-efficient precompiled binary format or (2) a text file
+containing one word per line.  The Stanford library distribution
+includes a binary lexicon file named <code>EnglishWords.dat</code>
+containing a list of words in English.  The standard code pattern
+to initialize that lexicon looks like this:
+<pre>
+Lexicon english("EnglishWords.dat");
+</pre>
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+Lexicon lex;
+Lexicon lex(filename);
+</pre>
+<hr>
+</table>
+
+<h2>Method detail</h2>
+
+
+<hr>
+<a name="Method:contains"></a>
+<pre class=detailCode>
+bool contains(string word) const;
+</pre>
+<div class=detailHTML>
+Returns <code>true</code> if <code>word</code> is contained in the
+lexicon.  In the <code>Lexicon</code> class, the case of letters is
+ignored, so "Zoo" is the same as "ZOO" or "zoo".
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (lex.contains(word)) ...
+</pre>
+
+<hr>
+<a name="Method:containsPrefix"></a>
+<pre class=detailCode>
+bool containsPrefix(string prefix) const;
+</pre>
+<div class=detailHTML>
+Returns true if any words in the lexicon begin with <code>prefix</code>.
+Like <code>containsWord</code>, this method ignores the case of letters
+so that "MO" is a prefix of "monkey" or "Monday".
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (lex.containsPrefix(prefix)) ...
+</pre>
+
+<hr>
+<a name="Method:size"></a>
+<pre class=detailCode>
+int size() const;
+</pre>
+<div class=detailHTML>
+Returns the number of words contained in the lexicon.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+int n = lex.size();
+</pre>
+
+<hr>
+<a name="Method:toString"></a>
+<pre class=detailCode>
+string toString() const;
+</pre>
+<div class=detailHTML>
+Returns a printable string representation of this lexicon, such as <code>&quot;{word1, word2, word3}&quot;</code>.
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+string str = lexicon.toString();
+</pre>
+<hr>
+</table>
+
+
+<h2>Operator detail</h2>
+
+<hr>
+<a name="Operator:foreach"></a>
+<pre class=detailCode>
+for (string word : lex)
+</pre>
+<div class=detailHTML>
+The range-based for loop can be used to iterate through the elements in a collection. The iteration accesses the lexicon words in alphabetical order.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+for (string word : lex) {
+	cout << word << endl;
+}
+
+</pre>
+
+
+<hr>
+<a name="Operator:<<"></a>
+<pre class=detailCode>
+ostream&amp; operator&lt;&lt;(const Lexicon&amp; lex);
+</pre>
+Outputs the contents of <code>lex</code> to the given output stream.
+The output is in the form <code>{ word1, word2, word3 }</code>. The words
+will be listed in alphabetical order.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+cout << lex << endl;
+</pre>
+
+
+<hr>
+<a name="Operator:>>"></a>
+<pre class=detailCode>
+istream&amp; operator&gt;&gt;(Lexicon&amp; lex);
+</pre>
+Reads the contents of the given input stream into <code>lex</code>. Any previous
+contents of the lex are replaced.
+The input is expected to be in the form <code>{ word1, word2, word3 }</code>. If unable to read a proper
+lexicon from the stream, the operation results in a stream fail state.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+if (infile >> lex) ...
+</pre>
+
+<hr>
+</table>
+</body>
+</html>

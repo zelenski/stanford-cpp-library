@@ -1,0 +1,58 @@
+<html>
+<head>
+<title>The Stanford Library documentation</title>
+<link rel="stylesheet" type="text/css" href="cppdoc.css" />
+
+</head>
+<body>
+<table class=banner>
+<tr>
+<td valign=middle><image src="img/StanfordTreeLogo.png" height=32></td>
+<td valign=middle><div class=bannerText>
+The Stanford <code>libcs106</code> library, Academic Year 2023-24
+
+</div></td>
+</tr></table>
+<hr>
+
+
+<h2>Collection classes</h2>
+Several of the classes represent collections of other objects.These collections work in much the same way as the similar classes in
+the Standard Template Library (STL).
+
+<p>Each of these collections is documented in its own page, along with sample code.
+<table class=index width=100%>
+<tr><td class=indexKey><nobr><a href="Vector.html">Vector&lt;<var>ValueType</var>&gt;</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>A Vector is an indexed sequence of values similar to an <b>array</b>.</td></tr>
+<tr><td class=indexKey><nobr><a href="Grid">Grid&lt;<var>ValueType</var>&gt;</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>A Grid is an indexed, <b>two-dimensional array</b>.</td></tr>
+<tr><td class=indexKey><nobr><a href="GridLocation.html">GridLocation</nobr></td><td class=indexSynopsis width=100%>A GridLocation struct is a <b>row/col</b> pair.</td></tr>
+<tr><td class=indexKey><nobr><a href="GridLocationRange.html">GridLocationRange</nobr></td><td class=indexSynopsis width=100%>A GridLocationRange is a <b>two-dimensional range</b> of grid locations.</td></tr>
+
+<tr><td class=indexKey><nobr><a href="Stack">Stack&lt;<var>ValueType</var>&gt;</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>A Stack is a linear structure in which values are added and removed only from one end, <b>LIFO</b>.</td></tr>
+<tr><td class=indexKey><nobr><a href="Queue">Queue&lt;<var>ValueType</var>&gt;</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>A Queue is a linear structure in which values are added at one end and removed from the other, <b>FIFO</b>.</td></tr>
+<tr><td class=indexKey><nobr><a href="PriorityQueue">PriorityQueue&lt;<var>ValueType</var>&gt;</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>A PriorityQueue is a specialized queue in which values are processed <b>in order of priority</b>.</td></tr>
+<tr><td class=indexKey><nobr><a href="Map">Map&lt;<var>KeyType</var>,&nbsp;<var>ValueType</var>&gt;</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>A Map maintains an ordered association between <b>keys</b> and <b>values</b>.</td></tr>
+<tr><td class=indexKey><nobr><a href="HashMap">HashMap&lt;<var>KeyType</var>,&nbsp;<var>ValueType</var>&gt;</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>A HashMap is a highly efficient and unordered implementation of the Map abstraction.</td></tr>
+<tr><td class=indexKey><nobr><a href="Set">Set&lt;<var>ValueType</var>&gt;</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>A Set is an ordered collection of <b>distinct values</b>.</td></tr>
+<tr><td class=indexKey><nobr><a href="HashSet">HashSet&lt;<var>ValueType</var>&gt;</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>A HashSet is a highly efficient and unordered implementation of the Set abstraction.</td></tr>
+<tr><td class=indexKey><nobr><a href="Lexicon">Lexicon</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>A Lexicon is a highly efficient implementation of a <b>word list</b>.</td></tr>
+
+</table>
+
+
+<table class=index width=100%>
+<h2>Utility header files</h2>
+These headers export various utility functions, grouped thematically. Some of these have been updated for Fall Quarter 2022; others are pending updates.
+<tr><td class=indexKey><nobr><a href="direction.html">direction.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file exports an enumerated type called <code>Direction</code> whose elements are the four compass points: <code>NORTH</code>, <code>EAST</code>, <code>SOUTH</code>, and <code>WEST</code>.</td></tr>
+<tr><td class=indexKey><nobr><a href="error.html">error.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file defines the <code>ErrorException</code> class and the <code>error</code> function.</td></tr>
+<tr><td class=indexKey><nobr><a href="filelib.html">filelib.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file exports a standardized set of tools for working with files.</td></tr>
+<tr><td class=indexKey><nobr><a href="GPoint.html">GPoint</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>A GPoint struct is a x/y pair to represent a location in the graphics plane.</td></tr>
+<tr><td class=indexKey><nobr><a href="random.html">random.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file exports functions for generating pseudorandom numbers.</td></tr>
+<tr><td class=indexKey><nobr><a href="simpio.html">simpio.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file exports a set of functions that simplify input/output operations in C++ and provide some error-checking on console input.</td></tr>
+<tr><td class=indexKey><nobr><a href="strlib.html">strlib.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file exports several useful string functions that are not included in the C++ string library.</td></tr>
+<tr><td class=indexKey><nobr><a href="timer.html">timer.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file exports a class for measuring intervals of time.</td></tr>
+<!--<tr><td class=indexKey><nobr><a href="tokenscanner.html">tokenscanner.h</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>This file exports a <code>TokenScanner</code> class that divides a string into individual logical units called <b><i>tokens</i></b>.</td></tr>-->
+</table>
+
+
+</body>
+</html>
