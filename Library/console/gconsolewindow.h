@@ -104,7 +104,6 @@ public:
     virtual void setLocked(bool locked);
     virtual void setOutputColor(int rgb);
     virtual void setOutputColor(const std::string& outputColor);
-    void setSize(double width, double height) override;
     virtual void setUserInputColor(const std::string& userInputColor);
     virtual void showAboutDialog();
     virtual void showColorDialog(bool background = false);

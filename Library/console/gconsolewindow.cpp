@@ -1179,17 +1179,6 @@ void GConsoleWindow::setOutputColor(const std::string& outputColor) {
     _textArea->moveCursorToEnd();
 }
 
-void GConsoleWindow::setSize(double width, double height) {
-    if (isHighDpiScalingEnabled() && isHighDensityScreen()) {
-        double ratio = getScreenDpiScaleRatio();
-        width = std::min(getScreenWidth(), width * ratio);
-        height = std::min(getScreenHeight(), height * ratio);;
-    }
-
-    // call super
-    GWindow::setSize(width, height);
-}
-
 void GConsoleWindow::setUserInput(const std::string& userInput) {
     if (_shutdown) {
         return;

@@ -714,19 +714,6 @@ public:
     static bool isDarkMode();
 
     /**
-     * Returns whether the dots-per-inch of the screen are high enough to
-     * consider it a "high-density" screen for which scaling should be used.
-     * The threshold for this is given by the constant
-     */
-    static bool isHighDensityScreen();
-
-    /**
-     * Returns whether we should scale some windows when run on high-density
-     * screens.
-     */
-    static bool isHighDpiScalingEnabled();
-
-    /**
      * Returns true if the window is in a maximized state, occupying the entire
      * screen.
      */

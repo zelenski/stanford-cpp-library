@@ -832,18 +832,6 @@ bool GWindow::inCanvasBounds(double x, double y) const {
     return fgLum > bgLum;
 }
 
-/*static*/ bool GWindow::isHighDensityScreen() {
-    return getScreenDpi() >= HIGH_DPI_SCREEN_THRESHOLD;
-}
-
-/*static*/ bool GWindow::isHighDpiScalingEnabled() {
-#ifdef SPL_SCALE_HIGH_DPI_SCREEN
-    return true;
-#else
-    return false;
-#endif // SPL_SCALE_HIGH_DPI_SCREEN
-}
-
 bool GWindow::isMaximized() const {
     return (_iqmainwindow->windowState() & Qt::WindowMaximized) != 0
             || (_iqmainwindow->windowState() & Qt::WindowFullScreen) != 0;
