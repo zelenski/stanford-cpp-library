@@ -28,10 +28,9 @@
 #include <algorithm>
 #include <cctype>
 #include <cstdio>
-#include "simpio.h"
-#include "strlib.h"
 #include "private/filelibunix.cpp"
 #include "private/filelibwindows.cpp"
+#include "gfilechooser.h"
 
 /* Prototypes */
 
@@ -101,13 +100,6 @@ int fileSize(const std::string& filename) {
         input.seekg(0, std::ifstream::end);
         return (int) input.tellg();
     }
-}
-
-std::string findOnPath(const std::string& path, const std::string& filename) {
-    std::ifstream stream;
-    std::string result = openOnPath(stream, path, filename);
-    if (result != "") stream.close();
-    return result;
 }
 
 std::string getAbsolutePath(const std::string& path) {
@@ -198,18 +190,9 @@ bool isFile(const std::string& filename) {
     return platform::filelib_isFile(expandPathname(filename));
 }
 
-bool isSymbolicLink(const std::string& filename) {
-    return platform::filelib_isSymbolicLink(filename);
-}
-
-void listDirectory(const std::string& path, Vector<std::string>& list) {
-    list.clear();
-    return platform::filelib_listDirectory(expandPathname(path), list);
-}
-
 Vector<std::string> listDirectory(const std::string& path) {
     Vector<std::string> vec;
-    listDirectory(path, vec);
+    platform::filelib_listDirectory(expandPathname(path), vec);
     return vec;
 }
 
@@ -219,192 +202,34 @@ bool matchFilenamePattern(const std::string& filename, const std::string& patter
 
 bool openFile(std::ifstream& stream, const std::string& filename) {
     stream.clear();
-    stream.open(expandPathname(filename).c_str());
+    stream.open(expandPathname(filename));
     return !stream.fail();
 }
 
 bool openFile(std::ofstream& stream, const std::string& filename) {
     stream.clear();
-    stream.open(expandPathname(filename).c_str());
+    stream.open(expandPathname(filename));
     return !stream.fail();
 }
 
-std::string openFileDialog(std::ifstream& stream) {
-    return openFileDialog(stream, "Open File", "");
+std::string chooseFilenameDialog(const std::string& title,
+                           const std::string& path,
+                           const std::string& fileFilter) {
+    return GFileChooser::showOpenDialog(title, path, fileFilter);
 }
 
-std::string openFileDialog(std::ifstream& stream,
-                           const std::string& title) {
-    return openFileDialog(stream, title, "");
-}
-
-std::string openFileDialog(std::ifstream& stream,
-                           const std::string& title,
-                           const std::string& path) {
-    std::string filename = platform::file_openFileDialog(title, "load", path);
-    if (filename == "") return "";
-    stream.open(filename.c_str());
-    return (stream.fail()) ? "" : filename;
-}
-
-std::string openFileDialog(const std::string& title,
-                           const std::string& path) {
-    std::string filename = platform::file_openFileDialog(title, "load", path);
-    if (filename == "") return "";
-    return (fileExists(filename)) ? filename : "";
-}
-
-std::string openFileDialog(std::ofstream& stream) {
-    return openFileDialog(stream, "Open File", "");
-}
-
-std::string openFileDialog(std::ofstream& stream,
-                           const std::string& title) {
-    return openFileDialog(stream, title, "");
-}
-
-std::string openFileDialog(std::ofstream& stream,
-                           const std::string& title,
-                           const std::string& path) {
-    std::string filename = platform::file_openFileDialog(title, "save", path);
-    if (filename == "") return "";
-    stream.open(filename.c_str());
-    return (stream.fail()) ? "" : filename;
-}
-
-std::string openOnPath(std::ifstream& stream,
-                       const std::string& path,
+std::string findOnPath(const std::string& path,
                        const std::string& filename) {
     Vector<std::string> paths;
     splitPath(path, paths);
     for (std::string dir : paths) {
         std::string pathname = dir + "/" + filename;
-        if (openFile(stream, pathname)) return pathname;
+        if (fileExists(pathname)) return pathname;
     }
     return "";
 }
 
-std::string openOnPath(std::ofstream& stream,
-                       const std::string& path,
-                       const std::string& filename) {
-    Vector<std::string> paths;
-    splitPath(path, paths);
-    for (std::string dir : paths) {
-        std::string pathname = dir + "/" + filename;
-        if (openFile(stream, pathname)) return pathname;
-    }
-    return "";
-}
-
-std::string promptUserForFile(std::ifstream& stream,
-                              const std::string& prompt,
-                              const std::string& reprompt) {
-    std::string promptCopy = prompt;
-    std::string repromptCopy = reprompt;
-    if (reprompt == "") {
-        repromptCopy = "Unable to open that file.  Try again.";
-    }
-    appendSpace(promptCopy);
-    while (true) {
-        std::cout << promptCopy;
-        std::string filename;
-        getline(std::cin, filename);
-        if (!filename.empty()) {
-            openFile(stream, filename);
-            if (!stream.fail()) return filename;
-            stream.clear();
-        }
-        std::cout << repromptCopy << std::endl;
-        if (promptCopy == "") promptCopy = "Input file: ";
-    }
-}
-
-std::string promptUserForFile(std::ofstream& stream,
-                              const std::string& prompt,
-                              const std::string& reprompt) {
-    std::string promptCopy = prompt;
-    std::string repromptCopy = reprompt;
-    if (reprompt == "") {
-        repromptCopy = "Unable to open that file.  Try again.";
-    }
-    appendSpace(promptCopy);
-    while (true) {
-        std::cout << promptCopy;
-        std::string filename;
-        getline(std::cin, filename);
-        if (!filename.empty()) {
-            openFile(stream, filename);
-            if (!stream.fail()) return filename;
-            stream.clear();
-        }
-        std::cout << repromptCopy << std::endl;
-        if (promptCopy == "") promptCopy = "Output file: ";
-    }
-}
-
-std::string promptUserForFile(const std::string& prompt,
-                              const std::string& reprompt) {
-    std::string promptCopy = prompt;
-    std::string repromptCopy = reprompt;
-    if (reprompt == "") {
-        repromptCopy = "Unable to open that file.  Try again.";
-    }
-    appendSpace(promptCopy);
-    while (true) {
-        std::cout << promptCopy;
-        std::string filename;
-        getline(std::cin, filename);
-        if (!filename.empty()) {
-            std::ifstream stream;
-            openFile(stream, filename);
-            if (!stream.fail()) {
-                stream.close();
-                return filename;
-            }
-        }
-        std::cout << repromptCopy << std::endl;
-        if (promptCopy == "") promptCopy = "Input file: ";
-    }
-}
-
-void readEntireFile(std::istream& is, Vector<std::string>& lines) {
-    lines.clear();
-    while (true) {
-        std::string line;
-        getline(is, line);
-        if (is.fail()) break;
-        lines.add(line);
-    }
-}
-
-std::string readEntireFile(const std::string& filename) {
-    std::string out;
-    if (readEntireFile(filename, out)) {
-        return out;
-    } else {
-        error(std::string("input file not found or cannot be opened: ") + filename);
-        return "";
-    }
-}
-
-bool readEntireFile(const std::string& filename, std::string& out) {
-    std::ifstream input;
-    input.open(filename.c_str());
-    if (input.fail()) {
-        return false;
-    }
-    readEntireStream(input, out);
-    input.close();
-    return true;
-}
-
-std::string readEntireStream(std::istream& input) {
-    std::string out;
-    readEntireStream(input, out);
-    return out;
-}
-
-void readEntireStream(std::istream& input, std::string& out) {
+std::string readEntire(std::istream& input) {
     std::ostringstream output;
     while (true) {
         int ch = input.get();
@@ -413,7 +238,18 @@ void readEntireStream(std::istream& input, std::string& out) {
         }
         output.put(ch);
     }
-    out = output.str();
+    return output.str();
+}
+
+Vector<std::string> readLines(std::istream& input) {
+    Vector<std::string> lines;
+    while (true) {
+        std::string line;
+        getline(input, line);
+        if (input.fail()) break;
+        lines.add(line);
+    }
+    return lines;
 }
 
 void renameFile(const std::string& oldname, const std::string& newname) {

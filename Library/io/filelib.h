@@ -7,21 +7,6 @@
  * Windows, and Linux.  Directory and search paths are allowed to
  * contain separators in any of the supported styles, which usually
  * makes it possible to use the same code on different platforms.
- *
- * @version 2018/10/23
- * - added getAbsolutePath
- * @version 2018/09/25
- * - added doc comments for new documentation generation
- * @version 2016/11/12
- * - added fileSize, readEntireStream
- * @version 2016/08/12
- * - added second overload of openFileDialog that accepts path parameter
- * @version 2015/04/12
- * - added promptUserForFile overload without stream parameter
- * @version 2014/10/19
- * - alphabetized function declarations
- * - converted many funcs to take const string& rather than string for efficiency
- * - added listDirectory overload that returns a Vector
  */
 
 
@@ -33,6 +18,18 @@
 #include <string>
 
 #include "vector.h"
+
+/**
+ * Opens a dialog that allows the user to choose a file name.
+ * The <code>title</code> parameter is displayed in the dialog title.
+ * The <code>path</code> parameter is used to set the working directory.
+ * If the <code>path</code> is omitted, the dialog begins in the current directory.
+ * The optional <code>fileFilter</code> string limits the user
+ * selection to those files matching the filter string, e.g.  "*.gif,*.jpg,*.png".
+ */
+std::string chooseFilenameDialog(const std::string& title = "Open File ...",
+                                 const std::string& path = "",
+                                 const std::string& fileFilter = "");
 
 /**
  * Creates a new directory for the specified path.  The
@@ -83,10 +80,14 @@ int fileSize(const std::string& filename);
 
 /**
  * Returns the canonical name of a file found using a search path.
- * The <code>findOnPath</code> function is similar to
- * <code>openOnPath</code>, except that it doesn't actually
- * return an open stream.  If no matching file is found,
- * <code>findOnPath</code> returns the empty string.
+ * If <code>findOnPath</code> is successful, it returns the first path
+ * name on the search path for which filename exists.
+ * The <code>path</code> argument consists of a list of directories
+ * that are prepended to the filename, unless <code>filename</code>
+ * begins with an absolute directory marker, such as <code>/</code>
+ * or <code>~</code>. The directories in the search path may be
+ * separated either by colons (Unix or Mac OS) or semicolons (Windows).
+ *  If no matching file is found, <code>findOnPath</code> returns the empty string.
  */
 std::string findOnPath(const std::string& path, const std::string& filename);
 
@@ -169,25 +170,6 @@ bool isDirectory(const std::string& filename);
 bool isFile(const std::string& filename);
 
 /**
- * Returns <code>true</code> if the specified file is a symbolic link.
- */
-bool isSymbolicLink(const std::string& filename);
-
-/**
- * Adds an alphabetized list of the files in the specified directory
- * to the string vector <code>list</code>.  This list excludes the
- * names <code>.</code> and <code>..</code> entries.
- */
-void listDirectory(const std::string& path, Vector<std::string>& list);
-
-/**
- * Adds an alphabetized list of the files in the specified directory
- * to the Vector <code>list</code>.  This list excludes the
- * names <code>.</code> and <code>..</code> entries.
- */
-void listDirectory(const std::string& path, Vector<std::string>& list);
-
-/**
  * Adds an alphabetized list of the files in the specified directory
  * to a vector that is returned.  This list excludes the
  * names <code>.</code> and <code>..</code> entries.
@@ -213,209 +195,32 @@ bool matchFilenamePattern(const std::string& filename, const std::string& patter
 
 /**
  * Opens the file input stream <code>stream</code> using the specified
- * filename.  This function is similar to the <code>open</code>
- * method of the stream classes, but uses a C++ <code>string</code>
- * object instead of the older C-style string.  If the operation
- * succeeds, <code>openFile</code> returns <code>true</code>;
- * if it fails, <code>openFile</code> sets the failure flag in the
- * stream and returns <code>false</code>.
+ * filename.  If the operation succeeds, <code>openFile</code>
+ * returns <code>true</code>; if it fails, <code>openFile</code> sets
+ * the failure flag in the stream and returns <code>false</code>.
  */
 bool openFile(std::ifstream& stream, const std::string& filename);
 
 /**
  * Opens the file output stream <code>stream</code> using the specified
- * filename.  This function is similar to the <code>open</code>
- * method of the stream classes, but uses a C++ <code>string</code>
- * object instead of the older C-style string.  If the operation
- * succeeds, <code>openFile</code> returns <code>true</code>;
- * if it fails, <code>openFile</code> sets the failure flag in the
- * stream and returns <code>false</code>.
+ * filename.  If the operation succeeds, <code>openFile</code>
+ * returns <code>true</code>; if it fails, <code>openFile</code> sets
+ * the failure flag in the stream and returns <code>false</code>.
  */
 bool openFile(std::ofstream& stream, const std::string& filename);
 
 /**
- * Opens a dialog that allows the user to choose a file to read.
- * The dialog begins in the current directory.
- */
-std::string openFileDialog(std::ifstream& stream);
-
-/**
- * Opens a dialog that allows the user to choose a file to read.
- * The <code>title</code> parameter is displayed in the dialog title.
- * The dialog begins in the current directory.
- */
-std::string openFileDialog(std::ifstream& stream,
-                           const std::string& title);
-
-/**
- * Opens a dialog that allows the user to choose a file to read.
- * The <code>title</code> parameter is displayed in the dialog title.
- * The <code>path</code> parameter is used to set the working directory.
- */
-std::string openFileDialog(std::ifstream& stream,
-                           const std::string& title,
-                           const std::string& path);
-
-/**
- * Opens a dialog that allows the user to choose a file to write.
- * The dialog begins in the current directory.
- */
-std::string openFileDialog(std::ofstream& stream);
-
-/**
- * Opens a dialog that allows the user to choose a file to write.
- * The <code>title</code> parameter is displayed in the dialog title.
- * The dialog begins in the current directory.
- */
-std::string openFileDialog(std::ofstream& stream,
-                           const std::string& title);
-
-/**
- * Opens a dialog that allows the user to choose a file to write.
- * The <code>title</code> parameter is displayed in the dialog title.
- * The <code>path</code> parameter is used to set the working directory.
- */
-std::string openFileDialog(std::ofstream& stream,
-                           const std::string& title,
-                           const std::string& path);
-
-/**
- * Opens a dialog that allows the user to choose a file name to read or write.
- * The <code>title</code> parameter is displayed in the dialog title.
- * The <code>path</code> parameter is used to set the working directory.
- * If the <code>path</code> is omitted, the dialog begins in the current directory.
- */
-std::string openFileDialog(const std::string& title = "Open File ...",
-                           const std::string& path = "");
-
-/**
- * Opens a file to read using a search path.  If <code>openOnPath</code>
- * is successful, it returns the first path name on the search path
- * for which <code>stream.open</code> succeeds.  The <code>path</code>
- * argument consists of a list of directories that are prepended to the
- * filename, unless <code>filename</code> begins with an absolute
- * directory marker, such as <code>/</code> or <code>~</code>.
- * The directories in the search path may be separated either
- * by colons (Unix or Mac OS) or semicolons (Windows).  If the file
- * cannot be opened, the failure bit is set in the <code>stream</code>
- * parameter, and the <code>openOnPath</code> function returns the
- * empty string.
- */
-std::string openOnPath(std::ifstream& stream,
-                       const std::string& path,
-                       const std::string& filename);
-
-/**
- * Opens a file to write using a search path.  If <code>openOnPath</code>
- * is successful, it returns the first path name on the search path
- * for which <code>stream.open</code> succeeds.  The <code>path</code>
- * argument consists of a list of directories that are prepended to the
- * filename, unless <code>filename</code> begins with an absolute
- * directory marker, such as <code>/</code> or <code>~</code>.
- * The directories in the search path may be separated either
- * by colons (Unix or Mac OS) or semicolons (Windows).  If the file
- * cannot be opened, the failure bit is set in the <code>stream</code>
- * parameter, and the <code>openOnPath</code> function returns the
- * empty string.
- */
-std::string openOnPath(std::ofstream& stream,
-                       const std::string& path,
-                       const std::string& filename);
-
-/**
- * Asks the user for the name of a file to read.
- * The file is opened using the reference parameter <code>stream</code>.
- * The function returns the name of the file.
- * If the requested file cannot be opened, the user is given additional chances
- * to type a valid file name.
- *
- * The optional <code>prompt</code> argument provides an input prompt
- * for the user.
- *
- * The also optional <code>reprompt</code> argument provides an output message
- * displayed each time if the user types a file that is not found.
- * If no value is passed, defaults to, "Unable to open that file.  Try again.".
- */
-std::string promptUserForFile(std::ifstream& stream,
-                              const std::string& prompt = "",
-                              const std::string& reprompt = "");
-
-/**
- * Asks the user for the name of a file to read.
- * The file is opened using the reference parameter <code>stream</code>.
- * The function returns the name of the file.
- * If the requested file cannot be opened, the user is given additional chances
- * to type a valid file name.
- *
- * The optional <code>prompt</code> argument provides an input prompt
- * for the user.
- *
- * The also optional <code>reprompt</code> argument provides an output message
- * displayed each time if the user types a file that is not found.
- * If no value is passed, defaults to, "Unable to open that file.  Try again.".
- */
-std::string promptUserForFile(std::ofstream& stream,
-                              const std::string& prompt = "",
-                              const std::string& reprompt = "");
-
-/**
- * Asks the user for the name of a file to read.
- * The function returns the name of the file.
- * If the requested file cannot be opened, the user is given additional chances
- * to type a valid file name.
- *
- * The optional <code>prompt</code> argument provides an input prompt
- * for the user.
- *
- * The also optional <code>reprompt</code> argument provides an output message
- * displayed each time if the user types a file that is not found.
- * If no value is passed, defaults to, "Unable to open that file.  Try again.".
- */
-std::string promptUserForFile(const std::string& prompt = "",
-                              const std::string& reprompt = "");
-
-/**
- * Reads the entire contents of the specified input stream into the
- * string Vector <code>lines</code>.  The client is responsible for
- * opening and closing the stream.
- */
-void readEntireFile(std::istream& is, Vector<std::string>& lines);
-
-/**
- * Reads the entire contents of the specified input stream into the
- * string Vector <code>lines</code>.  The client is responsible for
- * opening and closing the stream.
- */
-void readEntireFile(std::istream& is, Vector<std::string>& lines);
-
-/**
- * An overload of readEntireFile that just returns the whole file as a very
- * long single string, rather than a vector of lines.
- * @throw ErrorException if the file is not found or cannot be read.
- */
-std::string readEntireFile(const std::string& filename);
-
-/**
- * An overload of readEntireFile that just reads the whole file as a very
- * long single string, rather than a vector of lines.
- *
- * This version fills an output reference with the text read.
- * Returns true if the read was successful or false if the file was not found
- * or unable to be opened for reading.
- */
-bool readEntireFile(const std::string& filename, std::string& out);
-
-/**
  * Reads the contents of the given stream until its end and returns them as
- * a string.
+ * a string.  The client is responsible for opening and closing the stream.
  */
-std::string readEntireStream(std::istream& input);
+std::string readEntire(std::istream& input);
 
 /**
- * Reads the contents of the given stream until its end and stores them
- * in the given string 'out' by reference.
+ * Reads the entire contents of the specified input stream into the
+ * string Vector <code>lines</code>.  The client is responsible for
+ * opening and closing the stream.
  */
-void readEntireStream(std::istream& input, std::string& out);
+Vector<std::string> readLines(std::istream& input);
 
 /**
  * Renames a file.
@@ -453,7 +258,6 @@ bool writeEntireFile(const std::string& filename,
  * @private
  */
 namespace platform {
-    std::string file_openFileDialog(const std::string& title, const std::string& mode, const std::string& path);
     void filelib_createDirectory(const std::string& path);
     void filelib_deleteFile(const std::string& path);
     std::string filelib_expandPathname(const std::string& filename);
@@ -465,7 +269,6 @@ namespace platform {
     std::string filelib_getTempDirectory();
     bool filelib_isDirectory(const std::string& filename);
     bool filelib_isFile(const std::string& filename);
-    bool filelib_isSymbolicLink(const std::string& filename);
     void filelib_listDirectory(const std::string& path, Vector<std::string>& list);
     void filelib_setCurrentDirectory(const std::string& path);
 }

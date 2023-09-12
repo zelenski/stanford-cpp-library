@@ -3,31 +3,13 @@
  * --------------
  * This file exports a set of functions that simplify input/output
  * operations in C++ and provide some error-checking on console input.
- *
- * @version 2018/09/25
- * - added doc comments for new documentation generation
- * @version 2016/09/29
- * - added getDouble method
- * @version 2015/07/05
- * - increased visibility of appendSpace function used by various IO
- *   prompting functions (no longer static)
- * @version 2014/10/19
- * - alphabetized functions
- * - converted many funcs to take const string& rather than string for efficiency
  */
-
 
 #ifndef _simpio_h
 #define _simpio_h
 
 #include <iostream>
 #include <string>
-
-/**
- * Adds a space at the end of the given string by reference if none is present.
- * @private
- */
-void appendSpace(std::string& prompt);
 
 /**
  * Reads a complete line from <code>cin</code>, expecting the user to type a
@@ -78,7 +60,6 @@ double getDouble(const std::string& prompt = "",
  * Equivalent to getRealBetween.
  */
 double getDoubleBetween(const std::string& prompt, double min, double max);
-
 
 /**
  * Reads a complete line from <code>cin</code> and scans it as an
@@ -189,5 +170,21 @@ double getRealBetween(const std::string& prompt, double min, double max);
 bool getYesOrNo(const std::string& prompt = "",
                 const std::string& reprompt = "",
                 const std::string& defaultValue = "");
+
+/**
+ * Asks the user for the name of a file to read.
+ * The function returns the name of the file.
+ * If the requested file cannot be opened, the user is given additional chances
+ * to type a valid file name.
+ *
+ * The optional <code>prompt</code> argument provides an input prompt
+ * for the user.
+ *
+ * The also optional <code>reprompt</code> argument provides an output message
+ * displayed each time if the user types a file that is not found.
+ * If no value is passed, defaults to, "Unable to open that file.  Try again.".
+ */
+std::string promptUserForFilename(const std::string& prompt = "",
+                                  const std::string& reprompt = "");
 
 #endif // _simpio_h

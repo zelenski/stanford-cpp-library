@@ -38,18 +38,17 @@ struct  {
     {"Vector modify",   ([] { Vector<int> v {4, 7}; for (int m : v) v.remove(m); } ) },
     {"Set modify",      ([] { Set<int> set {4, 7}; for (int m : set) set.add(m*2); } ) },
     {"stringToReal",    ([] { stringToReal("3.14Pi.59"); } ) },
-    {"readFile",        ([] { readEntireFile("nonexistent"); } ) },
     {"std::vector at",  ([] { vector<int> v; v.at(106); } ) },
     {"std::string at",  ([] { string s; s.at(106); } ) },
     {"gui segv",        ([] { GThread::runOnQtGuiThread([] { *gPtr = 106; } ); } ) },
     {"gui fpe",         ([] { GThread::runOnQtGuiThread([] { gZero = 106/gZero; } ); } ) },
     {"gui throw",       ([] { GThread::runOnQtGuiThread([] { throw 106; } ); } ) },
-    {"gui error",       ([] { GThread::runOnQtGuiThread([] {  Vector<int> v; v[106]; } ); } ) },
+    {"gui error",       ([] { GThread::runOnQtGuiThread([] { Vector<int> v; v[106]; } ); } ) },
     {"gui stack",       ([] { GThread::runOnQtGuiThread([] { stack_overflow(); } ); } ) },
 };
 
 
-PROVIDED_TEST("Create exception and see what happens")
+PROVIDED_TEST("Create fatal exception under PROVIDED_TEST, (HEADS UP: test expected to fail, possible crash")
 {
   //  exceptions::setTopLevelExceptionHandlerEnabled(false);
    // exceptions::interruptIfDebug();

@@ -145,15 +145,6 @@ public:
      * contents of this formatted pane.
      * The pane will try to display the content in the best appropriate format,
      * such as rendering basic HTML content with formatting intact.
-     * If the file cannot be read, sets the pane's text to be empty.
-     */
-    virtual void readTextFromFile(std::istream& file);
-
-    /**
-     * Reads text from the given file and displays the entire file's text as the
-     * contents of this formatted pane.
-     * The pane will try to display the content in the best appropriate format,
-     * such as rendering basic HTML content with formatting intact.
      * If the file does not exist or cannot be read, sets the pane's text to be empty.
      */
     virtual void readTextFromFile(const std::string& filename);

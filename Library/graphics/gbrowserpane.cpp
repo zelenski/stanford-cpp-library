@@ -147,17 +147,13 @@ void GBrowserPane::moveCursorToStart() {
     });
 }
 
-void GBrowserPane::readTextFromFile(std::istream& file) {
-    std::string fileText = readEntireStream(file);
-    setText(fileText);
-}
-
 void GBrowserPane::readTextFromFile(const std::string& filename) {
     std::ifstream input;
     input.open(filename.c_str());
     if (!input.fail()) {
         _pageUrl = filename;
-        readTextFromFile(input);
+        std::string fileText = readEntire(input);
+        setText(fileText);
     }
 }
 

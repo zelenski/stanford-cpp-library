@@ -103,16 +103,19 @@ void excepA() {
 }
 
 
-// test raising various kinds of exceptions
-PROVIDED_TEST("error during test") {
+PROVIDED_TEST("error raised under EXPECT_ERROR should report as success") {
     EXPECT_ERROR(exceptionTest());
 }
 
-PROVIDED_TEST("throw std::exception during test") {
+PROVIDED_TEST("error raised under EXPECT_NO_ERROR should report as failure (HEADS UP: text expected to fail)") {
+    EXPECT_NO_ERROR(exceptionTest());
+}
+
+PROVIDED_TEST("throw std::exception under EXPECT_ERROR should report as failure (HEADS UP: test expected to fail)") {
     EXPECT_ERROR(throw std::exception());
 }
 
-PROVIDED_TEST("throw std::string during test") {
+PROVIDED_TEST("throw std::string under EXPECT_ERROR should report as failure (HEADS UP: test expected to fail)") {
     EXPECT_ERROR(throw string("oh crap"));
 }
 

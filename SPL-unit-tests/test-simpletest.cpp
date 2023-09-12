@@ -58,16 +58,16 @@ PROVIDED_TEST("expect equal, inf should equal self ") {
     EXPECT_EQUAL(-1/zero, -1/zero);
 }
 
-PROVIDED_TEST("nan is not equal to anything even itself (HEADS UP: this test should fail)") {
+PROVIDED_TEST("nan is not equal to anything even itself (HEADS UP: test expected to fail)") {
     EXPECT(zero/zero != zero/zero);
     EXPECT_EQUAL(zero/zero, zero/zero);
 }
 
 PROVIDED_TEST("capture output, compare equal") {
     ioutils::captureStdoutBegin();
-    std::cout << 12.3456789 << std::endl;
+    std::cout << std::setprecision(4) << 12.3456789;
     std::string output = ioutils::captureStdoutEnd();
-    EXPECT_EQUAL(output, "12.3457\n");
+    EXPECT_EQUAL(output, "12.35");
 }
 
 PROVIDED_TEST("capture output, compare equal") {

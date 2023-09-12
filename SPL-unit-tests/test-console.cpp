@@ -32,15 +32,6 @@ PROVIDED_TEST("console animation") {
     getLine("animation 3 complete (w/ clear), RETURN to continue");
 }
 
-PROVIDED_TEST("console cin/cout") {
-    for (int i = 0; i < 100; i++) {
-        cout << "hello" << endl;
-    }
-    string input = getLine("How are you doing? ");
-    cout << "You said, \"" << input << "\"." << endl;
-    cout << "The end." << endl;
-}
-
 PROVIDED_TEST("console mixed cout/cerr") {
     cerr << "This message comes from cerr" << endl;
     cout << "Another one from cout!" << endl;
@@ -53,22 +44,6 @@ PROVIDED_TEST("console mixed cout/cerr") {
     cerr << "LINE??";
     cout << endl;
 }
-
-PROVIDED_TEST("console getInteger") {
-    while (true) {
-        std::string line = getLine("Enter string to parse as integer (RETURN to quit): ");
-        if (line == "") break;
-        if (stringIsInteger(line)) {
-            cout << line << " is an integer!" << endl;
-        } else {
-            cout << line << " is not integer" << endl;
-        }
-    }
-    int n = getInteger("Enter string for getInteger:");
-    cout << "you typed " << n << endl;
-
-}
-
 
 void outputColorTest() {
     cout << "Output color test:" << endl;

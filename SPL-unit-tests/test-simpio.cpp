@@ -7,6 +7,7 @@
 #include "simpio.h"
 #include "ioutils.h"
 #include "strlib.h"
+#include "filelib.h"
 using namespace std;
 
 
@@ -78,5 +79,15 @@ PROVIDED_TEST("getDoubleBetween rejects values outside range") {
     cout << endl << "low = " << low << " high = " << high << endl;
     double val = getDoubleBetween("Enter double between low and high:", low, high);
     EXPECT(val >= low && val <= high);
+    ioutils::redirectStdinEnd();
+}
+
+PROVIDED_TEST("promptUserForFile accepts valid filenames, rejects others") {
+    ioutils::setConsoleEchoUserInput(true);
+    string input = stringJoin({"", "garbage", __FILE__, "", "/s", __FILE__}, '\n');
+    ioutils::redirectStdinBegin(input);
+
+    EXPECT(fileExists(promptUserForFilename()));
+    EXPECT(fileExists(promptUserForFilename("Enter a nice filename", "I am mad!")));
     ioutils::redirectStdinEnd();
 }

@@ -23,6 +23,7 @@
 #include <string>
 #include "error.h"
 #include "strlib.h"
+#include "filelib.h"
 #include "private/static.h"
 
 STATIC_CONST_VARIABLE_DECLARE(std::string, GETCHAR_DEFAULT_PROMPT, "Enter a character: ")
@@ -33,6 +34,12 @@ STATIC_CONST_VARIABLE_DECLARE(std::string, GETREAL_DEFAULT_PROMPT, "Enter a numb
 STATIC_CONST_VARIABLE_DECLARE(std::string, GETREAL_DEFAULT_REPROMPT, "Illegal numeric format. Try again.")
 STATIC_CONST_VARIABLE_DECLARE(std::string, GETYESORNO_DEFAULT_PROMPT, "Try again: ")
 STATIC_CONST_VARIABLE_DECLARE(std::string, GETYESORNO_DEFAULT_REPROMPT, "Please type a word that starts with 'Y' or 'N'.")
+
+/**
+ * Adds a space at the end of the given string by reference if none is present.
+ * @private
+ */
+static void appendSpace(std::string& prompt);
 
 /*
  * Implementation notes: getChar, getDouble, getInteger, getReal
@@ -230,8 +237,28 @@ bool getYesOrNo(const std::string& prompt,
     return value;
 }
 
-void appendSpace(std::string& prompt) {
+static void appendSpace(std::string& prompt) {
     if (!prompt.empty() && !isspace(prompt[prompt.length() - 1])) {
         prompt += ' ';
+    }
+}
+
+std::string promptUserForFilename(const std::string& prompt,
+                                  const std::string& reprompt) {
+    std::string promptCopy = prompt;
+    std::string repromptCopy = reprompt;
+    if (reprompt == "") {
+        repromptCopy = "Unable to open that file.  Try again.";
+    }
+    appendSpace(promptCopy);
+    while (true) {
+        std::cout << promptCopy;
+        std::string filename;
+        getline(std::cin, filename);
+        if (isFile(filename)) {
+            return filename;
+        }
+        std::cout << repromptCopy << std::endl;
+        if (promptCopy == "") promptCopy = "Input file: ";
     }
 }

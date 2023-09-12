@@ -148,14 +148,6 @@ bool filelib_isFile(const std::string& filename) {
     return S_ISREG(fileInfo.st_mode) != 0;
 }
 
-bool filelib_isSymbolicLink(const std::string& filename) {
-    struct stat fileInfo;
-    if (lstat(filename.c_str(), &fileInfo) != 0) {
-        return false;
-    }
-    return S_ISLNK(fileInfo.st_mode) != 0;
-}
-
 void filelib_listDirectory(const std::string& path, Vector<std::string>& list) {
     DIR* dir = opendir(path.empty() ? "." : path.c_str());
     if (!dir) {
@@ -174,13 +166,6 @@ void filelib_listDirectory(const std::string& path, Vector<std::string>& list) {
     }
     closedir(dir);
     sort(list.begin(), list.end());
-}
-
-std::string file_openFileDialog(const std::string& /*title*/,
-                                const std::string& /*mode*/,
-                                const std::string& /*path*/) {
-    // TODO
-    return "";
 }
 
 void filelib_setCurrentDirectory(const std::string& path) {

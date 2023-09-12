@@ -113,12 +113,6 @@ bool filelib_isFile(const std::string& filename) {
     return attr != INVALID_FILE_ATTRIBUTES && !(attr & FILE_ATTRIBUTE_DIRECTORY);
 }
 
-bool filelib_isSymbolicLink(const std::string& filename) {
-    DWORD attr = GetFileAttributesA(filename.c_str());
-    return attr != INVALID_FILE_ATTRIBUTES
-            && (attr & FILE_ATTRIBUTE_REPARSE_POINT);
-}
-
 void filelib_listDirectory(const std::string& path, Vector<std::string> & list) {
     std::string pathStr = path;
     if (pathStr == "") {
@@ -142,13 +136,6 @@ void filelib_listDirectory(const std::string& path, Vector<std::string> & list) 
     }
     FindClose(h);
     sort(list.begin(), list.end());
-}
-
-std::string file_openFileDialog(const std::string& /*title*/,
-                                const std::string& /*mode*/,
-                                const std::string& /*path*/) {
-    // TODO
-    return "";
 }
 
 void filelib_setCurrentDirectory(const std::string& path) {

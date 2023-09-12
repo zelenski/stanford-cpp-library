@@ -274,10 +274,12 @@ namespace SimpleTest {
             window->requestFocus();
             // student can customize by provided stylesheet in project directory
             string localFile = "simpletest.css";
-            if (fileExists(localFile))
-                readEntireFile(localFile, stylesheet);
-            else
+            if (fileExists(localFile)) {
+                ifstream in(localFile);
+                stylesheet = readEntire(in);
+            } else {
                 stylesheet = gDefaultStylesheet;
+            }
         }
 
         /* Show everything so there's some basic data available. */

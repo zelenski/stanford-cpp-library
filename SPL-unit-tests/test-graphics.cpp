@@ -23,14 +23,13 @@
 #include "SimpleTest.h"
 using namespace std;
 
-PROVIDED_TEST("File Dialog") {
-    // std::cout << "current dir should be \"" << getCurrentDirectory() << "\"" << std::endl;
-    std::ifstream input;
-    std::string filename = openFileDialog(input, "booyahtitle", "/usr/lib/eclipse");
-    std::cout << "you chose \"" << filename << "\"" << std::endl;
+PROVIDED_TEST("chooseFilenameDialog") {
+    std::cout << "Opening file chooser in directory \"" << getCurrentDirectory() << "\"" << std::endl;
+    std::string filename = chooseFilenameDialog("booyahtitle", "", "*.cpp");
+    std::cout << "You selected file:  \"" << filename << "\"" << std::endl;
 }
 
-PROVIDED_TEST("GOptionPane alerts, dialogs, messages") {
+PROVIDED_TEST("GOptionPane messages, alerts, and confirm dialogs") {
     GOptionPane::showMessageDialog("Just saying hi");
     GOptionPane::showMessageDialog("This would be an error alert", "Oh no", GOptionPane::MESSAGE_ERROR);
     GOptionPane::showMessageDialog("Testing special chars [*+*&}{] && || !)@(*&#)(&^%!{ \" \" \" \"}) C:\\Program Files\\Test ;,;:\", ';\"\\//\\// ( ) test 1 2 3 $a $b %a %b %1 %2 http://foo.com/! end");
@@ -39,28 +38,140 @@ PROVIDED_TEST("GOptionPane alerts, dialogs, messages") {
     EXPECT_EQUAL(result, GOptionPane::CONFIRM_YES);
     result = GOptionPane::showConfirmDialog("All is cool? (say OK)", "I have a title", GOptionPane::CONFIRM_OK_CANCEL);
     EXPECT_EQUAL(result, GOptionPane::CONFIRM_OK);
-    result = GOptionPane::showConfirmDialog("This one allows Cancel (do that)", "booyah", GOptionPane::CONFIRM_YES_NO_CANCEL);
+    result = GOptionPane::showConfirmDialog("This one allows Cancel (do that)", "I have a title", GOptionPane::CONFIRM_YES_NO_CANCEL);
     EXPECT_EQUAL(result, GOptionPane::CONFIRM_CANCEL);
-
-    std::string input = GOptionPane::showInputDialog("Enter boo in text field:");
-    EXPECT_EQUAL(input, "boo");
-    input = GOptionPane::showInputDialog("Enter boo in text field", "I have a title");
-    EXPECT_EQUAL(input, "boo");
-
-    Vector<std::string> choices;
-    choices += "a", "bb", "ccc", "dd";
-    std::string option = GOptionPane::showOptionDialog("Please pick choice bb", choices, "booyah", "ccc");
-    EXPECT_EQUAL(option, "bb");
 }
 
-PROVIDED_TEST("Gtable in window") {
+PROVIDED_TEST("GOptionPane input dialogs") {
+    std::string input = GOptionPane::showInputDialog("Enter b in text field:", "I have a title");
+    EXPECT_EQUAL(input, "b");
+    input = GOptionPane::showInputDialog("Enter Karel in text field:", "I have a title", "Karel");
+    EXPECT_EQUAL(input, "Karel");
+}
+
+PROVIDED_TEST("GOptionPane option dialogs") {
+    Vector<std::string> choices = {"Apple", "Banana", "Cherry", "Default"};
+    std::string option = GOptionPane::showOptionDialog("Please pick Banana", choices, "I have a title", "Default");
+    EXPECT_EQUAL(option, "Banana");
+}
+
+PROVIDED_TEST("GRadioButton to select from option group") {
     GWindow* gw = new GWindow;
-    gw->setTitle("GTable Test");
+    GButton* b = new GButton("Click me");
+    GLabel* label = new GLabel("Hello, world!");
+    label->setColor("#000000");
+    label->setBackground("#ffffff");
+    label->setFont("Helvetica-64-Bold");
+    gw->addToRegion(label, "CENTER");
+
+    gw->setTitle("Radio Button (close window to end test)");
+    GRadioButton* rb1 = new GRadioButton("Red", "color");
+    rb1->setActionListener([label](GEvent) { label->setBackground("#ff0000");});
+    GRadioButton* rb2 = new GRadioButton("Green", "color", true);
+    rb2->setActionListener([label](GEvent) { label->setBackground("#0000ff");});
+    GRadioButton* rb3 = new GRadioButton("Blue", "color");
+    rb3->setActionListener([label](GEvent) { label->setBackground("#00ff00");});
+    gw->addToRegion(rb1, "SOUTH");
+    gw->addToRegion(rb2, "SOUTH");
+    gw->addToRegion(rb3, "SOUTH");
+
+    // a second group of buttons
+    GRadioButton* rb4 = new GRadioButton("Black", "N", true);
+    rb4->setActionListener([label](GEvent) { label->setColor("#0");});
+    GRadioButton* rb5 = new GRadioButton("White", "N");
+    rb5->setActionListener([label](GEvent) { label->setColor("#ffffff");});
+    gw->addToRegion(rb4, "NORTH");
+    gw->addToRegion(rb5, "NORTH");
+
+    gw->setVisible(true);
+    while (gw->isVisible()) {}
+}
+
+
+static void border(GCanvas* img) {
+    int color = 0x0;
+    int w = img->getWidth();
+    int h = img->getHeight();
+    // top/bottom
+    for (int x = 0; x < w; x++) {
+        img->setRGB(x, 0, color);
+        img->setRGB(x, h-1, color);
+    }
+    // left/right
+    for (int y = 0; y < h; y++) {
+        img->setRGB(0, y, color);
+        img->setRGB(w-1, y, color);
+    }
+}
+
+PROVIDED_TEST("GCanvas with image") {
+    GWindow* gw = new GWindow;
+    gw->setSize(300, 300);
+    gw->setTitle("Testing GCanvas...");
+
+    GLabel* label = new GLabel("Label");
+    gw->addToRegion(label, "SOUTH");
+
+    label->setText("Display image Stanford S");
+    GCanvas* img = new GCanvas();
+    img->load("res/stanford.png");
+    gw->add(img, 10, 20);
+    pause(2000);
+
+    label->setText("Retrieve pixels via toGrid, compare to individual pixel retrieved one by one");
+    Grid<int> grid = img->toGrid();
+    for (int y = 0; y < grid.numRows(); y++) {
+        for (int x = 0; x < grid.numCols(); x++) {
+            EXPECT_EQUAL(img->getARGB(x, y), grid[y][x]);
+        }
+    }
+    label->setText("Replace image with pixel copy, should not change");
+    img->fromGrid(grid);
+    pause(1000);
+
+    label->setText("Resize, fill magenta");
+    img->resize(120, 120);
+    img->fill(0xff00ff);  // magenta
+    border(img);
+
+    label->setText("setRGB on inner pixels (one at a time, this is slow!)");
+    for (int y = 0; y < img->getHeight()/2; y++) {
+        for (int x = 0; x < img->getWidth()/2; x++) {
+            img->setRGB(x + img->getWidth()/4, y + img->getHeight()/4, 0xffcc33);
+        }
+    }
+    pause(500);
+
+    label->setText("Resize, fill red");
+    img->resize(150, 300);
+    img->fill(0xff0000);
+    pause(500);
+
+    label->setText("Use setGrid to change inner pixels (fast)");
+    grid = img->toGrid();
+
+    for (int y = 0; y < img->getHeight()/2; y++) {
+        for (int x = 0; x < img->getWidth()/2; x++) {
+            grid[y + img->getHeight()/4][x + img->getWidth()/4] = 0xffcc33;
+        }
+    }
+
+    img->setPixels(grid);
+    pause(1000);
+    label->setText("Done, close window to exit this test");
+    while (gw->isVisible()) {}
+}
+
+
+
+PROVIDED_TEST("GTable with editing controls") {
+    GWindow* gw = new GWindow;
+    gw->setTitle("Testing GTable (close window when finished)");
 
     GTable* table = new GTable(5, 3);
     table->select(0, 1);
     table->setTableListener([](GTableEvent tableEvent) {
-        std::cout << "cell updated: " << tableEvent.toString() << std::endl;
+        //std::cout << "cell updated: " << tableEvent.toString() << std::endl;
     });
     gw->addToRegion(table, "NORTH");
 
@@ -133,115 +244,5 @@ PROVIDED_TEST("Gtable in window") {
     gw->addToRegion(buttwidthrem, "SOUTH");
 
     gw->setVisible(true);
+    while (gw->isVisible()) {}
 }
-
-PROVIDED_TEST("Radio buttons") {
-    GWindow* gw = new GWindow;
-    gw->setTitle("Radio Button Test");
-    GRadioButton* rb1 = new GRadioButton("Red", "color");
-    GRadioButton* rb2 = new GRadioButton("Green", "color", true);
-    GRadioButton* rb3 = new GRadioButton("Blue", "color");
-    gw->addToRegion(rb1, "SOUTH");
-    gw->addToRegion(rb2, "SOUTH");
-    gw->addToRegion(rb3, "SOUTH");
-
-    // a second group of buttons
-    GRadioButton* rb4 = new GRadioButton("Black", "N", true);
-    GRadioButton* rb5 = new GRadioButton("White", "N");
-    gw->addToRegion(rb4, "NORTH");
-    gw->addToRegion(rb5, "NORTH");
-
-    gw->setVisible(true);
-}
-
-
-static void border(GCanvas* img) {
-    int color = 0x0;
-    int w = img->getWidth();
-    int h = img->getHeight();
-    // top/bottom
-    for (int x = 0; x < w; x++) {
-        img->setRGB(x, 0, color);
-        img->setRGB(x, h-1, color);
-    }
-    // left/right
-    for (int y = 0; y < h; y++) {
-        img->setRGB(0, y, color);
-        img->setRGB(w-1, y, color);
-    }
-}
-
-PROVIDED_TEST("Canvas with image") {
-    GWindow* gw = new GWindow;
-    gw->setSize(300, 300);
-    gw->setTitle("Canvas Test");
-
-    GButton* button1 = new GButton("Click Me 1");
-    gw->addToRegion(button1, "NORTH");
-    GButton* button2 = new GButton("Click Me 2");
-    gw->addToRegion(button2, "NORTH");
-
-    GLabel* label = new GLabel("this is a label");
-    gw->addToRegion(label, "SOUTH");
-
-    cout << "Show canvas with image of Stanford S" << endl;
-    GCanvas* img = new GCanvas();
-    img->load("res/stanford.png");
-    gw->add(img, 10, 20);
-    pause(2000);
-
-    cout << "Retrieve pixels via toGrid, compare to individual pixel retrieved one by one" << endl;
-    Grid<int> grid = img->toGrid();
-    for (int y = 0; y < grid.numRows(); y++) {
-        for (int x = 0; x < grid.numCols(); x++) {
-            EXPECT_EQUAL(img->getARGB(x, y), grid[y][x]);
-        }
-    }
-    cout << "Now replace image with its pixel copy, should not change" << endl;
-    img->fromGrid(grid);
-    pause(1000);
-
-    std::cout << "Will resize GCanvas to 100x50, fill with magenta" << std::endl;
-    img->fill(0xff00ff);  // magenta
-    img->resize(100, 50);
-    border(img);
-
-    std::cout << "Now setRGB on inner pixels (one at a time, this is slow!)" << std::endl;
-    for (int y = 0; y < img->getHeight()/2; y++) {
-        for (int x = 0; x < img->getWidth()/2; x++) {
-            img->setRGB(x + img->getWidth()/4, y + img->getHeight()/4, 0xffcc33);
-        }
-    }
-    std::cout << "Done setting RGB on GCanvas pixels." << std::endl;
-    pause(100);
-
-    std::cout << "Will resize GCanvas to 80x200, fill red" << std::endl;
-    img->resize(80, 200);
-    img->fill(0xff0000);
-    pause(300);
-
-    std::cout << "Now setGrid to change on inner pixels" << std::endl;
-    grid = img->toGrid();
-
-    for (int y = 0; y < img->getHeight()/2; y++) {
-        for (int x = 0; x < img->getWidth()/2; x++) {
-            grid[y + img->getHeight()/4][x + img->getWidth()/4] = 0xffcc33;
-        }
-    }
-
-    img->setPixels(grid);
-    pause(1000);
-
-    std::cout << "About to remove others" << std::endl;
-    gw->remove(label);
-    gw->remove(button1);
-    gw->remove(button2);
-    pause(300);
-
-    std::cout << "About to remove GCanvas." << std::endl;
-    gw->remove(img);
-    std::cout << "Test complete." << std::endl;
-    std::cout << std::endl;
-}
-
-
