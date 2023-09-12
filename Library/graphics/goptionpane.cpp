@@ -254,6 +254,18 @@ std::string GOptionPane::showOptionDialog(QWidget* parent,
         }
 
         int index = box.exec();
+        int i = 0, clicked = -1;
+        // on macOS exec doesn't return index of selected option, need to find manually
+        for (QAbstractButton* button : box.buttons()) {
+            if (box.clickedButton() == button) {
+                clicked = i;
+                break;
+            }
+            i++;
+        }
+        if (clicked >= 0 && clicked < options.size()) {
+            index = clicked;
+        }
         if (index == GOptionPane::InternalResult::INTERNAL_CLOSED_OPTION
                 || index < 0 || index >= options.size()
                 || (escapeButtonIndex >= 0 && index == escapeButtonIndex)) {
