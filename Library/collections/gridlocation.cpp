@@ -109,6 +109,13 @@ GridLocationRange::GridLocationRange(const GridLocation& startLoc, const GridLoc
     // empty
 }
 
+GridLocationRange::GridLocationRange()
+        : _start(0, 0),
+          _end(0, 0),
+          _isRowMajor(true) {
+    // empty
+}
+
 GridLocationRange::GridLocationRangeIterator GridLocationRange::begin() const {
     return GridLocationRangeIterator(this, /* end */ false);
 }
@@ -146,6 +153,18 @@ bool GridLocationRange::isEmpty() const {
 
 bool GridLocationRange::isRowMajor() const {
     return _isRowMajor;
+}
+
+int GridLocationRange::numRows() const {
+    return isEmpty() ? 0 : _end.row - _start.row + 1;
+}
+
+int GridLocationRange::numCols() const {
+    return isEmpty() ? 0 : _end.col - _start.col + 1;
+}
+
+int GridLocationRange::size() const {
+    return numRows()*numCols();
 }
 
 int GridLocationRange::startCol() const {
