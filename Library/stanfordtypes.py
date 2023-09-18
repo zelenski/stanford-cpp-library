@@ -1,73 +1,10 @@
-# ############################################################################
-# #
-# # Copyright (C) 2016 The Qt Company Ltd.
-# # Contact: https://www.qt.io/licensing/
-# #
-# # This file is part of Qt Creator.
-# #
-# # Commercial License Usage
-# # Licensees holding valid commercial Qt licenses may use this file in
-# # accordance with the commercial license agreement provided with the
-# # Software or, alternatively, in accordance with the terms contained in
-# # a written agreement between you and The Qt Company. For licensing terms
-# # and conditions see https://www.qt.io/terms-conditions. For further
-# # information use the contact form at https://www.qt.io/contact-us.
-# #
-# # GNU General Public License Usage
-# # Alternatively, this file may be used under the terms of the GNU
-# # General Public License version 3 as published by the Free Software
-# # Foundation with exceptions as appearing in the file LICENSE.GPL3-EXCEPT
-# # included in the packaging of this file. Please review the following
-# # information to ensure the GNU General Public License requirements will
-# # be met: https://www.gnu.org/licenses/gpl-3.0.html.
-# #
-# ############################################################################
-
-# # This is a place to add your own dumpers for testing purposes.
-# # Any contents here will be picked up by GDB, LLDB, and CDB based
-# # debugging in Qt Creator automatically.
-
-# # NOTE: This file will get overwritten when updating Qt Creator.
-# #
-# # To add dumpers that don't get overwritten, copy this file here
-# # to a safe location outside the Qt Creator installation and
-# # make this location known to Qt Creator using the Debugger >
-# # Locals & Expressions > Extra Debugging Helpers setting.
-
-# # Example to display a simple type
-# # template<typename U, typename V> struct MapNode
-# # {
-# #     U key;
-# #     V data;
-# # }
-# #
-# # def qdump__MapNode(d, value):
-# #    d.putValue("This is the value column contents")
-# #    d.putNumChild(2)
-# #    if d.isExpanded():
-# #        with Children(d):
-# #            # Compact simple case.
-# #            d.putSubItem("key", value["key"])
-# #            # Same effect, with more customization possibilities.
-# #            with SubItem(d, "data")
-# #                d.putItem("data", value["data"])
-
-# # Check http://doc.qt.io/qtcreator/creator-debugging-helpers.html
-# # for more details or look at qttypes.py, stdtypes.py, boosttypes.py
-# # for more complex examples.
-
-import platform
-import dumper
-from dumper import Children, SubItem
-
-# ######################## Your code below #######################
-
-# @author Jeremy Barenholtz 2020
-# @author Julie Zelenski, last update Fall 2022 (std::string on M1 mac)
+# @author Jeremy Barenholtz 2020, created
+# @author Julie Zelenski, updated 2020-2023
 #
 # Debugging helpers for the CS106B classes (Vector, Stack, Set, Map, etc.)
 # Some code adopted from stdtypes.py distributed with Qt Creator
-
+#import platform
+from dumper import Children, SubItem
 from functools import partial
 
 #############################
@@ -82,11 +19,15 @@ from functools import partial
 # desired class, and look at the related add element function here; you should
 # be able to see how the code corresponds to what is displayed.
 
+def putPairItem(d, val1, val2, name1, name2):
+    d.putSubItem(f"- {name1}", val1)
+    d.putSubItem(f"  {name2}", val2)
+
 
 def add_map_elem(d, i, key, value):
     """Adds an element of a map to the debugger display."""
 
-    d.putPairItem(None, (key, value), 'key', 'value')
+    putPairItem(d, key, value, 'key', 'value')
 
 
 def add_set_elem(d, i, key, value):
@@ -109,17 +50,13 @@ def add_pq_elem(d, i, size, raw):
 
     priority = raw['priority']
     value = raw['value']
-    d.putPairItem(None, (value, priority), 'value', 'priority')
+    putPairItem(d, value, priority, 'value', 'priority')
 
 
 def add_stack_elem(d, i, size, value):
     """Adds an element of a stack to the debugger display."""
 
-    if size == 1:
-        name = 'bottom/top'
-    elif i == 0:
-        name = 'bottom'
-    elif i == size - 1:
+    if i == size - 1:
         name = 'top'
     else:
         name = '-'
@@ -142,12 +79,12 @@ def add_queue_elem(d, i, size, value):
     d.putSubItem(name, value)
 
 
-# This function takes in an extra `cols` parameter. Look at `qdump__Grid` for
+# This function takes in an extra `ncols` parameter. Look at `qdump__Grid` for
 # an example of how you can add parameters to these functions.
-def add_grid_elem(d, i, size, value, cols):
+def add_grid_elem(d, i, size, value, ncols):
     """Adds an element of a grid to the debugger display."""
 
-    name = '[%d, %d]' % (i // cols, i % cols)
+    name = f"[{i//ncols}][{i%ncols}]"
     d.putSubItem(name, value)
 
 
@@ -246,7 +183,38 @@ def qdump__Grid(d, value):
 
     # Grab the internal data from the Grid > Vector > std::vector
     value = value['_elements']['_elements']
-    vector_or_deque_helper(d, value, elem_fn=partial(add_grid_elem, cols=cols))
+    vector_or_deque_helper(d, value, elem_fn=partial(add_grid_elem, ncols=cols))
+
+
+def location_str(value):
+    row = value['row'].integer()
+    col = value['col'].integer()
+    return f"r{row}c{col}"
+
+
+def put_all_fields(d, value):
+    d.putExpandable()  # Show the rest of the fields as usual
+    if d.isExpanded():
+        with Children(d):
+            d.putFields(value)
+
+
+def qdump__GridLocation(d, value):
+    """Display Stanford GridLocation on debugger."""
+
+    makeExpandable = False
+    d.putValue(location_str(value))
+    if makeExpandable: put_all_fields(d, value)
+
+
+def qdump__GridLocationRange(d, value):
+    """Display Stanford GridLocationRange on debugger."""
+
+    makeExpandable = False
+    start = location_str(value['_start'])
+    end = location_str(value['_end'])
+    d.putValue(f"{start} .. {end}")
+    if makeExpandable: put_all_fields(d, value)
 
 
 def qdump__HashMap(d, value):
@@ -263,6 +231,13 @@ def qdump__HashSet(d, value):
     # Grab the internal map from HashMap > std::unordered_map
     value = value['_map']['_elements']
     unordered_map_helper(d, value, elem_fn=add_set_elem)
+
+
+def qdump__Bit(d, value):
+    """Display Huffman Bit on debugger."""
+    bit = value['_value'].integer()
+    bitstr = "1" if bit else "0"
+    d.putValue(bitstr)
 
 
 ####################
@@ -282,7 +257,8 @@ def vector_or_deque_helper(d, value, elem_fn):
 
 
 def vector_helper(d, value, elem_fn):
-    """Dumps the internal vector for Vector, Stack, PriorityQueue, and Grid."""
+    """Dumps the internal vector for Vector, Stack, PriorityQueue, and Grid.
+       Adapted from qdumpHelper__std__vector__libstdcxx,  qdumpHelper__std__vector__libcxx"""
 
     inner_type = value.type[0]
     is_bool = inner_type.name == 'bool'
@@ -322,25 +298,23 @@ def vector_helper(d, value, elem_fn):
     d.putItemCount(size)
     if d.isExpanded():
         if is_bool:
-            if d.isExpanded():
-                with dumper.Children(d, size, maxNumChild=10000,
-                        childType=inner_type):
-                    for i in d.childRange():
-                        q = start + int(i / 8)
-                        with dumper.SubItem(d, i):
-                            # std::vector<bool> stores elements as special
-                            # bit-array, so we read each bit and convert from
-                            # {0, 1} -> {false, true}
-                            val = (int(d.extractPointer(q)) >> (i % 8)) & 1
-                            d.putValue(val != 0)
+            with Children(d, size, maxNumChild=10000,
+                    childType=inner_type):
+                for i in d.childRange():
+                    q = start + int(i / 8)
+                    with SubItem(d, i):
+                        # std::vector<bool> stores elements as special
+                        # bit-array, so we read each bit and convert from
+                        # {0, 1} -> {false, true}
+                        val = (int(d.extractPointer(q)) >> (i % 8)) & 1
+                        d.putValue(val != 0)
         else:
-            max_num_child = 1000 * 1000
             d.checkIntType(start)
             d.checkIntType(size)
             addr_base = start
             inner_size = inner_type.size()
             d.putNumChild(size)
-            with dumper.Children(d, size, inner_type, None, max_num_child,
+            with Children(d, size, inner_type, None, maxNumChild=10000,
                       addrBase=addr_base, addrStep=inner_size):
                 for i in d.childRange():
                     value = d.createValue(addr_base + i * inner_size,
@@ -359,55 +333,57 @@ def deque_helper(d, value, elem_fn):
 
 
 def deque_helper_libcpp(d, value, elem_fn):
-    """Dumps the deque for containers of bools or Queue for libc++."""
+    """Dumps the deque for containers of bools or Queue for libc++.
+       Adapted from qdumpHelper__std__deque__libcxx in stdtypes.py"""
 
-    inner_type = value.type[0]
-    inner_size = inner_type.size()
     mptr, mfirst, mbegin, mend, start, size = value.split("pppptt")
     d.check(0 <= size and size <= 1000 * 1000 * 1000)
     d.putItemCount(size)
     if d.isExpanded():
-        ptr_size = d.ptrSize()
-        buf_size = (4096 // inner_size) if inner_size < 256 else 16
-        with dumper.Children(d, size, maxNumChild=2000, childType=inner_type):
+        innerType = value.type[0]
+        innerSize = innerType.size()
+        ptrSize = d.ptrSize()
+        bufsize = (4096 // innerSize) if innerSize < 256 else 16
+        with Children(d, size, maxNumChild=2000, childType=innerType):
             for i in d.childRange():
-                k, j = divmod(start + i, buf_size)
-                base = d.extractPointer(mfirst + k * ptr_size)
-                value = d.createValue(base + j * inner_size, inner_type)
+                k, j = divmod(start + i, bufsize)
+                base = d.extractPointer(mfirst + k * ptrSize)
+                value = d.createValue(base + j * innerSize, innerType)
                 elem_fn(d, i, size, value)
 
 
 def deque_helper_libstd(d, value, elem_fn):
-    """Dumps the deque for containers of bools or Queue for libstdc++."""
+    """Dumps the deque for containers of bools or Queue for libstdc++.
+        Adapted from qdumpHelper__std__deque__libstdcxx in stdtypes.py"""
 
-    inner_type = value.type[0]
-    inner_size = inner_type.size()
-    buf_size = 1
-    if inner_size < 512:
-        buf_size = 512 // inner_size
+    innerType = value.type[0]
+    innerSize = innerType.size()
+    bufsize = 1
+    if innerSize < 512:
+        bufsize = 512 // innerSize
 
-    (mptr, msize, start_cur, start_first, start_last, start_node, finish_cur,
-     finish_first, finish_last, finish_node) = value.split("pppppppppp")
+    (mapptr, mapsize, startCur, startFirst, startLast, startNode,
+     finishCur, finishFirst, finishLast, finishNode) = value.split("pppppppppp")
 
-    size = buf_size * ((finish_node - start_node) // d.ptrSize() - 1)
-    size += (finish_cur - finish_first) // inner_size
-    size += (start_last - start_cur) // inner_size
+    size = bufsize * ((finishNode - startNode) // d.ptrSize() - 1)
+    size += (finishCur - finishFirst) // innerSize
+    size += (startLast - startCur) // innerSize
 
     d.check(0 <= size and size <= 1000 * 1000 * 1000)
     d.putItemCount(size)
     if d.isExpanded():
-        with dumper.Children(d, size, maxNumChild=2000, childType=inner_type):
-            pcur = start_cur
-            plast = start_last
-            pnode = start_node
+        with Children(d, size, maxNumChild=2000, childType=innerType):
+            pcur = startCur
+            plast = startLast
+            pnode = startNode
             for i in d.childRange():
-                value = d.createValue(pcur, inner_type)
+                value = d.createValue(pcur, innerType)
                 elem_fn(d, i, size, value)
-                pcur += inner_size
+                pcur += innerSize
                 if pcur == plast:
                     newnode = pnode + d.ptrSize()
                     pfirst = d.extractPointer(newnode)
-                    plast = pfirst + buf_size * d.ptrSize()
+                    plast = pfirst + bufsize * d.ptrSize()
                     pcur = pfirst
                     pnode = newnode
 
@@ -422,31 +398,33 @@ def unordered_map_helper(d, value, elem_fn):
 
 
 def unordered_map_helper_libcpp(d, value, elem_fn):
-    """Dumps the unordered_map for HashSet and HashMap for libc++."""
+    """Dumps the unordered_map for HashSet and HashMap for libc++.
+       Adapted from qdump__std____1__unordered_map in libcpp_stdtypes.py"""
 
     (size, _) = value["__table_"]["__p2_"].split("pp")
     d.putItemCount(size)
 
-    key_type = value.type[0]
-    value_type = value.type[1]
-    pair_type = value.type[4][0]
+    keyType = value.type[0]
+    valueType = value.type[1]
+    pairType = value.type[4][0]
 
     if d.isExpanded():
         curr = value["__table_"]["__p1_"].split("pp")[0]
 
         def traverse_list(node):
             while node:
-                (next_, _, pad, pair) = d.split("pp@{%s}" % (pair_type.name), node)
-                yield pair.split("{%s}@{%s}" % (key_type.name, value_type.name))[::2]
+                (next_, _, pad, pair) = d.split("pp@{%s}" % (pairType.name), node)
+                yield pair.split("{%s}@{%s}" % (keyType.name, valueType.name))[::2]
                 node = next_
 
-        with dumper.Children(d, size, childType=value.type[0], maxNumChild=1000):
+        with Children(d, size, childType=value.type[0], maxNumChild=1000):
             for (i, pair) in zip(d.childRange(), traverse_list(curr)):
                 elem_fn(d, i, pair[0], pair[1])
 
 
 def unordered_map_helper_libstd(d, value, elem_fn):
-    """Dumps the unordered_map for HashSet and HashMap for libstdc++."""
+    """Dumps the unordered_map for HashSet and HashMap for libstdc++.
+       Adapted from qdump__std__unordered_map in stdtypes.py"""
 
     try:
         # gcc ~= 4.7
@@ -454,7 +432,7 @@ def unordered_map_helper_libstd(d, value, elem_fn):
         start = value["_M_before_begin"]["_M_nxt"]
     except:
         try:
-            # libc++ (Mac?)
+            # libc++ (Mac)
             size = value["_M_h"]["_M_element_count"].integer()
             start = value["_M_h"]["_M_bbegin"]["_M_node"]["_M_nxt"]
         except:
@@ -474,15 +452,21 @@ def unordered_map_helper_libstd(d, value, elem_fn):
 
     d.putItemCount(size)
     if d.isExpanded():
-        key_type = value.type[0]
-        value_type = value.type[1]
-        type_code = 'p@{%s}@{%s}' % (key_type.name, value_type.name)
-        p = start.pointer()
+        keyType = value.type[0]
+        valueType = value.type[1]
+        if d.isMsvcTarget():
+            typeCode = 'pp@{%s}@{%s}' % (keyType.name, valueType.name)
+            p = d.extractPointer(start)
+        else:
+            typeCode = 'p@{%s}@{%s}' % (keyType.name, valueType.name)
+            p = start.pointer()
         with Children(d, size):
             for i in d.childRange():
-                p, pad, key, pad, val = d.split(type_code, p)
+                if d.isMsvcTarget():
+                    p, _, _, key, _, val = d.split(typeCode, p)
+                else:
+                    p, _, key, _, val = d.split(typeCode, p)
                 elem_fn(d, i, key, val)
-
 
 def map_helper(d, value, elem_fn):
     """Wrapper for dumping maps."""
@@ -494,13 +478,14 @@ def map_helper(d, value, elem_fn):
 
 
 def map_helper_libcpp(d, value, elem_fn):
-    """Dumps the internal map for Set or Map for libc++."""
+    """Dumps the internal map for Set or Map for libc++.
+       Adapted from qdump__std____1__map in libcpp_stdtypes.py"""
 
     try:
         (proxy, head, size) = value.split("ppp")
         d.check(0 <= size and size <= 100 * 1000 * 1000)
 
-    # JEB sometimes there is extra data at the front (?)
+    # Sometimes there is extra data at the front. Don't know why at the moment.
     except RuntimeError:
         (junk, proxy, head, size) = value.split("pppp")
         d.check(0 <= size and size <= 100 * 1000 * 1000)
@@ -508,51 +493,48 @@ def map_helper_libcpp(d, value, elem_fn):
     d.putItemCount(size)
 
     if d.isExpanded():
-        key_type = value.type[0]
-        value_type = value.type[1]
-        pair_type = value.type[3][0]
+        keyType = value.type[0]
+        valueType = value.type[1]
+        pairType = value.type[3][0]
 
         def in_order_traversal(node):
-            (left, right, parent,
-             color, pad, pair) = d.split("pppB@{%s}" % (pair_type.name), node)
+            (left, right, parent, color, pad, pair) = d.split("pppB@{%s}" % (pairType.name), node)
 
             if left:
                 for res in in_order_traversal(left):
                     yield res
 
-            yield pair.split("{%s}@{%s}" %
-                             (key_type.name, value_type.name))[::2]
+            yield pair.split("{%s}@{%s}" % (keyType.name, valueType.name))[::2]
 
             if right:
                 for res in in_order_traversal(right):
                     yield res
 
-        with dumper.Children(d, size, maxNumChild=1000):
+        with Children(d, size, maxNumChild=1000):
             for (i, pair) in zip(d.childRange(), in_order_traversal(head)):
                 elem_fn(d, i, pair[0], pair[1])
 
 
 def map_helper_libstd(d, value, elem_fn):
-    """Dumps the internal map for Set or Map for libstdc++."""
+    """Dumps the internal map for Set or Map for libstdc++.
+       Adapted from qdump__std__map in stdtypes.py"""
 
-    # stuff is actually (color, pad) with 'I@', but we can save cycles
+    # stuff is actually (color, pad) with 'I@', but we can save cycles/
     (compare, stuff, parent, left, right) = value.split('ppppp')
     size = value["_M_t"]["_M_impl"]["_M_node_count"].integer()
     d.check(0 <= size and size <= 100 * 1000 * 1000)
     d.putItemCount(size)
 
     if d.isExpanded():
-        key_type = value.type[0]
-        value_type = value.type[1]
+        keyType = value.type[0]
+        valueType = value.type[1]
         with Children(d, size, maxNumChild=1000):
             node = value["_M_t"]["_M_impl"]["_M_header"]["_M_left"]
-            node_size = node.dereference().type.size()
-            type_code = "@{%s}@{%s}" % (key_type.name, value_type.name)
+            nodeSize = node.dereference().type.size()
+            typeCode = "@{%s}@{%s}" % (keyType.name, valueType.name)
             for i in d.childRange():
-                (pad1, key, pad2, value) = d.split(type_code, node.pointer()
-                                                              + node_size)
+                (pad1, key, pad2, value) = d.split(typeCode, node.pointer() + nodeSize)
                 elem_fn(d, i, key, value)
-
                 if node["_M_right"].pointer() == 0:
                     parent = node["_M_parent"]
                     while True:
@@ -568,33 +550,7 @@ def map_helper_libstd(d, value, elem_fn):
                         if node["_M_left"].pointer() == 0:
                             break
                         node = node["_M_left"]
-
-
 def is_lib_cpp(value):
     """Returns whether the class is from libc++."""
     return value.type.name.startswith('std::__1')
-
-
-# 3/8/2022
-# A quick hack courtesy of Julie Zelenski, Chris Gregg, Neel Kishnani, and Jonathan Kula
-# clang on M1 hardware is generating std::string with different layout than
-# it did on intel.
-# See bug report https://bugreports.qt.io/browse/QTCREATORBUG-26175
-# layout on M1 = 24 bytes
-#    internal [23 byte chars][length byte]
-#    external [8 byte pointer to char data][length short][14 other bytes][0x80]
-# see here for data types: https://doc.qt.io/qtcreator/creator-debugging-helpers.html
-
-if platform.machine() == 'arm64':
-    def qdump__std____1__string(d, value):
-        all = value.split('pHbbbbbbbbbbbbbb')
-        size = all[-1]
-        if size == -128:  # 0x80
-            data = all[0]
-            size = all[1]
-        else:
-            data = value.address()
-
-        d.putCharArrayHelper(data, size, d.charType(), d.currentItemFormat())
-        d.putType("std::string")
 
