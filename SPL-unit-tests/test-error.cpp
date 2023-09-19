@@ -4,7 +4,6 @@
 
 
 #include "error.h"
-#include "exceptions.h"
 #include "vector.h"
 #include <csignal>
 #include <iostream>

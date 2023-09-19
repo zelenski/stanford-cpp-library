@@ -4,9 +4,7 @@
 
 
 #include "map.h"
-#include "hashcode.h"
 #include "hashset.h"
-#include "queue.h"
 #include "set.h"
 #include "common.h"
 #include "SimpleTest.h"

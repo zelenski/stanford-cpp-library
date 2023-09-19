@@ -7,12 +7,8 @@
 // Map, PriorityQueue, Queue, Set, Stack, Vector
 
 
-#include "basicgraph.h"
 #include "deque.h"
-#include "graph.h"
 #include "grid.h"
-#include "hashcode.h"
-#include "hashmap.h"
 #include "hashset.h"
 #include "lexicon.h"
 #include "linkedlist.h"
@@ -22,7 +18,6 @@
 #include "set.h"
 #include "stack.h"
 #include "vector.h"
-#include "common.h"
 #include "SimpleTest.h"
 #include <iostream>
 #include <sstream>

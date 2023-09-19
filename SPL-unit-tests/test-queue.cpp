@@ -4,7 +4,6 @@
 
 
 #include "queue.h"
-#include "hashcode.h"
 #include "hashset.h"
 #include "common.h"
 #include "SimpleTest.h"

@@ -2,13 +2,10 @@
 #include "console.h"
 #include "simpio.h"
 #include "error.h"
-//#include <QDebug>
 #include "vector.h"
 #include "set.h"
-#include "filelib.h"
 #include "strlib.h"
 #include "gthread.h"
-#include "exceptions.h"
 #include "SimpleTest.h"
 
 using namespace std;
@@ -22,7 +19,7 @@ struct  {
     std::function<void()> fn;
 } faults[] = {
     {"exit normally",   ([] { cout << "Goodbye!" << endl; } ) },
-    {"infinite loop",   ([] { for (int i = 0; ; i++); } ) },
+    {"infinite loop",   ([] { while (true) ; } ) },
     {"segv",            ([] { *gPtr = 106; } ) },
     {"sigabort",        ([] { abort(); } ) },
     {"sigfpe",          ([] { gZero = 106/gZero; } ) },
@@ -48,7 +45,7 @@ struct  {
 };
 
 
-PROVIDED_TEST("Create fatal exception under PROVIDED_TEST, (HEADS UP: test expected to fail, possible crash")
+MANUAL_TEST("Create fatal exception under PROVIDED_TEST, (HEADS UP: test expected to fail, possible crash")
 {
   //  exceptions::setTopLevelExceptionHandlerEnabled(false);
    // exceptions::interruptIfDebug();

@@ -2,7 +2,6 @@
  * Test file for verifying the Stanford C++ lib collection functionality.
  */
 
-#include "hashcode.h"
 #include "hashset.h"
 #include "vector.h"
 #include "common.h"

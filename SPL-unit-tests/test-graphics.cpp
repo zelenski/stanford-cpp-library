@@ -6,14 +6,9 @@
 #include "filelib.h"
 #include "gcanvas.h"
 #include "gevent.h"
-#include "gfilechooser.h"
-#include "ginteractors.h"
-#include "gobjects.h"
 #include "goptionpane.h"
 #include "gtable.h"
-#include "gtypes.h"
 #include "gwindow.h"
-#include "simpio.h"
 
 #include <csignal>
 #include <fstream>
@@ -23,13 +18,13 @@
 #include "SimpleTest.h"
 using namespace std;
 
-PROVIDED_TEST("chooseFilenameDialog") {
+MANUAL_TEST("chooseFilenameDialog") {
     std::cout << "Opening file chooser in directory \"" << getCurrentDirectory() << "\"" << std::endl;
     std::string filename = chooseFilenameDialog("booyahtitle", "", "*.cpp");
     std::cout << "You selected file:  \"" << filename << "\"" << std::endl;
 }
 
-PROVIDED_TEST("GOptionPane messages, alerts, and confirm dialogs") {
+MANUAL_TEST("GOptionPane messages, alerts, and confirm dialogs") {
     GOptionPane::showMessageDialog("Just saying hi");
     GOptionPane::showMessageDialog("This would be an error alert", "Oh no", GOptionPane::MESSAGE_ERROR);
     GOptionPane::showMessageDialog("Testing special chars [*+*&}{] && || !)@(*&#)(&^%!{ \" \" \" \"}) C:\\Program Files\\Test ;,;:\", ';\"\\//\\// ( ) test 1 2 3 $a $b %a %b %1 %2 http://foo.com/! end");
@@ -42,20 +37,20 @@ PROVIDED_TEST("GOptionPane messages, alerts, and confirm dialogs") {
     EXPECT_EQUAL(result, GOptionPane::CONFIRM_CANCEL);
 }
 
-PROVIDED_TEST("GOptionPane input dialogs") {
+MANUAL_TEST("GOptionPane input dialogs") {
     std::string input = GOptionPane::showInputDialog("Enter b in text field:", "I have a title");
     EXPECT_EQUAL(input, "b");
     input = GOptionPane::showInputDialog("Enter Karel in text field:", "I have a title", "Karel");
     EXPECT_EQUAL(input, "Karel");
 }
 
-PROVIDED_TEST("GOptionPane option dialogs") {
+MANUAL_TEST("GOptionPane option dialogs") {
     Vector<std::string> choices = {"Apple", "Banana", "Cherry", "Default"};
     std::string option = GOptionPane::showOptionDialog("Please pick Banana", choices, "I have a title", "Default");
     EXPECT_EQUAL(option, "Banana");
 }
 
-PROVIDED_TEST("GRadioButton to select from option group") {
+MANUAL_TEST("GRadioButton to select from option group") {
     GWindow* gw = new GWindow;
     GButton* b = new GButton("Click me");
     GLabel* label = new GLabel("Hello, world!");
@@ -104,10 +99,11 @@ static void border(GCanvas* img) {
     }
 }
 
-PROVIDED_TEST("GCanvas with image") {
+MANUAL_TEST("GCanvas with image") {
     GWindow* gw = new GWindow;
     gw->setSize(300, 300);
     gw->setTitle("Testing GCanvas...");
+    gw->setCloseOperation(GWindow::CLOSE_DO_NOTHING); // disallow close while test is running
 
     GLabel* label = new GLabel("Label");
     gw->addToRegion(label, "SOUTH");
@@ -158,13 +154,12 @@ PROVIDED_TEST("GCanvas with image") {
 
     img->setPixels(grid);
     pause(1000);
+    gw->setCloseOperation(GWindow::CLOSE_DISPOSE);
     label->setText("Done, close window to exit this test");
     while (gw->isVisible()) {}
 }
 
-
-
-PROVIDED_TEST("GTable with editing controls") {
+MANUAL_TEST("GTable with editing controls") {
     GWindow* gw = new GWindow;
     gw->setTitle("Testing GTable (close window when finished)");
 

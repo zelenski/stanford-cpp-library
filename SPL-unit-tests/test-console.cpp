@@ -1,20 +1,20 @@
 
 #include "consoletext.h"
-#include "error.h"
 #include "simpio.h"
-#include "strlib.h"
 #include <iostream>
 #include <string>
+#include "gconsolewindow.h"
 #include "SimpleTest.h"
 
 using namespace std;
 
-PROVIDED_TEST("console animation") {
+MANUAL_TEST("console animation") {
     for (int i = 0; i < 10; i++) {
         cout << "Frame #" << i << endl;
         pause(100);
         clearConsole();
     }
+    getConsoleWindow()->requestFocus();
     getLine("animation complete, RETURN to continue");
     setConsoleClearEnabled(false);
     for (int i = 0; i < 10; i++) {
@@ -32,7 +32,7 @@ PROVIDED_TEST("console animation") {
     getLine("animation 3 complete (w/ clear), RETURN to continue");
 }
 
-PROVIDED_TEST("console mixed cout/cerr") {
+MANUAL_TEST("console mixed cout/cerr") {
     cerr << "This message comes from cerr" << endl;
     cout << "Another one from cout!" << endl;
     cerr << "This message ALSO comes from cerr" << endl;
@@ -59,5 +59,3 @@ void outputColorTest() {
     cout << "black line" << endl;
     cout << endl;
 }
-
-

@@ -4,10 +4,8 @@
 
 
 #include "priorityqueue.h"
-#include "hashcode.h"
 #include "hashset.h"
 #include "queue.h"
-#include "common.h"
 #include "SimpleTest.h"
 #include <initializer_list>
 #include <iostream>

@@ -2,7 +2,6 @@
  * Test file for verifying the Stanford C++ lib system functionality.
  */
 
-#include "common.h"
 #include "SimpleTest.h"
 #include "filelib.h"
 #include "strlib.h"
@@ -91,5 +90,7 @@ PROVIDED_TEST("Test filelib read/write line endings") {
             cout << "This platform CANNOT read line endings: " << f << endl;
         }
     }
+    deleteFile("output");
+    EXPECT(!fileExists("output"));
 }
 

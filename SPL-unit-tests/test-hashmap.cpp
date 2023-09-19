@@ -4,12 +4,9 @@
 
 
 #include "hashmap.h"
-#include "hashcode.h"
-#include "hashset.h"
 #include "queue.h"
 #include "common.h"
 #include "SimpleTest.h"
-#include "strlib.h"
 #include <initializer_list>
 #include <iostream>
 #include <sstream>

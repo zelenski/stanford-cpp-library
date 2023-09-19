@@ -2,11 +2,8 @@
  * Test file for verifying the Stanford C++ lib collection functionality.
  */
 
-
-#include "hashcode.h"
 #include "hashset.h"
 #include "map.h"
-#include "queue.h"
 #include "common.h"
 #include "SimpleTest.h"
 #include <initializer_list>

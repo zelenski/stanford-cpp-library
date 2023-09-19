@@ -2,7 +2,6 @@
  * Test file for verifying the Stanford C++ lib system functionality.
  */
 
-#include "common.h"
 #include "SimpleTest.h"
 #include "simpio.h"
 #include "ioutils.h"
