@@ -3,7 +3,6 @@
 #
 # Debugging helpers for the CS106B classes (Vector, Stack, Set, Map, etc.)
 # Some code adopted from stdtypes.py distributed with Qt Creator
-#import platform
 from dumper import Children, SubItem
 from functools import partial
 
@@ -19,15 +18,10 @@ from functools import partial
 # desired class, and look at the related add element function here; you should
 # be able to see how the code corresponds to what is displayed.
 
-def putPairItem(d, val1, val2, name1, name2):
-    d.putSubItem(f"- {name1}", val1)
-    d.putSubItem(f"  {name2}", val2)
-
-
 def add_map_elem(d, i, key, value):
     """Adds an element of a map to the debugger display."""
 
-    putPairItem(d, key, value, 'key', 'value')
+    putPairItem(d, i, key, value, 'key', 'value', compact=True)
 
 
 def add_set_elem(d, i, key, value):
@@ -45,12 +39,12 @@ def add_indexed_elem(d, i, size, value):
     d.putSubItem(i, value)
 
 
-def add_pq_elem(d, i, size, raw):
+def add_pq_elem(d, i, size, pq_entry):  # pq_entry struct
     """Adds an element of a priority queue to the debugger display."""
 
-    priority = raw['priority']
-    value = raw['value']
-    putPairItem(d, value, priority, 'value', 'priority')
+    priority = pq_entry['priority']
+    value = pq_entry['value']
+    putPairItem(d, i, value, priority, 'value', 'priority', compact=False)
 
 
 def add_stack_elem(d, i, size, value):
@@ -87,6 +81,41 @@ def add_grid_elem(d, i, size, value, ncols):
     name = f"[{i//ncols}][{i%ncols}]"
     d.putSubItem(name, value)
 
+
+# The existing Dumper.putPairItem is somewhat broken, we replace with our own
+# version that works correctly for our paired collections (Map/HashMap/PriorityQueue)
+# The "compact" form uses val1 as top-level summary, makes val2 a single child of val1
+# non-compact has blank summary, val1 & val2 are both children of top-level
+# only attempts compact if val1 has simple display. Mostly this would translate to having
+# no children (and thus not needed expansion) but that info is hard to come by in a reliable
+# way. The code below accepts primitive types and makes special case for other types
+# know to have simple display (GridLocation/GridLocationRange and std::string)
+
+basic_types = ['std__basic_string', 'std____1__basic_string', 'std____cxx11__basic_string']
+STR_TYPES = basic_types + [s.replace('basic_', '') for s in basic_types]
+
+def is_std_string(d, type):
+    nsStrippedType = d.stripNamespaceFromType(type.name).replace('::', '__')
+    return nsStrippedType in STR_TYPES
+
+def has_simple_display(d, type):
+    return type.isSimpleType() or type.name in ['GridLocation', 'GridLocationRange'] or is_std_string(d, type)
+
+def putPairItem(d, i, val1, val2, name1, name2, compact):
+    compact = compact and has_simple_display(d, val1.type)
+    with SubItem(d, i):
+        d.putExpandable()
+        if d.isExpanded():
+            with Children(d):
+                if not compact: d.putSubItem(f"{name1}", val1)
+                d.putSubItem(f"{name2}", val2)
+        if compact:
+            d.putField('key', name1)
+            d.putItem(val1)
+        else:
+            d.putField('key', '...')
+            d.putNoType()
+            d.putEmptyValue()
 
 #####################################
 # Stanford Library Dumper Functions #
@@ -298,7 +327,7 @@ def vector_helper(d, value, elem_fn):
     d.putItemCount(size)
     if d.isExpanded():
         if is_bool:
-            with Children(d, size, maxNumChild=10000,
+            with Children(d, size, maxNumChild=1000,
                     childType=inner_type):
                 for i in d.childRange():
                     q = start + int(i / 8)
@@ -314,7 +343,7 @@ def vector_helper(d, value, elem_fn):
             addr_base = start
             inner_size = inner_type.size()
             d.putNumChild(size)
-            with Children(d, size, inner_type, None, maxNumChild=10000,
+            with Children(d, size, inner_type, None, maxNumChild=1000,
                       addrBase=addr_base, addrStep=inner_size):
                 for i in d.childRange():
                     value = d.createValue(addr_base + i * inner_size,
@@ -344,7 +373,7 @@ def deque_helper_libcpp(d, value, elem_fn):
         innerSize = innerType.size()
         ptrSize = d.ptrSize()
         bufsize = (4096 // innerSize) if innerSize < 256 else 16
-        with Children(d, size, maxNumChild=2000, childType=innerType):
+        with Children(d, size, maxNumChild=1000, childType=innerType):
             for i in d.childRange():
                 k, j = divmod(start + i, bufsize)
                 base = d.extractPointer(mfirst + k * ptrSize)
@@ -372,7 +401,7 @@ def deque_helper_libstd(d, value, elem_fn):
     d.check(0 <= size and size <= 1000 * 1000 * 1000)
     d.putItemCount(size)
     if d.isExpanded():
-        with Children(d, size, maxNumChild=2000, childType=innerType):
+        with Children(d, size, maxNumChild=1000, childType=innerType):
             pcur = startCur
             plast = startLast
             pnode = startNode
@@ -417,7 +446,7 @@ def unordered_map_helper_libcpp(d, value, elem_fn):
                 yield pair.split("{%s}@{%s}" % (keyType.name, valueType.name))[::2]
                 node = next_
 
-        with Children(d, size, childType=value.type[0], maxNumChild=1000):
+        with Children(d, size, maxNumChild=1000):  # JDZ removed childType=value.type[0],
             for (i, pair) in zip(d.childRange(), traverse_list(curr)):
                 elem_fn(d, i, pair[0], pair[1])
 
