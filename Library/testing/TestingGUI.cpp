@@ -59,6 +59,7 @@ namespace SimpleTest {
         string name;
         Vector<Test> tests;
         bool selected;
+        bool isfilegroup;
     };
 
     static const string NORMAL="\033[0m", RED="\033[31m", BLUE="\033[34m",
@@ -218,19 +219,20 @@ namespace SimpleTest {
         return conclusion;
     }
 
-    void addTestToGroup(Map<string, TestGroup>& map, TestCase tcase, string groupname)
+    void addTestToGroup(Map<string, TestGroup>& map, TestCase tcase, string groupname, bool isfilegroup)
     {
         if (!map.containsKey(groupname)) {
             TestGroup tg;
             tg.name = groupname;
             tg.selected = false;
+            tg.isfilegroup = isfilegroup;
             map[groupname] = tg;
         }
         Test t;
         t.testname = tcase.testname;
         t.callback = tcase.callback;
         ostringstream os;
-        if (tcase.filename == groupname) {
+        if (isfilegroup) {
             os << " (" << tcase.owner << ", line " << setw(3) << tcase.line << ") ";
         } else {
             os << " (" << tcase.owner << ", " << tcase.filename << ":" << tcase.line << ") ";
@@ -247,8 +249,8 @@ namespace SimpleTest {
         for (const auto& module: allTests) {
             for (const auto& rawTest: module.second) {
                 TestCase tcase = rawTest.second;
-                addTestToGroup(grouped, tcase, tcase.owner);   // add once in owner group
-                addTestToGroup(grouped, tcase, module.first);  // add again in module group
+                addTestToGroup(grouped, tcase, tcase.owner, false);  // add once in owner group
+                addTestToGroup(grouped, tcase, module.first, true);  // add again in file group
             }
         }
         return grouped.values();
@@ -360,7 +362,7 @@ namespace SimpleTest {
             return false;
         } else {
             for (int i = 0; i < groups.size(); i++) {
-                groups[i].selected = (chosen == i+1 || chosen == groups.size()+1);
+                groups[i].selected = (chosen == i+1) || ((chosen == groups.size()+1) && groups[i].isfilegroup);
             }
             return true;
         }

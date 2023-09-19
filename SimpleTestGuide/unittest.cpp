@@ -26,7 +26,7 @@ PROVIDED_TEST("How FAILURE reported for mismatch set literal") {
     Set<string> one = {"A", "C"};
     Set<string> two = {"B", "C"};
 
-    EXPECT_EQUAL(one + two, {"A", "C"});
+    EXPECT_EQUAL(one + two, {"A", "C"}); // mismatch -> FAILURE
 }
 
 template <typename T> T sum(T val, int n) {
@@ -37,19 +37,18 @@ template <typename T> T sum(T val, int n) {
 
 PROVIDED_TEST("== compare float/double literals, expect to not be exact") {
     // literals: float double
-    EXPECT(0.1 != 0.1f); // not exact
-    EXPECT(0.1f != 0.1); // not exact
+    EXPECT(0.1 != 0.1f); // expect not exact equal
 }
 
 PROVIDED_TEST("How FAILURE reported for mismatch type float/double literals") {
     EXPECT_EQUAL(0.1f, 0.1); // yes fpe, both forced to float
-    EXPECT_EQUAL(0.1, 0.1f);  // yes fpe, both forced to double, val mismatch
+    EXPECT_EQUAL(0.1, 0.1f);  // yes fpe, both forced to double, val mismatch -> FAILURE
 }
 
 PROVIDED_TEST("float literal compared with float op result") {
     float fsum = sum(0.1f, 10);
 
-    EXPECT(fsum != 1.0f); // not exact
+    EXPECT(fsum != 1.0f); // expect not exact equal
     EXPECT_EQUAL(fsum, 1.0f); // yes fpe, both forced to float
 }
 
@@ -57,16 +56,16 @@ PROVIDED_TEST("float literal compared with float op result") {
     float fsum = sum(0.1f, 10);
     double dsum = sum(0.1, 10);
 
-    EXPECT(fsum != 1.0); // not exact
+    EXPECT(fsum != 1.0); // expect not exact equal
     EXPECT_EQUAL(fsum, 1.0); // yes fpe, both forced to float
-    EXPECT(fsum != dsum); // not exact
+    EXPECT(fsum != dsum); // expect not exact equal
     EXPECT_EQUAL(fsum, dsum); // yes fpe, both forced to float
 }
 
 PROVIDED_TEST("double literal compared with double op result") {
     double dsum = sum(0.1, 10);
 
-    EXPECT(dsum != 1.0); // not exact
+    EXPECT(dsum != 1.0); // expect not exact equal
     EXPECT_EQUAL(dsum, 1.0); // yes fpe, both forced to double
 }
 
@@ -75,32 +74,32 @@ PROVIDED_TEST("How FAILURE reported for double op result compared with float lit
     double dsum = sum(0.1, 10);
 
     // double == float
-    EXPECT(dsum != 1.0f); // not exact
+    EXPECT(dsum != 1.0f); // expect not exact equal
     EXPECT_EQUAL(dsum, 1.0f); // yes fpe, both forced to double
-    EXPECT(dsum != fsum); // not exact
-    EXPECT_EQUAL(dsum, fsum); // yes fpe, both forced to double, val mismatch
+    EXPECT(dsum != fsum); // expect not exact equal
+    EXPECT_EQUAL(dsum, fsum); // yes fpe, both forced to double, val mismatch -> FAILURE
 }
 
 PROVIDED_TEST("float op result compared with int literal") {
     float fsum = sum(0.1f, 10);
-    EXPECT(fsum != 1); // not exact
+    EXPECT(fsum != 1); // expect not exact equal
     EXPECT_EQUAL(fsum, 1); //yes fpe, both forced to float
 }
 
  PROVIDED_TEST("double op result compared with int literal") {
     double dsum = sum(0.1, 10);
-    EXPECT(dsum != 1); // not exact
+    EXPECT(dsum != 1); // expect not exact equal
     EXPECT_EQUAL(dsum, 1); // yes fpe, both forced to double
 }
 
 // This will all fail
 PROVIDED_TEST("How FAILURE reported for mismatch literal number") {
-    EXPECT_EQUAL(3 + 5, 10);
+    EXPECT_EQUAL(3 + 5, 10); // mismatch -> FAILURE
 }
 
 PROVIDED_TEST("How FAILURE reported for mismatch literal string") {
     string str = "hello";
-    EXPECT_EQUAL(str, "goodbye");
+    EXPECT_EQUAL(str, "goodbye"); // mismatch -> FAILURE
 }
 
 PROVIDED_TEST("How FAILURE reported for mismatch literal Set") {
@@ -110,21 +109,22 @@ PROVIDED_TEST("How FAILURE reported for mismatch literal Set") {
 
 PROVIDED_TEST("How FAILURE reported for mismatch literal double") {
     double d = 0.1;
-    EXPECT_EQUAL(d, 0.2);
+    EXPECT_EQUAL(d, 0.2); // mismatch -> FAILURE
 }
 
 PROVIDED_TEST("How FAILURE reported for mismatch literal number") {
-    EXPECT_EQUAL(10, 5+9);
+    EXPECT_EQUAL(10, 5+9); // mismatch -> FAILURE
 }
 
 PROVIDED_TEST("How FAILURE reported for mismatch literal string") {
-    EXPECT_EQUAL("hello", "goodbye");
+    EXPECT_EQUAL("hello", "goodbye"); // mismatch -> FAILURE
 }
 
 PROVIDED_TEST("How FAILURE reported for mismatch literal double") {
-    EXPECT_EQUAL(0.1, 0.2);
+    EXPECT_EQUAL(0.1, 0.2); // mismatch -> FAILURE
 }
 
 PROVIDED_TEST("How FAILURE reported for mismatch literal bool") {
-    EXPECT_EQUAL(4 % 2 == 0, 0);
+    EXPECT_EQUAL(4 % 2 == 0, 0); // mismatch -> FAILURE
 }
+
