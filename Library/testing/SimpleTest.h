@@ -12,6 +12,7 @@
  */
 #pragma once
 #include <string>
+// IWYU pragma: always keep
 
 
 /*** Utility functions to express your test cases. ***/
@@ -99,4 +100,4 @@ bool runSimpleTests(Choice ch, Where where = CONSOLE_AND_WINDOW);
 bool runSimpleTests(std::string groupName, Where where = CONSOLE_AND_WINDOW);
 
 
-#include "TestDriver.h"
+#include "TestDriver.h" // IWYU pragma: export
