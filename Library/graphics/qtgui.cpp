@@ -15,11 +15,8 @@
 #include <QThread>
 #include "consoletext.h"
 #include "error.h"
-#include "exceptions.h"
 #include "gconsolewindow.h"
 #include "gthread.h"
-#include "strlib.h"
-#include "private/static.h"
 #include "private/init.h"
 
 // QSPLApplication members

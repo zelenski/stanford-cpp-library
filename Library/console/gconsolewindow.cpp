@@ -38,8 +38,6 @@
 #include <cstdio>
 #include <QAction>
 #include <QTextDocumentFragment>
-#include "error.h"
-#include "exceptions.h"
 #include "filelib.h"
 #include "gclipboard.h"
 #include "gcolor.h"
@@ -51,7 +49,6 @@
 #include "gthread.h"
 #include "os.h"
 #include "qtgui.h"
-#include "private/static.h"
 #include "private/version.h"
 
 void setConsolePropertiesQt();

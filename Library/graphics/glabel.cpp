@@ -26,7 +26,6 @@
 #include "filelib.h"
 #include "glayout.h"
 #include "gthread.h"
-#include "gwindow.h"
 #include "require.h"
 
 GLabel::GLabel(const std::string& text, const std::string& iconFileName, QWidget* parent)

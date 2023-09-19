@@ -46,8 +46,6 @@
 
 #include "collections.h"
 #include "error.h"
-#include "filelib.h"
-#include "hashcode.h"
 #include "strlib.h"
 
 static bool scrub(std::string& str);

@@ -20,7 +20,6 @@
 #include "strlib.h"
 #include "private/static.h"
 #include <QStandardPaths>
-#include "private/version.h"
 #include <QLoggingCategory>
 
 

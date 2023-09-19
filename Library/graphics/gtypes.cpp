@@ -14,7 +14,6 @@
 #include <sstream>
 #include <string>
 #include "collections.h"
-#include "error.h"
 #include "gmath.h"
 #include "hashcode.h"
 #include "strlib.h"

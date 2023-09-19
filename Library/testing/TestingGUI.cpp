@@ -17,8 +17,6 @@
 #include <map>
 #include "MemoryDiagnostics.h"
 #include <QCoreApplication> // for application name
-#include <QLoggingCategory> // to control log messages
-#include <QScrollBar>
 #include "simpio.h"
 #include "SimpleTest.h"
 #include "styles_css_h"

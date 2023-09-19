@@ -17,7 +17,6 @@
 #include <iostream>
 #include "error.h"
 #include "strlib.h"
-#include "stack.h"
 
 TokenScanner::TokenScanner() {
     initScanner();

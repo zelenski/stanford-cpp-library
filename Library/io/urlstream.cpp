@@ -24,10 +24,7 @@
 #include "urlstream.h"
 #include <sstream>
 #include <string>
-#include "error.h"
-#include "filelib.h"
 #include "gdownloader.h"
-#include "strlib.h"
 
 namespace {
     /*

@@ -31,7 +31,6 @@
 #include "gthread.h"
 #include "gwindow.h"
 #include "set.h"
-#include "strlib.h"
 
 GOptionPane::GOptionPane() {
     // empty

@@ -11,14 +11,10 @@
  * - initial version
  */
 
-#include "qtgui.h"
 #include <QEvent>
-#include "error.h"
-#include "exceptions.h"
-#include "gwindow.h"
-#include "gthread.h"
+#include "geventqueue.h"
 #include "gtypes.h"
-#include "strlib.h"
+#include "gthread.h"
 
 GEventQueue* GEventQueue::_instance = nullptr;
 

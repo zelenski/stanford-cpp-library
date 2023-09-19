@@ -19,7 +19,6 @@
 #include <iostream>
 #include <sstream>
 #include "consoletext.h"
-#include "error.h"
 #include "echoinputstreambuf.h"
 #include "limitoutputstreambuf.h"
 #include "private/static.h"

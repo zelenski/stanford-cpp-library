@@ -25,8 +25,8 @@
 #include <QStringList>
 #include <QStringListModel>
 #include "gthread.h"
-#include "gwindow.h"
 #include "require.h"
+#include "strlib.h"
 
 GTextField::GTextField(const std::string& text, int charsWide, QWidget* parent)
         : _iqlineedit(nullptr),

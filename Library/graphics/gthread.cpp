@@ -26,7 +26,6 @@
 #include "consoletext.h"
 #include "gevent.h"
 #include "geventqueue.h"
-#include "qtgui.h"
 #include "require.h"
 #include <chrono>
 #include <pthread.h>

@@ -10,8 +10,6 @@
  */
 
 #include "error.h"
-#include "exceptions.h"
-#include "strlib.h"
 #include <sstream>
 
 /* Definitions for the ErrorException class */

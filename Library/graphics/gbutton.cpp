@@ -21,7 +21,6 @@
 #include <QKeySequence>
 #include "filelib.h"
 #include "gthread.h"
-#include "gwindow.h"
 #include "require.h"
 
 GButton::GButton(const std::string& text, const std::string& iconFileName, QWidget* parent) {

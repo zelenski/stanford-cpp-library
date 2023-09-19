@@ -7,7 +7,6 @@
  */
 
 #include "MemoryDiagnostics.h"
-#include "hashmap.h"
 #include "error.h"
 #include <sstream>
 #include <unordered_map>

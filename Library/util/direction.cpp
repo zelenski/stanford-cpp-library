@@ -10,7 +10,6 @@
  */
 
 #include "direction.h"
-#include "error.h"
 #include "strlib.h"
 #include "tokenscanner.h"
 

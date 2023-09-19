@@ -19,7 +19,6 @@
 
 #include "gradiobutton.h"
 #include "gthread.h"
-#include "gwindow.h"
 #include "require.h"
 
 Map<std::string, QButtonGroup*> GRadioButton::_buttonGroups;

@@ -14,7 +14,6 @@
 
 #include "gmath.h"
 #include <cmath>
-#include "error.h"
 #include "gtypes.h"
 
 extern const double PI = 3.14159265358979323846;

@@ -16,7 +16,6 @@
 #include "gslider.h"
 #include "gthread.h"
 #include "require.h"
-#include "gwindow.h"
 
 const int GSlider::DEFAULT_MIN_VALUE = 0;
 const int GSlider::DEFAULT_MAX_VALUE = 100;

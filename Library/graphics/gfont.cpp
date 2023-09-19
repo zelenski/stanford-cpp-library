@@ -20,7 +20,6 @@
 #include <iomanip>
 #include <iostream>
 #include <QtGlobal>
-#include "error.h"
 #include "require.h"
 #include "strlib.h"
 #include "vector.h"

@@ -19,7 +19,6 @@
 
 #include "gcheckbox.h"
 #include "gthread.h"
-#include "gwindow.h"
 #include "require.h"
 
 GCheckBox::GCheckBox(const std::string& text, bool checked, QWidget* parent) {

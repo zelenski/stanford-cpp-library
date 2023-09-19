@@ -19,12 +19,8 @@
 
 #include "consoletext.h"
 #include <cstdio>
-#include "error.h"
 #include "exceptions.h"
-#include "filelib.h"
 #include "gconsolewindow.h"
-#include "gthread.h"
-#include "private/static.h"
 
 // Default can be overridden with explicit call to setConsoleBlah
 static const int DEFAULT_X = -1, DEFAULT_Y = -1; // will center

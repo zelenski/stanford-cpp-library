@@ -19,7 +19,6 @@
 #include "gcolor.h"
 #include "gfont.h"
 #include "gthread.h"
-#include "gwindow.h"
 #include "require.h"
 
 GTextArea::GTextArea(int rows, int columns, QWidget* parent)

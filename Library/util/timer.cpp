@@ -6,7 +6,6 @@
 
 #include "timer.h"
 #include <sys/time.h>
-#include "error.h"
 
 Timer::Timer(bool autostart) {
     _startMS = 0;

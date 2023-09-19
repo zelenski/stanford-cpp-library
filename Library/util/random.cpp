@@ -29,7 +29,6 @@
 #include <queue>
 #include <sstream>
 #include "error.h"
-#include "private/static.h"
 
 /* Private function prototype */
 

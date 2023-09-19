@@ -20,7 +20,6 @@
 
 #include "gcontainer.h"
 #include "error.h"
-#include "glabel.h"
 #include "glayout.h"
 #include "gthread.h"
 #include "require.h"

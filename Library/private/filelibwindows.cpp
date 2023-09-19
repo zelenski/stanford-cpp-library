@@ -8,7 +8,6 @@
  * - added getAbsolutePath
  */
 
-#include "filelib.h"
 
 // define all of the following only on Windows OS
 // (see filelibunix.cpp for non-Windows versions)

@@ -28,11 +28,9 @@
 #include "gcanvas.h"
 #include "gcolor.h"
 #include "gthread.h"
-#include "gwindow.h"
 #include "error.h"
 #include "filelib.h"
 #include "require.h"
-#include "strlib.h"
 
 const int GCanvas::WIDTH_HEIGHT_MAX = 65535;
 

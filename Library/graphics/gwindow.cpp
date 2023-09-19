@@ -52,7 +52,6 @@
 #include "gcolor.h"
 #include "gdiffimage.h"
 #include "glabel.h"
-#include "glayout.h"
 #include "gtextfield.h"
 #include "gthread.h"
 #include "qtgui.h"
