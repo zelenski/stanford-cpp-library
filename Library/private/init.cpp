@@ -21,6 +21,7 @@
 #include "private/static.h"
 #include <QStandardPaths>
 #include "private/version.h"
+#include <QLoggingCategory>
 
 
 #ifdef _WIN32
@@ -64,6 +65,9 @@ void initializeLibrary(int argc, char** argv) {
     parseArgsQt(argc, argv);
 
 #ifndef SPL_HEADLESS_MODE
+    // suppress harmless warnings about font substitutions
+    QLoggingCategory::setFilterRules("qt.qpa.fonts.warning=false");
+
     // initialize the main Qt graphics subsystem
     QtGui::instance()->setArgs(argc, argv);
     QtGui::instance()->initializeQt();

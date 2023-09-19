@@ -272,13 +272,12 @@ namespace SimpleTest {
 
             window->setVisible(true);
             window->requestFocus();
-            // student can customize by provided stylesheet in project directory
+            stylesheet = gDefaultStylesheet;
+            // student can customize by adding stylesheet in project directory
             string localFile = "simpletest.css";
             if (fileExists(localFile)) {
                 ifstream in(localFile);
-                stylesheet = readEntire(in);
-            } else {
-                stylesheet = gDefaultStylesheet;
+                stylesheet += readEntire(in);
             }
         }
 
@@ -369,8 +368,6 @@ namespace SimpleTest {
 
     bool runSimpleTests(Choice ch, Where where, std::string groupName = "")
     {
-        // suppress harmless warning about font substitutions (this should be in library too)
-        QLoggingCategory::setFilterRules("qt.qpa.fonts.warning=false");
         if (!GThread::qtGuiThreadExists()) {
             where = CONSOLE_ONLY;   // without Qt GUI, fall back to console only
         }
