@@ -2,7 +2,7 @@
 # Project file for CS106B/X Library
 #
 # @author Julie Zelenski
-# @version Fall Quarter 2022.1 for Qt 6
+# @version Fall Quarter 2023.1 for Qt 6
 #    build static lib and install into user data
 ###############################################################################
 
