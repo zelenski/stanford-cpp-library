@@ -59,6 +59,7 @@ namespace SimpleTest {
         string name;
         Vector<Test> tests;
         bool selected;
+        bool isfilegroup;
     };
 
     static const string NORMAL="\033[0m", RED="\033[31m", BLUE="\033[34m",
@@ -218,19 +219,20 @@ namespace SimpleTest {
         return conclusion;
     }
 
-    void addTestToGroup(Map<string, TestGroup>& map, TestCase tcase, string groupname)
+    void addTestToGroup(Map<string, TestGroup>& map, TestCase tcase, string groupname, bool isfilegroup)
     {
         if (!map.containsKey(groupname)) {
             TestGroup tg;
             tg.name = groupname;
             tg.selected = false;
+            tg.isfilegroup = isfilegroup;
             map[groupname] = tg;
         }
         Test t;
         t.testname = tcase.testname;
         t.callback = tcase.callback;
         ostringstream os;
-        if (tcase.filename == groupname) {
+        if (isfilegroup) {
             os << " (" << tcase.owner << ", line " << setw(3) << tcase.line << ") ";
         } else {
             os << " (" << tcase.owner << ", " << tcase.filename << ":" << tcase.line << ") ";
@@ -247,8 +249,8 @@ namespace SimpleTest {
         for (const auto& module: allTests) {
             for (const auto& rawTest: module.second) {
                 TestCase tcase = rawTest.second;
-                addTestToGroup(grouped, tcase, tcase.owner);   // add once in owner group
-                addTestToGroup(grouped, tcase, module.first);  // add again in module group
+                addTestToGroup(grouped, tcase, tcase.owner, false);  // add once in owner group
+                addTestToGroup(grouped, tcase, module.first, true);  // add again in file group
             }
         }
         return grouped.values();
@@ -272,13 +274,12 @@ namespace SimpleTest {
 
             window->setVisible(true);
             window->requestFocus();
-            // student can customize by provided stylesheet in project directory
+            stylesheet = gDefaultStylesheet;
+            // student can customize by adding stylesheet in project directory
             string localFile = "simpletest.css";
             if (fileExists(localFile)) {
                 ifstream in(localFile);
-                stylesheet = readEntire(in);
-            } else {
-                stylesheet = gDefaultStylesheet;
+                stylesheet += readEntire(in);
             }
         }
 
@@ -361,7 +362,7 @@ namespace SimpleTest {
             return false;
         } else {
             for (int i = 0; i < groups.size(); i++) {
-                groups[i].selected = (chosen == i+1 || chosen == groups.size()+1);
+                groups[i].selected = (chosen == i+1) || ((chosen == groups.size()+1) && groups[i].isfilegroup);
             }
             return true;
         }
@@ -369,8 +370,6 @@ namespace SimpleTest {
 
     bool runSimpleTests(Choice ch, Where where, std::string groupName = "")
     {
-        // suppress harmless warning about font substitutions (this should be in library too)
-        QLoggingCategory::setFilterRules("qt.qpa.fonts.warning=false");
         if (!GThread::qtGuiThreadExists()) {
             where = CONSOLE_ONLY;   // without Qt GUI, fall back to console only
         }

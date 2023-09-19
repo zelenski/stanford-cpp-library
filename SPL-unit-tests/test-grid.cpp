@@ -263,3 +263,48 @@ PROVIDED_TEST("GridLocationRange, contains") {
     EXPECT(!range.contains({1, 1}));
     EXPECT(range.isEmpty());
 }
+
+
+PROVIDED_TEST("GridLocationRange dimensions,size,isEmpty ") {
+    Grid<int> grid;
+    GridLocationRange range;
+
+    /* 5 x 1 */
+    grid = Grid<int>(5, 1);
+    range = grid.locations();
+    EXPECT(!range.isEmpty());
+    EXPECT_EQUAL(range.numRows(), grid.numRows());
+    EXPECT_EQUAL(range.numCols(), grid.numCols());
+    EXPECT_EQUAL(range.size(), std::distance(range.begin(), range.end()));
+
+    /* 1 x 5 */
+    grid = Grid<int>(1, 5);
+    range = grid.locations();
+    EXPECT(!range.isEmpty());
+    EXPECT_EQUAL(range.numRows(), grid.numRows());
+    EXPECT_EQUAL(range.numCols(), grid.numCols());
+    EXPECT_EQUAL(range.size(), std::distance(range.begin(), range.end()));
+
+    /* 2 x 3 */
+    grid = Grid<int>(2, 3);
+    range = grid.locations();
+    EXPECT(!range.isEmpty());
+    EXPECT_EQUAL(range.numRows(), grid.numRows());
+    EXPECT_EQUAL(range.numCols(), grid.numCols());
+    EXPECT_EQUAL(range.size(), std::distance(range.begin(), range.end()));
+
+    GridLocationRange origin;
+    EXPECT(!origin.isEmpty());
+    EXPECT_EQUAL(origin.numRows(), 1);
+    EXPECT_EQUAL(origin.numCols(),1);
+    EXPECT_EQUAL(origin.size(), 1);
+    EXPECT(origin.contains({0, 0}));
+
+    GridLocationRange empty(10, 5, 2, 1);
+    EXPECT(empty.isEmpty());
+    EXPECT_EQUAL(empty.numRows(), 0);
+    EXPECT_EQUAL(empty.numCols(),0);
+    EXPECT_EQUAL(empty.size(), 0);
+    EXPECT(!empty.contains(empty.startLocation()));
+    EXPECT(!empty.contains(empty.endLocation()));
+}

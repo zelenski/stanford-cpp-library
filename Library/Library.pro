@@ -2,7 +2,7 @@
 # Project file for CS106B/X Library
 #
 # @author Julie Zelenski
-# @version Fall Quarter 2022.1 for Qt 6
+# @version Fall Quarter 2023.1 for Qt 6
 #    build static lib and install into user data
 ###############################################################################
 
@@ -10,7 +10,7 @@ TEMPLATE    =   lib
 TARGET      =   cs106
 CONFIG      +=  staticlib
 
-SPL_VERSION         =   2022.1
+SPL_VERSION         =   2023.1
 REQUIRES_QT_VERSION =   6.1
 
 ###############################################################################
@@ -29,7 +29,7 @@ SOURCES             +=  $$files(private/*.cpp)
 HEADERS             +=  $$PUBLIC_HEADERS $$PRIVATE_HEADERS
 
 RESOURCES           =   images.qrc
-OTHER_FILES         =   personaltypes.py
+OTHER_FILES         =   stanfordtypes.py
 QMAKE_SUBSTITUTES   =   private/build.h.in
 
 INCLUDEPATH         +=  $$LIB_SUBDIRS
@@ -77,7 +77,7 @@ headers.files       =   $$PUBLIC_HEADERS
 headers.path        =   "$${SPL_DIR}/include"
 INSTALLS            +=  target headers debughelper versionfile
 
-debughelper.files   =   personaltypes.py
+debughelper.files   =   stanfordtypes.py
 mac         { debughelper.path = "$$(HOME)/Qt/Qt Creator.app/Contents/Resources/debugger" }
 win32|win64 { debughelper.path = "C:\Qt\Tools\QtCreator\share\qtcreator\debugger" }
 unix:!mac   { debughelper.path = "$$(HOME)/Qt/Tools/QtCreator/share/qtcreator/debugger" }

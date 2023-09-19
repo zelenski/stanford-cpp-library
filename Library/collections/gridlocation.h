@@ -230,7 +230,7 @@ public:
      * The isRowMajor flag indicates whether we will loop over the range in
      * row-major order (true, default) or column-major order (false).
      */
-    GridLocationRange(int startRow = 0, int startCol = 0, int endRow = 0, int endCol = 0, bool isRowMajor = true);
+    GridLocationRange(int startRow, int startCol, int endRow, int endCol, bool isRowMajor = true);
 
     /*
      * Constructs a range over the given start/end locations, inclusive.
@@ -240,12 +240,18 @@ public:
     GridLocationRange(const GridLocation& startLoc, const GridLocation& endLoc, bool isRowMajor = true);
 
     /*
+     * The default constructor creates a range containing the single location r0c0.
+     */
+    GridLocationRange();
+
+
+    /*
      * Returns an iterator over the range.
      */
     GridLocationRangeIterator begin() const;
 
     /*
-     * Returns true if this range entirely contains the given other range.
+     * Returns true if this range contains the specified GridLocation.
      */
     bool contains(const GridLocation& loc) const;
 
@@ -279,6 +285,21 @@ public:
      * as specified at time of construction (default true).
      */
     bool isRowMajor() const;
+
+    /*
+     * Returns the number of columns in this range.
+     */
+    int numCols() const;
+
+    /*
+     * Returns the number of rows in this range.
+     */
+    int numRows() const;
+
+    /*
+     * Returns the number of locations in this range.
+     */
+    int size() const;
 
     /*
      * Returns the first column in this range.

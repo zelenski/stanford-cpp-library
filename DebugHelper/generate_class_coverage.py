@@ -6,25 +6,44 @@
 import copy
 from typing import List, Optional, Any
 
-# A little bit of manual testing
-FIXED = '''
+TYPEDEFS = '''
+    struct Thing {
+        int num;
+        string label;
+    };
+    int hashCode(const Thing& t) {
+        return t.num;
+    }
+    bool operator ==(const Thing& t1, const Thing& t2) {
+        return t1.num == t2.num && t1.label == t2.label;
+    }
+    bool operator <(const Thing& t1, const Thing& t2) {
+        return stanfordcpplib::collections::compareTo(t1.num, t2.num, t1.label, t2.label) < 0;
+    }
+
     struct Node {
         char letter;
         Node *left, *right;
     };
+'''
 
+# manually test combos for certain assignments
+FIXED = '''
     Node *ptr = new Node {'A', nullptr, nullptr};
-    PriorityQueue<Node *> pq {{4.0, ptr}};
-    Vector<Node *> v = {ptr, ptr, nullptr, nullptr};
-    Set<Node *> s = {ptr, nullptr};
-    Map<char, Node *> m = {{'a', ptr}, {'b', ptr},
-                           {'c', nullptr}};
+    PriorityQueue<Node *> huff_PQ_NodePtr {{4.0, ptr}};
+    Vector<Node *> huff_Vector_NodePtr = {ptr, ptr, nullptr, nullptr};
+    Set<Node *> huff_Set_NodePtr = {ptr, nullptr};
+    Map<char, Node *> huff_Map_NodePtr = {{'a', ptr}, {'b', ptr}, {'c', nullptr}};
 
-    std::vector<bool> stdvb = {true, true, false, false, true, true, true, true};
-    std::vector<Node *> stdv = {ptr, nullptr, ptr};
-    std::map<char, Node *> stdm = {{'a', ptr}, {'b', ptr},
-                                   {'c', nullptr}};
+    Vector<Bit> huff_Vector_Bit = {0, 1, 1, 1, 0};
+    Map<char, Queue<Bit>> huff_Map_Queue_Bit {{'a', {0, 1, 1, 1}}, {'b', {1, 0}}};
+    Map<char, Vector<Bit>> huff_Map_Vector_Bit = {{'a', {1, 1, 1, 0}}, {'b', {0, 0}}};
+    Map<string, Set<string>> siteIndex_Map_Set =  {{"home", {"the", "end"}}, {"faq", {"what", "why"}}};
 
+    Grid<char> boggle_Grid = {{'a', 'n', 'r'}, {'p', 'e', 't'}, {'c', 'o', 'b'}};
+    GridLocationRange redistrict_Range = boggle_Grid.locations();
+    GridLocation maze_Loc(2, 4);
+    Stack<GridLocation> maze_Stack_Loc = { {1, 2}, {1, 3}, {2, 3}, {2, 4}};
 '''
 
 class Type:
@@ -57,7 +76,7 @@ class Type:
 
     def __repr__(self) -> str:
         return f'Type({str(self)})'
-    
+
     def __eq__(self, other) -> bool:
         return str(self) == str(other)
 
@@ -83,7 +102,9 @@ basic_types = [
     'char',
     'float',
     'int',
-    'string'
+    'string',
+    'GridLocation',
+    'Thing'
 ]
 
 basic_values = {
@@ -91,24 +112,24 @@ basic_values = {
     'char': [f"'{c}'" for c in 'abc'],
     'float': [str(f) for f in [1e-5, 1.37, 3.14159]],
     'int': [str(i) for i in range(3)],
-    'string': [f'"{s}"' for s in ['bananas', 'ice cream', 'nachos']]
-}
+    'string': [f'"{s}"' for s in ['bananas', 'ice cream', 'nachos']],
+    'GridLocation': [f'{{{r}, {c}}}' for r,c in [(0,0), (2,4), (5,3)]],
+    'Thing': [f'(Thing){{{len(s)}, "{s}"}}' for s in ['red', 'green', 'blue']]}
 
-includes = [c.lower() + '.h' for c in containers]
+includes = [c.lower() + '.h' for c in containers] + ['bits.h']
 
-
-def generate_source_code(depth: int = 1) -> str:
+def generate_source_code(depth: int=1) -> str:
     src = []
     src += [f'#include "{f}"' for f in includes]
     src += ['using namespace std;', '']
+    src += TYPEDEFS.split('\n')
     src += ['int main() {']
     src += [
         '\t'
         + ' '.join([str(t), t.varname(), '=', create_init_list_str(t) + ';'])
         for t in generate_all_types(depth)
     ]
-    others = FIXED.split('\n')
-    src += others
+    src += FIXED.split('\n')
     src += ['', '\treturn 0;', '}']
 
     return '\n'.join(src)
