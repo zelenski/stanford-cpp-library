@@ -30,6 +30,7 @@ HEADERS             +=  $$PUBLIC_HEADERS $$PRIVATE_HEADERS
 
 RESOURCES           =   images.qrc
 OTHER_FILES         =   stanfordtypes.py
+RESOURCE_FILES      =   $$files(resources/*)
 QMAKE_SUBSTITUTES   =   private/build.h.in
 
 INCLUDEPATH         +=  $$LIB_SUBDIRS
@@ -75,7 +76,9 @@ SPL_DIR = $${USER_DATA_DIR}/cs106
 target.path         =   "$${SPL_DIR}/lib"
 headers.files       =   $$PUBLIC_HEADERS
 headers.path        =   "$${SPL_DIR}/include"
-INSTALLS            +=  target headers debughelper versionfile
+resources.files     =   $$RESOURCE_FILES
+resources.path      =   "$${SPL_DIR}/resources"
+INSTALLS            +=  target headers resources debughelper versionfile
 
 debughelper.files   =   stanfordtypes.py
 mac         { debughelper.path = "$$(HOME)/Qt/Qt Creator.app/Contents/Resources/debugger" }

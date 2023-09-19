@@ -14,6 +14,7 @@ namespace version {
 
     std::string getLibraryInfoPanelMessage();
     std::string getLibraryVersion();
+    std::string getLibraryPathForResource(const std::string& name);
 }
 
 #endif // _version_h
