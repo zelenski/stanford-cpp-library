@@ -208,11 +208,11 @@ template <typename T> std::string evaluate(const std::string& orig, const T& ans
 
 #undef TIME_OPERATION
 #define TIME_OPERATION(n, expr) do {\
-    Timer t;\
-    t.start();\
+    Timer _timer;\
+    _timer.start();\
     (void)(expr); \
-    double elapsed_ms = t.stop();\
+    double _elapsed_ms = _timer.stop();\
     std::ostringstream _out; \
-    _out << "Line " << __LINE__ << " TIME_OPERATION " << #expr << " (size = " << std::setw(8) << n << ")" << " completed in " << std::setw(8) << std::fixed << std::setprecision(3) << (elapsed_ms/1000) << " secs";\
+    _out << "Line " << __LINE__ << " TIME_OPERATION " << #expr << " (size = " << std::setw(8) << n << ")" << " completed in " << std::setw(8) << std::fixed << std::setprecision(3) << (_elapsed_ms/1000) << " secs";\
     addDetail(_out.str());\
 } while(0)
