@@ -3,7 +3,7 @@
  */
 
 
-#include "lexicon.h"
+#include "trielexicon.h"
 #include "hashset.h"
 #include "common.h"
 #include "SimpleTest.h"
@@ -14,7 +14,7 @@
 
 
 
-PROVIDED_TEST("Lexicon, basic") {
+PROVIDED_TEST("TrieLexicon, basic") {
     std::initializer_list<std::string> words = {
         "a",
         "ab",
@@ -42,7 +42,7 @@ PROVIDED_TEST("Lexicon, basic") {
         "z"
     };
 
-    Lexicon lex;
+    TrieLexicon lex;
     for (std::string word : words) {
         lex.add(word);
     }
@@ -68,26 +68,26 @@ PROVIDED_TEST("Lexicon, basic") {
     }
 }
 
-PROVIDED_TEST("Lexicon, compare") {
-    Lexicon lex;
+PROVIDED_TEST("TrieLexicon, compare") {
+    TrieLexicon lex;
     lex.add("a");
     lex.add("ab");
     lex.add("bc");
-    Lexicon lex2;
+    TrieLexicon lex2;
     lex2.add("a");
     lex2.add("b");
     lex2.add("c");
-    Lexicon lex3;
+    TrieLexicon lex3;
     testCompareOperators(lex, lex2, LessThan);
     testCompareOperators(lex2, lex, GreaterThan);
     testCompareOperators(lex, lex, EqualTo);
 
-    Set<Lexicon> slex {lex, lex2, lex3};
+    Set<TrieLexicon> slex {lex, lex2, lex3};
     EXPECT_EQUAL(slex.toString(), "{{}, {\"a\", \"ab\", \"bc\"}, {\"a\", \"b\", \"c\"}}");
 }
 
-PROVIDED_TEST("Lexicon, forEach") {
-    Lexicon lex;
+PROVIDED_TEST("TrieLexicon, forEach") {
+    TrieLexicon lex;
     lex.add("a");
     lex.add("aba");
     lex.add("cc");
@@ -99,26 +99,26 @@ PROVIDED_TEST("Lexicon, forEach") {
 }
 
 
-PROVIDED_TEST("Lexicon, hashCode") {
-    Lexicon lex;
+PROVIDED_TEST("TrieLexicon, hashCode") {
+    TrieLexicon lex;
     lex.add("a");
     lex.add("bc");
     EXPECT_EQUAL( hashCode(lex), hashCode(lex));
 
-    Lexicon copy = lex;
+    TrieLexicon copy = lex;
     EXPECT_EQUAL( hashCode(lex), hashCode(copy));
 
-    Lexicon lex2;   // empty
+    TrieLexicon lex2;   // empty
 
     // shouldn't add two copies of same lexicon
-    HashSet<Lexicon> hashlex {lex, copy, lex2};
+    HashSet<TrieLexicon> hashlex {lex, copy, lex2};
     EXPECT_EQUAL( 2, hashlex.size());
 }
 
-PROVIDED_TEST("Lexicon, initializerList") {
+PROVIDED_TEST("TrieLexicon, initializerList") {
     std::initializer_list<std::string> lexlist = {"sixty", "seventy"};
 
-    Lexicon lex {"ten", "twenty", "thirty"};
+    TrieLexicon lex {"ten", "twenty", "thirty"};
     EXPECT_EQUAL(lex.toString(), "{\"ten\", \"thirty\", \"twenty\"}");
     EXPECT_EQUAL( 3, lex.size());
     EXPECT( lex.contains("ten"));
@@ -138,7 +138,7 @@ PROVIDED_TEST("Lexicon, initializerList") {
     EXPECT(! lex.contains("sixty"));
     EXPECT(! lex.contains("seventy"));
 
-    Lexicon lex2 = (lex + lexlist);
+    TrieLexicon lex2 = (lex + lexlist);
     EXPECT_EQUAL(lex.toString(), "{\"fifty\", \"forty\", \"ten\", \"thirty\", \"twenty\"}");
     EXPECT_EQUAL( 5, lex.size());
     EXPECT( lex.contains("ten"));
@@ -160,21 +160,21 @@ PROVIDED_TEST("Lexicon, initializerList") {
     EXPECT( lex2.contains("seventy"));
 }
 
-static void addDuring(Lexicon& v) {
+static void addDuring(TrieLexicon& v) {
     for (auto m : v) {
         (void) m;
         v.add("garbageword");
     }
 }
-static void removeDuring(Lexicon& v) {
+static void removeDuring(TrieLexicon& v) {
     for (auto m : v) {
         (void) m;
         v.remove(m);
     }
 }
 
-PROVIDED_TEST("Lexicon, error on modify during iterate") {
-    Lexicon lex {"ten", "twenty", "thirty", "forty"};
+PROVIDED_TEST("TrieLexicon, error on modify during iterate") {
+    TrieLexicon lex {"ten", "twenty", "thirty", "forty"};
     EXPECT_ERROR(addDuring(lex));
     EXPECT_ERROR(removeDuring(lex));
 }

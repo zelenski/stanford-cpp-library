@@ -49,7 +49,7 @@
 #include "gthread.h"
 #include "os.h"
 #include "qtgui.h"
-#include "private/version.h"
+#include "splversion.h"
 
 void setConsolePropertiesQt();
 
@@ -1209,7 +1209,7 @@ void GConsoleWindow::setUserInputColor(const std::string& userInputColor) {
 
 void GConsoleWindow::showAboutDialog() {
     // this text roughly matches that from old spl.jar message
-    static const std::string ABOUT_MESSAGE = version::getLibraryInfoPanelMessage();
+    static const std::string ABOUT_MESSAGE = getLibraryInfoPanelMessage();
     GOptionPane::showMessageDialog(
                 /* parent */   getWidget(),
                 /* message */  ABOUT_MESSAGE,

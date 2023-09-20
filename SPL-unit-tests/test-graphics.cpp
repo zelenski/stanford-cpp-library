@@ -9,6 +9,9 @@
 #include "goptionpane.h"
 #include "gtable.h"
 #include "gwindow.h"
+#include "gbutton.h"
+#include "glabel.h"
+#include "gradiobutton.h"
 
 #include <csignal>
 #include <fstream>
@@ -52,7 +55,6 @@ MANUAL_TEST("GOptionPane option dialogs") {
 
 MANUAL_TEST("GRadioButton to select from option group") {
     GWindow* gw = new GWindow;
-    GButton* b = new GButton("Click me");
     GLabel* label = new GLabel("Hello, world!");
     label->setColor("#000000");
     label->setBackground("#ffffff");

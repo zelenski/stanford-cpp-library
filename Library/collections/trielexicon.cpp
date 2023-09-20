@@ -1,19 +1,10 @@
 /*
- * File: lexicon.cpp
- * -----------------
- * A Lexicon is a word list. This Lexicon is backed by a data
+ * File: trielexicon.cpp
+ * ---------------------
+ * A TrieLexicon is a word list. This TrieLexicon is backed by a data
  * structure called a prefix tree or trie ("try").
  *
- * This is a re-implementation of Lexicon.  Its previous implementation used
- * a pair of structures: a directed acyclic word graph (DAWG) and an STL set.
- * That implementation was discarded because of several reasons:
- *
- * - It relied on binary file formats that were not readable by students.
- * - It did not provide for expected class members like remove.
- * - It had a clunky pair of data structures that had to be searched separately.
- * - It was optimized for space usage over ease of use and maintenance.
- *
- * The original DAWG implementation is retained as dawglexicon.h/cpp.
+ * The DAWG implementation of Lexicon is available as dawglexicon.h/cpp.
  *
  * @version 2018/03/10
  * - added method front
@@ -35,7 +26,7 @@
  * - removed 'using namespace' statement
  */
 
-#include "lexicon.h"
+#include "trielexicon.h"
 #include <cctype>
 #include <cstdlib>
 #include <cstring>
@@ -50,46 +41,46 @@
 
 static bool scrub(std::string& str);
 
-Lexicon::Lexicon() :
+TrieLexicon::TrieLexicon() :
         _root(nullptr),
         _size(0),
         _removeFlag(false) {
     // empty
 }
 
-Lexicon::Lexicon(std::istream& input) :
+TrieLexicon::TrieLexicon(std::istream& input) :
         _root(nullptr),
         _size(0),
         _removeFlag(false) {
     addWordsFromFile(input);
 }
 
-Lexicon::Lexicon(const std::string& filename) :
+TrieLexicon::TrieLexicon(const std::string& filename) :
         _root(nullptr),
         _size(0),
         _removeFlag(false) {
     addWordsFromFile(filename);
 }
 
-Lexicon::Lexicon(std::initializer_list<std::string> list) :
+TrieLexicon::TrieLexicon(std::initializer_list<std::string> list) :
         _root(nullptr),
         _size(0),
         _removeFlag(false) {
     addAll(list);
 }
 
-Lexicon::Lexicon(const Lexicon& src) :
+TrieLexicon::TrieLexicon(const TrieLexicon& src) :
         _root(nullptr),
         _size(0),
         _removeFlag(false) {
     deepCopy(src);
 }
 
-Lexicon::~Lexicon() {
+TrieLexicon::~TrieLexicon() {
     clear();
 }
 
-bool Lexicon::add(const std::string& word) {
+bool TrieLexicon::add(const std::string& word) {
     if (word.empty()) {
         return false;
     }
@@ -100,51 +91,51 @@ bool Lexicon::add(const std::string& word) {
     return addHelper(_root, scrubbed, /* originalWord */ scrubbed);
 }
 
-Lexicon& Lexicon::addAll(const Lexicon& lex) {
+TrieLexicon& TrieLexicon::addAll(const TrieLexicon& lex) {
     for (const std::string& word : lex) {
         add(word);
     }
     return *this;
 }
 
-Lexicon& Lexicon::addAll(std::initializer_list<std::string> list) {
+TrieLexicon& TrieLexicon::addAll(std::initializer_list<std::string> list) {
     for (const std::string& word : list) {
         add(word);
     }
     return *this;
 }
 
-void Lexicon::addWordsFromFile(std::istream& input) {
+void TrieLexicon::addWordsFromFile(std::istream& input) {
     std::string line;
     while (getline(input, line)) {
         add(trim(line));
     }
 }
 
-void Lexicon::addWordsFromFile(const std::string& filename) {
+void TrieLexicon::addWordsFromFile(const std::string& filename) {
     std::ifstream input(filename.c_str());
     if (input.fail()) {
-        error("Lexicon::addWordsFromFile: Couldn't read from input file " + filename);
+        error("TrieLexicon::addWordsFromFile: Couldn't read from input file " + filename);
     }
     addWordsFromFile(input);
     input.close();
 }
 
-std::string Lexicon::back() const {
+std::string TrieLexicon::back() const {
     if (isEmpty()) {
-        error("Lexicon::back: lexicon is empty");
+        error("TrieLexicon::back: lexicon is empty");
     }
     return _allWords.last();
 }
 
-void Lexicon::clear() {
+void TrieLexicon::clear() {
     _size = 0;
     _allWords.clear();
     deleteTree(_root);
     _root = nullptr;
 }
 
-bool Lexicon::contains(const std::string& word) const {
+bool TrieLexicon::contains(const std::string& word) const {
     if (word.empty()) {
         return false;
     }
@@ -155,7 +146,7 @@ bool Lexicon::contains(const std::string& word) const {
     return containsHelper(_root, scrubbed, /* isPrefix */ false);
 }
 
-bool Lexicon::containsAll(const Lexicon& lex2) const {
+bool TrieLexicon::containsAll(const TrieLexicon& lex2) const {
     for (const std::string& word : lex2) {
         if (!contains(word)) {
             return false;
@@ -164,7 +155,7 @@ bool Lexicon::containsAll(const Lexicon& lex2) const {
     return true;
 }
 
-bool Lexicon::containsAll(std::initializer_list<std::string> list) const {
+bool TrieLexicon::containsAll(std::initializer_list<std::string> list) const {
     for (const std::string& word : list) {
         if (!contains(word)) {
             return false;
@@ -173,7 +164,7 @@ bool Lexicon::containsAll(std::initializer_list<std::string> list) const {
     return true;
 }
 
-bool Lexicon::containsPrefix(const std::string& prefix) const {
+bool TrieLexicon::containsPrefix(const std::string& prefix) const {
     if (prefix.empty()) {
         return true;
     }
@@ -184,33 +175,33 @@ bool Lexicon::containsPrefix(const std::string& prefix) const {
     return containsHelper(_root, scrubbed, /* isPrefix */ true);
 }
 
-bool Lexicon::equals(const Lexicon& lex2) const {
+bool TrieLexicon::equals(const TrieLexicon& lex2) const {
     return stanfordcpplib::collections::equals(*this, lex2);
 }
 
-std::string Lexicon::first() const {
+std::string TrieLexicon::first() const {
     if (isEmpty()) {
-        error("Lexicon::first: lexicon is empty");
+        error("TrieLexicon::first: lexicon is empty");
     }
     return _allWords.first();
 }
 
-std::string Lexicon::front() const {
+std::string TrieLexicon::front() const {
     if (isEmpty()) {
-        error("Lexicon::front: lexicon is empty");
+        error("TrieLexicon::front: lexicon is empty");
     }
     return _allWords.first();
 }
 
-void Lexicon::insert(const std::string& word) {
+void TrieLexicon::insert(const std::string& word) {
     add(word);
 }
 
-bool Lexicon::isEmpty() const {
+bool TrieLexicon::isEmpty() const {
     return size() == 0;
 }
 
-bool Lexicon::isSubsetOf(const Lexicon& lex2) const {
+bool TrieLexicon::isSubsetOf(const TrieLexicon& lex2) const {
     auto it = begin();
     auto end = this->end();
     while (it != end) {
@@ -222,32 +213,32 @@ bool Lexicon::isSubsetOf(const Lexicon& lex2) const {
     return true;
 }
 
-bool Lexicon::isSubsetOf(std::initializer_list<std::string> list) const {
-    Lexicon lex2(list);
+bool TrieLexicon::isSubsetOf(std::initializer_list<std::string> list) const {
+    TrieLexicon lex2(list);
     return isSubsetOf(lex2);
 }
 
-bool Lexicon::isSupersetOf(const Lexicon& lex2) const {
+bool TrieLexicon::isSupersetOf(const TrieLexicon& lex2) const {
     return containsAll(lex2);
 }
 
-bool Lexicon::isSupersetOf(std::initializer_list<std::string> list) const {
+bool TrieLexicon::isSupersetOf(std::initializer_list<std::string> list) const {
     return containsAll(list);
 }
 
-void Lexicon::mapAll(void (*fn)(std::string)) const {
+void TrieLexicon::mapAll(void (*fn)(std::string)) const {
     for (std::string word : _allWords) {
         fn(word);
     }
 }
 
-void Lexicon::mapAll(void (*fn)(const std::string&)) const {
+void TrieLexicon::mapAll(void (*fn)(const std::string&)) const {
     for (std::string word : _allWords) {
         fn(word);
     }
 }
 
-bool Lexicon::remove(const std::string& word) {
+bool TrieLexicon::remove(const std::string& word) {
     if (word.empty()) {
         return false;
     }
@@ -258,7 +249,7 @@ bool Lexicon::remove(const std::string& word) {
     return removeHelper(_root, scrubbed, /* originalWord */ scrubbed, /* isPrefix */ false);
 }
 
-Lexicon& Lexicon::removeAll(const Lexicon& lex2) {
+TrieLexicon& TrieLexicon::removeAll(const TrieLexicon& lex2) {
     Vector<std::string> toRemove;
     for (const std::string& word : *this) {
         if (lex2.contains(word)) {
@@ -271,14 +262,14 @@ Lexicon& Lexicon::removeAll(const Lexicon& lex2) {
     return *this;
 }
 
-Lexicon& Lexicon::removeAll(std::initializer_list<std::string> list) {
+TrieLexicon& TrieLexicon::removeAll(std::initializer_list<std::string> list) {
     for (const std::string& word : list) {
         remove(word);
     }
     return *this;
 }
 
-bool Lexicon::removePrefix(const std::string& prefix) {
+bool TrieLexicon::removePrefix(const std::string& prefix) {
     if (prefix.empty()) {
         bool result = !isEmpty();
         clear();
@@ -292,7 +283,7 @@ bool Lexicon::removePrefix(const std::string& prefix) {
     return removeHelper(_root, scrubbed, /* originalWord */ scrubbed, /* isPrefix */ true);
 }
 
-Lexicon& Lexicon::retainAll(const Lexicon& lex2) {
+TrieLexicon& TrieLexicon::retainAll(const TrieLexicon& lex2) {
     Vector<std::string> toRemove;
     for (const std::string& word : *this) {
         if (!lex2.contains(word)) {
@@ -305,16 +296,16 @@ Lexicon& Lexicon::retainAll(const Lexicon& lex2) {
     return *this;
 }
 
-Lexicon& Lexicon::retainAll(std::initializer_list<std::string> list) {
-    Lexicon lex2(list);
+TrieLexicon& TrieLexicon::retainAll(std::initializer_list<std::string> list) {
+    TrieLexicon lex2(list);
     return retainAll(lex2);
 }
 
-int Lexicon::size() const {
+int TrieLexicon::size() const {
     return _size;
 }
 
-std::string Lexicon::toString() const {
+std::string TrieLexicon::toString() const {
     std::ostringstream out;
     out << *this;
     return out.str();
@@ -323,105 +314,105 @@ std::string Lexicon::toString() const {
 /*
  * Operators
  */
-bool Lexicon::operator ==(const Lexicon& lex2) const {
+bool TrieLexicon::operator ==(const TrieLexicon& lex2) const {
     return equals(lex2);
 }
 
-bool Lexicon::operator !=(const Lexicon& lex2) const {
+bool TrieLexicon::operator !=(const TrieLexicon& lex2) const {
     return !equals(lex2);
 }
 
-bool Lexicon::operator <(const Lexicon& lex2) const {
+bool TrieLexicon::operator <(const TrieLexicon& lex2) const {
     return stanfordcpplib::collections::compare(*this, lex2) < 0;
 }
 
-bool Lexicon::operator <=(const Lexicon& lex2) const {
+bool TrieLexicon::operator <=(const TrieLexicon& lex2) const {
     return stanfordcpplib::collections::compare(*this, lex2) <= 0;
 }
 
-bool Lexicon::operator >(const Lexicon& lex2) const {
+bool TrieLexicon::operator >(const TrieLexicon& lex2) const {
     return stanfordcpplib::collections::compare(*this, lex2) > 0;
 }
 
-bool Lexicon::operator >=(const Lexicon& lex2) const {
+bool TrieLexicon::operator >=(const TrieLexicon& lex2) const {
     return stanfordcpplib::collections::compare(*this, lex2) >= 0;
 }
 
-Lexicon Lexicon::operator +(const Lexicon& lex2) const {
-    Lexicon lex = *this;
+TrieLexicon TrieLexicon::operator +(const TrieLexicon& lex2) const {
+    TrieLexicon lex = *this;
     lex.addAll(lex2);
     return lex;
 }
 
-Lexicon Lexicon::operator +(std::initializer_list<std::string> list) const {
-    Lexicon lex = *this;
+TrieLexicon TrieLexicon::operator +(std::initializer_list<std::string> list) const {
+    TrieLexicon lex = *this;
     lex.addAll(list);
     return lex;
 }
 
-Lexicon Lexicon::operator +(const std::string& word) const {
-    Lexicon lex = *this;
+TrieLexicon TrieLexicon::operator +(const std::string& word) const {
+    TrieLexicon lex = *this;
     lex.add(word);
     return lex;
 }
 
-Lexicon Lexicon::operator *(const Lexicon& lex2) const {
-    Lexicon lex = *this;
+TrieLexicon TrieLexicon::operator *(const TrieLexicon& lex2) const {
+    TrieLexicon lex = *this;
     return lex.retainAll(lex2);
 }
 
-Lexicon Lexicon::operator *(std::initializer_list<std::string> list) const {
-    Lexicon lex = *this;
+TrieLexicon TrieLexicon::operator *(std::initializer_list<std::string> list) const {
+    TrieLexicon lex = *this;
     return lex.retainAll(list);
 }
 
-Lexicon Lexicon::operator -(const Lexicon& lex2) const {
-    Lexicon lex = *this;
+TrieLexicon TrieLexicon::operator -(const TrieLexicon& lex2) const {
+    TrieLexicon lex = *this;
     return lex.removeAll(lex2);
 }
 
-Lexicon Lexicon::operator -(std::initializer_list<std::string> list) const {
-    Lexicon lex = *this;
+TrieLexicon TrieLexicon::operator -(std::initializer_list<std::string> list) const {
+    TrieLexicon lex = *this;
     return lex.removeAll(list);
 }
 
-Lexicon Lexicon::operator -(const std::string& word) const {
-    Lexicon lex = *this;
+TrieLexicon TrieLexicon::operator -(const std::string& word) const {
+    TrieLexicon lex = *this;
     lex.remove(word);
     return lex;
 }
 
-Lexicon& Lexicon::operator +=(const Lexicon& lex2) {
+TrieLexicon& TrieLexicon::operator +=(const TrieLexicon& lex2) {
     return addAll(lex2);
 }
 
-Lexicon& Lexicon::operator +=(std::initializer_list<std::string> list) {
+TrieLexicon& TrieLexicon::operator +=(std::initializer_list<std::string> list) {
     return addAll(list);
 }
 
-Lexicon& Lexicon::operator +=(const std::string& word) {
+TrieLexicon& TrieLexicon::operator +=(const std::string& word) {
     add(word);
     _removeFlag = false;
     return *this;
 }
 
-Lexicon& Lexicon::operator *=(const Lexicon& lex2) {
+TrieLexicon& TrieLexicon::operator *=(const TrieLexicon& lex2) {
     return retainAll(lex2);
 }
 
-Lexicon& Lexicon::operator *=(std::initializer_list<std::string> list) {
+TrieLexicon& TrieLexicon::operator *=(std::initializer_list<std::string> list) {
     return retainAll(list);
 }
 
-Lexicon& Lexicon::operator -=(const Lexicon& lex2) {
+TrieLexicon& TrieLexicon::operator -=(const TrieLexicon& lex2) {
     return removeAll(lex2);
 }
 
-Lexicon& Lexicon::operator -=(std::initializer_list<std::string> list) {
+TrieLexicon& TrieLexicon::operator -=(std::initializer_list<std::string> list) {
     return removeAll(list);
 }
 
-Lexicon& Lexicon::operator -=(const std::string& word) {
+TrieLexicon& TrieLexicon::operator -=(const std::string& word) {
     remove(word);
     _removeFlag = true;
     return *this;
@@ -429,7 +420,7 @@ Lexicon& Lexicon::operator -=(const std::string& word) {
 
 /* private helpers implementation */
 
-Lexicon& Lexicon::operator ,(const std::string& word) {
+TrieLexicon& TrieLexicon::operator ,(const std::string& word) {
     if (_removeFlag) {
         remove(word);
     } else {
@@ -439,7 +430,7 @@ Lexicon& Lexicon::operator ,(const std::string& word) {
 }
 
 // pre: word is scrubbed to contain only lowercase a-z letters
-bool Lexicon::addHelper(TrieNode*& node, const std::string& word, const std::string& originalWord) {
+bool TrieLexicon::addHelper(TrieNode*& node, const std::string& word, const std::string& originalWord) {
     if (!node) {
         // create nodes all the way down, one for each letter of the word
         node = new TrieNode();
@@ -463,7 +454,7 @@ bool Lexicon::addHelper(TrieNode*& node, const std::string& word, const std::str
 }
 
 // pre: word is scrubbed to contain only lowercase a-z letters
-bool Lexicon::containsHelper(TrieNode* node, const std::string& word, bool isPrefix) const {
+bool TrieLexicon::containsHelper(TrieNode* node, const std::string& word, bool isPrefix) const {
     if (!node) {
         // base case: no pointer down to here, so prefix must not exist
         return false;
@@ -481,7 +472,7 @@ bool Lexicon::containsHelper(TrieNode* node, const std::string& word, bool isPre
 }
 
 // pre: word is scrubbed to contain only lowercase a-z letters
-bool Lexicon::removeHelper(TrieNode*& node, const std::string& word, const std::string& originalWord, bool isPrefix) {
+bool TrieLexicon::removeHelper(TrieNode*& node, const std::string& word, const std::string& originalWord, bool isPrefix) {
     if (!node) {
         // base case: dead end; this word/prefix must not be contained
         return false;
@@ -526,7 +517,7 @@ bool Lexicon::removeHelper(TrieNode*& node, const std::string& word, const std::
 }
 
 // remove/free this node and all descendents
-void Lexicon::removeSubtreeHelper(TrieNode*& node, const std::string& originalWord) {
+void TrieLexicon::removeSubtreeHelper(TrieNode*& node, const std::string& originalWord) {
     if (node) {
         for (char letter = 'a'; letter <= 'z'; letter++) {
             removeSubtreeHelper(node->child(letter), originalWord + letter);
@@ -540,13 +531,13 @@ void Lexicon::removeSubtreeHelper(TrieNode*& node, const std::string& originalWo
     }
 }
 
-void Lexicon::deepCopy(const Lexicon& src) {
+void TrieLexicon::deepCopy(const TrieLexicon& src) {
     for (std::string word : src._allWords) {
         add(word);
     }
 }
 
-void Lexicon::deleteTree(TrieNode* node) {
+void TrieLexicon::deleteTree(TrieNode* node) {
     if (node) {
         for (char letter = 'a'; letter <= 'z'; letter++) {
             deleteTree(node->child(letter));
@@ -555,7 +546,7 @@ void Lexicon::deleteTree(TrieNode* node) {
     }
 }
 
-Lexicon& Lexicon::operator =(const Lexicon& src) {
+TrieLexicon& TrieLexicon::operator =(const TrieLexicon& src) {
     if (this != &src) {
         clear();
         deepCopy(src);
@@ -563,20 +554,20 @@ Lexicon& Lexicon::operator =(const Lexicon& src) {
     return *this;
 }
 
-std::ostream& operator <<(std::ostream& out, const Lexicon& lex) {
+std::ostream& operator <<(std::ostream& out, const TrieLexicon& lex) {
     out << lex._allWords;
     return out;
 }
 
-std::istream& operator >>(std::istream& is, Lexicon& lex) {
+std::istream& operator >>(std::istream& is, TrieLexicon& lex) {
     std::string element;
-    return stanfordcpplib::collections::readCollection(is, lex, element, /* descriptor */ "Lexicon::operator >>");
+    return stanfordcpplib::collections::readCollection(is, lex, element, /* descriptor */ "TrieLexicon::operator >>");
 }
 
 /*
  * Hash function for lexicons.
  */
-int hashCode(const Lexicon& lex) {
+int hashCode(const TrieLexicon& lex) {
     return stanfordcpplib::collections::hashCodeCollection(lex);
 }
 

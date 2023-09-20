@@ -3,14 +3,14 @@
  */
 
 // all collections:
-// DawgLexicon, Grid, HashMap, HashSet, Lexicon, LinkedList,
+// DawgLexicon, Grid, HashMap, HashSet, TrieLexicon, LinkedList,
 // Map, PriorityQueue, Queue, Set, Stack, Vector
 
 
 #include "deque.h"
 #include "grid.h"
 #include "hashset.h"
-#include "lexicon.h"
+#include "trielexicon.h"
 #include "linkedlist.h"
 #include "map.h"
 #include "priorityqueue.h"
@@ -68,7 +68,7 @@ PROVIDED_TEST("collection initializer lists") {
     std::initializer_list<std::string> lexallwords = {
         "ten", "twenty", "thirty", "forty", "fifty", "sixty", "seventy"
     };
-    Lexicon lex {"ten", "twenty", "thirty"};
+    TrieLexicon lex {"ten", "twenty", "thirty"};
     cout << "init list Lexicon = " << lex << ", size " << lex.size() << endl;
     for (std::string s : lexallwords) { cout << boolalpha << lex.contains(s) << " "; }
     cout << endl;
