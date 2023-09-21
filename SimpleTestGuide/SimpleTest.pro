@@ -49,6 +49,9 @@ INCLUDEPATH     +=  $$PWD "$${SPL_DIR}/include"
 #       Configure project with custom settings                                #
 ###############################################################################
 
+# changes to headers require recompilation
+DEPENDPATH += $$PWD
+
 # remove spaces from target executable for better Windows compatibility
 TARGET      =   $$replace(TARGET, " ", _)
 
