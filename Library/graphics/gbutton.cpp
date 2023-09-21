@@ -19,6 +19,7 @@
 
 #include "gbutton.h"
 #include <QKeySequence>
+#include <QIcon>
 #include "filelib.h"
 #include "gthread.h"
 #include "require.h"

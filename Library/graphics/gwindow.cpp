@@ -40,6 +40,7 @@
  */
 
 #include "gwindow.h"
+#include <QIcon>
 #include <QMenu>
 #include <QMenuBar>
 #include <QScreen>

@@ -22,6 +22,7 @@
  */
 
 #include "glabel.h"
+#include <QIcon>
 #include <iostream>
 #include "filelib.h"
 #include "glayout.h"
