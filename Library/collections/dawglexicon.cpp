@@ -28,6 +28,7 @@
 #include <fstream>
 #include "splversion.h"
 #include "filelib.h"
+#include <cstring>
 
 DawgLexicon::DawgLexicon() :
         _edges(nullptr),
