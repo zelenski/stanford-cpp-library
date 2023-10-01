@@ -37,8 +37,7 @@ class supports efficient lookup operations for words and prefixes.
 		<td class=indexSynopsis width=100%>Initializes a new empty lexicon.</td>
 	</tr>
 	<tr>
-		<td class=indexKey><nobr><a href="#Constructor:Lexicon">Lexicon(<var>filename</var>)</a>&nbsp;<br>
-			<a href="#Constructor:Lexicon">Lexicon(<var>istream</var>)</a>&nbsp;</nobr></td>
+		<td class=indexKey><nobr><a href="#Constructor:Lexicon">Lexicon(<var>filename</var>)</a>&nbsp;</nobr></td>
 		<td class="bigoh">O(WN)</td>
 		<td class=indexSynopsis width=100%>Initializes a new lexicon that reads words from the given file or input stream.</td>
 	</tr>
@@ -61,27 +60,12 @@ class supports efficient lookup operations for words and prefixes.
 		<td class=indexSynopsis width=100%>Returns the number of words contained in the lexicon.</td>
 	</tr>
 	<tr>
-		<td class=indexKey><nobr><a href="#Method:toString">toString()</a>&nbsp;</nobr></td>
-		<td class="bigoh">O(1)</td>
-		<td class=indexSynopsis width=100%>Returns a printable string representation of this lexicon.</td>
-	</tr>
-	<tr>
 		<td class=indexHead colspan=3>Operators</td>
 	</tr>
 	<tr>
 		<td class=indexKey><nobr><a href="#Operator:foreach">for (string word : lex)&nbsp;</nobr></td>
 		<td class="bigoh">O(N)</td>
 		<td class=indexSynopsis width=100%>Iterates through the words in a lexicon in alphabetical order.</td>
-	</tr>
-	<tr>
-		<td class=indexKey><nobr><a href="#Operator:<<"><var>ostream</var>&nbsp;&lt;&lt;&nbsp;<var>lex</var></a>&nbsp;</nobr></td>
-		<td class="bigoh">O(N)</td>
-		<td class=indexSynopsis width=100%>Outputs the contents of the lexicon to the given output stream.</td>
-	</tr>
-	<tr>
-		<td class=indexKey><nobr><a href="#Operator:>>"><var>istream</var>&nbsp;&gt;&gt;&nbsp;<var>lex</var></a>&nbsp;</nobr></td>
-		<td class="bigoh">O(WN)</td>
-		<td class=indexSynopsis width=100%>Reads the contents of the given input stream into the lexicon.</td>
 	</tr>
 </table>
 
@@ -90,13 +74,12 @@ class supports efficient lookup operations for words and prefixes.
 <a name="Constructor:Lexicon"></a>
 <pre class=detailCode>
 Lexicon();
-Lexicon(istream&amp; input);
 Lexicon(string filename);
 </pre>
 <div class=detailHTML>
 Initializes a new lexicon.  The default constructor creates an empty
 lexicon.  The second form reads in the contents of the lexicon from
-the specified data file or stream.
+the specified data file.
 The data file must be in one of two formats:
 (1) a space-efficient precompiled binary format or (2) a text file
 containing one word per line.  The Stanford library distribution
@@ -161,18 +144,7 @@ Returns the number of words contained in the lexicon.
 int n = lex.size();
 </pre>
 
-<hr>
-<a name="Method:toString"></a>
-<pre class=detailCode>
-string toString() const;
-</pre>
-<div class=detailHTML>
-Returns a printable string representation of this lexicon, such as <code>&quot;{word1, word2, word3}&quot;</code>.
-<p>Usage:<br>
-</div>
-<pre class=usageCode>
-string str = lexicon.toString();
-</pre>
+
 <hr>
 </table>
 
@@ -196,38 +168,6 @@ for (string word : lex) {
 
 </pre>
 
-
-<hr>
-<a name="Operator:<<"></a>
-<pre class=detailCode>
-ostream&amp; operator&lt;&lt;(const Lexicon&amp; lex);
-</pre>
-Outputs the contents of <code>lex</code> to the given output stream.
-The output is in the form <code>{ word1, word2, word3 }</code>. The words
-will be listed in alphabetical order.
-
-<p>Usage:<br>
-</div>
-<pre class=usageCode>
-cout << lex << endl;
-</pre>
-
-
-<hr>
-<a name="Operator:>>"></a>
-<pre class=detailCode>
-istream&amp; operator&gt;&gt;(Lexicon&amp; lex);
-</pre>
-Reads the contents of the given input stream into <code>lex</code>. Any previous
-contents of the lex are replaced.
-The input is expected to be in the form <code>{ word1, word2, word3 }</code>. If unable to read a proper
-lexicon from the stream, the operation results in a stream fail state.
-
-<p>Usage:<br>
-</div>
-<pre class=usageCode>
-if (infile >> lex) ...
-</pre>
 
 <hr>
 </table>

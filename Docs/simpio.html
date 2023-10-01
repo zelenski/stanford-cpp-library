@@ -29,7 +29,12 @@ operations in C++ and provide some error-checking on user input.
     <td class=indexKey><nobr><a href="#Function:getReal">getReal(<var>prompt</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Reads a complete line from user input and scans it as a floating-point number.</td>
 </tr>
 <tr>
-    <td class=indexKey><nobr><a href="#Function:getYesOrNo">getYesOrNo(<var>prompt</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Reads a complete line from user input and treats it as a yes-or-no answer to a question, returning a boolean value of <code>true</code> for yes and <code>false</code> for no.</td></tr>
+    <td class=indexKey><nobr><a href="#Function:getYesOrNo">getYesOrNo(<var>prompt</var>)</a>&nbsp;</nobr></td><td class=indexSynopsis width=100%>Reads a complete line from user input and treats it as a yes-or-no answer to a question, returning a boolean value of <code>true</code> for yes and <code>false</code> for no.</td>
+</tr>
+<tr>
+    <td class="indexKey"><nobr><a href="#Function:promptUserForFilename">promptUserForFilename(<var>prompt</var>)</nobr></td><td class="indexSynopsis" width="100%">Prompts user to enter the name of a file and returns it.</td>
+</tr>
+
 </table>
 <h2>Function detail</h2>
 
@@ -114,6 +119,25 @@ If no reprompt argument is given, the message defaults to "Please type a word th
 </div>
 <pre class=usageCode>
 if (getYesOrNo("Do you want to play another round?")) { ...
+</pre>
+
+<hr>
+<a name="Function:promptUserForFilename"></a>
+<pre class="detailCode">string promptUserForFilename(string prompt = "", string reprompt = "");
+</pre>
+<div class="detailHTML">
+Prompts the user to enter the name of a file, reads a complete line from user input and treats it as filename.
+ If the named file does not exist, the user is given additional chances to enter a valid file name.
+
+<p>The optional <code>prompt</code> argument provides an input prompt
+for the user.
+
+</p><p>The also optional <code>reprompt</code> argument provides an output message displayed each time if the user types a file that is not found.
+If no value is passed it defaults to, "Unable to open that file.  Try again.".
+
+<p>Usage:<br>
+</p></div>
+<pre class="usageCode">string filename = promptUserForFilename("Enter a filename: ");
 </pre>
 
 <hr>

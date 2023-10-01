@@ -24,6 +24,10 @@ makes it possible to use the same code on different platforms.
 <tbody><tr><td class="indexHead" colspan="2">Functions</td>
 </tr>
 <tr>
+   <td class="indexKey"><nobr><a href="#Function:chooseFileDialog">chooseFileDialog(<var>title</var>,&nbsp;<var>path</var>)</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">Opens a dialog that allows the user to choose a file from the specified path.</td>
+</tr>
+
+<tr>
    <td class="indexKey"><nobr><a href="#Function:createDirectory">createDirectory(<var>path</var>)</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">Creates a new directory for the specified path.</td>
 </tr>
 <tr>
@@ -41,6 +45,10 @@ makes it possible to use the same code on different platforms.
 <tr>
    <td class="indexKey"><nobr><a href="#Function:fileExists">fileExists(<var>filename</var>)</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">Returns <code>true</code> if the specified file exists.</td>
 </tr>
+<tr>
+   <td class="indexKey"><nobr><a href="#Function:fileSize">fileSize(<var>filename</var>)</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">Returns size of specified file or -1 if no such file exists.</td>
+</tr>
+
 <tr>
    <td class="indexKey"><nobr><a href="#Function:findOnPath">findOnPath(<var>path</var>,&nbsp;<var>filename</var>)</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">Returns the canonical name of a file found using a search path.</td>
 </tr>
@@ -75,10 +83,7 @@ makes it possible to use the same code on different platforms.
    <td class="indexKey"><nobr><a href="#Function:isFile">isFile(<var>filename</var>)</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">Returns <code>true</code> if the specified file is a regular file.</td>
 </tr>
 <tr>
-   <td class="indexKey"><nobr><a href="#Function:isSymbolicLink">isSymbolicLink(<var>filename</var>)</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">Returns <code>true</code> if the specified file is a symbolic link.</td>
-</tr>
-<tr>
-   <td class="indexKey"><nobr><a href="#Function:listDirectory">listDirectory(<var>path</var>)</a><br><a href="#Function:listDirectory">listDirectory(<var>path</var>,&nbsp;<var>v</var>)</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">Returns an alphabetized vector of the files in the specified directory, or adds them to the given existing vector <code>v</code>.</td>
+   <td class="indexKey"><nobr><a href="#Function:listDirectory">listDirectory(<var>path</var>)</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">Returns an alphabetized vector of the files in the specified directory.</td>
 </tr>
 <tr>
    <td class="indexKey"><nobr><a href="#Function:matchFilenamePattern">matchFilenamePattern(<var>filename</var>,&nbsp;<var>pattern</var>)</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">Determines whether the filename matches the specified pattern.</td>
@@ -87,21 +92,10 @@ makes it possible to use the same code on different platforms.
    <td class="indexKey"><nobr><a href="#Function:openFile">openFile(<var>stream</var>,&nbsp;<var>filename</var>)</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">Opens the filestream <code>stream</code> using the specified filename.</td>
 </tr>
 <tr>
-   <td class="indexKey"><nobr><a href="#Function:openFileDialog">openFileDialog(<var>stream</var>)</a><br>
-<a href="#Function:openFileDialog">openFileDialog(<var>stream</var>,&nbsp;<var>title</var>)</a><br>
-<a href="#Function:openFileDialog">openFileDialog(<var>stream</var>,&nbsp;<var>title</var>,&nbsp;<var>path</var>)</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">Opens a dialog that allows the user to choose the file.</td>
+   <td class="indexKey"><nobr><a href="#Function:readEntire">readEntire(<var>is</var>)</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">Reads the entire contents of a filestream and returns them as a <code>string</code>.</td>
 </tr>
 <tr>
-   <td class="indexKey"><nobr><a href="#Function:openOnPath">openOnPath(<var>stream</var>,&nbsp;<var>path</var>,&nbsp;<var>filename</var>)</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">Opens a file using a search path.</td>
-</tr>
-<tr>
-   <td class="indexKey"><nobr><a href="#Function:promptUserForFile">promptUserForFile(<var>stream</var>,&nbsp;<var>prompt</var>)</a>&nbsp;<br><a href="#Function:promptUserForFile">promptUserForFile(<var>prompt</var>)</a></nobr></td><td class="indexSynopsis" width="100%">Asks the user for the name of a file.</td>
-</tr>
-<tr>
-   <td class="indexKey"><nobr><a href="#Function:readEntireFile">readEntireFile(<var>is</var>,&nbsp;<var>v</var>)</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">Reads the entire contents of the specified input stream into the string vector <code>lines</code>.</td>
-</tr>
-<tr>
-   <td class="indexKey"><nobr><a href="#Function:readEntireFile">readEntireFile(<var>filename</var>)</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">Reads the entire contents of the specified file and returns them as a <code>string</code>.</td>
+   <td class="indexKey"><nobr><a href="#Function:readLines">readLines(<var>is</var>)</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">Reads the entire contents of a filestream and returns them as a vector of lines.</td>
 </tr>
 <tr>
    <td class="indexKey"><nobr><a href="#Function:renameFile">renameFile(<var>oldname</var>,&nbsp;<var>newname</var>)</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">Renames a file.</td>
@@ -135,78 +129,44 @@ stream and returns <code>false</code>.
 <pre class="usageCode">if (openFile(stream, filename)) ...
 </pre>
 
+
 <hr>
-<a name="Function:promptUserForFile"></a>
-<pre class="detailCode">string promptUserForFile(ifstream&amp; stream, string prompt = "", string reprompt = "");
-string promptUserForFile(ofstream&amp; stream, string prompt = "", string reprompt = "");
-string promptUserForFile(string prompt = "", string reprompt = "");
+<a name="Function:readEntire"></a>
+<pre class="detailCode">string readEntire(istream&amp; is);
 </pre>
 <div class="detailHTML">
-Asks the user for the name of a file.  The file is opened using
-the reference parameter <code>stream</code>, and the function
-returns the name of the file.  If the requested file cannot be
-opened, the user is given additional chances to enter a valid file.
-
-
-<p>The optional <code>prompt</code> argument provides an input prompt
-for the user.
-
-</p><p>The also optional <code>reprompt</code> argument provides an output message displayed each time if the user types a file that is not found.
-If no value is passed it defaults to, "Unable to open that file.  Try again.".
-
-</p><p>If no stream reference is passed, it is up to you to create an ifstream
-object and open it upon return from this function.</p>
-
+Reads the entire contents of a filestream and returns them as a <code>string</code>.  The client is responsible for
+opening and closing the stream.
 <p>Usage:<br>
 </p></div>
-<pre class="usageCode">string filename = promptUserForFile(stream, prompt);
+<pre class="usageCode">string data = readEntire(is);
 </pre>
 
 <hr>
-<a name="Function:openFileDialog"></a>
-<pre class="detailCode">string openFileDialog(ifstream&amp; stream);
-string openFileDialog(ifstream&amp; stream, string title);
-string openFileDialog(ifstream&amp; stream, string title, string path);
-string openFileDialog(ofstream&amp; stream);
-string openFileDialog(ofstream&amp; stream, string title);
-string openFileDialog(ofstream&amp; stream, string title, string path);
+<a name="Function:readLines"></a>
+<pre class="detailCode">Vector&lt;string&gt; readLines(istream&amp; is);
+</pre>
+<div class="detailHTML">
+Reads the entire contents of a filestream and returns them as a vector of lines.  The client is responsible for
+opening and closing the stream.
+<p>Usage:<br>
+</p></div>
+<pre class="usageCode">Vector&lt;string&gt; lines = readLines(is);
+</pre>
+
+<hr>
+<a name="Function:chooseFileDialog"></a>
+<pre class="detailCode">string chooseFileDialog(string title, string path);
 </pre>
 <div class="detailHTML">
 Opens a dialog that allows the user to choose the file.  The
 <code>title</code> parameter is displayed in the dialog title.
 The <code>path</code> parameter is used to set the working directory;
-if <code>path</code> does not appear, <code>openFileDialog</code>
+if <code>path</code> does not appear, <code>chooseFileDialog</code>
 uses the current directory.
 <p>Usage:<br>
 </p></div>
-<pre class="usageCode">string filename = openFileDialog(stream);
-string filename = openFileDialog(stream, title);
-string filename = openFileDialog(stream, title, path);
-</pre>
-
-<hr>
-<a name="Function:readEntireFile"></a>
-<pre class="detailCode">void readEntireFile(istream&amp; is, Vector&lt;string&gt;&amp; lines);
-</pre>
-<div class="detailHTML">
-Reads the entire contents of the specified input stream into the
-string vector <code>lines</code>.  The client is responsible for
-opening and closing the stream.
-<p>Usage:<br>
-</p></div>
-<pre class="usageCode">readEntireFile(is, lines);
-</pre>
-
-<hr>
-<a name="Function:readEntireFile"></a>
-<pre class="detailCode">string readEntireFile(string filename);
-</pre>
-<div class="detailHTML">
-Reads the entire contents of the specified file and returns them as a <code>string</code>.
-If the file cannot be opened or read, throws an error.
-<p>Usage:<br>
-</p></div>
-<pre class="usageCode">string text = readEntireFile(filename);
+<pre class="usageCode">string filename = chooseFileDialog("Choose a file");
 </pre>
 
 <hr>
@@ -301,28 +261,6 @@ any existing extension in <code>filename</code> is replaced by
 </pre>
 
 <hr>
-<a name="Function:openOnPath"></a>
-<pre class="detailCode">string openOnPath(ifstream&amp; stream, string path, string filename);
-string openOnPath(ofstream&amp; stream, string path, string filename);
-</pre>
-<div class="detailHTML">
-Opens a file using a search path.  If <code>openOnPath</code>
-is successful, it returns the first path name on the search path
-for which <code>stream.open</code> succeeds.  The <code>path</code>
-argument consists of a list of directories that are prepended to the
-filename, unless <code>filename</code> begins with an absolute
-directory marker, such as <code>/</code> or <code>~</code>.
-The directories in the search path may be separated either
-by colons (Unix or Mac OS) or semicolons (Windows).  If the file
-cannot be opened, the failure bit is set in the <code>stream</code>
-parameter, and the <code>openOnPath</code> function returns the
-empty string.
-<p>Usage:<br>
-</p></div>
-<pre class="usageCode">string pathname = openOnPath(stream, path, filename);
-</pre>
-
-<hr>
 <a name="Function:findOnPath"></a>
 <pre class="detailCode">string findOnPath(string path, string filename);
 </pre>
@@ -373,6 +311,17 @@ Returns <code>true</code> if the specified file exists.
 </pre>
 
 <hr>
+<a name="Function:fileSize"></a>
+<pre class="detailCode">int fileSize(string filename);
+</pre>
+<div class="detailHTML">
+Returns size in bytes of specified file or -1 if no such file exists.
+<p>Usage:<br>
+</p></div>
+<pre class="usageCode">int n = fileSize(filename);
+</pre>
+
+<hr>
 <a name="Function:isFile"></a>
 <pre class="detailCode">bool isFile(string filename);
 </pre>
@@ -381,17 +330,6 @@ Returns <code>true</code> if the specified file is a regular file.
 <p>Usage:<br>
 </p></div>
 <pre class="usageCode">if (isFile(filename)) ...
-</pre>
-
-<hr>
-<a name="Function:isSymbolicLink"></a>
-<pre class="detailCode">bool isSymbolicLink(string filename);
-</pre>
-<div class="detailHTML">
-Returns <code>true</code> if the specified file is a symbolic link.
-<p>Usage:<br>
-</p></div>
-<pre class="usageCode">if (isSymbolicLink(filename)) ...
 </pre>
 
 <hr>
@@ -470,19 +408,14 @@ Expands a filename into a canonical name for the platform.
 <hr>
 <a name="Function:listDirectory"></a>
 <pre class="detailCode">Vector&lt;string&gt; listDirectory(string path);
-void listDirectory(string path, Vector&lt;string&gt;&amp; v);
 </pre>
 <div class="detailHTML">
-Adds an alphabetized list of the names of the files in the specified directory to the string vector <code>v</code>.
-This list excludes the entries <code>.</code> and <code>..</code>.
+Returns an alphabetized list of the names of the files in the specified directory.
+The entries <code>.</code> and <code>..</code> are excluded from the list.
 <p>Usage:<br>
 </p></div>
-<pre class="usageCode">// first form
+<pre class="usageCode">
 Vector&lt;string&gt; files = listDirectory(path);
-
-// second form
-Vector&lt;string&gt; files;
-listDirectory(path, files);
 </pre>
 
 <hr>
