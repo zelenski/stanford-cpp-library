@@ -24,7 +24,7 @@ makes it possible to use the same code on different platforms.
 <tbody><tr><td class="indexHead" colspan="2">Functions</td>
 </tr>
 <tr>
-   <td class="indexKey"><nobr><a href="#Function:chooseFileDialog">chooseFileDialog(<var>title</var>,&nbsp;<var>path</var>)</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">Opens a dialog that allows the user to choose a file from the specified path.</td>
+   <td class="indexKey"><nobr><a href="#Function:chooseFilenameDialog">chooseFilenameDialog(<var>title</var>,&nbsp;<var>path</var>)</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">Opens a dialog that allows the user to choose a file from the specified path.</td>
 </tr>
 
 <tr>
@@ -50,7 +50,7 @@ makes it possible to use the same code on different platforms.
 </tr>
 
 <tr>
-   <td class="indexKey"><nobr><a href="#Function:findOnPath">findOnPath(<var>path</var>,&nbsp;<var>filename</var>)</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">Returns the canonical name of a file found using a search path.</td>
+   <td class="indexKey"><nobr><a href="#Function:findOnPath">findOnPath(<var>searchpath</var>,&nbsp;<var>filename</var>)</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">Returns the canonical name of a file found using a search path.</td>
 </tr>
 <tr>
    <td class="indexKey"><nobr><a href="#Function:getCurrentDirectory">getCurrentDirectory()</a>&nbsp;</nobr></td><td class="indexSynopsis" width="100%">Returns an absolute filename for the current directory.</td>
@@ -118,12 +118,11 @@ bool openFile(ofstream&amp; stream, string filename);
 </pre>
 <div class="detailHTML">
 Opens the filestream <code>stream</code> using the specified
-filename.  This function is similar to the <code>open</code>
-method of the stream classes, but uses a C++ <code>string</code>
-object instead of the older C-style string.  If the operation
+filename.  If the operation
 succeeds, <code>openFile</code> returns <code>true</code>;
 if it fails, <code>openFile</code> sets the failure flag in the
-stream and returns <code>false</code>.
+stream and returns <code>false</code>. If <code>stream</code> is of type <code>ifstream</code>, the file
+is opened for reading; if of type <code>ofstream</code>, it is opened for writing.
 <p>Usage:<br>
 </p></div>
 <pre class="usageCode">if (openFile(stream, filename)) ...
@@ -155,18 +154,18 @@ opening and closing the stream.
 </pre>
 
 <hr>
-<a name="Function:chooseFileDialog"></a>
-<pre class="detailCode">string chooseFileDialog(string title, string path);
+<a name="Function:chooseFilenameDialog"></a>
+<pre class="detailCode">string chooseFilenameDialog(string title, string path);
 </pre>
 <div class="detailHTML">
 Opens a dialog that allows the user to choose the file.  The
 <code>title</code> parameter is displayed in the dialog title.
 The <code>path</code> parameter is used to set the working directory;
-if <code>path</code> does not appear, <code>chooseFileDialog</code>
+if <code>path</code> does not appear, <code>chooseFilenameDialog</code>
 uses the current directory.
 <p>Usage:<br>
 </p></div>
-<pre class="usageCode">string filename = chooseFileDialog("Choose a file");
+<pre class="usageCode">string filename = chooseFilenameDialog("Choose a file");
 </pre>
 
 <hr>
@@ -262,17 +261,14 @@ any existing extension in <code>filename</code> is replaced by
 
 <hr>
 <a name="Function:findOnPath"></a>
-<pre class="detailCode">string findOnPath(string path, string filename);
+<pre class="detailCode">string findOnPath(string searchpath, string filename);
 </pre>
 <div class="detailHTML">
-Returns the canonical name of a file found using a search path.
-The <code>findOnPath</code> function is similar to
-<code>openOnPath</code>, except that it doesn't actually
-return an open stream.  If no matching file is found,
+Returns the canonical name of a file found using a search path. The searchpath argument consists of a list of directories that are prepended to the filename, unless filename begins with an absolute directory marker, such as / or ~. The directories in the search path may be separated either by colons (Unix or Mac OS) or semicolons (Windows).  If no matching file is found,
 <code>findOnPath</code> returns the empty string.
 <p>Usage:<br>
 </p></div>
-<pre class="usageCode">string pathname = findOnPath(path, filename);
+<pre class="usageCode">string pathname = findOnPath(searchpath, filename);
 </pre>
 
 <hr>
@@ -415,7 +411,7 @@ The entries <code>.</code> and <code>..</code> are excluded from the list.
 <p>Usage:<br>
 </p></div>
 <pre class="usageCode">
-Vector&lt;string&gt; files = listDirectory(path);
+Vector&lt;string&gt; filenames = listDirectory(path);
 </pre>
 
 <hr>

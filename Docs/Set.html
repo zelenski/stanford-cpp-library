@@ -49,7 +49,7 @@ Because of this choice of internal representation, the <code>ValueType</code> fo
 	</tr>
 	<tr>
 		<td class=indexKey><nobr><a href="#Method:difference">difference(<var>otherSet</var>)</a>&nbsp;</nobr></td>
-		<td class="bigoh">O(Nlog N)</td>
+		<td class="bigoh">O(N log N)</td>
 		<td class=indexSynopsis width=100%>Subtracts <code>otherSet</code> from this set. The difference removes those elements that appear in <code>otherSet</code>.</td>
 	</tr>
 	<tr>
@@ -130,19 +130,14 @@ Because of this choice of internal representation, the <code>ValueType</code> fo
 		<td class=indexSynopsis width=100%>Evaluates to <code>true</code> if <code>set1</code> and <code>set2</code> are different.</td>
 	</tr>
 	<tr>
-		<td class=indexKey><nobr><a href="#Operator:+"><var>set1</var> + <var>set2</var></a>&nbsp;</nobr></td>
-		<td class="bigoh">O(N)</td>
-		<td class=indexSynopsis width=100%>Creates a new set which is the union of <code>set1</code> with <code>set2</code>.</td>
-	</tr>
-	<tr>
 		<td class=indexKey><nobr><a href="#Operator:+"><var>set</var> + <var>value</var></a>&nbsp;</nobr></td>
-		<td class="bigoh">O(N log N)</td>
+		<td class="bigoh">O(N)</td>
 		<td class=indexSynopsis width=100%>Creates a new set which is the union of <code>set</code> with the single <code>value</code>.</td>
 	</tr>
 	<tr>
-		<td class=indexKey><nobr><a href="#Operator:+="><var>set1</var> += <var>set2</var></a>&nbsp;</nobr></td>
+		<td class=indexKey><nobr><a href="#Operator:+"><var>set1</var> + <var>set2</var></a>&nbsp;</nobr></td>
 		<td class="bigoh">O(N log N)</td>
-		<td class=indexSynopsis width=100%>Adds all of the elements from <code>set2</code> to <code>set1</code>.</td>
+		<td class=indexSynopsis width=100%>Creates a new set which is the union of <code>set1</code> with <code>set2</code>.</td>
 	</tr>
 	<tr>
 		<td class=indexKey><nobr><a href="#Operator:+="><var>set</var> += <var>value</var></a>&nbsp;</nobr></td>
@@ -150,24 +145,29 @@ Because of this choice of internal representation, the <code>ValueType</code> fo
 		<td class=indexSynopsis width=100%>Adds the single <code>value</code> to <code>set</code>.</td>
 	</tr>
 	<tr>
+		<td class=indexKey><nobr><a href="#Operator:+="><var>set1</var> += <var>set2</var></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N log N)</td>
+		<td class=indexSynopsis width=100%>Adds all of the elements from <code>set2</code> to <code>set1</code>.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:-"><var>set</var> - <var>value</var></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Creates a new set which contains all values in <code>set</code> minus <code>value</code>.
+	</tr>
+	<tr>
 		<td class=indexKey><nobr><a href="#Operator:-"><var>set1</var> - <var>set2</var></a>&nbsp;</nobr></td>
 		<td class="bigoh">O(N log N)</td>
 		<td class=indexSynopsis width=100%>Creates a new set containing the elements in <code>set1</code> that aren't in <code>set2</code>.</td>
 	</tr>
 	<tr>
-		<td class=indexKey><nobr><a href="#Operator:-"><var>set</var> - <var>value</var></a>&nbsp;</nobr></td>
+		<td class=indexKey><nobr><a href="#Operator:-="><var>set</var> -= <var>value</var></a>&nbsp;</nobr></td>
 		<td class="bigoh">O(log N)</td>
-		<td class=indexSynopsis width=100%>Creates a new set which contains all values in <code>set</code> minus <code>value</code>.
+		<td class=indexSynopsis width=100%>Removes the single <code>value</code> from <code>set</code>.</td>
 	</tr>
 	<tr>
 		<td class=indexKey><nobr><a href="#Operator:-="><var>set1</var> -= <var>set2</var></a>&nbsp;</nobr></td>
 		<td class="bigoh">O(N log N)</td>
 		<td class=indexSynopsis width=100%>Removes the elements of <code>set2</code> from <code>set1</code>.</td>
-	</tr>
-	<tr>
-		<td class=indexKey><nobr><a href="#Operator:-="><var>set</var> -= <var>value</var></a>&nbsp;</nobr></td>
-		<td class="bigoh">O(log N)</td>
-		<td class=indexSynopsis width=100%>Removes the single <code>value</code> from <code>set</code>.</td>
 	</tr>
 	<tr>
 		<td class=indexKey><nobr><a href="#Operator:*"><var>set1</var> * <var>set2</var></a>&nbsp;</nobr></td>
