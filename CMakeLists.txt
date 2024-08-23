@@ -71,6 +71,18 @@ file(GLOB LIBRARY_SRC CONFIGURE_DEPENDS
         "${CS106_LIB_PATH}/private/*.cpp"
 )
 
+# Create list of header files
+file(GLOB LIBRARY_HEADER CONFIGURE_DEPENDS
+        "${CS106_LIB_PATH}/collections/*.h"
+        "${CS106_LIB_PATH}/console/*.h"
+        "${CS106_LIB_PATH}/graphics/*.h"
+        "${CS106_LIB_PATH}/io/*.h"
+        "${CS106_LIB_PATH}/system/*.h"
+        "${CS106_LIB_PATH}/util/*.h"
+        "${CS106_LIB_PATH}/testing/*.h"
+        "${CS106_LIB_PATH}/private/*.h"
+)
+
 file(GLOB QT_RESOURCES ${CS106_LIB_PATH}/images.qrc)
 
 # We need to say what libraries we need from Qt6
@@ -87,9 +99,7 @@ qt_add_resources(RCC_SOURCES ${QT_RESOURCES})
 # Create static library
 qt_add_library(CS106_library STATIC
         ${LIBRARY_SRC}
-        ${PRIVATE_SRC}
         ${LIBRARY_HEADER}
-        ${PRIVATE_HEADER}
         ${RCC_SOURCES}
 )
 
