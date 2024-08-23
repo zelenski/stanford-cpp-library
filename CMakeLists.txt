@@ -1,11 +1,16 @@
 cmake_minimum_required(VERSION 3.17)
 project(stanford-cpp-library)
 
+# This CMake provides an example of how to use CMake to build the
+# Stanford cpp library rather than a pro file.
+# This allows the use of other IDE's such as CLion, VSC, etc. for
+# development.
+
 # MinGW compiler lags, be conservative and use C++11 on all platforms
 # rather than special case
 set(CMAKE_CXX_STANDARD 11)
 
-set(CS106_LIB_PATH "./Library")
+set(CS106_LIB_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Library")
 
 # Make sure you have an updated version of MinGW
 # set(CMAKE_PREFIX_PATH "C:/PATH_TO_COMPILER")
@@ -49,9 +54,10 @@ endif ()
 add_definitions(-DSPL_CMAKE_BUILD)
 configure_file(
         ${CS106_LIB_PATH}/private/build.h.in
-        ${CS106_LIB_PATH}/private/build.h
+        ${CS106_LIB_PATH}/private/build.h 
         @ONLY
 )
+
 
 # Create list of source files
 file(GLOB LIBRARY_SRC CONFIGURE_DEPENDS
