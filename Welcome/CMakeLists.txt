@@ -31,11 +31,11 @@ find_package(Qt${QT_VERSION} COMPONENTS ${REQUIRED_LIBS} REQUIRED)
 target_link_libraries(${PROJECT_NAME} ${REQUIRED_LIBS_QUALIFIED})
 
 if (WIN32)
-    if (CMAKE_BUILD_TYPE MATCHES "Debug")
-        set(EXTENSION "debug")
-    else ()
-        set(EXTENSION "dll")
-    endif ()
+
+    # If the debug library versions do not exist, 
+    # consider using the dll library version instead   
+    set(EXTENSION "dll")
+    #    set(EXTENSION "debug")
     set(QT_INSTALL_PATH "${CMAKE_PREFIX_PATH}")
     if (NOT EXISTS "${QT_INSTALL_PATH}/bin")
         set(QT_INSTALL_PATH "${QT_INSTALL_PATH}/..")
@@ -49,10 +49,13 @@ if (WIN32)
                 "$<TARGET_FILE_DIR:${PROJECT_NAME}>/plugins/platforms/")
         add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
                 COMMAND ${CMAKE_COMMAND} -E copy
-                "${QT_INSTALL_PATH}/plugins/platforms/qwindows.${EXTENSION}"
+                "${QT_INSTALL_PATH}/plugins/platforms/qwindows.dll"
                 "$<TARGET_FILE_DIR:${PROJECT_NAME}>/plugins/platforms/")
     endif ()
     foreach (QT_LIB ${REQUIRED_LIBS})
+        if (NOT EXISTS "${QT_INSTALL_PATH}/bin/Qt${QT_VERSION}${QT_LIB}.${EXTENSION}")
+            message("${QT_INSTALL_PATH}/bin/Qt${QT_VERSION}${QT_LIB}.${EXTENSION} does not exist")
+        endif ()
         add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
                 COMMAND ${CMAKE_COMMAND} -E copy
                 "${QT_INSTALL_PATH}/bin/Qt${QT_VERSION}${QT_LIB}.${EXTENSION}"
