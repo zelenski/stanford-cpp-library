@@ -4,9 +4,13 @@ project(SPL-unit-tests)
 # Need the relative path to Library
 set(CS106_LIB_PATH "../Library")
 
+file(GLOB TEST_SRC CONFIGURE_DEPENDS
+        "*.cpp"
+)
+
 # Create the project executable
 add_executable(${PROJECT_NAME}
-        main.cpp
+        ${TEST_SRC}
 )
 
 # link exe to CS106 library
