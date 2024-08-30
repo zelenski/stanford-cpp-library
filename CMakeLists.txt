@@ -12,18 +12,27 @@ set(CMAKE_CXX_STANDARD 11)
 
 set(CS106_LIB_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Library")
 
-# Make sure you have an updated version of MinGW
-# set(CMAKE_PREFIX_PATH "C:/PATH_TO_COMPILER")
-# Alternatively it can also be MSVC compiler (not tested)
-# set(CMAKE_PREFIX_PATH "C:/Qt6/6.2.4/msvc2019_64")
-set(CMAKE_PREFIX_PATH "C:/Qt6/6.2.4/mingw_64")
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
-set(CMAKE_AUTOUIC ON)
+# We try to make a best guess based on the OS, but you may
+# need to manually specify the path to the qt CMake.
+if (WIN32)
+    # I recommend using MinGW for Windows
+    set(CMAKE_PREFIX_PATH "C:/Qt/6.7.2/mingw_64")
 
-# Special sauce to get qt resources to work
-find_package(QT NAMES Qt6 Qt5 COMPONENTS Core Quick QuickControls2 Widgets Qt6QuickCompiler REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Quick QuickControls2 Widgets REQUIRED)
+    # Alternatively it can use MSVC 2019 compiler (Not tested)
+    # set(CMAKE_PREFIX_PATH "C:/Qt/6.7.2/msvc2019_64")
+elseif (APPLE)
+    # Not tested
+    set(CMAKE_PREFIX_PATH "~/Qt/6.7.2/macos")
+else ()
+    # UNIX/Linux case
+    set(CMAKE_PREFIX_PATH "~/Qt6/6.7.2/gcc_64")
+endif ()
+
+set(CMAKE_AUTOMOC ON)  # Automatic handling of the Qt Meta-Object Compiler (MOC)
+set(CMAKE_AUTORCC ON)  # Automatic handling of the Qt Resource compiler
+set(CMAKE_AUTOUIC ON)  # Automatic handling of the Qt UI code generator
+
+find_package(Qt6 COMPONENTS Core Quick Gui Widgets REQUIRED)
 
 # Include all the cs106 library folders
 include_directories("${CS106_LIB_PATH}")
