@@ -15,17 +15,24 @@ set(CS106_LIB_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Library")
 # We try to make a best guess based on the OS, but you may
 # need to manually specify the path to the qt CMake.
 if (WIN32)
-    # I recommend using MinGW for Windows
+    # MinGW is recommended for Windows.  Please note that
+    # Qt is very picky about the MinGW compiler.  Be sure
+    # you are using the most up to date version of MinGW.
     set(CMAKE_PREFIX_PATH "C:/Qt/6.7.2/mingw_64")
 
-    # Alternatively it can use MSVC 2019 compiler (Not tested)
-    # set(CMAKE_PREFIX_PATH "C:/Qt/6.7.2/msvc2019_64")
+    # Alternatively MSVC 2019 compiler can be used (Not tested)
+    # set(CMAKE_PREFIX_PATH "C:/Qt6/6.7.2/msvc2019_64")
 elseif (APPLE)
-    # Not tested
     set(CMAKE_PREFIX_PATH "~/Qt/6.7.2/macos")
 else ()
     # UNIX/Linux case
     set(CMAKE_PREFIX_PATH "~/Qt6/6.7.2/gcc_64")
+endif ()
+
+# Verify CMAKE_PREFIX_PATH exists
+if (NOT EXISTS ${CMAKE_PREFIX_PATH})
+    message(WARNING "The path ${CMAKE_PREFIX_PATH} does not exist"
+            "please verify the path to your Qt installation")
 endif ()
 
 set(CMAKE_AUTOMOC ON)  # Automatic handling of the Qt Meta-Object Compiler (MOC)
@@ -45,6 +52,24 @@ include_directories("${CS106_LIB_PATH}/resources")
 include_directories("${CS106_LIB_PATH}/system")
 include_directories("${CS106_LIB_PATH}/util")
 include_directories("${CS106_LIB_PATH}/testing")
+
+
+# Copy resources folder into per-user writable data location from QtStandardPaths
+if (WIN32)
+    set(QTP_EXE "qtpaths6.exe")
+else()
+    set(QTP_EXE "qtpaths6")
+endif ()
+
+set (QT_INSTALL_BINS "${CMAKE_PREFIX_PATH}/bin")
+
+# Find writable data directory
+execute_process(COMMAND "${QT_INSTALL_BINS}/${QTP_EXE}" "--writable-path" "GenericDataLocation" 
+        OUTPUT_VARIABLE USER_DATA_DIR OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+# Copy resources folder into data directory
+set (SPL_DIR "${USER_DATA_DIR}/cs106")
+file(COPY "${CS106_LIB_PATH}/resources" DESTINATION "${SPL_DIR}")
 
 # Used in build.h.in file to generate build.h file
 set (SPL_VERSION "2023.1")
