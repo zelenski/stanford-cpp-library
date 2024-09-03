@@ -26,7 +26,7 @@ elseif (APPLE)
     set(CMAKE_PREFIX_PATH "$ENV{HOME}/Qt/6.7.2/macos")
 else ()
     # UNIX/Linux case
-    set(CMAKE_PREFIX_PATH "$ENV{HOME}/Qt6/6.7.2/gcc_64")
+    set(CMAKE_PREFIX_PATH "$ENV{HOME}/Qt/6.7.2/gcc_64")
 endif ()
 
 # Verify CMAKE_PREFIX_PATH exists

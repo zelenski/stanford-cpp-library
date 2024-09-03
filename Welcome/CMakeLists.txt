@@ -9,7 +9,7 @@ target_link_libraries(CS106_library PRIVATE Qt6::Core Qt6::Gui Qt6::Widgets Qt6:
 
 # Create the project executable
 add_executable(${PROJECT_NAME}
-        Welcome.cpp
+        welcome.cpp
 )
 
 # link exe to CS106 library
