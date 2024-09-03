@@ -2,9 +2,8 @@ cmake_minimum_required(VERSION 3.17)
 project(stanford-cpp-library)
 
 # This CMake provides an example of how to use CMake to build the
-# Stanford cpp library rather than a pro file.
-# This allows the use of other IDE's such as CLion, VSC, etc. for
-# development.
+# Stanford cpp library rather than a pro file. This allows the use
+# of other IDE's such as CLion, VSC, etc. for development.
 
 # MinGW compiler lags, be conservative and use C++11 on all platforms
 # rather than special case
@@ -13,7 +12,7 @@ set(CMAKE_CXX_STANDARD 11)
 set(CS106_LIB_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Library")
 
 # We try to make a best guess based on the OS, but you may
-# need to manually specify the path to the qt CMake.
+# need to manually specify the path to the Qt library.
 if (WIN32)
     # MinGW is recommended for Windows.  Please note that
     # Qt is very picky about the MinGW compiler.  Be sure
@@ -23,9 +22,12 @@ if (WIN32)
     # Alternatively MSVC 2019 compiler can be used (Not tested)
     # set(CMAKE_PREFIX_PATH "C:/Qt6/6.7.2/msvc2019_64")
 elseif (APPLE)
+    # Note that execute_process cannot expand ~/ for the home path.
+    # We instead find the home directory using the environment variable
     set(CMAKE_PREFIX_PATH "$ENV{HOME}/Qt/6.7.2/macos")
 else ()
     # UNIX/Linux case
+    # Same issue with expanding the home path
     set(CMAKE_PREFIX_PATH "$ENV{HOME}/Qt/6.7.2/gcc_64")
 endif ()
 
@@ -52,7 +54,6 @@ include_directories("${CS106_LIB_PATH}/resources")
 include_directories("${CS106_LIB_PATH}/system")
 include_directories("${CS106_LIB_PATH}/util")
 include_directories("${CS106_LIB_PATH}/testing")
-
 
 # Copy resources folder into per-user writable data location from QtStandardPaths
 if (WIN32)
@@ -85,7 +86,7 @@ else ()
 endif ()
 
 # Generate build.h file
-add_definitions(-DSPL_CMAKE_BUILD)
+add_compile_definitions(SPL_CMAKE_BUILD)
 configure_file(
         ${CS106_LIB_PATH}/private/build.h.in
         ${CS106_LIB_PATH}/private/build.h 
