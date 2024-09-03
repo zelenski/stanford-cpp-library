@@ -184,7 +184,7 @@ GColor::GColor() {
 
 /*static*/ int GColor::fixAlpha(int argb) {
     int alpha = ((argb & 0xff000000) >> 24) & 0x000000ff;
-    if (alpha == 0 && (argb & 0x00ffffff) != 0) {
+    if (alpha == 0) {
         argb = argb | 0xff000000;   // set full 255 alpha
     }
     return argb;
