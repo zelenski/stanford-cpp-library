@@ -12,7 +12,9 @@ PROVIDED_TEST("Test filelib path utility functions") {
     EXPECT(fileExists(cwd));
     EXPECT(isDirectory(cwd));
     EXPECT(!isFile(cwd));
-    string thisFile = __FILE__;
+
+    /* 9/3/24: Can't use __FILE__ here as that resolves to ../../test-filelib.cpp. */
+    string thisFile = "test-filelib.cpp";
     EXPECT(fileExists(thisFile));
     EXPECT(isFile(thisFile));
     EXPECT(!isDirectory(thisFile));

@@ -83,7 +83,11 @@ PROVIDED_TEST("getDoubleBetween rejects values outside range") {
 
 PROVIDED_TEST("promptUserForFile accepts valid filenames, rejects others") {
     ioutils::setConsoleEchoUserInput(true);
-    string input = stringJoin({"", "garbage", __FILE__, "", "/s", __FILE__}, '\n');
+
+    /* 9/3/24: __FILE__ will be ../../test-simpio.cpp, which will not load given the working
+     * directory. However, the explicit test-simpio.cpp will.
+     */
+    string input = stringJoin({"", "garbage", "test-simpio.cpp", "", "/s", "test-simpio.cpp"}, '\n');
     ioutils::redirectStdinBegin(input);
 
     EXPECT(fileExists(promptUserForFilename()));
