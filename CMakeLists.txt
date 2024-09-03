@@ -23,10 +23,10 @@ if (WIN32)
     # Alternatively MSVC 2019 compiler can be used (Not tested)
     # set(CMAKE_PREFIX_PATH "C:/Qt6/6.7.2/msvc2019_64")
 elseif (APPLE)
-    set(CMAKE_PREFIX_PATH "~/Qt/6.7.2/macos")
+    set(CMAKE_PREFIX_PATH "$ENV{HOME}/Qt/6.7.2/macos")
 else ()
     # UNIX/Linux case
-    set(CMAKE_PREFIX_PATH "~/Qt6/6.7.2/gcc_64")
+    set(CMAKE_PREFIX_PATH "$ENV{HOME}/Qt6/6.7.2/gcc_64")
 endif ()
 
 # Verify CMAKE_PREFIX_PATH exists
@@ -39,7 +39,7 @@ set(CMAKE_AUTOMOC ON)  # Automatic handling of the Qt Meta-Object Compiler (MOC)
 set(CMAKE_AUTORCC ON)  # Automatic handling of the Qt Resource compiler
 set(CMAKE_AUTOUIC ON)  # Automatic handling of the Qt UI code generator
 
-find_package(Qt6 COMPONENTS Core Quick Gui Widgets REQUIRED)
+find_package(Qt6 COMPONENTS Core Gui Widgets Network REQUIRED)
 
 # Include all the cs106 library folders
 include_directories("${CS106_LIB_PATH}")
@@ -91,7 +91,6 @@ configure_file(
         ${CS106_LIB_PATH}/private/build.h 
         @ONLY
 )
-
 
 # Create list of source files
 file(GLOB LIBRARY_SRC CONFIGURE_DEPENDS
