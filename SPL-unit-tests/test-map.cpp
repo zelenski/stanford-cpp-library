@@ -12,6 +12,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <memory>
 
 
 
@@ -172,4 +173,39 @@ PROVIDED_TEST("Map, streamExtract") {
     Map<int, int> map;
     stream >> map;
     EXPECT_EQUAL(map.toString(), "{1:10, 2:20, 3:30, 4:40}");
+}
+
+PROVIDED_TEST("Map, operator[]") {
+    const Map<std::string, bool> m1 = {
+        { "A", true }
+    };
+    const Map<std::string, int> m2 = {
+        { "A", 1 }
+    };
+    const Map<std::string, float> m3 = {
+        { "A", 1.0f }
+    };
+    const Map<std::string, double> m4 = {
+        { "A", 1.0 }
+    };
+
+    auto ptr = std::make_shared<std::istringstream>();
+    const Map<std::string, std::shared_ptr<std::istringstream>> m5 = {
+        { "A", ptr }
+    };
+
+    EXPECT_EQUAL(m1["A"], true);
+    EXPECT_EQUAL(m1["B"], false);
+
+    EXPECT_EQUAL(m2["A"], 1);
+    EXPECT_EQUAL(m2["B"], 0);
+
+    EXPECT_EQUAL(m3["A"], 1.0f);
+    EXPECT_EQUAL(m3["B"], 0.0f);
+
+    EXPECT_EQUAL(m4["A"], 1.0);
+    EXPECT_EQUAL(m4["B"], 0.0);
+
+    EXPECT_EQUAL(m5["A"], ptr);
+    EXPECT_EQUAL(m5["B"], nullptr);
 }
