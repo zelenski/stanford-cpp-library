@@ -1,11 +1,9 @@
 /*
- * Test file for verifying the Stanford C++ lib collection functionality.
+ * Test file for verifying the Stanford C++ lib collections functionality.
+ *
+ * DawgLexicon, Grid, HashMap, HashSet, TrieLexicon, LinkedList,
+ * Map, PriorityQueue, Queue, Set, Stack, Vector
  */
-
-// all collections:
-// DawgLexicon, Grid, HashMap, HashSet, TrieLexicon, LinkedList,
-// Map, PriorityQueue, Queue, Set, Stack, Vector
-
 
 #include "deque.h"
 #include "grid.h"
@@ -23,9 +21,6 @@
 #include <sstream>
 #include <string>
 using namespace std;
-
-
-
 
 
 PROVIDED_TEST("collection initializer lists") {

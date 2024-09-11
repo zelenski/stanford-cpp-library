@@ -1,7 +1,6 @@
 /*
- * Test file for verifying the Stanford C++ lib collection functionality.
+ * Test file for verifying the Stanford C++ lib HashMap class.
  */
-
 
 #include "hashmap.h"
 #include "queue.h"
@@ -11,7 +10,6 @@
 #include <iostream>
 #include <sstream>
 #include <string>
-
 
 /*
  * Force instantiation of HashMap on a few types to make sure we didn't miss anything.

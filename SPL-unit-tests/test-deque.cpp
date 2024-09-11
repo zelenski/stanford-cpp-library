@@ -1,8 +1,6 @@
 /*
- * Test file for verifying the Stanford C++ lib collection functionality.
+ * Test file for verifying the Stanford C++ lib Deque class.
  */
-
-
 #include "deque.h"
 #include "hashset.h"
 #include "common.h"

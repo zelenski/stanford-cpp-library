@@ -1,5 +1,5 @@
 /*
- * Test file for verifying the Stanford C++ lib system functionality.
+ * Test file for verifying the Stanford C++ lib simpio module.
  */
 
 #include "SimpleTest.h"
@@ -8,7 +8,6 @@
 #include "strlib.h"
 #include "filelib.h"
 using namespace std;
-
 
 PROVIDED_TEST("getChar rejects empty input, reprompt") {
     ioutils::setConsoleEchoUserInput(true);
@@ -83,7 +82,8 @@ PROVIDED_TEST("getDoubleBetween rejects values outside range") {
 
 PROVIDED_TEST("promptUserForFile accepts valid filenames, rejects others") {
     ioutils::setConsoleEchoUserInput(true);
-    string input = stringJoin({"", "garbage", __FILE__, "", "/s", __FILE__}, '\n');
+    string thisFile = "test-simpio.cpp";
+    string input = stringJoin({"", "garbage", thisFile, "", "/s", thisFile}, '\n');
     ioutils::redirectStdinBegin(input);
 
     EXPECT(fileExists(promptUserForFilename()));

@@ -1,7 +1,6 @@
 /*
- * Test file for verifying the Stanford C++ lib collection functionality.
+ * Test file for verifying the Stanford C++ lib Map class.
  */
-
 
 #include "map.h"
 #include "hashset.h"
@@ -12,8 +11,6 @@
 #include <iostream>
 #include <sstream>
 #include <string>
-
-
 
 /*
  * Force instantiation of Map on a few types to make sure we didn't miss anything.

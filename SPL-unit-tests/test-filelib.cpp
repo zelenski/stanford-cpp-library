@@ -1,5 +1,5 @@
 /*
- * Test file for verifying the Stanford C++ lib system functionality.
+ * Test file for verifying the Stanford C++ lib filelib module.
  */
 
 #include "SimpleTest.h"
@@ -12,7 +12,7 @@ PROVIDED_TEST("Test filelib path utility functions") {
     EXPECT(fileExists(cwd));
     EXPECT(isDirectory(cwd));
     EXPECT(!isFile(cwd));
-    string thisFile = __FILE__;
+    string thisFile = "test-filelib.cpp";
     EXPECT(fileExists(thisFile));
     EXPECT(isFile(thisFile));
     EXPECT(!isDirectory(thisFile));

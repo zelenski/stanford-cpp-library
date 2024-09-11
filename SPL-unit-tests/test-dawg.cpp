@@ -1,5 +1,5 @@
 /*
- * Test file for verifying the Stanford C++ lib collection functionality.
+ * Test file for verifying the Stanford C++ lib Dawg class.
  */
 
 #include "trielexicon.h"
@@ -78,7 +78,7 @@ PROVIDED_TEST("DawgLexicon, library-istalled, compare to trie") {
 
 PROVIDED_TEST("DawgLexicon, errors in file read") {
     EXPECT_ERROR(loadDawg("NoExist.dat"));
-    EXPECT_ERROR(loadDawg(__FILE__));
+    EXPECT_ERROR(loadDawg("test-dawg.cpp"));
     EXPECT_ERROR(loadDawg("res/badtag.dat"));
     EXPECT_ERROR(loadDawg("res/badsizeformat.dat"));
     EXPECT_ERROR(loadDawg("res/badstartformat.dat"));
