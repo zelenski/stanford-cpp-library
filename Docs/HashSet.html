@@ -8,7 +8,7 @@
 <tr>
 <td valign=middle><image src="img/StanfordTreeLogo.png" height=32></td>
 <td valign=middle><div class=bannerText>
-The Stanford <code>libcs106</code> library, Academic Year 2023-24
+The Stanford <code>libcs106</code> library, Academic Year 2024-25
 </div></td>
 </tr></table>
 <hr>
@@ -17,7 +17,7 @@ The Stanford <code>libcs106</code> library, Academic Year 2023-24
 This class stores a collection of distinct elements.
 
 This class implements an efficient abstraction for storing sets
-of distinct elements.  This class is identical to the <code>Set</code>
+of distinct elements.  This class is identical in interface to the <code>Set</code>
 class except for the fact that it uses a hash table as its underlying
 representation.  The advantage of the <code>HashSet</code> class is that
 it operates in constant time, as opposed to the <i>O</i>(log <i>N</i>)
@@ -220,7 +220,7 @@ HashSet&lt;ValueType&gt; set = { value1, value2, value3 };
 <hr>
 <a name="Method:add"></a>
 <pre class=detailCode>
-void add(const ValueType& value);
+void add(const ValueType&amp; value);
 </pre>
 <div class=detailHTML>
 Adds an element to this HashSet, if it was not already there.
@@ -246,7 +246,7 @@ set.clear();
 <hr>
 <a name="Method:contains"></a>
 <pre class=detailCode>
-bool contains(const ValueType& value) const;
+bool contains(const ValueType&amp; value) const;
 </pre>
 <div class=detailHTML>
 Returns <code>true</code> if the specified value is in this HashSet.
@@ -259,7 +259,7 @@ if (set.contains(value)) ...
 <hr>
 <a name="Method:difference"></a>
 <pre class=detailCode>
-HashSet& difference(const HashSet&amp; set2);
+HashSet&amp; difference(const HashSet&amp; set2);
 </pre>
 <div class=detailHTML>
 Removes from this HashSet all elements that are present in <code>set2</code>. Returns a reference to this HashSet, which has been modified in place. If you want a new HashSet, consider <code><a href="#Operator:-">set1 - set2</a></code> instead.
@@ -300,7 +300,7 @@ ValueType value = set.first();
 <hr>
 <a name="Method:intersect"></a>
 <pre class=detailCode>
-HashSet& intersect(const HashSet&amp; set2);
+HashSet&amp; intersect(const HashSet&amp; set2);
 </pre>
 <div class=detailHTML>
 Removes from this HashSet all elements that are not present in <code>set2</code>. Returns a reference to this HashSet, which has been modified in place. If you want a new HashSet, consider <code><a href="#Operator:*">set1 * set2</a></code> instead.
@@ -388,7 +388,7 @@ set.mapAll(fn);
 <hr>
 <a name="Method:remove"></a>
 <pre class=detailCode>
-void remove(const ValueType& value);
+void remove(const ValueType&amp; value);
 </pre>
 <div class=detailHTML>
 Removes an element from this HashSet.  If the value was not
@@ -430,7 +430,7 @@ string str = set.toString();
 <hr>
 <a name="Method:unionWith"></a>
 <pre class=detailCode>
-HashSet& unionWith(const HashSet&amp; set2);
+HashSet&amp; unionWith(const HashSet&amp; set2);
 </pre>
 <div class=detailHTML>
 Adds to this HashSet all elements from <code>set2</code>. Returns a reference to this HashSet, which has been modified in place. If you want a new HashSet, consider <code><a href="#Operator:+">set1 + set2</a></code> instead.
@@ -493,7 +493,7 @@ set1 != set2
 <a name="Operator:+"></a>
 <pre class=detailCode>
 HashSet operator+(const HashSet&amp; set2) const;
-HashSet operator+(const ValueType& element) const;
+HashSet operator+(const ValueType&amp; element) const;
 </pre>
 <div class=detailHTML>
 Creates a new HashSet which is the union of <code>set1</code> with <code>set2</code> (or with the single <code>value</code>).
@@ -521,7 +521,7 @@ set1 * set2
 <a name="Operator:-"></a>
 <pre class=detailCode>
 HashSet operator-(const HashSet&amp; set2) const;
-HashSet operator-(const ValueType& element) const;
+HashSet operator-(const ValueType&amp; element) const;
 </pre>
 <div class=detailHTML>
 Creates a new HashSet which is the difference of <code>set1</code> minus <code>set2</code> (or minus the single <code>value</code>).
@@ -536,7 +536,7 @@ set1 - value
 <a name="Operator:+="></a>
 <pre class=detailCode>
 HashSet&amp; operator+=(const HashSet&amp; set2);
-HashSet&amp; operator+=(const ValueType& value);
+HashSet&amp; operator+=(const ValueType&amp; value);
 </pre>
 <div class=detailHTML>
 Adds all of the elements from <code>set2</code> (or the single <code>value</code>) to <code>set1</code>.
@@ -565,7 +565,7 @@ set1 *= set2;
 <a name="Operator:-="></a>
 <pre class=detailCode>
 HashSet&amp; operator-=(const HashSet&amp; set2);
-HashSet&amp; operator-=(const ValueType& value);
+HashSet&amp; operator-=(const ValueType&amp; value);
 </pre>
 <div class=detailHTML>
 Removes the elements from <code>set2</code> (or the single <code>value</code>) from <code>set1</code>.
