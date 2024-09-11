@@ -257,7 +257,7 @@ public:
      * whose value is set to the default for the value type.
      */
     ValueType& operator [](const KeyType& key);
-    const ValueType operator [](const KeyType& key) const;
+    const ValueType& operator [](const KeyType& key) const;
 
     /*
      * Operator: ==
@@ -553,8 +553,19 @@ ValueType& Map<KeyType, ValueType>::operator [](const KeyType& key) {
 }
 
 template <typename KeyType, typename ValueType>
-const ValueType Map<KeyType, ValueType>::operator [](const KeyType& key) const {
-    return get(key);
+const ValueType& Map<KeyType, ValueType>::operator [](const KeyType& key) const {
+    auto itr = _elements.find(key);
+    if (itr != _elements.end()) {
+        return itr->second;
+    }
+    /* We need to return a reference to a default-constructed object of the
+     * specified type. We thus construct a unique default-initialized version
+     * of the object and return it.
+     */
+    else {
+        static const ValueType singleton{};
+        return singleton;
+    }
 }
 
 template <typename KeyType, typename ValueType>
