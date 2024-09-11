@@ -9,29 +9,30 @@
 #include "stack.h"
 #include "vector.h"
 #include "bits.h"
+#include <unordered_set>
+#include <map>
 using namespace std;
 
+struct Thing {
+    int num;
+    string label;
+};
+int hashCode(const Thing& t) {
+    return t.num;
+}
+bool operator ==(const Thing& t1, const Thing& t2) {
+    return t1.num == t2.num && t1.label == t2.label;
+}
+bool operator <(const Thing& t1, const Thing& t2) {
+    return stanfordcpplib::collections::compareTo(t1.num, t2.num, t1.label, t2.label) < 0;
+}
 
-    struct Thing {
-        int num;
-        string label;
-    };
-    int hashCode(const Thing& t) {
-        return t.num;
-    }
-    bool operator ==(const Thing& t1, const Thing& t2) {
-        return t1.num == t2.num && t1.label == t2.label;
-    }
-    bool operator <(const Thing& t1, const Thing& t2) {
-        return stanfordcpplib::collections::compareTo(t1.num, t2.num, t1.label, t2.label) < 0;
-    }
+struct Node {
+    char letter;
+    Node *left, *right;
+};
 
-    struct Node {
-        char letter;
-        Node *left, *right;
-    };
-
-int main() {
+void allSPLCollectionTypes() {
 	Deque<bool> Deque_bool = {false, true};
 	Deque<char> Deque_char = {'a', 'b', 'c'};
 	Deque<float> Deque_float = {1e-05, 1.37, 3.14159};
@@ -202,7 +203,28 @@ int main() {
     GridLocationRange redistrict_Range = boggle_Grid.locations();
     GridLocation maze_Loc(2, 4);
     Stack<GridLocation> maze_Stack_Loc = { {1, 2}, {1, 3}, {2, 3}, {2, 4}};
+}
 
+void standardTypes() {
+	string alphabet = "abcdefghijklmnopqrstuvwxyz";
+	string arr[] = {"abc", alphabet, toUpperCase(alphabet), alphabet.substr(0, 8)};
+	vector<string> vector = {"abc", "def"};
+    unordered_set<int> hashset = {4, 9, 10};
+    map<int, string> map = {{0, "bananas"}, {1, "ice cream"}, {2, "nachos"}};
+}
 
+void targetTest() {
+	string str = "abcde";
+	unordered_set<int> hashset = {4, 9, 100};
+	HashSet<int> HashSet = {4, 9, 100};
+	vector<int> vector = {4, 9, 100};
+	Map<int, int> HashMap =   {{4, 2}, {9,3}, {100,10}};
+    map<int,int> map =  {{4, 2}, {9,3}, {100,10}};
+}
+
+int main() {
+	//targetTest();
+    //standardTypes();
+	allSPLCollectionTypes();
 	return 0;
 }

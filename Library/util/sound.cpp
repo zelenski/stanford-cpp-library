@@ -12,15 +12,14 @@
 #include <QAudioOutput>
 
 /*static*/ QMediaPlayer* Sound::_qmediaPlayer = nullptr;
-/*static*/ Sound::Status Sound::_currentStatus = Sound::NONE;
+/*static*/ Sound::Status Sound::_playbackStatus = Sound::NONE;
 
 /*static*/ void Sound::initialize() {
     if (!_qmediaPlayer) {
-        GThread::runOnQtGuiThread([]() {
+        GThread::runOnQtGuiThreadAsync([]() {
             if (!_qmediaPlayer) {
-                _qmediaPlayer = new QMediaPlayer;
+               _qmediaPlayer = new QMediaPlayer;
                 _qmediaPlayer->setAudioOutput(new QAudioOutput);
-                _currentStatus = NONE;
                 QObject::connect(_qmediaPlayer, &QMediaPlayer::mediaStatusChanged, Sound::statusChanged);
                 QObject::connect( _qmediaPlayer, &QMediaPlayer::errorOccurred, Sound::errorOccurred);
             }
@@ -28,14 +27,23 @@
     }
 }
 
+/* static */ bool Sound::waitComplete() {
+    // cannot wait on this thread if it is GUI thread (i.e. deadlock)
+    if (GThread::iAmRunningOnTheQtGuiThread()) {
+        return false;
+    }
+    while (_playbackStatus == BUSY) GThread::getCurrentThread()->sleep(100);
+    return _playbackStatus == ERROR;
+}
+
 /* static */ void Sound::playSource(const QUrl &qurl) {
-    _currentStatus = NONE;
-    GThread::runOnQtGuiThreadAsync([qurl]() {
-         _qmediaPlayer->setSource(qurl);
-         _qmediaPlayer->play();
+    _playbackStatus = BUSY;
+    GThread::runOnQtGuiThread([qurl]() {
+        _qmediaPlayer->setSource(qurl);
+        _qmediaPlayer->play(); // dispatch is async, play will  execute on Qt thread
      });
-    if (_currentStatus == ERROR && !GThread::iAmRunningOnTheQtGuiThread()) {
-        // must error on student thread, not QtGui
+    bool hadError = waitComplete();
+    if (hadError) {
         error("Sound::play() error " + _qmediaPlayer->errorString().toStdString() + " (" + _qmediaPlayer->source().toString().toStdString() + ")");
     }
 }
@@ -46,6 +54,8 @@
     if (!fileExists(absPath)) {
         error("Sound::playFile() file not found (" + filename + ")");
     }
+    QUrl qurl = QUrl::fromLocalFile(QString::fromStdString(absPath));
+    playSource(qurl);
 }
 
 /*static*/ void Sound::playURL(const std::string& url) {
@@ -60,24 +70,24 @@
 /*static*/ void Sound::statusChanged(QMediaPlayer::MediaStatus update) {
     switch (update) {
         case QMediaPlayer::NoMedia:
-            _currentStatus = NONE;
+            _playbackStatus = NONE;
             break;
         case QMediaPlayer::LoadingMedia:
         case QMediaPlayer::LoadedMedia:
         case QMediaPlayer::StalledMedia:
         case QMediaPlayer::BufferingMedia:
         case QMediaPlayer::BufferedMedia:
-            _currentStatus = BUSY;
+            _playbackStatus = BUSY;
             break;
         case QMediaPlayer::EndOfMedia:
-            _currentStatus = COMPLETE;
+            _playbackStatus = COMPLETE;
             break;
         case QMediaPlayer::InvalidMedia:
-            _currentStatus = ERROR;
+            _playbackStatus = ERROR;
             break;
     }
 }
 
 /* static */ void Sound::errorOccurred(QMediaPlayer::Error, const QString &) {
-   _currentStatus = ERROR;
+   _playbackStatus = ERROR;
 }

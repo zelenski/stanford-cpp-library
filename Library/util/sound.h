@@ -46,12 +46,13 @@ private:
         COMPLETE = 2,
         ERROR = 3,
     };
-    static Status _currentStatus;
+    static Status _playbackStatus;
 
     static void initialize();
     static void statusChanged(QMediaPlayer::MediaStatus update);
     static void errorOccurred(QMediaPlayer::Error err, const QString &errorString);
     static void playSource(const QUrl &qurl);
+    static bool waitComplete();
 };
 
 #endif // _sound_h

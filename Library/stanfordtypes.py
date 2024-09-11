@@ -1,8 +1,11 @@
-# @author Jeremy Barenholtz 2020, created
-# @author Julie Zelenski, updated 2020-2023
+# stanfordtypes.py   version 2023.1
 #
 # Debugging helpers for the CS106B classes (Vector, Stack, Set, Map, etc.)
 # Some code adopted from stdtypes.py distributed with Qt Creator
+#
+# @author Jeremy Barenholtz 2020, created
+# @author Julie Zelenski, updated 2020-
+#
 from dumper import Children, SubItem
 from functools import partial
 

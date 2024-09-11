@@ -20,13 +20,6 @@
 #include "urlstream.h"
 using namespace std;
 
-string readUrl(string urlString)
-{
-    iurlstream ustream;
-    ustream.open(urlString);
-    return string(std::istreambuf_iterator(ustream), {});
-}
-
 void welcomeAlert(string name)
 {
     GWindow* window = new GWindow;
@@ -48,28 +41,40 @@ void welcomeAlert(string name)
         canvas->fillPolygon({GPoint(x-w, y+h),GPoint(x, y),GPoint(x+w, y+h) } );
         y += h/2;
     }
-    GLabel *l = new GLabel("Installed Stanford library v " + getLibraryVersion());
+    GLabel *l = new GLabel("Installed Stanford library " + getLibraryVersion());
     window->addToRegion(l, GWindow::REGION_NORTH);
     GButton *b = new GButton("Play sound clip");
     b->setActionListener([]() { Sound::playFile("res/AllRightNow.mp3"); });
     window->addToRegion(b, GWindow::REGION_SOUTH);
-    window->addToRegion(b, GWindow::REGION_SOUTH);
     window->setVisible(true);
+}
+
+void checkLibraryVersion()
+{
+    // Confirm installed library matches version of our Qt install instructions
+    // This also confirms availability of network functionality
+    string url = "https://web.stanford.edu/dept/cs_edu/qt/version.txt";
+    iurlstream ustream;
+    ustream.open(url);
+    string expected_version(std::istreambuf_iterator(ustream), {});
+    string installed_version = getLibraryVersion();
+    if (expected_version.empty()) {
+        cerr << "Not able to read library version from network. '" << endl;
+    } else if (expected_version != installed_version) {
+        cerr << "Installed library version (" << installed_version << ") does not match expected (" << expected_version <<")" << endl;
+    } else {
+        cout << "Installed and expected library version match (" << installed_version << ")" << endl;
+    }
 }
 
 int main()
 {
     Queue<string> names = {"Leland", "Stanford", "Junior", "University"};
     cout << "Copyright 2024 " << names << endl;
-    string expected_version = readUrl("https://web.stanford.edu/dept/cs_edu/qt/version.txt"); // network access
-    if (!expected_version.empty()) {
-        cout << "Able to read from network. Expected library version is " << expected_version << endl;
-    } else {
-        cout << "Not able to read version from network." << endl;
-    }
+    checkLibraryVersion();
     string name = getLine("What is your name?");
     welcomeAlert(name);
-    getLine("Ready to exit?");
+    cout << "All done!" << endl;
     return 0;
 }
 
