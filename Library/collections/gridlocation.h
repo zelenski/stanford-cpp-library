@@ -328,4 +328,11 @@ public:
  */
 std::ostream& operator <<(std::ostream& out, const GridLocationRange& range);
 
+/*
+ * Relational operators for comparing grid location ranges.
+ */
+bool operator ==(const GridLocationRange& r1, const GridLocationRange& r2);
+bool operator !=(const GridLocationRange& r1, const GridLocationRange& r2);
+
+
 #endif // _gridlocation_h

@@ -52,3 +52,7 @@ int missing_field()
 }
 
 
+int main()
+{
+    return 0;
+}

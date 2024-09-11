@@ -306,3 +306,21 @@ PROVIDED_TEST("GridLocationRange dimensions,size,isEmpty ") {
     EXPECT(!empty.contains(empty.startLocation()));
     EXPECT(!empty.contains(empty.endLocation()));
 }
+
+PROVIDED_TEST("GridLocationRange ctors, equality") {
+    Grid<int> grid;
+
+    grid = Grid<int>(1, 1); // 1x1
+    GridLocationRange single; // default ctor is singleton range
+    EXPECT(grid.locations() == single);
+    EXPECT_EQUAL(grid.locations(), GridLocationRange(0,0,0,0));
+
+    grid = Grid<int>(5, 3);
+    EXPECT(grid.locations() != single);
+    EXPECT_EQUAL(grid.locations(), {0,0,grid.numRows()-1,grid.numCols()-1});
+
+    GridLocationRange topRow = GridLocationRange({0, 0}, {0, grid.numCols()-1});
+    GridLocationRange bottomRow = {{grid.numRows()-1, 0}, {grid.numRows()-1, grid.numCols()-1}};
+    EXPECT_EQUAL(topRow.size(), bottomRow.size());
+    EXPECT(topRow != bottomRow);
+}

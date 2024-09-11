@@ -32,24 +32,24 @@
 
 DawgLexicon::DawgLexicon() :
         _edges(nullptr),
-        _startIndex(0),
         _edgeCount(0),
+        _startIndex(0),
         _wordCount(0) {
     readBinaryFile(getLibraryPathForResource("EnglishWords.dat"));
 }
 
 DawgLexicon::DawgLexicon(const std::string& filename) :
         _edges(nullptr),
-        _startIndex(0),
         _edgeCount(0),
+        _startIndex(0),
         _wordCount(0) {
     if (!filename.empty()) readBinaryFile(filename);
 }
 
 DawgLexicon::DawgLexicon(const DawgLexicon& src) :
         _edges(nullptr),
-        _startIndex(0),
         _edgeCount(0),
+        _startIndex(0),
         _wordCount(0) {
     deepCopy(src);
 }
