@@ -1,7 +1,6 @@
 /*
- * Test file for verifying the Stanford C++ lib collection functionality.
+ * Test file for verifying the Stanford C++ lib Trie class.
  */
-
 
 #include "trielexicon.h"
 #include "hashset.h"
@@ -11,8 +10,6 @@
 #include <iostream>
 #include <sstream>
 #include <string>
-
-
 
 PROVIDED_TEST("TrieLexicon, basic") {
     std::initializer_list<std::string> words = {

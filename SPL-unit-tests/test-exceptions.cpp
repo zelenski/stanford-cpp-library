@@ -1,3 +1,6 @@
+/*
+ * Test file for verifying the Stanford C++ lib exception handling.
+ */
 #include <iostream>
 #include "console.h"
 #include "simpio.h"

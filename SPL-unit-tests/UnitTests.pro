@@ -10,7 +10,7 @@ SPL_VERSION = 2023.1
 SPL_URL = https://web.stanford.edu/dept/cs_edu/qt
 
 TEMPLATE    =   app
-QT          +=  core gui widgets network
+QT          +=  core gui widgets network multimedia
 CONFIG      +=  silent debug         # quiet build and debug symbols always
 CONFIG      -=  depend_includepath   # library headers not changing, don't add depend
 

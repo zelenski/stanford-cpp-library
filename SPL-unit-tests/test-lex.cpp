@@ -1,7 +1,6 @@
 /*
- * Test file for verifying the Stanford C++ lib collection functionality.
+ * Test file for verifying the Stanford C++ lib Lexicon class.
  */
-
 
 #include "lexicon.h"
 #include "hashset.h"
@@ -11,8 +10,6 @@
 #include <iostream>
 #include <sstream>
 #include <string>
-
-
 
 PROVIDED_TEST("Lexicon, basic") {
     std::initializer_list<std::string> words = {

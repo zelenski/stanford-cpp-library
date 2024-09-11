@@ -2,7 +2,6 @@
  * Test file for verifying the Stanford C++ lib GUI functionality.
  */
 
-
 #include "filelib.h"
 #include "gcanvas.h"
 #include "gevent.h"
@@ -14,8 +13,6 @@
 #include "gradiobutton.h"
 
 #include <csignal>
-#include <fstream>
-#include <iomanip>
 #include <iostream>
 #include <string>
 #include "SimpleTest.h"

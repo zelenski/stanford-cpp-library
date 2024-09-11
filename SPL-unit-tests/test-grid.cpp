@@ -1,7 +1,6 @@
 /*
- * Test file for verifying the Stanford C++ lib collection functionality.
+ * Test file for verifying the Stanford C++ lib Grid class.
  */
-
 
 #include "grid.h"
 #include "hashset.h"

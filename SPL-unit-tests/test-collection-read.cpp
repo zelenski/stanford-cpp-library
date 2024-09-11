@@ -1,3 +1,6 @@
+/*
+ * Test file for verifying the Stanford C++ lib collections read functionality.
+ */
 #include "deque.h"
 #include "grid.h"
 #include "hashmap.h"
