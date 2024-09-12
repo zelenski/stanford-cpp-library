@@ -20,7 +20,7 @@ if (WIN32)
     set(CMAKE_PREFIX_PATH "C:/Qt/6.7.2/mingw_64")
 
     # Alternatively MSVC 2019 compiler can be used (Not tested)
-    # set(CMAKE_PREFIX_PATH "C:/Qt6/6.7.2/msvc2019_64")
+    # set(CMAKE_PREFIX_PATH "C:/Qt/6.7.2/msvc2019_64")
 elseif (APPLE)
     # Note that execute_process cannot expand ~/ for the home path.
     # We instead find the home directory using the environment variable
