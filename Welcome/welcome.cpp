@@ -56,7 +56,8 @@ void checkLibraryVersion()
     string url = "https://web.stanford.edu/dept/cs_edu/qt/version.txt";
     iurlstream ustream;
     ustream.open(url);
-    string expected_version(std::istreambuf_iterator(ustream), {});
+    string expected_version;
+    getline(ustream, expected_version);
     string installed_version = getLibraryVersion();
     if (expected_version.empty()) {
         cerr << "Not able to read library version from network. '" << endl;
