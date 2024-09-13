@@ -1,8 +1,14 @@
-# @author Jeremy Barenholtz 2020, created
-# @author Julie Zelenski, updated 2020-2023
+# stanfordtypes.py   version 2024.1
+#
+# Formatters for std::string and std::unordered_map currently broken
+# for both Qt and our code, works in lldb native.
 #
 # Debugging helpers for the CS106B classes (Vector, Stack, Set, Map, etc.)
 # Some code adopted from stdtypes.py distributed with Qt Creator
+#
+# @author Jeremy Barenholtz 2020, created
+# @author Julie Zelenski, updated 2020-
+#
 from dumper import Children, SubItem
 from functools import partial
 

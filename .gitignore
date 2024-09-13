@@ -9,6 +9,6 @@
 *.pro.user
 
 # Build products
-build-*/
+build*/
 *.app
 *.exe

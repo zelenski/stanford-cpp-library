@@ -188,3 +188,11 @@ std::string GridLocationRange::toString() const {
 std::ostream& operator <<(std::ostream& out, const GridLocationRange& range) {
     return out << range.startLocation() << " .. " << range.endLocation();
 }
+
+bool operator ==(const GridLocationRange& r1, const GridLocationRange& r2) {
+    return r1.startLocation() == r2.startLocation() && r1.endLocation() == r2.endLocation();
+}
+
+bool operator !=(const GridLocationRange& r1, const GridLocationRange& r2) {
+    return !(r1 == r2);
+}

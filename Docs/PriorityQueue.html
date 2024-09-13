@@ -8,7 +8,7 @@
 <tr>
 <td valign=middle><image src="img/StanfordTreeLogo.png" height=32></td>
 <td valign=middle><div class=bannerText>
-The Stanford <code>libcs106</code> library, Academic Year 2023-24
+The Stanford <code>libcs106</code> library, Academic Year 2024-25
 </div></td>
 </tr></table>
 <hr>
@@ -182,7 +182,7 @@ ValueType front = pq.dequeue();
 <hr>
 <a name="Method:enqueue"></a>
 <pre class=detailCode>
-void enqueue(const ValueType& value, double priority);
+void enqueue(const ValueType&amp; value, double priority);
 </pre>
 <div class=detailHTML>
 Adds <code>value</code> to the queue with the specified priority.
@@ -228,7 +228,7 @@ if (pq.isEmpty()) ...
 <hr>
 <a name="Method:peek"></a>
 <pre class=detailCode>
-const ValueType& peek() const;
+const ValueType&amp; peek() const;
 </pre>
 <div class=detailHTML>
 Returns the value of the frontmost element, without removing it.

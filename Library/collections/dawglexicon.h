@@ -88,7 +88,7 @@ private:
         uint32_t children:24;
     };
     Edge *_edges;
-    int _edgeCount, _wordCount, _startIndex;
+    int _edgeCount, _startIndex, _wordCount;
 
 public:
     /*

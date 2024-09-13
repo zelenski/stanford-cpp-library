@@ -1,3 +1,6 @@
+/*
+ * Test file for verifying the Stanford C++ lib console module.
+ */
 
 #include "consoletext.h"
 #include "simpio.h"

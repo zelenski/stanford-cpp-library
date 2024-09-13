@@ -1,7 +1,6 @@
 /*
- * Test file for verifying the Stanford C++ lib exception functionality.
+ * Test file for verifying the Stanford C++ lib error module.
  */
-
 
 #include "error.h"
 #include "vector.h"

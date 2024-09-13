@@ -2,7 +2,6 @@
  * Test file for verifying the Stanford C++ lib GUI functionality.
  */
 
-
 #include "filelib.h"
 #include "gcanvas.h"
 #include "gevent.h"
@@ -14,8 +13,6 @@
 #include "gradiobutton.h"
 
 #include <csignal>
-#include <fstream>
-#include <iomanip>
 #include <iostream>
 #include <string>
 #include "SimpleTest.h"
@@ -155,7 +152,16 @@ MANUAL_TEST("GCanvas with image") {
     }
 
     img->setPixels(grid);
+    pause(500);
+
+    label->setText("setRGB to draw black pixels (slow; should be obviously black)");
+    for (int y = 0; y < img->getHeight()/2; y++) {
+        for (int x = 0; x < img->getWidth()/2; x++) {
+            img->setRGB(x + img->getWidth()/4, y + img->getHeight()/4, 0x000000);
+        }
+    }
     pause(1000);
+
     gw->setCloseOperation(GWindow::CLOSE_DISPOSE);
     label->setText("Done, close window to exit this test");
     while (gw->isVisible()) {}

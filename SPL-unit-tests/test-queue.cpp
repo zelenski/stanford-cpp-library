@@ -1,7 +1,6 @@
 /*
- * Test file for verifying the Stanford C++ lib collection functionality.
+ * Test file for verifying the Stanford C++ lib Queue class.
  */
-
 
 #include "queue.h"
 #include "hashset.h"
@@ -11,8 +10,6 @@
 #include <iostream>
 #include <sstream>
 #include <string>
-
-
 
 /*
  * Force instantiation of the template on a type to ensure that we don't have anything

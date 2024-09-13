@@ -1,7 +1,6 @@
 /*
- * Test file for verifying the Stanford C++ lib collection functionality.
+ * Test file for verifying the Stanford C++ lib Set class.
  */
-
 
 #include "set.h"
 #include "hashset.h"
@@ -13,8 +12,6 @@
 #include <sstream>
 #include <string>
 #include <numeric>
-
-
 
 /*
  * Force instantiation of Set on a few types to make sure we didn't miss anything.

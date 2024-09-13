@@ -1,5 +1,5 @@
 /*
- * Test file for verifying the Stanford C++ lib collection functionality.
+ * Test file for verifying the Stanford C++ lib Vector class.
  */
 
 #include "hashset.h"

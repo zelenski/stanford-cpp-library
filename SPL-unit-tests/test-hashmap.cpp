@@ -1,7 +1,6 @@
 /*
- * Test file for verifying the Stanford C++ lib collection functionality.
+ * Test file for verifying the Stanford C++ lib HashMap class.
  */
-
 
 #include "hashmap.h"
 #include "queue.h"
@@ -11,7 +10,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
-
+#include <memory>
 
 /*
  * Force instantiation of HashMap on a few types to make sure we didn't miss anything.
@@ -163,4 +162,39 @@ PROVIDED_TEST("HashMap, streamExtract") {
     std::istringstream hmstreambad("1:1, 2, 33}");
     bool result = bool(hmstreambad >> hm);
     EXPECT(! result);
+}
+
+PROVIDED_TEST("HashMap, operator[]") {
+    const HashMap<std::string, bool> m1 = {
+        { "A", true }
+    };
+    const HashMap<std::string, int> m2 = {
+        { "A", 1 }
+    };
+    const HashMap<std::string, float> m3 = {
+        { "A", 1.0f }
+    };
+    const HashMap<std::string, double> m4 = {
+        { "A", 1.0 }
+    };
+
+    auto ptr = std::make_shared<std::istringstream>();
+    const HashMap<std::string, std::shared_ptr<std::istringstream>> m5 = {
+        { "A", ptr }
+    };
+
+    EXPECT_EQUAL(m1["A"], true);
+    EXPECT_EQUAL(m1["B"], false);
+
+    EXPECT_EQUAL(m2["A"], 1);
+    EXPECT_EQUAL(m2["B"], 0);
+
+    EXPECT_EQUAL(m3["A"], 1.0f);
+    EXPECT_EQUAL(m3["B"], 0.0f);
+
+    EXPECT_EQUAL(m4["A"], 1.0);
+    EXPECT_EQUAL(m4["B"], 0.0);
+
+    EXPECT_EQUAL(m5["A"], ptr);
+    EXPECT_EQUAL(m5["B"], nullptr);
 }

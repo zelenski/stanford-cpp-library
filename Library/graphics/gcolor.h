@@ -164,8 +164,6 @@ public:
 
     /**
      * Sets the 'alpha' (high order bits) of the given integer to ff.
-     * If RGB is not completely black, but alpha is 0, assumes that the
-     * client meant to use an opaque color and add ff as alpha channel.
      */
     static int fixAlpha(int argb);
 

@@ -8,7 +8,7 @@
 <tr>
 <td valign=middle><image src="img/StanfordTreeLogo.png" height=32></td>
 <td valign=middle><div class=bannerText>
-The Stanford <code>libcs106</code> library, Academic Year 2023-24
+The Stanford <code>libcs106</code> library, Academic Year 2024-25
 </div></td>
 </tr></table>
 <hr>
@@ -153,7 +153,7 @@ ValueType first = queue.dequeue();
 <hr>
 <a name="Method:enqueue"></a>
 <pre class=detailCode>
-void enqueue(const ValueType& value);
+void enqueue(const ValueType&amp; value);
 </pre>
 <div class=detailHTML>
 Adds <code>value</code> to the back of the queue.
@@ -193,7 +193,7 @@ if (queue.isEmpty()) ...
 <hr>
 <a name="Method:peek"></a>
 <pre class=detailCode>
-const ValueType& peek() const;
+const ValueType&amp; peek() const;
 </pre>
 <div class=detailHTML>
 Returns the frontmost element in the queue, without removing it. If the queue is empty, this function signals an error.

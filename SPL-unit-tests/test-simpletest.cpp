@@ -1,14 +1,12 @@
 /*
- * Test file for verifying the Stanford C++ lib system functionality.
+ * Test file for verifying SimpleTest module.
  */
-
 
 #include "SimpleTest.h"
 #include "ioutils.h"
 #include <iomanip>
 #include <iostream>
 #include <string>
-
 
 PROVIDED_TEST("expect equal, integer compare") {
     EXPECT_EQUAL(42, 42);

@@ -8,7 +8,7 @@
 <tr>
 <td valign=middle><image src="img/StanfordTreeLogo.png" height=32></td>
 <td valign=middle><div class=bannerText>
-The Stanford <code>libcs106</code> library, Academic Year 2023-24
+The Stanford <code>libcs106</code> library, Academic Year 2024-25
 </div></td>
 </tr></table>
 <hr>
@@ -208,7 +208,7 @@ map.clear();
 <hr>
 <a name="Method:containsKey"></a>
 <pre class=detailCode>
-bool containsKey(const KeyType& key) const;
+bool containsKey(const KeyType&amp; key) const;
 </pre>
 <div class=detailHTML>
 Returns <code>true</code> if there is an entry for <code>key</code>
@@ -326,7 +326,7 @@ map.mapAll(fn);
 <hr>
 <a name="Method:put"></a>
 <pre class=detailCode>
-void put(const KeyType& key, const ValueType& value);
+void put(const KeyType&amp; key, const ValueType&amp; value);
 </pre>
 <div class=detailHTML>
 Associates <code>key</code> with <code>value</code> in this map.
@@ -341,7 +341,7 @@ map.put(key, value);
 <hr>
 <a name="Method:remove"></a>
 <pre class=detailCode>
-void remove(const KeyType& key);
+void remove(const KeyType&amp; key);
 </pre>
 <div class=detailHTML>
 Removes any entry for <code>key</code> from this map.
@@ -418,8 +418,8 @@ for (KeyType key : map) {
 <hr>
 <a name="Operator:[]"></a>
 <pre class=detailCode>
-ValueType&amp; operator[](const KeyType& key);
-ValueType operator[](const KeyType& key) const;
+ValueType&amp; operator[](const KeyType&amp; key);
+const ValueType&amp; operator[](const KeyType&amp; key) const;
 </pre>
 <div class=detailHTML>
 Selects the value associated with <code>key</code>.  This syntax

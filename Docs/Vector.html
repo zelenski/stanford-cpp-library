@@ -8,7 +8,7 @@
 <tr>
 <td valign=middle><image src="img/StanfordTreeLogo.png" height=32></td>
 <td valign=middle><div class=bannerText>
-The Stanford <code>libcs106</code> library, Academic Year 2023-24
+The Stanford <code>libcs106</code> library, Academic Year 2024-25
 </div></td>
 </tr></table>
 <hr>
@@ -181,7 +181,7 @@ Vector&lt;ValueType&gt; vec = { value1, value2, value3 };
 <hr>
 <a name="Method:add"></a>
 <pre class=detailCode>
-void add(const ValueType& value);
+void add(const ValueType&amp; value);
 </pre>
 <div class=detailHTML>
 Adds a new value to the end of this vector.
@@ -235,7 +235,7 @@ ValueType val = vec.get(index);
 <hr>
 <a name="Method:insert"></a>
 <pre class=detailCode>
-void insert(int index, const ValueType& value);
+void insert(int index, const ValueType&amp; value);
 </pre>
 <div class=detailHTML>
 Inserts a new value into this vector at the specified index.
@@ -293,7 +293,7 @@ ValueType val = vec.remove(index);
 <hr>
 <a name="Method:set"></a>
 <pre class=detailCode>
-void set(int index, const ValueType& value);
+void set(int index, const ValueType&amp; value);
 </pre>
 <div class=detailHTML>
 Replaces the element at the specified index in this vector with
@@ -368,7 +368,7 @@ string str = vec.toString();
 <a name="Operator:foreach"></a>
 <pre class=detailCode>
 for (ValueType elem : vec)
-for (ValueType& elem : vec)
+for (ValueType&amp; elem : vec)
 </pre>
 <div class=detailHTML>
 The range-based for loop can be used to iterate through the elements in a collection. The iteration accesses vector elements in order of ascending index. An error is signaled if you attempt to add/remove elements from a collection while iterating over it.
@@ -380,7 +380,7 @@ for (ValueType elem : vec) {
 	cout << elem << endl;
 }
 
-for (ValueType& elem : vec) { // if reference type, elements are mutable
+for (ValueType&amp; elem : vec) { // if reference type, elements are mutable
 	elem *= 2;
 }
 </pre>

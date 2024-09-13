@@ -8,7 +8,7 @@
 <tr>
 <td valign=middle><image src="img/StanfordTreeLogo.png" height=32></td>
 <td valign=middle><div class=bannerText>
-The Stanford <code>libcs106</code> library, Academic Year 2023-24
+The Stanford <code>libcs106</code> library, Academic Year 2024-25
 </div></td>
 </tr></table>
 <hr>
@@ -49,7 +49,7 @@ Because of this choice of internal representation, the <code>ValueType</code> fo
 	</tr>
 	<tr>
 		<td class=indexKey><nobr><a href="#Method:difference">difference(<var>otherSet</var>)</a>&nbsp;</nobr></td>
-		<td class="bigoh">O(Nlog N)</td>
+		<td class="bigoh">O(N log N)</td>
 		<td class=indexSynopsis width=100%>Subtracts <code>otherSet</code> from this set. The difference removes those elements that appear in <code>otherSet</code>.</td>
 	</tr>
 	<tr>
@@ -130,19 +130,14 @@ Because of this choice of internal representation, the <code>ValueType</code> fo
 		<td class=indexSynopsis width=100%>Evaluates to <code>true</code> if <code>set1</code> and <code>set2</code> are different.</td>
 	</tr>
 	<tr>
-		<td class=indexKey><nobr><a href="#Operator:+"><var>set1</var> + <var>set2</var></a>&nbsp;</nobr></td>
-		<td class="bigoh">O(N)</td>
-		<td class=indexSynopsis width=100%>Creates a new set which is the union of <code>set1</code> with <code>set2</code>.</td>
-	</tr>
-	<tr>
 		<td class=indexKey><nobr><a href="#Operator:+"><var>set</var> + <var>value</var></a>&nbsp;</nobr></td>
-		<td class="bigoh">O(N log N)</td>
+		<td class="bigoh">O(N)</td>
 		<td class=indexSynopsis width=100%>Creates a new set which is the union of <code>set</code> with the single <code>value</code>.</td>
 	</tr>
 	<tr>
-		<td class=indexKey><nobr><a href="#Operator:+="><var>set1</var> += <var>set2</var></a>&nbsp;</nobr></td>
+		<td class=indexKey><nobr><a href="#Operator:+"><var>set1</var> + <var>set2</var></a>&nbsp;</nobr></td>
 		<td class="bigoh">O(N log N)</td>
-		<td class=indexSynopsis width=100%>Adds all of the elements from <code>set2</code> to <code>set1</code>.</td>
+		<td class=indexSynopsis width=100%>Creates a new set which is the union of <code>set1</code> with <code>set2</code>.</td>
 	</tr>
 	<tr>
 		<td class=indexKey><nobr><a href="#Operator:+="><var>set</var> += <var>value</var></a>&nbsp;</nobr></td>
@@ -150,24 +145,29 @@ Because of this choice of internal representation, the <code>ValueType</code> fo
 		<td class=indexSynopsis width=100%>Adds the single <code>value</code> to <code>set</code>.</td>
 	</tr>
 	<tr>
+		<td class=indexKey><nobr><a href="#Operator:+="><var>set1</var> += <var>set2</var></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N log N)</td>
+		<td class=indexSynopsis width=100%>Adds all of the elements from <code>set2</code> to <code>set1</code>.</td>
+	</tr>
+	<tr>
+		<td class=indexKey><nobr><a href="#Operator:-"><var>set</var> - <var>value</var></a>&nbsp;</nobr></td>
+		<td class="bigoh">O(N)</td>
+		<td class=indexSynopsis width=100%>Creates a new set which contains all values in <code>set</code> minus <code>value</code>.
+	</tr>
+	<tr>
 		<td class=indexKey><nobr><a href="#Operator:-"><var>set1</var> - <var>set2</var></a>&nbsp;</nobr></td>
 		<td class="bigoh">O(N log N)</td>
 		<td class=indexSynopsis width=100%>Creates a new set containing the elements in <code>set1</code> that aren't in <code>set2</code>.</td>
 	</tr>
 	<tr>
-		<td class=indexKey><nobr><a href="#Operator:-"><var>set</var> - <var>value</var></a>&nbsp;</nobr></td>
+		<td class=indexKey><nobr><a href="#Operator:-="><var>set</var> -= <var>value</var></a>&nbsp;</nobr></td>
 		<td class="bigoh">O(log N)</td>
-		<td class=indexSynopsis width=100%>Creates a new set which contains all values in <code>set</code> minus <code>value</code>.
+		<td class=indexSynopsis width=100%>Removes the single <code>value</code> from <code>set</code>.</td>
 	</tr>
 	<tr>
 		<td class=indexKey><nobr><a href="#Operator:-="><var>set1</var> -= <var>set2</var></a>&nbsp;</nobr></td>
 		<td class="bigoh">O(N log N)</td>
 		<td class=indexSynopsis width=100%>Removes the elements of <code>set2</code> from <code>set1</code>.</td>
-	</tr>
-	<tr>
-		<td class=indexKey><nobr><a href="#Operator:-="><var>set</var> -= <var>value</var></a>&nbsp;</nobr></td>
-		<td class="bigoh">O(log N)</td>
-		<td class=indexSynopsis width=100%>Removes the single <code>value</code> from <code>set</code>.</td>
 	</tr>
 	<tr>
 		<td class=indexKey><nobr><a href="#Operator:*"><var>set1</var> * <var>set2</var></a>&nbsp;</nobr></td>
@@ -214,7 +214,7 @@ Set&lt;ValueType&gt; set = { value1, value2, value3 };
 <hr>
 <a name="Method:add"></a>
 <pre class=detailCode>
-void add(const ValueType& value);
+void add(const ValueType&amp; value);
 </pre>
 <div class=detailHTML>
 Adds an element to this set, if it was not already there.
@@ -240,7 +240,7 @@ set.clear();
 <hr>
 <a name="Method:contains"></a>
 <pre class=detailCode>
-bool contains(const ValueType&  value) const;
+bool contains(const ValueType&amp;  value) const;
 </pre>
 <div class=detailHTML>
 Returns <code>true</code> if the specified value is in this set.
@@ -253,7 +253,7 @@ if (set.contains(value)) ...
 <hr>
 <a name="Method:difference"></a>
 <pre class=detailCode>
-Set& difference(const Set&amp; set2);
+Set&amp; difference(const Set&amp; set2);
 </pre>
 <div class=detailHTML>
 Removes from this set all elements that are present in <code>set2</code>. Returns a reference to this set, which has been modified in place. If you want a new set, consider <code><a href="#Operator:-">set1 - set2</a></code> instead.
@@ -293,7 +293,7 @@ ValueType value = set.first();
 <hr>
 <a name="Method:intersect"></a>
 <pre class=detailCode>
-Set& intersect(const Set&amp; set2);
+Set&amp; intersect(const Set&amp; set2);
 </pre>
 <div class=detailHTML>
 Removes from this set all elements that are not present in <code>set2</code>. Returns a reference to this set, which has been modified in place. If you want a new set, consider <code><a href="#Operator:*">set1 * set2</a></code> instead.
@@ -380,7 +380,7 @@ set.mapAll(fn);
 <hr>
 <a name="Method:remove"></a>
 <pre class=detailCode>
-void remove(const ValueType&  value);
+void remove(const ValueType&amp;  value);
 </pre>
 <div class=detailHTML>
 Removes an element from this set.  If the value was not
@@ -422,7 +422,7 @@ string str = set.toString();
 <hr>
 <a name="Method:unionWith"></a>
 <pre class=detailCode>
-Set& unionWith(const Set&amp; set2);
+Set&amp; unionWith(const Set&amp; set2);
 </pre>
 <div class=detailHTML>
 Adds to this set all elements from <code>set2</code>. Returns a reference to this set, which has been modified in place. If you want a new set, consider <code><a href="#Operator:+">set1 + set2</a></code> instead.
@@ -485,7 +485,7 @@ set1 != set2
 <a name="Operator:+"></a>
 <pre class=detailCode>
 Set operator+(const Set&amp; set2) const;
-Set operator+(const ValueType& element) const;
+Set operator+(const ValueType&amp; element) const;
 </pre>
 <div class=detailHTML>
 Creates a new set which is the union of <code>set1</code> with <code>set2</code> (or with the single <code>value</code>).
@@ -513,7 +513,7 @@ set1 * set2
 <a name="Operator:-"></a>
 <pre class=detailCode>
 Set operator-(const Set&amp; set2) const;
-Set operator-(const ValueType& value) const;
+Set operator-(const ValueType&amp; value) const;
 </pre>
 <div class=detailHTML>
 Creates a new set which is the difference of <code>set1</code> minus <code>set2</code> (or minus the single <code>value</code>).
@@ -528,7 +528,7 @@ set1 - value
 <a name="Operator:+="></a>
 <pre class=detailCode>
 Set&amp; operator+=(const Set&amp; set2);
-Set&amp; operator+=(const ValueType& value);
+Set&amp; operator+=(const ValueType&amp; value);
 </pre>
 <div class=detailHTML>
 Adds all of the elements from <code>set2</code> (or the single <code>value</code>) to <code>set1</code>.
@@ -557,7 +557,7 @@ set1 *= set2;
 <a name="Operator:-="></a>
 <pre class=detailCode>
 Set&amp; operator-=(const Set&amp; set2);
-Set&amp; operator-=(const ValueType& value);
+Set&amp; operator-=(const ValueType&amp; value);
 </pre>
 <div class=detailHTML>
 Removes the all elements in <code>set2</code> (or the single <code>value</code>) from <code>set1</code>.
