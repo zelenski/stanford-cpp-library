@@ -41,7 +41,7 @@ set(CMAKE_AUTOMOC ON)  # Automatic handling of the Qt Meta-Object Compiler (MOC)
 set(CMAKE_AUTORCC ON)  # Automatic handling of the Qt Resource compiler
 set(CMAKE_AUTOUIC ON)  # Automatic handling of the Qt UI code generator
 
-find_package(Qt6 COMPONENTS Core Gui Widgets Network REQUIRED)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Network Multimedia)
 
 # Include all the cs106 library folders
 include_directories("${CS106_LIB_PATH}")
@@ -124,8 +124,8 @@ file(GLOB QT_RESOURCES ${CS106_LIB_PATH}/images.qrc)
 # Make sure you check to make sure your compiler
 # is up to date.  You have been warned!
 set(QT_VERSION 6)
-set(REQUIRED_LIBS Core Gui Widgets Network)
-set(REQUIRED_LIBS_QUALIFIED Qt6::Core Qt6::Gui Qt6::Widgets Qt6::Network)
+set(REQUIRED_LIBS Core Gui Widgets Network Multimedia)
+set(REQUIRED_LIBS_QUALIFIED Qt6::Core Qt6::Gui Qt6::Widgets Qt6::Network Qt6::Multimedia)
 
 qt_add_resources(RCC_SOURCES ${QT_RESOURCES})
 
@@ -138,7 +138,7 @@ qt_add_library(CS106_library STATIC
 )
 
 # Link CS106 library to required Qt libraries
-target_link_libraries(CS106_library PRIVATE Qt6::Core Qt6::Gui Qt6::Widgets Qt6::Network)
+target_link_libraries(CS106_library PRIVATE Qt6::Core Qt6::Gui Qt6::Widgets Qt6::Network Qt6::Multimedia)
 
 # Call CMakeLists.txt files of subdirectories
 add_subdirectory(Welcome)
