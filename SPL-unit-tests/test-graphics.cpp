@@ -62,9 +62,9 @@ MANUAL_TEST("GRadioButton to select from option group") {
     GRadioButton* rb1 = new GRadioButton("Red", "color");
     rb1->setActionListener([label](GEvent) { label->setBackground("#ff0000");});
     GRadioButton* rb2 = new GRadioButton("Green", "color", true);
-    rb2->setActionListener([label](GEvent) { label->setBackground("#0000ff");});
+    rb2->setActionListener([label](GEvent) { label->setBackground("#00ff00");});
     GRadioButton* rb3 = new GRadioButton("Blue", "color");
-    rb3->setActionListener([label](GEvent) { label->setBackground("#00ff00");});
+    rb3->setActionListener([label](GEvent) { label->setBackground("#0000ff");});
     gw->addToRegion(rb1, "SOUTH");
     gw->addToRegion(rb2, "SOUTH");
     gw->addToRegion(rb3, "SOUTH");
@@ -152,11 +152,11 @@ MANUAL_TEST("GCanvas with image") {
     }
 
     img->setPixels(grid);
-    pause(500);
+    pause(3000);
 
     label->setText("setRGB to draw black pixels (slow; should be obviously black)");
-    for (int y = 0; y < img->getHeight()/2; y++) {
-        for (int x = 0; x < img->getWidth()/2; x++) {
+    for (int y = 0; y < img->getHeight()/4; y++) {
+        for (int x = 0; x < img->getWidth()/4; x++) {
             img->setRGB(x + img->getWidth()/4, y + img->getHeight()/4, 0x000000);
         }
     }
