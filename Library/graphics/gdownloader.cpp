@@ -33,7 +33,9 @@ GDownloader::GDownloader()
           _httpStatusCode(0),
           _downloadComplete(false) {
             if (_sslSupported == -1) {
-                _sslSupported = QSslSocket::supportsSsl();
+                GThread::runOnQtGuiThreadAsync([]() {
+                    _sslSupported = QSslSocket::supportsSsl();
+                });
             }
 }
 

@@ -236,35 +236,25 @@ def put_all_fields(d, value):
 
 def qdump__GridLocation(d, value):
     """Display Stanford GridLocation on debugger."""
-
-    makeExpandable = False
     d.putValue(location_str(value))
-    if makeExpandable: put_all_fields(d, value)
 
 
 def qdump__GridLocationRange(d, value):
     """Display Stanford GridLocationRange on debugger."""
-
-    makeExpandable = False
     start = location_str(value['_start'])
     end = location_str(value['_end'])
     d.putValue(f"{start} .. {end}")
-    if makeExpandable: put_all_fields(d, value)
 
 
 def qdump__HashMap(d, value):
     """Display Stanford HashMap on debugger."""
-
-    # Grab the internal map from HashMap > std::unordered_map
-    value = value['_elements']
+    value = value['_elements']  # Grab the internal map from HashMap > std::unordered_map
     unordered_map_helper(d, value, elem_fn=add_map_elem)
 
 
 def qdump__HashSet(d, value):
     """Display Stanford HashSet on debugger."""
-
-    # Grab the internal map from HashMap > std::unordered_map
-    value = value['_map']['_elements']
+    value = value['_map']['_elements']  # Grab the internal map from HashMap > std::unordered_map
     unordered_map_helper(d, value, elem_fn=add_set_elem)
 
 
@@ -436,7 +426,7 @@ def unordered_map_helper_libcpp(d, value, elem_fn):
     """Dumps the unordered_map for HashSet and HashMap for libc++.
        Adapted from qdump__std____1__unordered_map in libcpp_stdtypes.py"""
 
-    (size, _) = value["__table_"]["__p2_"].split("pp")
+    size = value["__table_"]["__p2_"].integer()
     d.putItemCount(size)
 
     keyType = value.type[0]
@@ -444,12 +434,18 @@ def unordered_map_helper_libcpp(d, value, elem_fn):
     pairType = value.type[4][0]
 
     if d.isExpanded():
-        curr = value["__table_"]["__p1_"].split("pp")[0]
+        curr = value["__table_"]["__p1_"].pointer()
 
         def traverse_list(node):
             while node:
-                (next_, _, pad, pair) = d.split("pp@{%s}" % (pairType.name), node)
-                yield pair.split("{%s}@{%s}" % (keyType.name, valueType.name))[::2]
+                # 9/2024 JDZ change in clang makes default @ align no longer correct to find pad between
+                # node fields and pair struct (perhaps compressed layout?)
+                # I changed to manually compute alignment and force padding ahead of pair start
+                # not sure below is correct in every case, but handles more than default at least
+                align = max(keyType.alignment(), valueType.alignment())
+                node_fmt = "pp%d@{%s}@{%s}" % (align, keyType.name, valueType.name)
+                (next_, _, pad1, first, pad2, second) = d.split(node_fmt, node)
+                yield (first, second)
                 node = next_
 
         with Children(d, size, maxNumChild=1000):  # JDZ removed childType=value.type[0],
@@ -533,13 +529,19 @@ def map_helper_libcpp(d, value, elem_fn):
         pairType = value.type[3][0]
 
         def in_order_traversal(node):
-            (left, right, parent, color, pad, pair) = d.split("pppB@{%s}" % (pairType.name), node)
+            # 9/2024 JDZ change in clang makes default @ align no longer correct to find pad between
+            # node fields and pair struct (perhaps compressed layout?)
+            # I changed to manually compute alignment and force padding ahead of pair start
+            # not sure below is correct in every case, but handles more than default at least
+            align = max(keyType.alignment(), valueType.alignment())
+            node_fmt = "pppB%d@{%s}@{%s}" % (align, keyType.name, valueType.name)
+            (left, right, parent, color, pad1, first, pad2, second) = d.split(node_fmt, node)
 
             if left:
                 for res in in_order_traversal(left):
                     yield res
 
-            yield pair.split("{%s}@{%s}" % (keyType.name, valueType.name))[::2]
+            yield (first, second)
 
             if right:
                 for res in in_order_traversal(right):
@@ -588,4 +590,13 @@ def map_helper_libstd(d, value, elem_fn):
 def is_lib_cpp(value):
     """Returns whether the class is from libc++."""
     return value.type.name.startswith('std::__1')
+
+
+# 9/2024 JDZ another patch to fix std::string on latest clang, ugh.
+# need reroute from alternate name to existing dumper
+
+from libcpp_stdtypes import qdump__std____1__string
+
+def qdump__std____1__basic_string(d, value):
+    qdump__std____1__string(d, value)
 
