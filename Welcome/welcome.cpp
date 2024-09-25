@@ -27,10 +27,10 @@ void welcomeAlert(string name)
     window->setLocation(300, 100);
     window->setExitOnClose(true);
     window->setResizable(false);
-    window->setBackground("White");
     window->setCanvasSize(240, 220);
     GCanvas *canvas = window->getCanvas();
     canvas->clear();
+    canvas->setBackground("White");
     canvas->setColor("black");
     canvas->setFont("SansSerif-24");
     canvas->drawString("Welcome " + name + "!", 30, 150);
