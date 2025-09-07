@@ -28,7 +28,7 @@ std::string getLibraryInfoPanelMessage()
         "<br>"
         "Libraries originally authored by Eric Roberts.<br>"
         "Updates from Marty Stepp, Keith Schwarz, and Julie Zelenski.<br>"
-        "&copy; Stanford University &bull; 2003-2024.";
+        "&copy; Stanford University &bull; 2003-2025.";
 }
 
 std::string getLibraryVersion()

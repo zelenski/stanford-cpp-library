@@ -1,4 +1,4 @@
-# stanfordtypes.py   version 2024.1
+# stanfordtypes.py   version 2025.1
 #
 # Formatters for std::string and std::unordered_map currently broken
 # for both Qt and our code, works in lldb native.

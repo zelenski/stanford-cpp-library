@@ -2,7 +2,7 @@
 # Project file for CS106B/X Library
 #
 # @author Julie Zelenski
-# @version Fall Quarter 2024.1 for Qt 6
+# @version Fall Quarter 2025.1 for Qt 6
 #    build static lib and install into user data
 ###############################################################################
 
@@ -10,8 +10,8 @@ TEMPLATE    =   lib
 TARGET      =   cs106
 CONFIG      +=  staticlib
 
-SPL_VERSION         =   2024.1
-REQUIRES_QT_VERSION =   6.7
+SPL_VERSION         =   2025.1
+REQUIRES_QT_VERSION =   6.9
 
 ###############################################################################
 #       Gather files                                                          #
