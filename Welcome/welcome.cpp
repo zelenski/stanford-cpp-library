@@ -3,7 +3,7 @@
  * -----------------
  * Sample program used to confirm Qt/CS106 install.
  * @author Julie Zelenski
- * #version 2024/09
+ * #version 2025.1
  */
 
 #include <iostream>
@@ -11,6 +11,7 @@
 #include "queue.h"
 #include "simpio.h"
 #include "gbutton.h"
+#include "gfont.h"
 #include "glabel.h"
 #include "goptionpane.h"
 #include "gwindow.h"
@@ -28,12 +29,15 @@ void welcomeAlert(string name)
     window->setExitOnClose(true);
     window->setResizable(false);
     window->setCanvasSize(240, 220);
+    window->setBackground("White");
     GCanvas *canvas = window->getCanvas();
     canvas->clear();
-    canvas->setBackground("White");
     canvas->setColor("black");
-    canvas->setFont("SansSerif-24");
-    canvas->drawString("Welcome " + name + "!", 30, 150);
+    QFont f = GFont::toQFont("SansSerif-24");
+    canvas->setFont(f);
+    string message = "Hello, " + name + "!";
+    int m_width = QFontMetrics(f).horizontalAdvance(QString::fromStdString(message));
+    canvas->drawString(message, (canvas->getWidth()-m_width)/2.0, 150);
     canvas->drawImage("res/stanford.png", 60, 0);
     canvas->setColor("#008F00"); // green
     double x = 120, y = 25, w = 15, h = 30;
@@ -71,7 +75,7 @@ void checkLibraryVersion()
 int main()
 {
     Queue<string> names = {"Leland", "Stanford", "Junior", "University"};
-    cout << "Copyright 2024 " << names << endl;
+    cout << "Copyright 2025 " << names << endl;
     checkLibraryVersion();
     string name = getLine("What is your name?");
     welcomeAlert(name);

@@ -128,7 +128,7 @@ basic_values = {
     'float': [str(f) for f in [3.14159, 137.0, -.5]],
     'int': [str(i*2 + 1) for i in range(5)],
     'string': [f'"{s}"' for s in ['tree', 'cardinal', 'Stanford', 'abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ']],
-    'GridLocation': [f'{{{r}, {c}}}' for r,c in [(6,6), (1,9), (5,3)]],
+    'GridLocation': [f'{{{r}, {c}}}' for r,c in [(3,14), (18,91)]],
     'Thing': [f'(Thing){{{len(s)}, "{s}"}}' for s in ['red', 'green', 'blue']]}
 
 def create_init_list_str(type: Type) -> str:

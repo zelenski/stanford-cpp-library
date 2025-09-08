@@ -41,11 +41,6 @@ extern void shutdownConsole();
 
 static void parseArgsQt(int argc, char** argv);
 
-STATIC_VARIABLE_DECLARE(bool, isExitEnabled, true)
-
-bool exitEnabled() {
-    return STATIC_VARIABLE(isExitEnabled);
-}
 
 // called automatically by real main() function;
 // to be run in Qt GUI main thread
@@ -65,7 +60,10 @@ void initializeLibrary(int argc, char** argv) {
 
 #ifndef SPL_HEADLESS_MODE
     // suppress harmless warnings about font substitutions
-    QLoggingCategory::setFilterRules("qt.qpa.fonts.warning=false");
+    // also suppress jabber about ffmpeg LGPL license
+    QLoggingCategory::setFilterRules("qt.qpa.fonts.warning=false\n"
+                                     "qt.multimedia.ffmpeg.info=false"
+    );
 
     // initialize the main Qt graphics subsystem
     QtGui::instance()->setArgs(argc, argv);
@@ -110,11 +108,6 @@ static void parseArgsQt(int argc, char** argv) {
     }
 }
 
-void setExitEnabled(bool enabled) {
-    STATIC_VARIABLE(isExitEnabled) = enabled;
-    // TODO: notify GConsoleWindow?
-}
-
 // shut down the Qt graphical console window;
 // to be run in Qt main thread
 void shutdownLibrary() {
@@ -127,25 +120,3 @@ void shutdownLibrary() {
 
 } // namespace stanfordcpplib
 
-namespace std {
-void __stanfordcpplib__exitLibrary(int status) {
-    if (stanfordcpplib::exitEnabled()) {
-        // call std::exit (has been renamed)
-
-#ifdef exit
-#undef exit
-        std::exit(status);
-#define exit __stanfordcpplib__exitLibrary
-#endif // exit
-
-    } else {
-        // not allowed to call exit(); produce error message
-        std::ostringstream out;
-        out << "Program tried to call exit(" << status << ") to quit. " << std::endl;
-        out << "*** This function has been disabled; main should end through " << std::endl;
-        out << "*** normal program control flow." << std::endl;
-        error(out.str());
-    }
-}
-
-} // namespace std

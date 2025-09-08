@@ -114,7 +114,6 @@ private:
      */
     QSPLApplication* getApplication();
 
-    bool _initialized;
     int _argc;
     char** _argv;
 

@@ -24,12 +24,6 @@
 namespace stanfordcpplib {
 
 /**
- * Returns true if the std::exit function is enabled.
- * This will be true unless disabled by, say, an autograder.
- */
-bool exitEnabled();
-
-/**
  * Initializes the Stanford C++ library.
  * A call to this function is inserted before the student's main() runs.
  * This should be run from the Qt GUI (main) thread.
@@ -45,28 +39,14 @@ void initializeLibrary(int argc, char** argv);
 void initializeStudentThread();
 
 /**
- * Sets whether the std::exit function will be enabled or not.
- * If disabled, an error() will be thrown if student tries to exit().
- */
-void setExitEnabled(bool enabled);
-
-/**
  * Shuts down the Stanford C++ library.
  * A call to this function is inserted after the student's main().
  */
 void shutdownLibrary();
 
 
-
 } // namespace stanfordcpplib
 
-// bypass std::exit function
-namespace std {
-void __stanfordcpplib__exitLibrary(int status);
-} // namespace std
-
-#define STD_EXIT __std_exit_function_
-#define exit __stanfordcpplib__exitLibrary
 
 #ifdef SPL_HEADLESS_MODE
 #include "headless.h"

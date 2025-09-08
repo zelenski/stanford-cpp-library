@@ -36,8 +36,7 @@ bool QSPLApplication::notify(QObject* receiver, QEvent* e) {
 QSPLApplication* QtGui::_app = nullptr;
 QtGui* QtGui::_instance = nullptr;
 
-QtGui::QtGui()
-        : _initialized(false) {
+QtGui::QtGui() {
     connect(GEventQueue::instance(), SIGNAL(eventReady()), this, SLOT(processEventFromQueue()));
 }
 
@@ -47,13 +46,9 @@ void QtGui::exitGraphics(int exitCode) {
         exitCode = 0;
     }
     if (_app) {
-// need to temporarily turn off C++ lib exit macro to call QApplication's exit method
-// (NOTE: must keep in sync with exit definition in init.h)
-#undef exit
         _app->quit();
         _app = nullptr;
         std::exit(exitCode);
-#define exit __stanfordcpplib__exitLibrary
     } else {
         std::exit(exitCode);
     }
@@ -80,19 +75,8 @@ void QtGui::initializeQt() {
 
     GThread::runOnQtGuiThread([this]() {
         if (!_app) {
-            qSetMessagePattern(
-                    "Qt internal warning: %{message}\n"
-                    "  - pid: %{pid}\n"
-                    "  - thread: %{threadid}\n"
-
-                    // backtrace doesn't work on windows and some other builds
-#ifndef _WIN32
-                    "  - stack:\n"
-                    "      %{backtrace depth=20 separator=\"\n      \"}"
-#endif // _WIN32
-            );
+            qSetMessagePattern("[Qt internal] %{category}.%{type}: %{message})\n");
             _app = new QSPLApplication(_argc, _argv);
-            _initialized = true;
         }
     });
 }
