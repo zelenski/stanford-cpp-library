@@ -29,8 +29,8 @@ void welcomeAlert(string name)
     window->setExitOnClose(true);
     window->setResizable(false);
     window->setCanvasSize(240, 220);
-    window->setBackground("White");
     GCanvas *canvas = window->getCanvas();
+    canvas->setBackground("white");
     canvas->clear();
     canvas->setColor("black");
     QFont f = GFont::toQFont("SansSerif-24");

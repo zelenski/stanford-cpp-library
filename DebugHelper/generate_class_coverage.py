@@ -10,9 +10,9 @@ TYPEDEFS = '''
 using namespace std;
 
 #if defined(__APPLE__)
-#define BREAKPOINT __builtin_debugtrap()
+#define BREAKPOINT __builtin_debugtrap(); cout << "BREAK @" << __LINE__ << endl;
 #elif defined(_WIN32)
-#define BREAKPOINT __debugbreak()
+#define BREAKPOINT __debugbreak(); cout << "BREAK @" << __LINE__ << endl;
 #endif
 
 struct Thing {

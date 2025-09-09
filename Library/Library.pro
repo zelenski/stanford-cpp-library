@@ -62,6 +62,12 @@ develop_mode {
     CONFIG          +=  release
 }
 
+win32|win64 {
+        # disable g++ interprocedural ra shenanigans (root cause of Lexicon crash 2025/04)
+    QMAKE_CXXFLAGS  += -fno-ipa-ra
+}
+
+
 ###############################################################################
 #       Make install                                                          #
 ###############################################################################
