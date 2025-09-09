@@ -3,20 +3,57 @@
  */
 
 #include "filelib.h"
+#include "gbutton.h"
 #include "gcanvas.h"
 #include "gevent.h"
-#include "goptionpane.h"
-#include "gtable.h"
-#include "gwindow.h"
-#include "gbutton.h"
 #include "glabel.h"
+#include "goptionpane.h"
 #include "gradiobutton.h"
+#include "gslider.h"
+#include "gtable.h"
+#include "gtextfield.h"
+#include "gwindow.h"
 
 #include <csignal>
 #include <iostream>
 #include <string>
 #include "SimpleTest.h"
 using namespace std;
+
+MANUAL_TEST("Interactors enable/disable") {
+    GWindow* gw = new GWindow;
+    gw->setSize(400, 150);
+    gw->setTitle("Interactors (close window to end test)");
+    GButton* b1 = new GButton("Nope");
+    b1->setEnabled(false);
+    GButton* b2 = new GButton("Yes Me");
+    b2->setEnabled(true);
+    GTextField* t1 = new GTextField("Nope");
+    t1->setEnabled(false);
+    GTextField* t2 = new GTextField("Yes Me");
+    t2->setEnabled(true);
+    GSlider* s1 = new GSlider();
+    s1->setEnabled(false);
+    GSlider* s2 = new GSlider();
+    s2->setEnabled(true);
+    GRadioButton* r1 = new GRadioButton("Nope", "group");
+    r1->setEnabled(false);
+    GRadioButton* r2 = new GRadioButton("Yes Me", "group", true);
+    r2->setEnabled(true);
+
+    gw->addToRegion(new GLabel("Every other interactor is disabled"), "CENTER");
+    gw->addToRegion(s1, "NORTH");
+    gw->addToRegion(s2, "NORTH");
+    gw->addToRegion(b1, "EAST");
+    gw->addToRegion(b2, "EAST");
+    gw->addToRegion(t1, "SOUTH");
+    gw->addToRegion(t2, "SOUTH");
+    gw->addToRegion(r1, "WEST");
+    gw->addToRegion(r2, "WEST");
+
+    gw->setVisible(true);
+    while (gw->isVisible()) {}
+}
 
 MANUAL_TEST("chooseFilenameDialog") {
     std::cout << "Opening file chooser in directory \"" << getCurrentDirectory() << "\"" << std::endl;
@@ -80,6 +117,7 @@ MANUAL_TEST("GRadioButton to select from option group") {
     gw->setVisible(true);
     while (gw->isVisible()) {}
 }
+
 
 
 static void border(GCanvas* img) {
