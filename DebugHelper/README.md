@@ -23,18 +23,19 @@ Dissection of key/value blob is where most of the problems have been
 
 
 Bug reports
-
 https://bugreports.qt.io/browse/QTCREATORBUG-18287
 From https://forum.qt.io/topic/142639/qt-creator-debugger-is-slow
-
-But, also quickly checked whether I can reproduce the issue here. Neither breaking in a function with that type nor pasting a lookup command of that type resulted in the time you have reported here.
-The command I used to check this was:
 
 !qtcreatorcdbext.script print(cdbext.lookupType('std::vector<unsigned __int64,std::allocator<unsigned __int64> >*',0).name())
 
 This can be pasted into the Command field of the Debugger Log which can be enabled under View -> Views 0> Debugger Log while in debug mode.
 
 
-If you want to further investigate the issue on your side you would need to compile the cdbextension yourself (remember to link against a debug version of python) and set debugPyCdbextModule in <creatorsource>\src\libs\qtcreatorcdbext\pycdbextmodule.h to true (sorry, I have not implemented a buildsystem switch for this). And if that doesn't give you any usable information you might want to attach directly to the cdb and step through the individual functions.
-
-
+Fall 2025
+---------
+In past Qt did not compute the alignment for a struct correctly, just guessed 8.
+As of 6.9, it is trying to compute max alignment from fields
+but it iterates over get_fields_array() when it should instead b get_members_array()
+this causes it to ignore base class members, and for class such as std::string this is deadly.. ugh.
+I put in a patch into stanfordtypes.py to do the correct calculation where we depend on alignment
+such as extract key/value pair for map and hashmap, this brought map and hashmap back to working.

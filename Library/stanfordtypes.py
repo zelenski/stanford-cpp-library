@@ -388,7 +388,7 @@ def deque_helper_libstd(d, value, elem_fn):
         bufsize = 512 // innerSize
 
     (mapptr, mapsize, startCur, startFirst, startLast, startNode,
-     finishCur, finishFirst, finishLast, finishNode) = value.split("pppppppppp")
+    finishCur, finishFirst, finishLast, finishNode) = value.split("pppppppppp")
 
     size = bufsize * ((finishNode - startNode) // d.ptrSize() - 1)
     size += (finishCur - finishFirst) // innerSize
@@ -435,17 +435,16 @@ def unordered_map_helper_libcpp(d, value, elem_fn):
 
     if d.isExpanded():
         curr = value["__table_"]["__p1_"].pointer()
+        # 9/2025 JDZ see comment on ordered_map_helper_libcpp about alignment fix
+        valAlign = my_type_alignment(d, valueType.typeid)
+        pairAlign = my_type_alignment(d, pairType.typeid)
+        node_fmt = "pp%d@{%s}@%d{%s}" % (pairAlign, keyType.name, valAlign, valueType.name)
+        # [next][prev][pad][key(aligned)][pad][val(aligned)]
 
         def traverse_list(node):
             while node:
-                # 9/2024 JDZ change in clang makes default @ align no longer correct to find pad between
-                # node fields and pair struct (perhaps compressed layout?)
-                # I changed to manually compute alignment and force padding ahead of pair start
-                # not sure below is correct in every case, but handles more than default at least
-                align = max(keyType.alignment(), valueType.alignment())
-                node_fmt = "pp%d@{%s}@{%s}" % (align, keyType.name, valueType.name)
-                (next_, _, pad1, first, pad2, second) = d.split(node_fmt, node)
-                yield (first, second)
+                (next_,_,_,k,_,v) = d.split(node_fmt, node)
+                yield (k, v)
                 node = next_
 
         with Children(d, size, maxNumChild=1000):  # JDZ removed childType=value.type[0],
@@ -494,9 +493,9 @@ def unordered_map_helper_libstd(d, value, elem_fn):
         with Children(d, size):
             for i in d.childRange():
                 if d.isMsvcTarget():
-                    p, _, _, key, _, val = d.split(typeCode, p)
+                    p,_,_,key,_,val = d.split(typeCode, p)
                 else:
-                    p, _, key, _, val = d.split(typeCode, p)
+                    p,_,key,_,val = d.split(typeCode, p)
                 elem_fn(d, i, key, val)
 
 def map_helper(d, value, elem_fn):
@@ -507,6 +506,25 @@ def map_helper(d, value, elem_fn):
     else:
         map_helper_libstd(d, value, elem_fn)
 
+from utils import TypeCode
+
+def my_type_alignment(d, typeid):
+    # 9/2025 JDZ calculation of alignment for struct is broken in Dumper.nativeStructAlignment
+    # (iterates over get_fields_array when should instead get_members_array)
+    # code below does correct iteration to compute alignment and overwrites bad value in cache
+    # We should remove this code when/if Qt version is corrected (although leaving it in
+    # should act as no-op)
+    orig = d.type_alignment(typeid)
+    if d.type_code_cache.get(typeid, None) == TypeCode.Struct:
+        align = 1
+        for m in d.type_nativetype(typeid).get_members_array():
+            mtypeid = d.from_native_type(m.type)
+            align = max(my_type_alignment(d, mtypeid), align)
+        if orig != align:
+            print(f"JDZ: fixing alignment for type {typeid} from {orig} to {align}")
+            d.type_alignment_cache[typeid] = align # update cache so correct for all
+            return align
+    return orig
 
 def map_helper_libcpp(d, value, elem_fn):
     """Dumps the internal map for Set or Map for libc++.
@@ -527,22 +545,19 @@ def map_helper_libcpp(d, value, elem_fn):
         keyType = value.type[0]
         valueType = value.type[1]
         pairType = value.type[3][0]
+        # 9/2025 JDZ ugh compressed_pair still does not report correct align
+        # Qt update tried to fix but got it wrong for inherited class
+        valAlign = my_type_alignment(d, valueType.typeid)
+        pairAlign = my_type_alignment(d, pairType.typeid)
+        node_fmt = "pppB%d@{%s}%d@{%s}" % (pairAlign, keyType.name, valAlign, valueType.name)
+        # [left][right][parent][bool_is_black][pad][key(aligned)][pad][val(aligned)]
 
         def in_order_traversal(node):
-            # 9/2024 JDZ change in clang makes default @ align no longer correct to find pad between
-            # node fields and pair struct (perhaps compressed layout?)
-            # I changed to manually compute alignment and force padding ahead of pair start
-            # not sure below is correct in every case, but handles more than default at least
-            align = max(keyType.alignment(), valueType.alignment())
-            node_fmt = "pppB%d@{%s}@{%s}" % (align, keyType.name, valueType.name)
-            (left, right, parent, color, pad1, first, pad2, second) = d.split(node_fmt, node)
-
+            (left,right,_,_,_,k,_,v) = d.split(node_fmt, node)
             if left:
                 for res in in_order_traversal(left):
                     yield res
-
-            yield (first, second)
-
+            yield (k, v)
             if right:
                 for res in in_order_traversal(right):
                     yield res

@@ -39,18 +39,20 @@ struct Node {
 # manually test combos for certain assignments
 ASSIGN_USES = '''
 void assign_uses() {
+    Vector<Bit> huffBit_Vector = {0, 1, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1};
+    Queue<Bit> huffBit_Queue =   {1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0};
+    Map<char, Queue<Bit>> huffBit_Map_Q {{'a', {0, 1, 1, 1}}, {'b', {1, 0}}};
+    Map<char, Vector<Bit>> huffBit_Map_V = {{'a', {1, 1, 1, 0}}, {'b', {0, 0}}};
+
     Node *ptr = new Node {'A', nullptr, nullptr};
-    PriorityQueue<Node *> huff_PQ_NodePtr {{4.0, ptr}};
-    Vector<Node *> huff_Vector_NodePtr = {ptr, ptr, nullptr, nullptr};
-    Set<Node *> huff_Set_NodePtr = {ptr, nullptr};
-    Map<char, Node *> huff_Map_NodePtr = {{'a', ptr}, {'b', ptr}, {'c', nullptr}};
+    Node on_stack = {'Z', nullptr, nullptr};
+    PriorityQueue<Node *> huffNodePtr_PQ {{4.0, ptr}};
+    Vector<Node *> huffNodePtr_Vector = {ptr, &on_stack};
+    Set<Node *> huffNodePtr_Set = {ptr};
+    Map<char, Node *> huffNodePtr_Map = {{'a', ptr}, {'b', &on_stack}};
 
-    Vector<Bit> huff_Vector_Bit = {0, 1, 1, 1, 0};
-    Map<char, Queue<Bit>> huff_Map_Queue_Bit {{'a', {0, 1, 1, 1}}, {'b', {1, 0}}};
-    Map<char, Vector<Bit>> huff_Map_Vector_Bit = {{'a', {1, 1, 1, 0}}, {'b', {0, 0}}};
     Map<string, Set<string>> siteIndex_Map_Set =  {{"home", {"the", "end"}}, {"faq", {"what", "why"}}};
-
-    Grid<char> boggle_Grid = {{'a', 'n', 'r'}, {'p', 'e', 't'}, {'c', 'o', 'b'}};
+    Grid<char> boggle_Grid = {{'B', 'O', 'G'}, {'G', 'L', 'E'}};
     GridLocationRange redistrict_Range = boggle_Grid.locations();
     GridLocation maze_Loc(2, 4);
     Stack<GridLocation> maze_Stack_Loc = { {1, 2}, {3, 4}, {5, 6}, {7, 8}};
@@ -124,12 +126,12 @@ basic_types = [
 
 basic_values = {
     'bool': ['false', 'true'],
-    'char': [f"'{c}'" for c in 'abcABC'],
-    'float': [str(f) for f in [3.14159, 137.0, -.5]],
-    'int': [str(i*2 + 1) for i in range(5)],
-    'string': [f'"{s}"' for s in ['tree', 'cardinal', 'Stanford', 'abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ']],
+    'char': [f"'{c}'" for c in 'aBc'],
+    'float': [str(f) for f in [3.14159, -0.25]],
+    'int': [str(i) for i in [1, 5, 10]],
+    'string': [f'"{s}"' for s in ['tree', 'abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ']],
     'GridLocation': [f'{{{r}, {c}}}' for r,c in [(3,14), (18,91)]],
-    'Thing': [f'(Thing){{{len(s)}, "{s}"}}' for s in ['red', 'green', 'blue']]}
+    'Thing': [f'(Thing){{{len(s)}, "{s}"}}' for s in ['green', 'purple']]}
 
 def create_init_list_str(type: Type) -> str:
     if type.container == 'Grid':
