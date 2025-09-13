@@ -36,37 +36,13 @@ struct Node {
 
 '''
 
-# manually test combos for certain assignments
-ASSIGN_USES = '''
-void assign_uses() {
-    Vector<Bit> huffBit_Vector = {0, 1, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1};
-    Queue<Bit> huffBit_Queue =   {1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0};
-    Map<char, Queue<Bit>> huffBit_Map_Q {{'a', {0, 1, 1, 1}}, {'b', {1, 0}}};
-    Map<char, Vector<Bit>> huffBit_Map_V = {{'a', {1, 1, 1, 0}}, {'b', {0, 0}}};
-
-    Node *ptr = new Node {'A', nullptr, nullptr};
-    Node on_stack = {'Z', nullptr, nullptr};
-    PriorityQueue<Node *> huffNodePtr_PQ {{4.0, ptr}};
-    Vector<Node *> huffNodePtr_Vector = {ptr, &on_stack};
-    Set<Node *> huffNodePtr_Set = {ptr};
-    Map<char, Node *> huffNodePtr_Map = {{'a', ptr}, {'b', &on_stack}};
-
-    Map<string, Set<string>> siteIndex_Map_Set =  {{"home", {"the", "end"}}, {"faq", {"what", "why"}}};
-    Grid<char> boggle_Grid = {{'B', 'O', 'G'}, {'G', 'L', 'E'}};
-    GridLocationRange redistrict_Range = boggle_Grid.locations();
-    GridLocation maze_Loc(2, 4);
-    Stack<GridLocation> maze_Stack_Loc = { {1, 2}, {3, 4}, {5, 6}, {7, 8}};
-    BREAKPOINT;
-}
-'''
-
 MAIN_PROGRAM = '''
 int main() {
     stanford_linear();
     stanford_hash();
     stanford_tree();
     stanford_other();
-    assign_uses();
+    fixed_tests();
     return 0;
 }
 '''
@@ -117,7 +93,7 @@ all_stanford = linear_containers + hash_containers + tree_containers + other_con
 basic_types = [
     'bool',
     'char',
-    'float',
+    'double',
     'int',
     'string',
     'GridLocation',
@@ -126,12 +102,12 @@ basic_types = [
 
 basic_values = {
     'bool': ['false', 'true'],
-    'char': [f"'{c}'" for c in 'aBc'],
-    'float': [str(f) for f in [3.14159, -0.25]],
-    'int': [str(i) for i in [1, 5, 10]],
-    'string': [f'"{s}"' for s in ['tree', 'abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ']],
-    'GridLocation': [f'{{{r}, {c}}}' for r,c in [(3,14), (18,91)]],
-    'Thing': [f'(Thing){{{len(s)}, "{s}"}}' for s in ['green', 'purple']]}
+    'char': [f"'{c}'" for c in 'bB'],
+    'double': [str(d) for d in [3.14159, -0.25]],
+    'int': [str(i) for i in [106, 1891]],
+    'string': [f'"{s}"' for s in ['stanford', 'abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ']],
+    'GridLocation': [f'{{{r}, {c}}}' for r,c in [(3,14)]],
+    'Thing': [f'(Thing){{{len(s)}, "{s}"}}' for s in ['purple']]}
 
 def create_init_list_str(type: Type) -> str:
     if type.container == 'Grid':
@@ -170,7 +146,7 @@ def source_for_all(fn_name, containers) -> str:
     for outer in containers:
         lines += ['\t{'] + [
         '\t\t'
-        + ' '.join([str(t), t.varname(), '=', create_init_list_str(t) + ';'])
+        + ' '.join([str(t), t.varname().lower(), '=', create_init_list_str(t) + ';'])
         for t in types_for_container(outer)] + ['\t\tBREAKPOINT;\n\t}']
     lines += ["}\n\n"]
     return '\n'.join(lines)
@@ -183,7 +159,8 @@ def generate_program() -> str:
     program += source_for_all("stanford_hash", hash_containers)
     program += source_for_all("stanford_tree", tree_containers)
     program += source_for_all("stanford_other", other_containers)
-    return program + ASSIGN_USES + MAIN_PROGRAM
+    with open('fixed_tests') as f: fixed = f.read()
+    return program + fixed + MAIN_PROGRAM
 
 if __name__ == '__main__':
     print(generate_program())

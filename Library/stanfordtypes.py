@@ -1,7 +1,8 @@
-# stanfordtypes.py   version 2025.1
+# stanfordtypes.py   version 2025.3
 #
-# Formatters for std::string and std::unordered_map currently broken
-# for both Qt and our code, works in lldb native.
+# v 2025.3 adds handling of typedef to alignment fix
+# Debug helpers seem to now be correct for all Stanford types,
+# tested on Qt 6.9.2 macOS arm, macOS x86, and windows x86
 #
 # Debugging helpers for the CS106B classes (Vector, Stack, Set, Map, etc.)
 # Some code adopted from stdtypes.py distributed with Qt Creator
@@ -438,7 +439,8 @@ def unordered_map_helper_libcpp(d, value, elem_fn):
         # 9/2025 JDZ see comment on ordered_map_helper_libcpp about alignment fix
         valAlign = my_type_alignment(d, valueType.typeid)
         pairAlign = my_type_alignment(d, pairType.typeid)
-        node_fmt = "pp%d@{%s}@%d{%s}" % (pairAlign, keyType.name, valAlign, valueType.name)
+        node_fmt = "pp%d@{%s}%d@{%s}" % (pairAlign, keyType.name, valAlign, valueType.name)
+        #print(f"JDZ: unordered map helper format {node_fmt}")
         # [next][prev][pad][key(aligned)][pad][val(aligned)]
 
         def traverse_list(node):
@@ -515,7 +517,11 @@ def my_type_alignment(d, typeid):
     # We should remove this code when/if Qt version is corrected (although leaving it in
     # should act as no-op)
     orig = d.type_alignment(typeid)
-    if d.type_code_cache.get(typeid, None) == TypeCode.Struct:
+    code = d.type_code_cache.get(typeid, None)
+    if code == TypeCode.Typedef:
+        target = d.type_target(typeid)
+        return my_type_alignment(d, target)
+    elif code == TypeCode.Struct:
         align = 1
         for m in d.type_nativetype(typeid).get_members_array():
             mtypeid = d.from_native_type(m.type)
@@ -550,6 +556,7 @@ def map_helper_libcpp(d, value, elem_fn):
         valAlign = my_type_alignment(d, valueType.typeid)
         pairAlign = my_type_alignment(d, pairType.typeid)
         node_fmt = "pppB%d@{%s}%d@{%s}" % (pairAlign, keyType.name, valAlign, valueType.name)
+        # print(f"JDZ: map helper format {node_fmt}")
         # [left][right][parent][bool_is_black][pad][key(aligned)][pad][val(aligned)]
 
         def in_order_traversal(node):

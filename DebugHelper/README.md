@@ -39,3 +39,4 @@ but it iterates over get_fields_array() when it should instead b get_members_arr
 this causes it to ignore base class members, and for class such as std::string this is deadly.. ugh.
 I put in a patch into stanfordtypes.py to do the correct calculation where we depend on alignment
 such as extract key/value pair for map and hashmap, this brought map and hashmap back to working.
+Needed a followup to also fix alignment for struct which is typedef

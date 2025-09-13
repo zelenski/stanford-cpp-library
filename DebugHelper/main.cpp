@@ -38,196 +38,196 @@ struct Node {
 
 void stanford_linear() {
 	{
-		Deque<bool> Deque_bool = {false, true};
-		Deque<char> Deque_char = {'a', 'B', 'c'};
-		Deque<float> Deque_float = {3.14159, -0.25};
-		Deque<int> Deque_int = {1, 5, 10};
-		Deque<string> Deque_string = {"tree", "abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"};
-		Deque<GridLocation> Deque_GridLocation = {{3, 14}, {18, 91}};
-		Deque<Thing> Deque_Thing = {(Thing){5, "green"}, (Thing){6, "purple"}};
+		Deque<bool> deque_bool = {false, true};
+		Deque<char> deque_char = {'b', 'B'};
+		Deque<double> deque_double = {3.14159, -0.25};
+		Deque<int> deque_int = {106, 1891};
+		Deque<string> deque_string = {"stanford", "abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"};
+		Deque<GridLocation> deque_gridlocation = {{3, 14}};
+		Deque<Thing> deque_thing = {(Thing){6, "purple"}};
 		BREAKPOINT;
 	}
 	{
-		Grid<bool> Grid_bool = {{false, true}, {false, true}, {false, true}};
-		Grid<char> Grid_char = {{'a', 'B', 'c'}, {'a', 'B', 'c'}, {'a', 'B', 'c'}};
-		Grid<float> Grid_float = {{3.14159, -0.25}, {3.14159, -0.25}, {3.14159, -0.25}};
-		Grid<int> Grid_int = {{1, 5, 10}, {1, 5, 10}, {1, 5, 10}};
-		Grid<string> Grid_string = {{"tree", "abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"}, {"tree", "abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"}, {"tree", "abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"}};
-		Grid<GridLocation> Grid_GridLocation = {{{3, 14}, {18, 91}}, {{3, 14}, {18, 91}}, {{3, 14}, {18, 91}}};
-		Grid<Thing> Grid_Thing = {{(Thing){5, "green"}, (Thing){6, "purple"}}, {(Thing){5, "green"}, (Thing){6, "purple"}}, {(Thing){5, "green"}, (Thing){6, "purple"}}};
+		Grid<bool> grid_bool = {{false, true}, {false, true}, {false, true}};
+		Grid<char> grid_char = {{'b', 'B'}, {'b', 'B'}, {'b', 'B'}};
+		Grid<double> grid_double = {{3.14159, -0.25}, {3.14159, -0.25}, {3.14159, -0.25}};
+		Grid<int> grid_int = {{106, 1891}, {106, 1891}, {106, 1891}};
+		Grid<string> grid_string = {{"stanford", "abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"}, {"stanford", "abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"}, {"stanford", "abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"}};
+		Grid<GridLocation> grid_gridlocation = {{{3, 14}}, {{3, 14}}, {{3, 14}}};
+		Grid<Thing> grid_thing = {{(Thing){6, "purple"}}, {(Thing){6, "purple"}}, {(Thing){6, "purple"}}};
 		BREAKPOINT;
 	}
 	{
-		Queue<bool> Queue_bool = {false, true};
-		Queue<char> Queue_char = {'a', 'B', 'c'};
-		Queue<float> Queue_float = {3.14159, -0.25};
-		Queue<int> Queue_int = {1, 5, 10};
-		Queue<string> Queue_string = {"tree", "abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"};
-		Queue<GridLocation> Queue_GridLocation = {{3, 14}, {18, 91}};
-		Queue<Thing> Queue_Thing = {(Thing){5, "green"}, (Thing){6, "purple"}};
+		Queue<bool> queue_bool = {false, true};
+		Queue<char> queue_char = {'b', 'B'};
+		Queue<double> queue_double = {3.14159, -0.25};
+		Queue<int> queue_int = {106, 1891};
+		Queue<string> queue_string = {"stanford", "abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"};
+		Queue<GridLocation> queue_gridlocation = {{3, 14}};
+		Queue<Thing> queue_thing = {(Thing){6, "purple"}};
 		BREAKPOINT;
 	}
 	{
-		Stack<bool> Stack_bool = {false, true};
-		Stack<char> Stack_char = {'a', 'B', 'c'};
-		Stack<float> Stack_float = {3.14159, -0.25};
-		Stack<int> Stack_int = {1, 5, 10};
-		Stack<string> Stack_string = {"tree", "abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"};
-		Stack<GridLocation> Stack_GridLocation = {{3, 14}, {18, 91}};
-		Stack<Thing> Stack_Thing = {(Thing){5, "green"}, (Thing){6, "purple"}};
+		Stack<bool> stack_bool = {false, true};
+		Stack<char> stack_char = {'b', 'B'};
+		Stack<double> stack_double = {3.14159, -0.25};
+		Stack<int> stack_int = {106, 1891};
+		Stack<string> stack_string = {"stanford", "abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"};
+		Stack<GridLocation> stack_gridlocation = {{3, 14}};
+		Stack<Thing> stack_thing = {(Thing){6, "purple"}};
 		BREAKPOINT;
 	}
 	{
-		Vector<bool> Vector_bool = {false, true};
-		Vector<char> Vector_char = {'a', 'B', 'c'};
-		Vector<float> Vector_float = {3.14159, -0.25};
-		Vector<int> Vector_int = {1, 5, 10};
-		Vector<string> Vector_string = {"tree", "abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"};
-		Vector<GridLocation> Vector_GridLocation = {{3, 14}, {18, 91}};
-		Vector<Thing> Vector_Thing = {(Thing){5, "green"}, (Thing){6, "purple"}};
+		Vector<bool> vector_bool = {false, true};
+		Vector<char> vector_char = {'b', 'B'};
+		Vector<double> vector_double = {3.14159, -0.25};
+		Vector<int> vector_int = {106, 1891};
+		Vector<string> vector_string = {"stanford", "abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"};
+		Vector<GridLocation> vector_gridlocation = {{3, 14}};
+		Vector<Thing> vector_thing = {(Thing){6, "purple"}};
 		BREAKPOINT;
 	}
 }
 
 void stanford_hash() {
 	{
-		HashMap<bool, bool> HashMap_bool_bool = {{false, false}, {true, true}};
-		HashMap<char, bool> HashMap_char_bool = {{'a', false}, {'B', true}};
-		HashMap<float, bool> HashMap_float_bool = {{3.14159, false}, {-0.25, true}};
-		HashMap<int, bool> HashMap_int_bool = {{1, false}, {5, true}};
-		HashMap<string, bool> HashMap_string_bool = {{"tree", false}, {"abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", true}};
-		HashMap<GridLocation, bool> HashMap_GridLocation_bool = {{{3, 14}, false}, {{18, 91}, true}};
-		HashMap<Thing, bool> HashMap_Thing_bool = {{(Thing){5, "green"}, false}, {(Thing){6, "purple"}, true}};
-		HashMap<bool, char> HashMap_bool_char = {{false, 'a'}, {true, 'B'}};
-		HashMap<char, char> HashMap_char_char = {{'a', 'a'}, {'B', 'B'}, {'c', 'c'}};
-		HashMap<float, char> HashMap_float_char = {{3.14159, 'a'}, {-0.25, 'B'}};
-		HashMap<int, char> HashMap_int_char = {{1, 'a'}, {5, 'B'}, {10, 'c'}};
-		HashMap<string, char> HashMap_string_char = {{"tree", 'a'}, {"abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", 'B'}};
-		HashMap<GridLocation, char> HashMap_GridLocation_char = {{{3, 14}, 'a'}, {{18, 91}, 'B'}};
-		HashMap<Thing, char> HashMap_Thing_char = {{(Thing){5, "green"}, 'a'}, {(Thing){6, "purple"}, 'B'}};
-		HashMap<bool, float> HashMap_bool_float = {{false, 3.14159}, {true, -0.25}};
-		HashMap<char, float> HashMap_char_float = {{'a', 3.14159}, {'B', -0.25}};
-		HashMap<float, float> HashMap_float_float = {{3.14159, 3.14159}, {-0.25, -0.25}};
-		HashMap<int, float> HashMap_int_float = {{1, 3.14159}, {5, -0.25}};
-		HashMap<string, float> HashMap_string_float = {{"tree", 3.14159}, {"abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", -0.25}};
-		HashMap<GridLocation, float> HashMap_GridLocation_float = {{{3, 14}, 3.14159}, {{18, 91}, -0.25}};
-		HashMap<Thing, float> HashMap_Thing_float = {{(Thing){5, "green"}, 3.14159}, {(Thing){6, "purple"}, -0.25}};
-		HashMap<bool, int> HashMap_bool_int = {{false, 1}, {true, 5}};
-		HashMap<char, int> HashMap_char_int = {{'a', 1}, {'B', 5}, {'c', 10}};
-		HashMap<float, int> HashMap_float_int = {{3.14159, 1}, {-0.25, 5}};
-		HashMap<int, int> HashMap_int_int = {{1, 1}, {5, 5}, {10, 10}};
-		HashMap<string, int> HashMap_string_int = {{"tree", 1}, {"abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", 5}};
-		HashMap<GridLocation, int> HashMap_GridLocation_int = {{{3, 14}, 1}, {{18, 91}, 5}};
-		HashMap<Thing, int> HashMap_Thing_int = {{(Thing){5, "green"}, 1}, {(Thing){6, "purple"}, 5}};
-		HashMap<bool, string> HashMap_bool_string = {{false, "tree"}, {true, "abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"}};
-		HashMap<char, string> HashMap_char_string = {{'a', "tree"}, {'B', "abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"}};
-		HashMap<float, string> HashMap_float_string = {{3.14159, "tree"}, {-0.25, "abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"}};
-		HashMap<int, string> HashMap_int_string = {{1, "tree"}, {5, "abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"}};
-		HashMap<string, string> HashMap_string_string = {{"tree", "tree"}, {"abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"}};
-		HashMap<GridLocation, string> HashMap_GridLocation_string = {{{3, 14}, "tree"}, {{18, 91}, "abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"}};
-		HashMap<Thing, string> HashMap_Thing_string = {{(Thing){5, "green"}, "tree"}, {(Thing){6, "purple"}, "abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"}};
-		HashMap<bool, GridLocation> HashMap_bool_GridLocation = {{false, {3, 14}}, {true, {18, 91}}};
-		HashMap<char, GridLocation> HashMap_char_GridLocation = {{'a', {3, 14}}, {'B', {18, 91}}};
-		HashMap<float, GridLocation> HashMap_float_GridLocation = {{3.14159, {3, 14}}, {-0.25, {18, 91}}};
-		HashMap<int, GridLocation> HashMap_int_GridLocation = {{1, {3, 14}}, {5, {18, 91}}};
-		HashMap<string, GridLocation> HashMap_string_GridLocation = {{"tree", {3, 14}}, {"abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", {18, 91}}};
-		HashMap<GridLocation, GridLocation> HashMap_GridLocation_GridLocation = {{{3, 14}, {3, 14}}, {{18, 91}, {18, 91}}};
-		HashMap<Thing, GridLocation> HashMap_Thing_GridLocation = {{(Thing){5, "green"}, {3, 14}}, {(Thing){6, "purple"}, {18, 91}}};
-		HashMap<bool, Thing> HashMap_bool_Thing = {{false, (Thing){5, "green"}}, {true, (Thing){6, "purple"}}};
-		HashMap<char, Thing> HashMap_char_Thing = {{'a', (Thing){5, "green"}}, {'B', (Thing){6, "purple"}}};
-		HashMap<float, Thing> HashMap_float_Thing = {{3.14159, (Thing){5, "green"}}, {-0.25, (Thing){6, "purple"}}};
-		HashMap<int, Thing> HashMap_int_Thing = {{1, (Thing){5, "green"}}, {5, (Thing){6, "purple"}}};
-		HashMap<string, Thing> HashMap_string_Thing = {{"tree", (Thing){5, "green"}}, {"abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", (Thing){6, "purple"}}};
-		HashMap<GridLocation, Thing> HashMap_GridLocation_Thing = {{{3, 14}, (Thing){5, "green"}}, {{18, 91}, (Thing){6, "purple"}}};
-		HashMap<Thing, Thing> HashMap_Thing_Thing = {{(Thing){5, "green"}, (Thing){5, "green"}}, {(Thing){6, "purple"}, (Thing){6, "purple"}}};
+		HashMap<bool, bool> hashmap_bool_bool = {{false, false}, {true, true}};
+		HashMap<char, bool> hashmap_char_bool = {{'b', false}, {'B', true}};
+		HashMap<double, bool> hashmap_double_bool = {{3.14159, false}, {-0.25, true}};
+		HashMap<int, bool> hashmap_int_bool = {{106, false}, {1891, true}};
+		HashMap<string, bool> hashmap_string_bool = {{"stanford", false}, {"abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", true}};
+		HashMap<GridLocation, bool> hashmap_gridlocation_bool = {{{3, 14}, false}};
+		HashMap<Thing, bool> hashmap_thing_bool = {{(Thing){6, "purple"}, false}};
+		HashMap<bool, char> hashmap_bool_char = {{false, 'b'}, {true, 'B'}};
+		HashMap<char, char> hashmap_char_char = {{'b', 'b'}, {'B', 'B'}};
+		HashMap<double, char> hashmap_double_char = {{3.14159, 'b'}, {-0.25, 'B'}};
+		HashMap<int, char> hashmap_int_char = {{106, 'b'}, {1891, 'B'}};
+		HashMap<string, char> hashmap_string_char = {{"stanford", 'b'}, {"abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", 'B'}};
+		HashMap<GridLocation, char> hashmap_gridlocation_char = {{{3, 14}, 'b'}};
+		HashMap<Thing, char> hashmap_thing_char = {{(Thing){6, "purple"}, 'b'}};
+		HashMap<bool, double> hashmap_bool_double = {{false, 3.14159}, {true, -0.25}};
+		HashMap<char, double> hashmap_char_double = {{'b', 3.14159}, {'B', -0.25}};
+		HashMap<double, double> hashmap_double_double = {{3.14159, 3.14159}, {-0.25, -0.25}};
+		HashMap<int, double> hashmap_int_double = {{106, 3.14159}, {1891, -0.25}};
+		HashMap<string, double> hashmap_string_double = {{"stanford", 3.14159}, {"abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", -0.25}};
+		HashMap<GridLocation, double> hashmap_gridlocation_double = {{{3, 14}, 3.14159}};
+		HashMap<Thing, double> hashmap_thing_double = {{(Thing){6, "purple"}, 3.14159}};
+		HashMap<bool, int> hashmap_bool_int = {{false, 106}, {true, 1891}};
+		HashMap<char, int> hashmap_char_int = {{'b', 106}, {'B', 1891}};
+		HashMap<double, int> hashmap_double_int = {{3.14159, 106}, {-0.25, 1891}};
+		HashMap<int, int> hashmap_int_int = {{106, 106}, {1891, 1891}};
+		HashMap<string, int> hashmap_string_int = {{"stanford", 106}, {"abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", 1891}};
+		HashMap<GridLocation, int> hashmap_gridlocation_int = {{{3, 14}, 106}};
+		HashMap<Thing, int> hashmap_thing_int = {{(Thing){6, "purple"}, 106}};
+		HashMap<bool, string> hashmap_bool_string = {{false, "stanford"}, {true, "abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"}};
+		HashMap<char, string> hashmap_char_string = {{'b', "stanford"}, {'B', "abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"}};
+		HashMap<double, string> hashmap_double_string = {{3.14159, "stanford"}, {-0.25, "abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"}};
+		HashMap<int, string> hashmap_int_string = {{106, "stanford"}, {1891, "abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"}};
+		HashMap<string, string> hashmap_string_string = {{"stanford", "stanford"}, {"abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"}};
+		HashMap<GridLocation, string> hashmap_gridlocation_string = {{{3, 14}, "stanford"}};
+		HashMap<Thing, string> hashmap_thing_string = {{(Thing){6, "purple"}, "stanford"}};
+		HashMap<bool, GridLocation> hashmap_bool_gridlocation = {{false, {3, 14}}};
+		HashMap<char, GridLocation> hashmap_char_gridlocation = {{'b', {3, 14}}};
+		HashMap<double, GridLocation> hashmap_double_gridlocation = {{3.14159, {3, 14}}};
+		HashMap<int, GridLocation> hashmap_int_gridlocation = {{106, {3, 14}}};
+		HashMap<string, GridLocation> hashmap_string_gridlocation = {{"stanford", {3, 14}}};
+		HashMap<GridLocation, GridLocation> hashmap_gridlocation_gridlocation = {{{3, 14}, {3, 14}}};
+		HashMap<Thing, GridLocation> hashmap_thing_gridlocation = {{(Thing){6, "purple"}, {3, 14}}};
+		HashMap<bool, Thing> hashmap_bool_thing = {{false, (Thing){6, "purple"}}};
+		HashMap<char, Thing> hashmap_char_thing = {{'b', (Thing){6, "purple"}}};
+		HashMap<double, Thing> hashmap_double_thing = {{3.14159, (Thing){6, "purple"}}};
+		HashMap<int, Thing> hashmap_int_thing = {{106, (Thing){6, "purple"}}};
+		HashMap<string, Thing> hashmap_string_thing = {{"stanford", (Thing){6, "purple"}}};
+		HashMap<GridLocation, Thing> hashmap_gridlocation_thing = {{{3, 14}, (Thing){6, "purple"}}};
+		HashMap<Thing, Thing> hashmap_thing_thing = {{(Thing){6, "purple"}, (Thing){6, "purple"}}};
 		BREAKPOINT;
 	}
 	{
-		HashSet<bool> HashSet_bool = {false, true};
-		HashSet<char> HashSet_char = {'a', 'B', 'c'};
-		HashSet<float> HashSet_float = {3.14159, -0.25};
-		HashSet<int> HashSet_int = {1, 5, 10};
-		HashSet<string> HashSet_string = {"tree", "abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"};
-		HashSet<GridLocation> HashSet_GridLocation = {{3, 14}, {18, 91}};
-		HashSet<Thing> HashSet_Thing = {(Thing){5, "green"}, (Thing){6, "purple"}};
+		HashSet<bool> hashset_bool = {false, true};
+		HashSet<char> hashset_char = {'b', 'B'};
+		HashSet<double> hashset_double = {3.14159, -0.25};
+		HashSet<int> hashset_int = {106, 1891};
+		HashSet<string> hashset_string = {"stanford", "abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"};
+		HashSet<GridLocation> hashset_gridlocation = {{3, 14}};
+		HashSet<Thing> hashset_thing = {(Thing){6, "purple"}};
 		BREAKPOINT;
 	}
 }
 
 void stanford_tree() {
 	{
-		Map<bool, bool> Map_bool_bool = {{false, false}, {true, true}};
-		Map<char, bool> Map_char_bool = {{'a', false}, {'B', true}};
-		Map<float, bool> Map_float_bool = {{3.14159, false}, {-0.25, true}};
-		Map<int, bool> Map_int_bool = {{1, false}, {5, true}};
-		Map<string, bool> Map_string_bool = {{"tree", false}, {"abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", true}};
-		Map<GridLocation, bool> Map_GridLocation_bool = {{{3, 14}, false}, {{18, 91}, true}};
-		Map<Thing, bool> Map_Thing_bool = {{(Thing){5, "green"}, false}, {(Thing){6, "purple"}, true}};
-		Map<bool, char> Map_bool_char = {{false, 'a'}, {true, 'B'}};
-		Map<char, char> Map_char_char = {{'a', 'a'}, {'B', 'B'}, {'c', 'c'}};
-		Map<float, char> Map_float_char = {{3.14159, 'a'}, {-0.25, 'B'}};
-		Map<int, char> Map_int_char = {{1, 'a'}, {5, 'B'}, {10, 'c'}};
-		Map<string, char> Map_string_char = {{"tree", 'a'}, {"abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", 'B'}};
-		Map<GridLocation, char> Map_GridLocation_char = {{{3, 14}, 'a'}, {{18, 91}, 'B'}};
-		Map<Thing, char> Map_Thing_char = {{(Thing){5, "green"}, 'a'}, {(Thing){6, "purple"}, 'B'}};
-		Map<bool, float> Map_bool_float = {{false, 3.14159}, {true, -0.25}};
-		Map<char, float> Map_char_float = {{'a', 3.14159}, {'B', -0.25}};
-		Map<float, float> Map_float_float = {{3.14159, 3.14159}, {-0.25, -0.25}};
-		Map<int, float> Map_int_float = {{1, 3.14159}, {5, -0.25}};
-		Map<string, float> Map_string_float = {{"tree", 3.14159}, {"abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", -0.25}};
-		Map<GridLocation, float> Map_GridLocation_float = {{{3, 14}, 3.14159}, {{18, 91}, -0.25}};
-		Map<Thing, float> Map_Thing_float = {{(Thing){5, "green"}, 3.14159}, {(Thing){6, "purple"}, -0.25}};
-		Map<bool, int> Map_bool_int = {{false, 1}, {true, 5}};
-		Map<char, int> Map_char_int = {{'a', 1}, {'B', 5}, {'c', 10}};
-		Map<float, int> Map_float_int = {{3.14159, 1}, {-0.25, 5}};
-		Map<int, int> Map_int_int = {{1, 1}, {5, 5}, {10, 10}};
-		Map<string, int> Map_string_int = {{"tree", 1}, {"abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", 5}};
-		Map<GridLocation, int> Map_GridLocation_int = {{{3, 14}, 1}, {{18, 91}, 5}};
-		Map<Thing, int> Map_Thing_int = {{(Thing){5, "green"}, 1}, {(Thing){6, "purple"}, 5}};
-		Map<bool, string> Map_bool_string = {{false, "tree"}, {true, "abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"}};
-		Map<char, string> Map_char_string = {{'a', "tree"}, {'B', "abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"}};
-		Map<float, string> Map_float_string = {{3.14159, "tree"}, {-0.25, "abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"}};
-		Map<int, string> Map_int_string = {{1, "tree"}, {5, "abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"}};
-		Map<string, string> Map_string_string = {{"tree", "tree"}, {"abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"}};
-		Map<GridLocation, string> Map_GridLocation_string = {{{3, 14}, "tree"}, {{18, 91}, "abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"}};
-		Map<Thing, string> Map_Thing_string = {{(Thing){5, "green"}, "tree"}, {(Thing){6, "purple"}, "abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"}};
-		Map<bool, GridLocation> Map_bool_GridLocation = {{false, {3, 14}}, {true, {18, 91}}};
-		Map<char, GridLocation> Map_char_GridLocation = {{'a', {3, 14}}, {'B', {18, 91}}};
-		Map<float, GridLocation> Map_float_GridLocation = {{3.14159, {3, 14}}, {-0.25, {18, 91}}};
-		Map<int, GridLocation> Map_int_GridLocation = {{1, {3, 14}}, {5, {18, 91}}};
-		Map<string, GridLocation> Map_string_GridLocation = {{"tree", {3, 14}}, {"abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", {18, 91}}};
-		Map<GridLocation, GridLocation> Map_GridLocation_GridLocation = {{{3, 14}, {3, 14}}, {{18, 91}, {18, 91}}};
-		Map<Thing, GridLocation> Map_Thing_GridLocation = {{(Thing){5, "green"}, {3, 14}}, {(Thing){6, "purple"}, {18, 91}}};
-		Map<bool, Thing> Map_bool_Thing = {{false, (Thing){5, "green"}}, {true, (Thing){6, "purple"}}};
-		Map<char, Thing> Map_char_Thing = {{'a', (Thing){5, "green"}}, {'B', (Thing){6, "purple"}}};
-		Map<float, Thing> Map_float_Thing = {{3.14159, (Thing){5, "green"}}, {-0.25, (Thing){6, "purple"}}};
-		Map<int, Thing> Map_int_Thing = {{1, (Thing){5, "green"}}, {5, (Thing){6, "purple"}}};
-		Map<string, Thing> Map_string_Thing = {{"tree", (Thing){5, "green"}}, {"abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", (Thing){6, "purple"}}};
-		Map<GridLocation, Thing> Map_GridLocation_Thing = {{{3, 14}, (Thing){5, "green"}}, {{18, 91}, (Thing){6, "purple"}}};
-		Map<Thing, Thing> Map_Thing_Thing = {{(Thing){5, "green"}, (Thing){5, "green"}}, {(Thing){6, "purple"}, (Thing){6, "purple"}}};
+		Map<bool, bool> map_bool_bool = {{false, false}, {true, true}};
+		Map<char, bool> map_char_bool = {{'b', false}, {'B', true}};
+		Map<double, bool> map_double_bool = {{3.14159, false}, {-0.25, true}};
+		Map<int, bool> map_int_bool = {{106, false}, {1891, true}};
+		Map<string, bool> map_string_bool = {{"stanford", false}, {"abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", true}};
+		Map<GridLocation, bool> map_gridlocation_bool = {{{3, 14}, false}};
+		Map<Thing, bool> map_thing_bool = {{(Thing){6, "purple"}, false}};
+		Map<bool, char> map_bool_char = {{false, 'b'}, {true, 'B'}};
+		Map<char, char> map_char_char = {{'b', 'b'}, {'B', 'B'}};
+		Map<double, char> map_double_char = {{3.14159, 'b'}, {-0.25, 'B'}};
+		Map<int, char> map_int_char = {{106, 'b'}, {1891, 'B'}};
+		Map<string, char> map_string_char = {{"stanford", 'b'}, {"abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", 'B'}};
+		Map<GridLocation, char> map_gridlocation_char = {{{3, 14}, 'b'}};
+		Map<Thing, char> map_thing_char = {{(Thing){6, "purple"}, 'b'}};
+		Map<bool, double> map_bool_double = {{false, 3.14159}, {true, -0.25}};
+		Map<char, double> map_char_double = {{'b', 3.14159}, {'B', -0.25}};
+		Map<double, double> map_double_double = {{3.14159, 3.14159}, {-0.25, -0.25}};
+		Map<int, double> map_int_double = {{106, 3.14159}, {1891, -0.25}};
+		Map<string, double> map_string_double = {{"stanford", 3.14159}, {"abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", -0.25}};
+		Map<GridLocation, double> map_gridlocation_double = {{{3, 14}, 3.14159}};
+		Map<Thing, double> map_thing_double = {{(Thing){6, "purple"}, 3.14159}};
+		Map<bool, int> map_bool_int = {{false, 106}, {true, 1891}};
+		Map<char, int> map_char_int = {{'b', 106}, {'B', 1891}};
+		Map<double, int> map_double_int = {{3.14159, 106}, {-0.25, 1891}};
+		Map<int, int> map_int_int = {{106, 106}, {1891, 1891}};
+		Map<string, int> map_string_int = {{"stanford", 106}, {"abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", 1891}};
+		Map<GridLocation, int> map_gridlocation_int = {{{3, 14}, 106}};
+		Map<Thing, int> map_thing_int = {{(Thing){6, "purple"}, 106}};
+		Map<bool, string> map_bool_string = {{false, "stanford"}, {true, "abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"}};
+		Map<char, string> map_char_string = {{'b', "stanford"}, {'B', "abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"}};
+		Map<double, string> map_double_string = {{3.14159, "stanford"}, {-0.25, "abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"}};
+		Map<int, string> map_int_string = {{106, "stanford"}, {1891, "abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"}};
+		Map<string, string> map_string_string = {{"stanford", "stanford"}, {"abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"}};
+		Map<GridLocation, string> map_gridlocation_string = {{{3, 14}, "stanford"}};
+		Map<Thing, string> map_thing_string = {{(Thing){6, "purple"}, "stanford"}};
+		Map<bool, GridLocation> map_bool_gridlocation = {{false, {3, 14}}};
+		Map<char, GridLocation> map_char_gridlocation = {{'b', {3, 14}}};
+		Map<double, GridLocation> map_double_gridlocation = {{3.14159, {3, 14}}};
+		Map<int, GridLocation> map_int_gridlocation = {{106, {3, 14}}};
+		Map<string, GridLocation> map_string_gridlocation = {{"stanford", {3, 14}}};
+		Map<GridLocation, GridLocation> map_gridlocation_gridlocation = {{{3, 14}, {3, 14}}};
+		Map<Thing, GridLocation> map_thing_gridlocation = {{(Thing){6, "purple"}, {3, 14}}};
+		Map<bool, Thing> map_bool_thing = {{false, (Thing){6, "purple"}}};
+		Map<char, Thing> map_char_thing = {{'b', (Thing){6, "purple"}}};
+		Map<double, Thing> map_double_thing = {{3.14159, (Thing){6, "purple"}}};
+		Map<int, Thing> map_int_thing = {{106, (Thing){6, "purple"}}};
+		Map<string, Thing> map_string_thing = {{"stanford", (Thing){6, "purple"}}};
+		Map<GridLocation, Thing> map_gridlocation_thing = {{{3, 14}, (Thing){6, "purple"}}};
+		Map<Thing, Thing> map_thing_thing = {{(Thing){6, "purple"}, (Thing){6, "purple"}}};
 		BREAKPOINT;
 	}
 	{
-		Set<bool> Set_bool = {false, true};
-		Set<char> Set_char = {'a', 'B', 'c'};
-		Set<float> Set_float = {3.14159, -0.25};
-		Set<int> Set_int = {1, 5, 10};
-		Set<string> Set_string = {"tree", "abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"};
-		Set<GridLocation> Set_GridLocation = {{3, 14}, {18, 91}};
-		Set<Thing> Set_Thing = {(Thing){5, "green"}, (Thing){6, "purple"}};
+		Set<bool> set_bool = {false, true};
+		Set<char> set_char = {'b', 'B'};
+		Set<double> set_double = {3.14159, -0.25};
+		Set<int> set_int = {106, 1891};
+		Set<string> set_string = {"stanford", "abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"};
+		Set<GridLocation> set_gridlocation = {{3, 14}};
+		Set<Thing> set_thing = {(Thing){6, "purple"}};
 		BREAKPOINT;
 	}
 }
 
 void stanford_other() {
 	{
-		PriorityQueue<bool> PriorityQueue_bool = {{1, false}, {5, true}};
-		PriorityQueue<char> PriorityQueue_char = {{1, 'a'}, {5, 'B'}, {10, 'c'}};
-		PriorityQueue<float> PriorityQueue_float = {{1, 3.14159}, {5, -0.25}};
-		PriorityQueue<int> PriorityQueue_int = {{1, 1}, {5, 5}, {10, 10}};
-		PriorityQueue<string> PriorityQueue_string = {{1, "tree"}, {5, "abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"}};
-		PriorityQueue<GridLocation> PriorityQueue_GridLocation = {{1, {3, 14}}, {5, {18, 91}}};
-		PriorityQueue<Thing> PriorityQueue_Thing = {{1, (Thing){5, "green"}}, {5, (Thing){6, "purple"}}};
+		PriorityQueue<bool> priorityqueue_bool = {{106, false}, {1891, true}};
+		PriorityQueue<char> priorityqueue_char = {{106, 'b'}, {1891, 'B'}};
+		PriorityQueue<double> priorityqueue_double = {{106, 3.14159}, {1891, -0.25}};
+		PriorityQueue<int> priorityqueue_int = {{106, 106}, {1891, 1891}};
+		PriorityQueue<string> priorityqueue_string = {{106, "stanford"}, {1891, "abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"}};
+		PriorityQueue<GridLocation> priorityqueue_gridlocation = {{106, {3, 14}}};
+		PriorityQueue<Thing> priorityqueue_thing = {{106, (Thing){6, "purple"}}};
 		BREAKPOINT;
 	}
 }
@@ -254,12 +254,80 @@ void assign_uses() {
     BREAKPOINT;
 }
 
+void node_pair() {
+    // key align 1,4,8 and val align 1,4,8
+    Thing t = {1891, "stanford"};
+    GridLocation gl = {3, 14};
+    {
+        Map<char, char> treenode_11 = { {'B','b'} };
+        Map<char, int> treenode_14 = { {'B',106} };
+        Map<char, double> treenode_18 = { {'B',0.5} };
+        Map<int, char> treenode_41 = { {106,'B'} };
+        Map<int, int> treenode_44 = { {106,1891} };
+        Map<int, double> treenode_48 = { {106,0.5} };
+        Map<double, char> treenode_81 = { {0.5,'B'} };
+        Map<double, int> treenode_84 = { {0.5,106} };
+        Map<double, double> treenode_88 = { {0.5,0.25} };
+        BREAKPOINT;
+    }
+    {
+        HashMap<char, char> hashnode_11 = { {'B','b'} };
+        HashMap<char, int> hashnode_14 = { {'B',106} };
+        HashMap<char, double> hashnode_18 = { {'B',0.5} };
+        HashMap<int, char> hashnode_41 = { {106,'B'} };
+        HashMap<int, int> hashnode_44 = { {106,1891} };
+        HashMap<int, double> hashnode_48 = { {106,0.5} };
+        HashMap<double, char> hashnode_81 = { {0.5,'B'} };
+        HashMap<double, int> hashnode_84 = { {0.5,106} };
+        HashMap<double, double> hashnode_88 = { {0.5,0.25} };
+        BREAKPOINT;
+    }
+    // struct with align 4,8 as key, again as val
+    {
+        Map<char, GridLocation> treenode_14 = { {'B',gl} };
+        Map<char, Thing> treenode_18 = { {'B',t} };
+        Map<int, GridLocation> treenode_44 = { {106,gl} };
+        Map<int, Thing> treenode_48 = { {106,t} };
+        Map<double, GridLocation> treenode_84 = { {0.5,gl} };
+        Map<double, Thing> treenode_88 = { {0.5,t} };
+
+        Map<GridLocation, char> treenode_41 = { {gl,'B'} };
+        Map<Thing, char> treenode_81 = { {t,'B'} };
+        Map<GridLocation, int> treenode_44s = { {gl,106} };
+        Map<Thing, int> treenode_48s = { {t,106} };
+        Map<GridLocation, double> treenode_84s = { {gl,0.5} };
+        Map<Thing, double> treenode_88s = { {t,0.5} };
+        BREAKPOINT;
+    }
+    {
+        HashMap<char, GridLocation> hashnode_14 = { {'B',gl} };
+        HashMap<char, Thing> hashnode_18 = { {'B',t} };
+        HashMap<int, GridLocation> hashnode_44 = { {106,gl} };
+        HashMap<int, Thing> hashnode_48 = { {106,t} };
+        HashMap<double, GridLocation> hashnode_84 = { {0.5,gl} };
+        HashMap<double, Thing> hashnode_88 = { {0.5,t} };
+
+        HashMap<GridLocation, char> hashnode_41 = { {gl,'B'} };
+        HashMap<Thing, char> hashnode_81 = { {t,'B'} };
+        HashMap<GridLocation, int> hashnode_44s = { {gl,106} };
+        HashMap<Thing, int> hashnode_48s = { {t,106} };
+        HashMap<GridLocation, double> hashnode_84s = { {gl,0.5} };
+        HashMap<Thing, double> hashnode_88s = { {t,0.5} };
+        BREAKPOINT;
+    }
+}
+
+void fixed_tests() {
+    node_pair();
+    assign_uses();
+}
+
 int main() {
     stanford_linear();
     stanford_hash();
     stanford_tree();
     stanford_other();
-    assign_uses();
+    fixed_tests();
     return 0;
 }
 
