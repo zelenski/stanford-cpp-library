@@ -5,6 +5,7 @@
 #include "filelib.h"
 #include "gbutton.h"
 #include "gcanvas.h"
+#include "gchooser.h"
 #include "gevent.h"
 #include "glabel.h"
 #include "goptionpane.h"
@@ -36,10 +37,10 @@ MANUAL_TEST("Interactors enable/disable") {
     s1->setEnabled(false);
     GSlider* s2 = new GSlider();
     s2->setEnabled(true);
-    GRadioButton* r1 = new GRadioButton("Nope", "group");
-    r1->setEnabled(false);
-    GRadioButton* r2 = new GRadioButton("Yes Me", "group", true);
-    r2->setEnabled(true);
+    GChooser* c1 = new GChooser({"Nope", "Nada", "Nil"});
+    c1->setEnabled(false);
+    GChooser* c2 = new GChooser({"Yes Me", "Yep", "Sure"});
+    c2->setEnabled(true);
 
     gw->addToRegion(new GLabel("Every other interactor is disabled"), "CENTER");
     gw->addToRegion(s1, "NORTH");
@@ -48,8 +49,8 @@ MANUAL_TEST("Interactors enable/disable") {
     gw->addToRegion(b2, "EAST");
     gw->addToRegion(t1, "SOUTH");
     gw->addToRegion(t2, "SOUTH");
-    gw->addToRegion(r1, "WEST");
-    gw->addToRegion(r2, "WEST");
+    gw->addToRegion(c1, "WEST");
+    gw->addToRegion(c2, "WEST");
 
     gw->setVisible(true);
     while (gw->isVisible()) {}
