@@ -11,29 +11,36 @@ set(CMAKE_CXX_STANDARD 11)
 
 set(CS106_LIB_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Library")
 
+find_package(Qt6 COMPONENTS Core REQUIRED)
+
+message(STATUS "Qt6 version: ${Qt6_VERSION}")
+
 # We try to make a best guess based on the OS, but you may
 # need to manually specify the path to the Qt library.
 if (WIN32)
+
+#    find_qt_mingw64(QT_MINGW64_DIR)
+#    message("${QT_MINGW64_DIR}")
     # MinGW is recommended for Windows.  Please note that
     # Qt is very picky about the MinGW compiler.  Be sure
     # you are using the most up to date version of MinGW.
-    set(CMAKE_PREFIX_PATH "C:/Qt/6.7.2/mingw_64")
+    set(CMAKE_PREFIX_PATH "C:/Qt/${Qt6_VERSION}/mingw_64")
 
     # Alternatively MSVC 2019 compiler can be used (Not tested)
     # set(CMAKE_PREFIX_PATH "C:/Qt/6.7.2/msvc2019_64")
 elseif (APPLE)
     # Note that execute_process cannot expand ~/ for the home path.
     # We instead find the home directory using the environment variable
-    set(CMAKE_PREFIX_PATH "$ENV{HOME}/Qt/6.7.2/macos")
+    set(CMAKE_PREFIX_PATH "$ENV{HOME}/Qt/${Qt6_VERSION}/macos")
 else ()
     # UNIX/Linux case
     # Same issue with expanding the home path
-    set(CMAKE_PREFIX_PATH "$ENV{HOME}/Qt/6.7.2/gcc_64")
+    set(CMAKE_PREFIX_PATH "$ENV{HOME}/Qt/${Qt6_VERSION}/gcc_64")
 endif ()
 
 # Verify CMAKE_PREFIX_PATH exists
 if (NOT EXISTS ${CMAKE_PREFIX_PATH})
-    message(WARNING "The path ${CMAKE_PREFIX_PATH} does not exist"
+    message(WARNING "The path ${CMAKE_PREFIX_PATH} does not exist "
             "please verify the path to your Qt installation")
 endif ()
 
