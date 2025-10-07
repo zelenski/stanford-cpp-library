@@ -1,4 +1,6 @@
-# stanfordtypes.py   version 2025.3
+# stanfordtypes.py   version 2025.4
+#
+# v 2025.4 fix Vector/Stack/Grid on macOS, field renamed
 #
 # v 2025.3 adds handling of typedef to alignment fix
 # Debug helpers seem to now be correct for all Stanford types,
@@ -308,7 +310,15 @@ def vector_helper(d, value, elem_fn):
         if class_is_lib_cpp:
             start = value["__begin_"].pointer()
             finish = value["__end_"].pointer()
-            alloc = value["__end_cap_"].pointer()
+            alloc = finish   # assume allocated to size unless you can find capacity
+            # try to find capacity, field name may be __end_cap_ (used in past) or __cap_ (more recent)
+            try:
+                alloc = value["__end_cap_"].pointer()
+            except:
+                try:
+                    alloc = value["__cap_"].pointer()
+                except:
+                    pass
         else:
             start = value["_M_start"].pointer()
             finish = value["_M_finish"].pointer()
