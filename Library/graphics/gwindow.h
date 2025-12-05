@@ -772,7 +772,6 @@ public:
 
     /**
      * Causes the current thread to pause itself for the given number of milliseconds.
-     * Equivalent to sleep().
      * @throw ErrorException if ms is negative
      */
     virtual void pause(double ms);
@@ -1176,13 +1175,6 @@ public:
      * Equivalent to setVisible(true).
      */
     virtual void show();
-
-    /**
-     * Causes the current thread to pause itself for the given number of milliseconds.
-     * Equivalent to pause().
-     * @throw ErrorException if ms is negative
-     */
-    virtual void sleep(double ms);
 
     /**
      * Moves the window to the back of the z-ordering in the operating system,

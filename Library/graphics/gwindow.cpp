@@ -46,7 +46,6 @@
 #include <QScreen>
 #include <QSizePolicy>
 #include <QStatusBar>
-#include <QThread>
 #include <QTimer>
 #include <QToolBar>
 #include "filelib.h"
@@ -880,7 +879,7 @@ void GWindow::pack() {
 
 void GWindow::pause(double ms) {
     require::nonNegative(ms, "GWindow::pause", "milliseconds");
-    GThread::getCurrentThread()->sleep(ms);
+    GThread::msleep(ms);
 }
 
 void GWindow::processKeyPressEventInternal(QKeyEvent* /* event */) {
@@ -1270,11 +1269,6 @@ void GWindow::show() {
     setVisible(true);
 }
 
-void GWindow::sleep(double ms) {
-    require::nonNegative(ms, "GWindow::sleep", "delay (ms)");
-    GThread::getCurrentThread()->sleep(ms);
-}
-
 GWindow::Region GWindow::stringToRegion(const std::string& regionStr) {
     std::string regionLC = toLowerCase(trim(regionStr));
     if (stringContains(regionLC, "north") || stringContains(regionLC, "top")) {
@@ -1332,7 +1326,7 @@ double getScreenWidth() {
 
 #ifndef SPL_HEADLESS_MODE
 void pause(double milliseconds) {
-    GThread::getCurrentThread()->sleep(milliseconds);
+    GThread::msleep(milliseconds);
 }
 #endif // SPL_HEADLESS_MODE
 

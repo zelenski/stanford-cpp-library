@@ -79,8 +79,6 @@ void QFunctionThread::run() {
 
 /*static*/ GThread* GThread::_qtGuiThread = nullptr;
 /*static*/ GThread* GThread::_studentThread = nullptr;
-Map<QThread*, GThread*> GThread::_allGThreadsQt;
-Map<std::thread*, GThread*> GThread::_allGThreadsStd;
 
 GThread::GThread() {
     // empty
@@ -93,29 +91,13 @@ GThread::GThread() {
     }
 }
 
-/*static*/ GThread* GThread::getCurrentThread() {
-    QThread* currentQtThread = QThread::currentThread();
-    if (_allGThreadsQt.containsKey(currentQtThread)) {
-        return _allGThreadsQt[currentQtThread];
-    } else {
-        return new GThreadQt(currentQtThread);
-    }
-}
-
-/*static*/ GThread* GThread::getQtGuiThread() {
-    return _qtGuiThread;
-}
-
-/*static*/ GThread* GThread::getStudentThread() {
-    return _studentThread;
-}
-
 /*static*/ bool GThread::iAmRunningOnTheQtGuiThread() {
-    return _qtGuiThread && _qtGuiThread == getCurrentThread();
+    return QThread::isMainThread();
 }
 
-/*static*/ bool GThread::iAmRunningOnTheStudentThread() {
-    return _studentThread && _studentThread == getCurrentThread();
+/*static*/ void GThread::msleep(double ms) {
+    require::nonNegative(ms, "GThread::msleep", "delay (ms)");
+    QThread::msleep(static_cast<unsigned long>(ms));
 }
 
 /*static*/ bool GThread::qtGuiThreadExists() {
@@ -123,11 +105,10 @@ GThread::GThread() {
 }
 
 /*static*/ void GThread::runInNewThread(GThunk func, const std::string& threadName) {
-    GThread* currentThread = getCurrentThread();
     GThreadQt* thread = new GThreadQt(func, threadName);
     thread->start();
     while (thread->isRunning()) {
-        currentThread->sleep(10);
+        GThread::msleep(10);
     }
     delete thread;
 }
@@ -183,15 +164,10 @@ GThread::GThread() {
 }
 
 /*static*/ bool GThread::wait(GThread* thread, long ms) {
-    GThread* currentThread = getCurrentThread();
-    if (currentThread == thread) {
-        error("GThread::wait: a thread cannot wait for itself");
-    }
-
     long startTime = GEvent::getCurrentTimeMS();
     unsigned long msToSleep = static_cast<unsigned long>(ms > 10 ? 10 : ms);
     while (thread && thread->isRunning()) {
-        currentThread->sleep(msToSleep);
+        GThread::msleep(msToSleep);
 
         // stop if we have waited at least the given amount of time
         if (ms > 0 && GEvent::getCurrentTimeMS() - startTime >= ms) {
@@ -201,7 +177,7 @@ GThread::GThread() {
     return thread->isRunning();
 }
 
-void GThread::yield() {
+/*static*/ void GThread::yield() {
     QThread::yieldCurrentThread();
 }
 
@@ -215,7 +191,6 @@ GThreadQt::GThreadQt(GThunk func, const std::string& threadName)
     if (!threadName.empty()) {
         setName(threadName);
     }
-    _allGThreadsQt[_qThread] = this;
 }
 
 GThreadQt::GThreadQt(GThunkInt func, const std::string& threadName)
@@ -227,19 +202,16 @@ GThreadQt::GThreadQt(GThunkInt func, const std::string& threadName)
     if (!threadName.empty()) {
         setName(threadName);
     }
-    _allGThreadsQt[_qThread] = this;
 }
 
 GThreadQt::GThreadQt(QThread* qthread)
         : _qThread(qthread) {
     _hasReturn = false;
     _returnValue = 0;
-    _allGThreadsQt[_qThread] = this;
 }
 
 GThreadQt::~GThreadQt() {
     // TODO: delete _qThread;
-    _allGThreadsQt.remove(_qThread);
     _qThread = nullptr;
 }
 
@@ -283,6 +255,7 @@ void GThreadQt::run() {
 
 void GThreadQt::setName(const std::string& name) {
     _qThread->setObjectName(QString::fromStdString(name));
+    native_set_thread_name(name.c_str());
 }
 
 void GThreadQt::setPriority(int priority) {
@@ -301,10 +274,7 @@ void GThreadQt::setPriority(int priority) {
     _qThread->setPriority(priorityEnum);
 }
 
-void GThreadQt::sleep(double ms) {
-    require::nonNegative(ms, "GThread::sleep", "delay (ms)");
-    _qThread->msleep(static_cast<unsigned long>(ms));
-}
+
 
 void GThreadQt::start() {
     _qThread->start();
@@ -312,10 +282,6 @@ void GThreadQt::start() {
 
 void GThreadQt::stop() {
     _qThread->terminate();   // note: don't call this if possible!
-}
-
-void GThreadQt::yield() {
-    QThread::yieldCurrentThread();   // meh
 }
 
 
@@ -328,7 +294,6 @@ GThreadStd::GThreadStd(GThunk func, const std::string& threadName)
     if (!threadName.empty()) {
         setName(threadName);
     }
-    _allGThreadsStd[_stdThread] = this;
 }
 
 GThreadStd::GThreadStd(GThunkInt func, const std::string& threadName)
@@ -340,19 +305,16 @@ GThreadStd::GThreadStd(GThunkInt func, const std::string& threadName)
     if (!threadName.empty()) {
         setName(threadName);
     }
-    _allGThreadsStd[_stdThread] = this;
 }
 
 GThreadStd::GThreadStd(std::thread* stdThread)
         : _stdThread(stdThread) {
     _hasReturn = false;
     _returnValue = 0;
-    _allGThreadsStd[_stdThread] = this;
 }
 
 GThreadStd::~GThreadStd() {
     // TODO: delete _stdThread;
-    _allGThreadsStd.remove(_stdThread);
     _running = false;
     _stdThread = nullptr;
 }
@@ -382,7 +344,7 @@ bool GThreadStd::join(long ms) {
     long elapsed = 0;
     long amountToSleep = ms >= 50 ? 50 : ms;
     while (elapsed < ms && isRunning()) {
-        sleep(amountToSleep);
+        GThreadStd::msleep(amountToSleep);
         elapsed += amountToSleep;
     }
     return !isRunning();
@@ -418,8 +380,8 @@ void GThreadStd::setPriority(int /*priority*/) {
     // unsupported
 }
 
-void GThreadStd::sleep(double ms) {
-    require::nonNegative(ms, "GThread::sleep", "delay (ms)");
+void GThreadStd::msleep(double ms) {
+    require::nonNegative(ms, "GThread::msleep", "delay (ms)");
     std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<long>(ms)));
 }
 

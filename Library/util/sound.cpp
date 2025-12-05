@@ -32,7 +32,7 @@
     if (GThread::iAmRunningOnTheQtGuiThread()) {
         return false;
     }
-    while (_playbackStatus == BUSY) GThread::getCurrentThread()->sleep(100);
+    while (_playbackStatus == BUSY) GThread::msleep(100);
     return _playbackStatus == ERROR;
 }
 

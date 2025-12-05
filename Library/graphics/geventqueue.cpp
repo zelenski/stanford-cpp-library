@@ -114,7 +114,7 @@ void GEventQueue::runOnQtGuiThreadSync(GThunk thunk) {
         if (empty) {
             break;
         } else {
-            GThread::getCurrentThread()->sleep(1);
+            GThread::msleep(1);
         }
     }
 }
@@ -144,7 +144,7 @@ GEvent GEventQueue::waitForEvent(int mask) {
             _eventQueueMutex.unlock();
         }
 
-        GThread::getCurrentThread()->sleep(1);
+        GThread::msleep(1);
     }
 }
 

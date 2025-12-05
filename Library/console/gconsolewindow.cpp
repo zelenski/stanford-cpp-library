@@ -557,14 +557,13 @@ void GConsoleWindow::print(const std::string& str, bool isStdErr) {
     GThread::runOnQtGuiThread([this, strToPrint, isStdErr]() {
         _coutMutex.lock();
         _allOutputBuffer << strToPrint;
-        if (!this->_textArea) {
-            return;
+        if (this->_textArea) {
+            this->_textArea->setEventsEnabled(false);
+            this->_textArea->appendFormattedText(strToPrint, isStdErr ? getErrorColor() : getOutputColor());
+            this->_textArea->moveCursorToEnd();
+            this->_textArea->scrollToBottom();
+            this->_textArea->setEventsEnabled(true);
         }
-        this->_textArea->setEventsEnabled(false);
-        this->_textArea->appendFormattedText(strToPrint, isStdErr ? getErrorColor() : getOutputColor());
-        this->_textArea->moveCursorToEnd();
-        this->_textArea->scrollToBottom();
-        this->_textArea->setEventsEnabled(true);
         _coutMutex.unlock();
     });
 }
@@ -1022,7 +1021,7 @@ std::string GConsoleWindow::readLine() {
         if (lineRead) {
             break;
         } else {
-            sleep(20);
+            pause(20);
         }
     }
 

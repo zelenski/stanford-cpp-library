@@ -160,11 +160,6 @@ public:
      */
     virtual void setPriority(int priority) = 0;
 
-    /**
-     * Causes the thread to pause itself for the given number of milliseconds.
-     * @throw ErrorException if ms is negative
-     */
-    virtual void sleep(double ms) = 0;
 
     /**
      * Tells the thread to start running.
@@ -178,14 +173,6 @@ public:
      */
     virtual void stop() = 0;
 
-    /**
-     * Indicates that the current thread is willing to yield execution to any
-     * other threads that want to run.
-     * This differs slightly from sleep() in that sleep() mandates to pause the
-     * current thread for a given amount of time, while yield() is more of an
-     * offer to other threads that they may run now if they so choose.
-     */
-    virtual void yield() = 0;
 
     // TODO: methods to set a top-level exception handler
 
@@ -197,37 +184,21 @@ public:
     static void ensureThatThisIsTheQtGuiThread(const std::string& message = "");
 
     /**
-     * Returns the caller's Qt thread object.
-     */
-    static GThread* getCurrentThread();
-
-    /**
-     * Returns the Qt thread object representing the Qt Gui thread for the
-     * application.
-     */
-    static GThread* getQtGuiThread();
-
-    /**
-     * Returns the Qt thread object representing the thread on which the
-     * student's main() function runs.
-     */
-    static GThread* getStudentThread();
-
-    /**
      * Returns true if the caller is running on the Qt GUI thread.
      */
     static bool iAmRunningOnTheQtGuiThread();
-
-    /**
-     * Returns true if the caller is running on the student thread.
-     */
-    static bool iAmRunningOnTheStudentThread();
 
     /**
      * Returns true if the Qt GUI thread has been created.
      * This will happen right before the student's main() function runs.
      */
     static bool qtGuiThreadExists();
+
+    /**
+     * Causes current thread to pause itself for the given number of milliseconds.
+     * @throw ErrorException if ms is negative
+     */
+    static void msleep(double ms);
 
     /**
      * Runs the given void function in its own new thread,
@@ -302,6 +273,15 @@ public:
      * @return true if the entire amount of ms was elapsed without the thread finishing
      */
     static bool wait(GThread* thread, long ms);
+
+    /**
+     * Indicates that the current thread is willing to yield execution to any
+     * other threads that want to run.
+     * This differs slightly from msleep() in that msleep() mandates to pause the
+     * current thread for a given amount of time, while yield() is more of an
+     * offer to other threads that they may run now if they so choose.
+     */
+    static void yield();
 
     /**
      * Sets the current thread to be the "Gui" thread for the application.
@@ -400,16 +380,10 @@ public:
     void setPriority(int priority) override;
 
     /* @inherit */
-    void sleep(double ms) override;
-
-    /* @inherit */
     void start() override;
 
     /* @inherit */
     void stop() override;
-
-    /* @inherit */
-    void yield() override;
 
 protected:
     /* @inherit */
@@ -482,16 +456,15 @@ public:
     void setPriority(int priority) override;
 
     /* @inherit */
-    void sleep(double ms) override;
-
-    /* @inherit */
     void start() override;
 
     /* @inherit */
     void stop() override;
 
-    /* @inherit */
-    void yield() override;
+    /* override statics */
+    static void msleep(double ms);
+    static void yield();
+
 
 protected:
     /* @inherit */

@@ -48,7 +48,8 @@ void QtGui::exitGraphics(int exitCode) {
     if (_app) {
         _app->quit();
         _app = nullptr;
-        std::exit(exitCode);
+        //std::exit(exitCode);
+        _Exit(exitCode); // exit witout calling destructors, not tls
     } else {
         std::exit(exitCode);
     }
@@ -143,8 +144,7 @@ void QtGui::startEventLoop(bool exitAfter) {
 namespace stanfordcpplib {
 void studentThreadHasExited(const std::string& reason) {
     // briefly wait for the console to finish printing any/all output
-    GThread::getCurrentThread()->yield();
-    GThread::getCurrentThread()->sleep(1);
+    GThread::msleep(10);
 
     // if I get here, student's main() has finished running;
     // indicate this by showing a completed title on the graphical console

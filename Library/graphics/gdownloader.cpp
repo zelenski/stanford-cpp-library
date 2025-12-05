@@ -231,7 +231,7 @@ void GDownloader::reportNoSSL() {
 void GDownloader::waitForDownload() {
     // wait for download to finish
     while (!_downloadComplete) {
-        GThread::getCurrentThread()->sleep(10);
+        GThread::msleep(10);
         if (_reply && _reply->isFinished()) {
             _downloadComplete = true;
             break;

@@ -64,7 +64,7 @@ void checkLibraryVersion()
     getline(ustream, expected_version);
     string installed_version = getLibraryVersion();
     if (expected_version.empty()) {
-        cerr << "Not able to read library version from network. '" << endl;
+        cerr << "Not able to read library version from network." << endl;
     } else if (expected_version != installed_version) {
         cerr << "Installed library version (" << installed_version << ") does not match expected (" << expected_version <<")" << endl;
     } else {
@@ -75,7 +75,7 @@ void checkLibraryVersion()
 int main()
 {
     Queue<string> names = {"Leland", "Stanford", "Junior", "University"};
-    cout << "Copyright 2025 " << names << endl;
+    cout << "Copyright 2025-26 " << names << endl;
     checkLibraryVersion();
     string name = getLine("What is your name?");
     welcomeAlert(name);
