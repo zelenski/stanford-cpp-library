@@ -11,10 +11,10 @@
 
 #include "qtgui.h"
 #include <QEvent>
-#include <QtGlobal>
 #include <QThread>
 #include "consoletext.h"
 #include "error.h"
+#include "exceptions.h"
 #include "gconsolewindow.h"
 #include "gthread.h"
 #include "private/init.h"
@@ -36,31 +36,44 @@ bool QSPLApplication::notify(QObject* receiver, QEvent* e) {
 QSPLApplication* QtGui::_app = nullptr;
 QtGui* QtGui::_instance = nullptr;
 
-QtGui::QtGui() {
+QtGui::QtGui(int argc, char **argv) {
     connect(GEventQueue::instance(), SIGNAL(eventReady()), this, SLOT(processEventFromQueue()));
+    Q_INIT_RESOURCE(images);
+    _argc = argc;
+    _argv = argv;
+}
+
+void QtGui::createInstance(int argc, char **argv) {
+    if (_instance) {
+        error("Attempt to re-create already running Qt GUI.");
+    }
+    GThread::ensureThatThisIsTheQtGuiThread("Qt GUI must be created on the main thread.");
+    _instance = new QtGui(argc, argv);
+    _app = new QSPLApplication(argc, argv);
+    _app->setQuitOnLastWindowClosed(false);
 }
 
 void QtGui::exitGraphics(int exitCode) {
+    static bool already_exited = false;
+    if (already_exited) return;
+    already_exited = true;
+
     if (exitCode == EXITING_DUE_TO_WINDOW_CLOSE) {
         std::cout << std::endl << std::endl << "[Program exiting due to window close event]" << std::endl;
         exitCode = 0;
     }
     if (_app) {
-        _app->quit();
+        auto saved = _app;
         _app = nullptr;
-        //std::exit(exitCode);
-        _Exit(exitCode); // exit witout calling destructors, not tls
+        saved->quit();
+        delete saved;
+        _Exit(exitCode);  // exit w/o calling destructors (avoid order problems between static/tls)
+        // sad news: _Exit on mingw *does* call some dtors (in violation of C++ standard)
+        // https://github.com/qt/qtbase/blob/fd1e3fe0d77e1faf6572790d4c8cef4fabc6e54c/src/corelib/global/qassert.cpp#L29C58-L34C34
+        // from what I can tell, not currently causing problem but if it becomes one, switch to abort/terminate
     } else {
         std::exit(exitCode);
     }
-}
-
-QSPLApplication* QtGui::getApplication() {
-    return _app;
-}
-
-std::string QtGui::getApplicationDisplayName() const {
-    return (_app ? _app->applicationDisplayName().toStdString() : "");
 }
 
 int QtGui::getArgc() const {
@@ -71,21 +84,9 @@ char** QtGui::getArgv() const {
     return _argv;
 }
 
-void QtGui::initializeQt() {
-    if (_app) return;
-
-    GThread::runOnQtGuiThread([this]() {
-        if (!_app) {
-            qSetMessagePattern("[Qt internal] %{category}.%{type}: %{message})\n");
-            _app = new QSPLApplication(_argc, _argv);
-        }
-    });
-}
-
 QtGui* QtGui::instance() {
     if (!_instance) {
-        _instance = new QtGui();
-        GEventQueue::instance();   // create event queue on Qt GUI main thread
+        error("No Qt GUI instance!");
     }
     return _instance;
 }
@@ -98,11 +99,6 @@ void QtGui::processEventFromQueue() {
     }
 }
 
-void QtGui::setArgs(int argc, char** argv) {
-    _argc = argc;
-    _argv = argv;
-}
-
 // this should be called by the Qt main thread
 void QtGui::startBackgroundEventLoop(GThunkInt mainFunc, bool exitAfter) {
     GThread::ensureThatThisIsTheQtGuiThread("QtGui::startBackgroundEventLoop");
@@ -111,7 +107,7 @@ void QtGui::startBackgroundEventLoop(GThunkInt mainFunc, bool exitAfter) {
 
     if (!GThread::studentThreadExists()) {
         GThread::startStudentThread([&]() -> int {
-            stanfordcpplib::initializeStudentThread();
+            exceptions::setTopLevelExceptionHandlerEnabled(true);
             int result = mainFunc();
             stanfordcpplib::studentThreadHasExited("Completed");
             return result;

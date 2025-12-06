@@ -30,21 +30,9 @@
 namespace exceptions {
 
 /**
- * Called by C++ lib's main wrapper so that the stack trace knows the program's name.
- * (Taken from argv[0].)
- */
-std::string& getProgramName();
-
-/**
  * Returns whether the top-level exception handler is enabled.
  */
 bool getTopLevelExceptionHandlerEnabled();
-
-/**
- * Called by C++ lib's main wrapper so that the stack trace knows the program's name.
- * (Taken from argv[0].)
- */
-void setProgramName(char* programName);
 
 /**
  * Sets whether the top-level exception handler is enabled.

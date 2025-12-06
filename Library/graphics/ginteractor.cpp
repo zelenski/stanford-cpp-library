@@ -43,7 +43,6 @@ GInteractor::GInteractor()
           _id(-1),
           _container(nullptr),
           _lock(QReadWriteLock::Recursive) {
-    QtGui::instance()->initializeQt();   // make sure Qt system is initialized
     _id = ++_interactorCount;            // set ID to number of interactors + 1
 }
 

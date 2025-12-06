@@ -45,17 +45,16 @@ class QtGui : public QObject {
 
 public:
     /**
+     * Creates and initializes the Qt graphics subsystem.
+     * Clients do not need to call this directly because it is called
+     * automatically by the library before main() runs.
+     */
+    static void createInstance(int argc, char **argv);
+
+    /**
      * Shuts down the Qt graphics system.
      */
     void exitGraphics(int exitCode = 0);
-
-
-    /**
-     * Returns the display name of the application (used as
-     * title for window and menu). If name not (yet) available,
-     * returns empty string.
-     */
-    std::string getApplicationDisplayName() const;
 
     /**
      * Returns the count of arguments passed to the main() function.
@@ -70,21 +69,9 @@ public:
     char** getArgv() const;
 
     /**
-     * Initializes the Qt graphics subsystem if it is not initialized already.
-     * Clients do not need to call this directly because it is called
-     * automatically by the library before main() runs.
-     */
-    void initializeQt();
-
-    /**
      * Returns a pointer to the QtGui object for the graphical library.
      */
     static QtGui* instance();
-
-    /**
-     * Sets the argc and argv values before main is run.
-     */
-    void setArgs(int argc, char** argv);
 
     /**
      * Runs an event loop that calls the given function that returns an int.
@@ -106,13 +93,7 @@ public slots:
 private:
     Q_DISABLE_COPY(QtGui)
 
-    QtGui();   // forbid construction
-
-    /**
-     * Returns a pointer to the overall Qt application.
-     * This will be null if the application has not yet been initialized.
-     */
-    QSPLApplication* getApplication();
+    QtGui(int argc, char **argv);   // forbid construction
 
     int _argc;
     char** _argv;

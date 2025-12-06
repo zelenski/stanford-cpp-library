@@ -54,19 +54,23 @@ class QtGui;
 class QFunctionThread : public QThread {
 public:
     /**
-     * Constructs a new thread to execute.
+     * Constructs a new thread to execute with optional threadName.
      */
-    QFunctionThread(GThunk func);
+    QFunctionThread(GThunk func, const std::string& threadName = "");
 
     /**
-     * Constructs a new thread to execute.
+     * Constructs a new thread to execute function returning int.
      */
-    QFunctionThread(GThunkInt func);
+    QFunctionThread(GThunkInt func, const std::string& threadName = "");
 
     /**
      * Returns the value returned by the function, if any, else 0.
      */
     int returnValue() const;
+
+    /* @inherit */
+    void start();
+
 
 protected:
     /**
@@ -81,6 +85,7 @@ private:
     GThunkInt _funcInt;
     bool _hasReturn;
     int _returnValue;
+    std::string _name;
 };
 
 /**
@@ -108,13 +113,6 @@ private:
  */
 class GThread {
 public:
-    /**
-     * Returns the value returned by the thread's function.
-     * This will be 0 until the function is done running.
-     * This method only has meaning if your thread executes a function that
-     * returns an int.
-     */
-    virtual int getResult() const = 0;
 
     /**
      * Returns true if the given thread is currently actively running.
@@ -135,44 +133,9 @@ public:
     virtual bool join(long ms) = 0;
 
     /**
-     * Returns the thread's name as passed to the constructor, or a default
-     * name if none was passed.
-     * Not all thread implementations support names.
-     */
-    virtual std::string name() const = 0;
-
-    /**
-     * Returns the thread's priority.
-     * Threads with higher priorities tend to run more than ones that are lower.
-     * Not all thread implementations support priorities.
-     */
-    virtual int priority() const = 0;
-
-    /**
-     * Sets the thread's name to the given value.
-     * Not all thread implementations support names.
-     */
-    virtual void setName(const std::string& name) = 0;
-
-    /**
-     * Sets the thread's priority to the given value.
-     * Not all thread implementations support priorities.
-     */
-    virtual void setPriority(int priority) = 0;
-
-
-    /**
      * Tells the thread to start running.
      */
     virtual void start() = 0;
-
-    /**
-     * Forcibly terminates the thread.
-     * You probably should not call this unless absolutely necessary,
-     * since it can lead to messed up state in the program.
-     */
-    virtual void stop() = 0;
-
 
     // TODO: methods to set a top-level exception handler
 
@@ -290,30 +253,16 @@ public:
      * Clients do not need to call this method directly.
      * @private
      */
-    static void setGuiThread();
+    static void setCurrentThreadAsGuiThread();
 
 protected:
     // forbid construction
     GThread();
     virtual ~GThread() = default;
 
-    virtual void run() = 0;
-
-    // member variables
-    GThunk _func;
-    GThunkInt _funcInt;
-    bool _hasReturn;
-    int _returnValue;
-
     // pointers to the two core library threads
     static GThread* _qtGuiThread;
     static GThread* _studentThread;
-
-    // mapping between QThreads and their related GThread wrappings
-    static Map<QThread*, GThread*> _allGThreadsQt;
-    static Map<std::thread*, GThread*> _allGThreadsStd;
-
-
 
 private:
     friend class QtGui;
@@ -351,12 +300,9 @@ public:
     /**
      * Constructs a new thread to wrap the given existing Qt thread.
      */
-    GThreadQt(QThread* qthread);
+    GThreadQt(QThread* qthread, const std::string& threadName = "");
 
     virtual ~GThreadQt();
-
-    /* @inherit */
-    int getResult() const override;
 
     /* @inherit */
     bool isRunning() const override;
@@ -368,116 +314,13 @@ public:
     bool join(long ms) override;
 
     /* @inherit */
-    std::string name() const override;
-
-    /* @inherit */
-    int priority() const override;
-
-    /* @inherit */
-    void setName(const std::string& name) override;
-
-    /* @inherit */
-    void setPriority(int priority) override;
-
-    /* @inherit */
     void start() override;
-
-    /* @inherit */
-    void stop() override;
-
-protected:
-    /* @inherit */
-    void run() override;
 
 private:
     Q_DISABLE_COPY(GThreadQt)
 
     QThread* _qThread;   // underlying real Qt thread
 };
-
-
-/**
- * A GThreadQt is an object that runs a function in its own
- * std::thread thread of execution.
- * You construct it, passing a void function to run as a parameter,
- * and then call its <code>run()</code> method to run that function in its
- * own thread.
- *
- * This is provided so that you don't need to subclass QThread yourself
- * just to run a given piece of code.
- *
- * Clients generally do not need to access this class directly.
- * To use threads with our library, use the static methods
- * <code>GThread::runInNewThread</code> and
- * <code>GThread::runInNewThreadAsync</code>.
- * @private
- */
-class GThreadStd : public GThread {
-public:
-    /**
-     * Constructs a new thread to execute, with an optional thread name.
-     */
-    GThreadStd(GThunk func, const std::string& threadName = "");
-
-    /**
-     * Constructs a new thread to execute, with an optional thread name.
-     */
-    GThreadStd(GThunkInt func, const std::string& threadName = "");
-
-    /**
-     * Constructs a new thread to wrap the given existing std thread.
-     */
-    GThreadStd(std::thread* stdThread);
-
-    virtual ~GThreadStd();
-
-    /* @inherit */
-    int getResult() const override;
-
-    /* @inherit */
-    bool isRunning() const override;
-
-    /* @inherit */
-    void join() override;
-
-    /* @inherit */
-    bool join(long ms) override;
-
-    /* @inherit */
-    std::string name() const override;
-
-    /* @inherit */
-    int priority() const override;
-
-    /* @inherit */
-    void setName(const std::string& name) override;
-
-    /* @inherit */
-    void setPriority(int priority) override;
-
-    /* @inherit */
-    void start() override;
-
-    /* @inherit */
-    void stop() override;
-
-    /* override statics */
-    static void msleep(double ms);
-    static void yield();
-
-
-protected:
-    /* @inherit */
-    void run() override;
-
-private:
-    Q_DISABLE_COPY(GThreadStd)
-
-    std::thread* _stdThread;   // underlying real std thread
-    std::string _name;
-    std::atomic<bool> _running;
-};
-
 
 // Platform-specific way to set the name of current thread for display in debugger
 void native_set_thread_name(const char *name);

@@ -3,7 +3,6 @@
  * -----------------
  * Sample program used to confirm Qt/CS106 install.
  * @author Julie Zelenski
- * #version 2025.1
  */
 
 #include <iostream>
@@ -48,7 +47,7 @@ void welcomeAlert(string name)
     GLabel *l = new GLabel("Installed Stanford library " + getLibraryVersion());
     window->addToRegion(l, GWindow::REGION_NORTH);
     GButton *b = new GButton("Play sound clip");
-    b->setActionListener([]() { Sound::playFile("res/AllRightNow.mp3"); });
+    b->setActionListener([]() { Sound::playFile("res/AllRightNow.wav"); });
     window->addToRegion(b, GWindow::REGION_SOUTH);
     window->setVisible(true);
 }

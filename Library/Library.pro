@@ -8,7 +8,7 @@
 
 TEMPLATE    =   lib
 TARGET      =   cs106
-CONFIG      +=  staticlib
+CONFIG      +=  staticlib nostrip
 
 SPL_VERSION         =   2025.1
 REQUIRES_QT_VERSION =   6.9

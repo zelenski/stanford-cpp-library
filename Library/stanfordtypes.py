@@ -313,15 +313,13 @@ def vector_helper(d, value, elem_fn):
         if class_is_lib_cpp:
             start = value["__begin_"].pointer()
             finish = value["__end_"].pointer()
-            alloc = finish   # assume allocated to size unless you can find capacity
             # try to find capacity, field name may be __end_cap_ (used in past) or __cap_ (more recent)
-            try:
+            if "__end_cap_" in value:
                 alloc = value["__end_cap_"].pointer()
-            except:
-                try:
-                    alloc = value["__cap_"].pointer()
-                except:
-                    pass
+            elif "__cap_" in value:
+                alloc = value["__cap_"].pointer()
+            else:
+                alloc = finish   # assume allocated to size as default
         else:
             start = value["_M_start"].pointer()
             finish = value["_M_finish"].pointer()
@@ -643,29 +641,34 @@ def qdump__std____1__basic_string(d, value):
 # then consider other stopped threads
 # The replacement function below works as it should
 # We monkey patch it into lldbbridge as replacement
-import lldb
+# Entire process is under try/except so as to gracefully
+# cope when something we depend on changes
+try:
+    import lldb
 
-def origfirstStoppedThread(self):
-    for i in range(0, self.process.GetNumThreads()):
-        thread = self.process.GetThreadAtIndex(i)
-        reason = thread.GetStopReason()
-        if (reason == lldb.eStopReasonBreakpoint or
-                reason == lldb.eStopReasonException or
-                reason == lldb.eStopReasonPlanComplete or
-                reason == lldb.eStopReasonSignal or
-                reason == lldb.eStopReasonWatchpoint):
-            return thread
-    return None
+    def origfirstStoppedThread(self):
+        for i in range(0, self.process.GetNumThreads()):
+            thread = self.process.GetThreadAtIndex(i)
+            reason = thread.GetStopReason()
+            if (reason == lldb.eStopReasonBreakpoint or
+                    reason == lldb.eStopReasonException or
+                    reason == lldb.eStopReasonPlanComplete or
+                    reason == lldb.eStopReasonSignal or
+                    reason == lldb.eStopReasonWatchpoint):
+                return thread
+        return None
 
-def findSteppingThread(self):
-    for i in range(0, self.process.GetNumThreads()):
-        thread = self.process.GetThreadAtIndex(i)
-        reason = thread.GetStopReason()
-        if reason == lldb.eStopReasonPlanComplete:
-            return thread
-    return origfirstStoppedThread(self)
+    def findSteppingThread(self):
+        for i in range(0, self.process.GetNumThreads()):
+            thread = self.process.GetThreadAtIndex(i)
+            reason = thread.GetStopReason()
+            if reason == lldb.eStopReasonPlanComplete:
+                return thread
+        return origfirstStoppedThread(self)
 
 
-from lldbbridge import Dumper
-Dumper.firstStoppedThread = findSteppingThread
-
+    from lldbbridge import Dumper
+    Dumper.firstStoppedThread = findSteppingThread
+    print(f"SPL did monkey-patch thread step")
+except Exception as e:
+    print(f"SPL was not able to monkey-patch thread step (Reason: {e})")

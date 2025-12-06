@@ -93,7 +93,6 @@ void setConsolePropertiesQt();
         // initialize Qt system and Qt Console window
         GThread::runOnQtGuiThread([]() {
             if (!_instance) {
-                QtGui::instance()->initializeQt();
                 _instance = new GConsoleWindow();
                 setConsolePropertiesQt();
             }

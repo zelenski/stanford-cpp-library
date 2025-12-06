@@ -31,14 +31,6 @@ namespace stanfordcpplib {
 void initializeLibrary(int argc, char** argv);
 
 /**
- * This is for any initialization that needs to be done in the student's thread
- * rather than on the Qt GUI main thread.
- * Currently this is used primarily to set up exception handlers for the
- * student's thread to catch and report errors.
- */
-void initializeStudentThread();
-
-/**
  * Shuts down the Stanford C++ library.
  * A call to this function is inserted after the student's main().
  */

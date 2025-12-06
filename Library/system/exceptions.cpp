@@ -74,7 +74,6 @@ namespace exceptions {
 #define SIGUNKNOWN (static_cast<int>(0xcafebabe))
 
 // static 'variables' (as functions to avoid initialization ordering bugs)
-STATIC_VARIABLE_DECLARE(std::string, gProgramName, "")
 STATIC_CONST_VARIABLE_DECLARE_COLLECTION(Vector<int>, SIGNALS_HANDLED, SIGSEGV, SIGILL, SIGFPE, SIGABRT)
 
 static void signalHandlerDisable();
@@ -133,14 +132,6 @@ void interruptIfDebug()
 
 bool getTopLevelExceptionHandlerEnabled() {
     return std::get_terminate() == stanfordCppLibTerminateHandler;
-}
-
-std::string& getProgramName() {
-    return STATIC_VARIABLE(gProgramName);
-}
-
-void setProgramName(char* programName) {
-    STATIC_VARIABLE(gProgramName) = programName;
 }
 
 #ifdef _WIN32

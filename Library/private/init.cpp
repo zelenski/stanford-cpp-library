@@ -15,21 +15,13 @@
 
 #include "private/init.h"
 #include "consoletext.h"
-#include "exceptions.h"
 #include "qtgui.h"
-#include "strlib.h"
-#include "private/static.h"
-#include <QStandardPaths>
 #include <QLoggingCategory>
 
 
-#ifdef _WIN32
-#  include <direct.h>   // for chdir
-#else // _WIN32
-#  include <unistd.h>   // for chdir
-#endif // _WIN32
-
-inline void initResourcesOutsideNamespace() { Q_INIT_RESOURCE(images); }
+#ifdef __APPLE__
+#include <unistd.h>   // for chdir
+#endif // __APPLE__
 
 
 namespace stanfordcpplib {
@@ -39,8 +31,19 @@ extern void initializeQtGraphicalConsole();
 extern void shutdownConsole();
 }
 
-static void parseArgsQt(int argc, char** argv);
-
+static void chdirAppdir(std::string arg0) {
+#ifdef __APPLE__
+    // on Mac only, may need to change wd because of app's nested dir structure
+    size_t pos = arg0.find(".app/Contents/");
+    if (pos != std::string::npos) {
+        pos = arg0.rfind('/', pos); // find end of parent dir
+        if (pos != std::string::npos) {
+            std::string cwd = arg0.substr(0, pos);
+            chdir(cwd.c_str()); // set wd to folder containing .app
+        }
+    }
+#endif // __APPLE__
+}
 
 // called automatically by real main() function;
 // to be run in Qt GUI main thread
@@ -52,60 +55,22 @@ void initializeLibrary(int argc, char** argv) {
     }
     _initialized = true;
 
-#ifndef SPL_HEADLESS_MODE
-    GThread::setGuiThread();
-#endif // SPL_HEADLESS_MODE
-
-    parseArgsQt(argc, argv);
+    if (argc > 0) chdirAppdir(argv[0]);
 
 #ifndef SPL_HEADLESS_MODE
-    // suppress harmless warnings about font substitutions
-    // also suppress jabber about ffmpeg LGPL license
+    GThread::setCurrentThreadAsGuiThread();
+
+    qSetMessagePattern("[Qt internal] %{category}.%{type}: %{message})\n");
+    // suppress harmless warnings (font substitutions, ffmpeg license)
     QLoggingCategory::setFilterRules("qt.qpa.fonts.warning=false\n"
                                      "qt.multimedia.ffmpeg.info=false"
     );
 
-    // initialize the main Qt graphics subsystem
-    QtGui::instance()->setArgs(argc, argv);
-    QtGui::instance()->initializeQt();
-    initResourcesOutsideNamespace();
+    QtGui::createInstance(argc, argv);      // initialize Qt graphics subsystem
 
     // initialize Qt graphical console (if student #included it)
     initializeQtGraphicalConsole();
 #endif // SPL_HEADLESS_MODE
-}
-
-void initializeStudentThread() {
-    exceptions::setTopLevelExceptionHandlerEnabled(true);
-}
-
-// this should be roughly the same code as platform.cpp's parseArgs function
-static void parseArgsQt(int argc, char** argv) {
-    if (argc <= 0) {
-        return;
-    }
-    std::string arg0 = argv[0];
-    exceptions::setProgramName(argv[0]);
-    // programName() = getRoot(getTail(arg0));
-
-#ifndef _WIN32
-    // on Mac only, may need to change wd because of app's nested dir structure
-    size_t ax = arg0.find(".app/Contents/");
-    if (ax != std::string::npos) {
-        while (ax > 0 && arg0[ax] != '/') {
-            ax--;
-        }
-        if (ax > 0) {
-            std::string cwd = arg0.substr(0, ax);
-            chdir(cwd.c_str()); // wd is folder containing .app
-        }
-    }
-#endif // _WIN32
-
-    char* noConsoleFlag = getenv("NOCONSOLE");
-    if (noConsoleFlag && startsWith(std::string(noConsoleFlag), "t")) {
-        return;
-    }
 }
 
 // shut down the Qt graphical console window;
