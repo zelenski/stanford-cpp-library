@@ -1,8 +1,11 @@
-# stanfordtypes.py   version 2025.4
+# stanfordtypes.py   version 2025.5
+#
+# v 2025.5 monkey patch thread select during step
 #
 # v 2025.4 fix Vector/Stack/Grid on macOS, field renamed
 #
 # v 2025.3 adds handling of typedef to alignment fix
+#
 # Debug helpers seem to now be correct for all Stanford types,
 # tested on Qt 6.9.2 macOS arm, macOS x86, and windows x86
 #
@@ -631,4 +634,38 @@ from libcpp_stdtypes import qdump__std____1__string
 
 def qdump__std____1__basic_string(d, value):
     qdump__std____1__string(d, value)
+
+
+# 10/2025 JDZ
+# lldbbridge often mis-identifies current thread when stepping
+# (it picks first thread that is stopped for any reason)
+# Instead should first look for thread at plan complete. If none found,
+# then consider other stopped threads
+# The replacement function below works as it should
+# We monkey patch it into lldbbridge as replacement
+import lldb
+
+def origfirstStoppedThread(self):
+    for i in range(0, self.process.GetNumThreads()):
+        thread = self.process.GetThreadAtIndex(i)
+        reason = thread.GetStopReason()
+        if (reason == lldb.eStopReasonBreakpoint or
+                reason == lldb.eStopReasonException or
+                reason == lldb.eStopReasonPlanComplete or
+                reason == lldb.eStopReasonSignal or
+                reason == lldb.eStopReasonWatchpoint):
+            return thread
+    return None
+
+def findSteppingThread(self):
+    for i in range(0, self.process.GetNumThreads()):
+        thread = self.process.GetThreadAtIndex(i)
+        reason = thread.GetStopReason()
+        if reason == lldb.eStopReasonPlanComplete:
+            return thread
+    return origfirstStoppedThread(self)
+
+
+from lldbbridge import Dumper
+Dumper.firstStoppedThread = findSteppingThread
 
