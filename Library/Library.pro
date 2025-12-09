@@ -2,7 +2,7 @@
 # Project file for CS106B/X Library
 #
 # @author Julie Zelenski
-# @version Fall Quarter 2025.1 for Qt 6
+# @version Winter Quarter 2025.2 for Qt 6
 #    build static lib and install into user data
 ###############################################################################
 
@@ -10,7 +10,7 @@ TEMPLATE    =   lib
 TARGET      =   cs106
 CONFIG      +=  staticlib nostrip
 
-SPL_VERSION         =   2025.1
+SPL_VERSION         =   2025.2
 REQUIRES_QT_VERSION =   6.9
 
 ###############################################################################
@@ -79,13 +79,16 @@ win32|win64 { QTP_EXE = qtpaths.exe } else { QTP_EXE = qtpaths }
 USER_DATA_DIR = $$system($$[QT_INSTALL_BINS]/$$QTP_EXE --writable-path GenericDataLocation)
 SPL_DIR = $${USER_DATA_DIR}/cs106
 
+INSTALLS            +=  target headers resources versionfile debughelper
+
 target.path         =   "$${SPL_DIR}/lib"
 headers.files       =   $$PUBLIC_HEADERS
 headers.path        =   "$${SPL_DIR}/include"
 resources.files     =   $$RESOURCE_FILES
 resources.path      =   "$${SPL_DIR}/resources"
-INSTALLS            +=  target headers resources debughelper versionfile
-
+versionfile.files   =   spl_version
+versionfile.path    =   "$${SPL_DIR}/lib"
+QMAKE_SUBSTITUTES += spl_version.in
 debughelper.files   =   stanfordtypes.py
 mac         { debughelper.path = "$$(HOME)/Qt/Qt Creator.app/Contents/Resources/debugger" }
 win32|win64 { debughelper.path = "C:\Qt\Tools\QtCreator\share\qtcreator\debugger" }
@@ -94,9 +97,6 @@ unix:!mac   { debughelper.path = "$$(HOME)/Qt/Tools/QtCreator/share/qtcreator/de
     warning("Debug helper: no such path $$debughelper.path")
     debughelper.path = "$${SPL_DIR}"
 }
-
-versionfile.files   =   "version$${SPL_VERSION}"
-versionfile.path    =   "$${SPL_DIR}/lib"
 
 
 ###############################################################################
