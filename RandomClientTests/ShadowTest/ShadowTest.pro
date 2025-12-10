@@ -1,16 +1,16 @@
 ###############################################################################
 # Project file for CS106B/X student program
 #
-# @version Fall Quarter 2025.1 for Qt 6
+# @version Winter Quarter 2025.2 for Qt 6
 # @author Julie Zelenski
 #   build client program using installed static library
 ###############################################################################
 
-SPL_VERSION = 2025.1
+SPL_VERSION = 2025.2
 SPL_URL = https://web.stanford.edu/dept/cs_edu/qt
 
 TEMPLATE    =   app
-QT          +=  core gui widgets network
+QT          +=  core gui widgets network multimedia
 CONFIG      +=  silent debug         # quiet build and debug symbols always
 CONFIG      -=  depend_includepath   # library headers not changing, don't add depend
 
@@ -24,19 +24,7 @@ USER_DATA_DIR   =   $$system($$[QT_INSTALL_BINS]/$$QTP_EXE --writable-path Gener
 
 SPL_DIR         =   $${USER_DATA_DIR}/cs106
 STATIC_LIB      =   $$system_path($${SPL_DIR}/lib/libcs106.a)
-SPL_VERSION_FILE =  $$system_path($${SPL_DIR}/lib/version$${SPL_VERSION})
-
-# Confirm presence of lib before build using extra target as prereq
-check_lib.target    =  "$${STATIC_LIB}"
-check_lib.commands  =  $(error No CS106 library found. Install CS106 package following instructions at $${SPL_URL})
-QMAKE_EXTRA_TARGETS +=  check_lib
-PRE_TARGETDEPS       +=  $${check_lib.target}
-
-# Confirm version of library is current
-check_version.target    =  "$${SPL_VERSION_FILE}"
-check_version.commands  =  $(error Cannot find version $${SPL_VERSION} of CS106 library. Install CS106 package following instructions at $${SPL_URL})
-QMAKE_EXTRA_TARGETS +=  check_version
-PRE_TARGETDEPS       +=  $${check_version.target}
+VERSION_FILE =      $$system_path($${SPL_DIR}/lib/spl_version)
 
 # link against libcs106.a, add library headers to search path
 # libcs106 requires libpthread, add link here
@@ -125,11 +113,9 @@ QMAKE_CXXFLAGS_WARN_ON      +=  -Wno-unused-const-variable
 # error if project opened from within a ZIP archive (common mistake on Windows)
 win32|win64 {
     contains(PWD, .*\.zip.*) | contains(PWD, .*\.ZIP.*) {
-        message( "*******************************************************************" )
-        message( "*** ERROR: You are trying to open this project from within a ZIP archive." )
-        message( "*** You must first extract the files then open in Qt Creator." )
-        message( "*** In File Explorer open the ZIP and choose to Extract All." )
-        message( "*******************************************************************" )
+        warning( "*** You are trying to open this project from within a ZIP archive." )
+        warning( "*** You must first extract the files then open in Qt Creator." )
+        warning( "*** In File Explorer open the ZIP and choose to Extract All." )
         error( Exiting. Extract project from ZIP first.)
     }
 }
@@ -139,13 +125,27 @@ PROJECT_DIR = $$basename(PWD)
 FOUND  = $$PROJECT_DIR
 FOUND ~= s|[a-z A-Z 0-9 _.+-]||   # yes, spaces ok, limited punctuation, $ % & are dicey
 !isEmpty(FOUND) {
-    message( "*******************************************************************" )
-    message( "*** ERROR: The name of your project directory has disallowed characters." )
-    message( "*** The allowed characters are letters, numbers, and simple punctuation." )
-    message( "*** Your directory is named $$PROJECT_DIR which contains the" )
-    message( "*** disallowed characters: $$FOUND" )
-    message( "*** Please rename to a simple name such as Assignment_1 that contains" )
-    message( "*** no disallowed characters." )
-    message( "*******************************************************************" )
+    warning( "*** The name of your project directory contains the disallowed characters: $$FOUND" )
+    warning( "*** The allowed characters are letters, numbers, and simple punctuation." )
+    warning( "*** Please rename to a simple name such as Assignment_1 that contains no disallowed characters." )
     error(Exiting. Rename project directory to remove disallowed characters. )
+}
+
+
+!isEmpty(CURRENTLY_INSTALLING_LIBRARY) { # special case for Welcome app in CS106 package
+    message("Installing cs106 package, will skip library version check")
+} else {
+    !exists($$STATIC_LIB) {             # confirm static lib exists
+        warning("No CS106 library found. Need to install.")
+        error(Exiting. Install CS106 package following instructions at $$SPL_URL)
+    }
+    !exists($$VERSION_FILE) {           # confirm version file exists
+         warning("Installed library has no version. Re-install to get correct version.")
+         error(Exiting. Re-install CS106 package following instructions at $$SPL_URL)
+    }
+    CONTENTS = $$cat($$VERSION_FILE)    # confirm version file contents match this .pro file
+    !equals(CONTENTS, $$SPL_VERSION) {
+        warning( "Installed library version $$CONTENTS, expected $$SPL_VERSION" )
+        error(Exiting. Re-install CS106 package following instructions at $$SPL_URL)
+    }
 }

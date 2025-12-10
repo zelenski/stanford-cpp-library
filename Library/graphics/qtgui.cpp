@@ -49,7 +49,7 @@ void QtGui::createInstance(int argc, char **argv) {
     }
     GThread::ensureThatThisIsTheQtGuiThread("Qt GUI must be created on the main thread.");
     _instance = new QtGui(argc, argv);
-    _app = new QSPLApplication(argc, argv);
+    _app = new QSPLApplication(_instance->_argc, _instance->_argv);
     _app->setQuitOnLastWindowClosed(false);
 }
 

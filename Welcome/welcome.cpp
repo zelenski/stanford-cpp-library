@@ -59,15 +59,17 @@ void checkLibraryVersion()
     string url = "https://web.stanford.edu/dept/cs_edu/qt/version.txt";
     iurlstream ustream;
     ustream.open(url);
-    string expected_version;
-    getline(ustream, expected_version);
+    string from_csedu;
+    getline(ustream, from_csedu);
     string installed_version = getLibraryVersion();
-    if (expected_version.empty()) {
-        cerr << "Not able to read library version from network." << endl;
-    } else if (expected_version != installed_version) {
-        cerr << "Installed library version (" << installed_version << ") does not match expected (" << expected_version <<")" << endl;
+    cout << "Installed version of library is " << installed_version;
+
+    if (from_csedu.empty()) {
+        cerr << " (unable to read version spec from network to compare)" << endl;
+    } else if (from_csedu != installed_version) {
+        cerr << " (version spec published on cs_edu is " << from_csedu << ")" << endl;
     } else {
-        cout << "Installed and expected library version match (" << installed_version << ")" << endl;
+        cout << " (matches version spec from cs_edu)" << endl;
     }
 }
 
