@@ -6,47 +6,6 @@
 import copy
 from typing import List, Optional, Any
 
-TYPEDEFS = '''
-using namespace std;
-
-#if defined(__APPLE__)
-#define BREAKPOINT __builtin_debugtrap(); cout << "BREAK @" << __LINE__ << endl;
-#elif defined(_WIN32)
-#define BREAKPOINT __debugbreak(); cout << "BREAK @" << __LINE__ << endl;
-#endif
-
-struct Thing {
-    int num;
-    string label;
-};
-int hashCode(const Thing& t) {
-    return t.num;
-}
-bool operator ==(const Thing& t1, const Thing& t2) {
-    return t1.num == t2.num && t1.label == t2.label;
-}
-bool operator <(const Thing& t1, const Thing& t2) {
-    return stanfordcpplib::collections::compareTo(t1.num, t2.num, t1.label, t2.label) < 0;
-}
-
-struct Node {
-    char letter;
-    Node *left, *right;
-};
-
-'''
-
-MAIN_PROGRAM = '''
-int main() {
-    stanford_linear();
-    stanford_hash();
-    stanford_tree();
-    stanford_other();
-    fixed_tests();
-    return 0;
-}
-'''
-
 class Type:
     def __init__(
         self,
@@ -83,12 +42,6 @@ class Type:
 
     def __hash__(self) -> int:
         return hash(str(self))
-
-linear_containers = ['Deque', 'Grid', 'Queue','Stack','Vector', ]
-hash_containers = ['HashMap', 'HashSet', ]
-tree_containers = ['Map', 'Set', ]
-other_containers = [ 'PriorityQueue',]
-all_stanford = linear_containers + hash_containers + tree_containers + other_containers
 
 basic_types = [
     'bool',
@@ -141,7 +94,7 @@ def types_for_container(outer) -> List[Type]:
             types.append(Type(inner, outer))
     return types
 
-def source_for_all(fn_name, containers) -> str:
+def generate_all_combos(fn_name, containers) -> str:
     lines = [f"void {fn_name}() {{"]
     for outer in containers:
         lines += ['\t{'] + [
@@ -151,16 +104,13 @@ def source_for_all(fn_name, containers) -> str:
     lines += ["}\n\n"]
     return '\n'.join(lines)
 
-def generate_program() -> str:
-    includes = [c.lower() + '.h' for c in all_stanford + ['bits']]
-    program = '\n'.join([f'#include "{f}"' for f in includes])
-    program += TYPEDEFS
-    program += source_for_all("stanford_linear", linear_containers)
-    program += source_for_all("stanford_hash", hash_containers)
-    program += source_for_all("stanford_tree", tree_containers)
-    program += source_for_all("stanford_other", other_containers)
-    with open('fixed_tests') as f: fixed = f.read()
-    return program + fixed + MAIN_PROGRAM
+def generate_module(fn_name, containers):
+    code = '#include "shared.h"\nusing namespace std;\n\n' + generate_all_combos(fn_name, containers)
+    with open(fn_name + ".cpp", "w") as f:
+        f.write(code)
 
 if __name__ == '__main__':
-    print(generate_program())
+    generate_module("stanford_linear", ['Deque', 'Grid', 'Queue','Stack','Vector'])
+    generate_module("stanford_hash", ['HashMap', 'HashSet'])
+    generate_module("stanford_tree",  ['Map', 'Set'])
+    generate_module("stanford_pq", ['PriorityQueue'])

@@ -98,12 +98,12 @@ unix:!mac   { debughelper.path = "$$(HOME)/Qt/Tools/QtCreator/share/qtcreator/de
     debughelper.path = "$${SPL_DIR}"
 }
 
-# Add dependency to install to remove previous SPL_DIR first
+# Add dependency before install to remove any existing SPL_DIR
 unix {
     rmexisting.commands = rm -rf \"$$SPL_DIR\"
 }
 win32 {
-    rmexisting.commands = rd /s /q \"$$shell_path($$SPL_DIR)\"
+    rmexisting.commands = if exist \"$$shell_path($$SPL_DIR)\" rd /s /q \"$$shell_path($$SPL_DIR)\"
 }
 install.depends = rmexisting
 QMAKE_EXTRA_TARGETS += install rmexisting

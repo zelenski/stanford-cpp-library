@@ -438,30 +438,28 @@ def unordered_map_helper_libcpp(d, value, elem_fn):
     """Dumps the unordered_map for HashSet and HashMap for libc++.
        Adapted from qdump__std____1__unordered_map in libcpp_stdtypes.py"""
 
-    size = value["__table_"]["__p2_"].integer()
+    size = value["__table_"]["__size_"].integer() # 12/2025 field access change macos clang
     d.putItemCount(size)
 
-    keyType = value.type[0]
-    valueType = value.type[1]
-    pairType = value.type[4][0]
-
     if d.isExpanded():
-        curr = value["__table_"]["__p1_"].pointer()
+        keyType = value.type[0]
+        valueType = value.type[1]
+        pairType = value.type[4][0]
+
         # 9/2025 JDZ see comment on ordered_map_helper_libcpp about alignment fix
         valAlign = my_type_alignment(d, valueType.typeid)
         pairAlign = my_type_alignment(d, pairType.typeid)
         node_fmt = "pp%d@{%s}%d@{%s}" % (pairAlign, keyType.name, valAlign, valueType.name)
-        #print(f"JDZ: unordered map helper format {node_fmt}")
         # [next][prev][pad][key(aligned)][pad][val(aligned)]
 
+        first = value["__table_"]["__first_node_"].pointer() # 12/2025 field access change macos clang
         def traverse_list(node):
             while node:
                 (next_,_,_,k,_,v) = d.split(node_fmt, node)
                 yield (k, v)
                 node = next_
-
         with Children(d, size, maxNumChild=1000):  # JDZ removed childType=value.type[0],
-            for (i, pair) in zip(d.childRange(), traverse_list(curr)):
+            for (i, pair) in zip(d.childRange(), traverse_list(first)):
                 elem_fn(d, i, pair[0], pair[1])
 
 
@@ -538,7 +536,6 @@ def my_type_alignment(d, typeid):
             mtypeid = d.from_native_type(m.type)
             align = max(my_type_alignment(d, mtypeid), align)
         if orig != align:
-            print(f"JDZ: fixing alignment for type {typeid} from {orig} to {align}")
             d.type_alignment_cache[typeid] = align # update cache so correct for all
             return align
     return orig
@@ -567,7 +564,6 @@ def map_helper_libcpp(d, value, elem_fn):
         valAlign = my_type_alignment(d, valueType.typeid)
         pairAlign = my_type_alignment(d, pairType.typeid)
         node_fmt = "pppB%d@{%s}%d@{%s}" % (pairAlign, keyType.name, valAlign, valueType.name)
-        # print(f"JDZ: map helper format {node_fmt}")
         # [left][right][parent][bool_is_black][pad][key(aligned)][pad][val(aligned)]
 
         def in_order_traversal(node):
@@ -579,7 +575,6 @@ def map_helper_libcpp(d, value, elem_fn):
             if right:
                 for res in in_order_traversal(right):
                     yield res
-
         with Children(d, size, maxNumChild=1000):
             for (i, pair) in zip(d.childRange(), in_order_traversal(head)):
                 elem_fn(d, i, pair[0], pair[1])
