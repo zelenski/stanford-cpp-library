@@ -133,19 +133,19 @@ FOUND ~= s|[a-z A-Z 0-9 _.+-]||   # yes, spaces ok, limited punctuation, $ % & a
 
 
 !isEmpty(CURRENTLY_INSTALLING_LIBRARY) { # special case for Welcome app in CS106 package
-    message("Installing cs106 package, will skip library version check")
+    message( "Installing cs106 package, will skip library version check" )
 } else {
     !exists($$STATIC_LIB) {             # confirm static lib exists
-        warning("No CS106 library found. Need to install.")
+        warning( " *** No CS106 library found. Need to install." )
         error(Exiting. Install CS106 package following instructions at $$SPL_URL)
     }
     !exists($$VERSION_FILE) {           # confirm version file exists
-         warning("Installed library has no version. Re-install to get correct version.")
-         error(Exiting. Re-install CS106 package following instructions at $$SPL_URL)
+         warning( " *** Cannot determine version of installed library. Need to re-install." )
+         error(Exiting. Install CS106 package following instructions at $$SPL_URL)
     }
     CONTENTS = $$cat($$VERSION_FILE)    # confirm version file contents match this .pro file
     !equals(CONTENTS, $$SPL_VERSION) {
-        warning( "Installed library version $$CONTENTS, expected $$SPL_VERSION" )
-        error(Exiting. Re-install CS106 package following instructions at $$SPL_URL)
+        warning( "*** Installed library version $$CONTENTS, expected $$SPL_VERSION" )
+        error(Exiting. Install CS106 package following instructions at $$SPL_URL)
     }
 }
