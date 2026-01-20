@@ -1,22 +1,20 @@
 <!DOCTYPE RCC><RCC version="1.0">
-<qresource prefix="/">
-    <file alias="stanford">resources/splicon-large.png</file>
-
-    <file alias="about">resources/about.gif</file>
-    <file alias="background_color">resources/background_color.gif</file>
-    <file alias="clear_console">resources/clear_console.gif</file>
-    <file alias="compare_output">resources/compare_output.gif</file>
-    <file alias="copy">resources/copy.gif</file>
-    <file alias="cut">resources/cut.gif</file>
-    <file alias="font">resources/font.gif</file>
-    <file alias="load_input_script">resources/load_input_script.gif</file>
-    <file alias="paste">resources/paste.gif</file>
-    <file alias="print">resources/print.gif</file>
-    <file alias="quit">resources/quit.gif</file>
-    <file alias="save">resources/save.gif</file>
-    <file alias="save_as">resources/save_as.gif</file>
-    <file alias="select_all">resources/select_all.gif</file>
-    <file alias="text_color">resources/text_color.gif</file>
-</qresource>
-
+    <qresource prefix="/">
+        <file alias="about">resources/about.png</file>
+        <file alias="background_color">resources/background_color.png</file>
+        <file alias="clear_console">resources/clear_console.png</file>
+        <file alias="compare_output">resources/compare_output.png</file>
+        <file alias="copy">resources/copy.png</file>
+        <file alias="cut">resources/cut.png</file>
+        <file alias="font">resources/font.png</file>
+        <file alias="load_input_script">resources/load_input_script.png</file>
+        <file alias="paste">resources/paste.png</file>
+        <file alias="print">resources/print.png</file>
+        <file alias="quit">resources/quit.png</file>
+        <file alias="save">resources/save.png</file>
+        <file alias="save_as">resources/save_as.png</file>
+        <file alias="select_all">resources/select_all.png</file>
+        <file alias="splicon-large">resources/splicon-large.png</file>
+        <file alias="text_color">resources/text_color.png</file>
+    </qresource>
 </RCC>

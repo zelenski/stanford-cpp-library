@@ -33,6 +33,11 @@
 
 namespace platform {
 
+bool filelib_isDirectory(const std::string& filename) {
+    DWORD attr = GetFileAttributesA(filename.c_str());
+    return attr != INVALID_FILE_ATTRIBUTES && (attr & FILE_ATTRIBUTE_DIRECTORY);
+}
+
 void filelib_createDirectory(const std::string& path) {
     std::string pathStr = path;
     if (endsWith(path, "\\")) {
@@ -99,11 +104,6 @@ std::string filelib_getTempDirectory() {
     char path[MAX_PATH + 1];
     int n = GetTempPathA(MAX_PATH + 1, path);
     return std::string(path, n);
-}
-
-bool filelib_isDirectory(const std::string& filename) {
-    DWORD attr = GetFileAttributesA(filename.c_str());
-    return attr != INVALID_FILE_ATTRIBUTES && (attr & FILE_ATTRIBUTE_DIRECTORY);
 }
 
 // https://msdn.microsoft.com/en-us/library/windows/desktop/gg258117(v=vs.85).aspx

@@ -33,6 +33,14 @@
 #include "strlib.h"
 
 namespace platform {
+    
+bool filelib_isDirectory(const std::string& filename) {
+    struct stat fileInfo;
+    if (stat(filename.c_str(), &fileInfo) != 0) {
+        return false;
+    }
+    return S_ISDIR(fileInfo.st_mode) != 0;
+}
 
 void filelib_createDirectory(const std::string& path) {
     std::string pathStr = path;
@@ -130,14 +138,6 @@ std::string filelib_getTempDirectory() {
     if (!dir) dir = getenv("TEMPDIR");
     if (!dir) return "/tmp";
     return dir;
-}
-
-bool filelib_isDirectory(const std::string& filename) {
-    struct stat fileInfo;
-    if (stat(filename.c_str(), &fileInfo) != 0) {
-        return false;
-    }
-    return S_ISDIR(fileInfo.st_mode) != 0;
 }
 
 bool filelib_isFile(const std::string& filename) {
