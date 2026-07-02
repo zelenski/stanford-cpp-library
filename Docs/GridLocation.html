@@ -41,6 +41,16 @@ represent a location in a two-dimensional grid.
 </tr>
 <tr>
 
+    <td class=indexKey><nobr><a href="#Operator:+"><var>loc1</var> + <var>loc2</var></a>&nbsp;</nobr></td>
+    <td class=indexSynopsis width=100%>Returns a new <code>GridLocation</code> with row and col added together.</td>
+</tr>
+<tr>
+
+    <td class=indexKey><nobr><a href="#Operator:+="><var>loc1</var> += <var>loc2</var></a>&nbsp;</nobr></td>
+    <td class=indexSynopsis width=100%>Add <code>loc2.row</code> and <code>loc2.col</code> to <code>loc1</code>.</td>
+</tr>
+<tr>
+
     <td class=indexKey><nobr><a href="#Operator:=="><var>loc1</var> == <var>loc2</var></a>&nbsp;</nobr></td>
     <td class=indexSynopsis width=100%>Returns <code>true</code> if <code>loc1</code> and <code>loc2</code> are the same location.</td>
 </tr>
@@ -99,6 +109,36 @@ Returns a printable string for this GridLocation in the form
 </div>
 <pre class=usageCode>
 string str = loc.toString();
+</pre>
+
+<hr>
+<a name="Operator:+"></a>
+<pre class=detailCode>
+GridLocation operator+(const GridLocation&amp; loc1, const GridLocation&amp; loc2);
+</pre>
+Returns a new <code>GridLocation</code> where <code>new.row = loc1.row + loc2.row</code> and <code>new.col = loc1.col + loc2.col</code>.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+GridLocation startLoc(5, 10);
+GridLocation offset(1, 1);
+GridLocation endLoc = startLoc + offset;
+</pre>
+
+<hr>
+<a name="Operator:+="></a>
+<pre class=detailCode>
+GridLocation&amp; operator+=(GridLocation&amp; loc1, const GridLocation&amp; loc2);
+</pre>
+Equal to <code>loc1 = loc1 + loc2</code>. Returns <code>loc1</code> as a reference.
+
+<p>Usage:<br>
+</div>
+<pre class=usageCode>
+GridLocation pos(5, 10);
+GridLocation offset(1, 1);
+pos += offset;
 </pre>
 
 <hr>
