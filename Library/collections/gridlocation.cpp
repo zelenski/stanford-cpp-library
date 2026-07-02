@@ -30,6 +30,16 @@ int hashCode(const GridLocation& loc) {
     return hashCode(loc.row, loc.col);
 }
 
+GridLocation operator +(const GridLocation& loc1, const GridLocation& loc2) {
+    return GridLocation(loc1.row + loc2.row, loc1.col + loc2.col);
+}
+
+GridLocation& operator +=(GridLocation& loc1, const GridLocation& loc2) {
+    loc1.row += loc2.row;
+    loc1.col += loc2.col;
+    return loc1;
+}
+
 bool operator <(const GridLocation& loc1, const GridLocation& loc2) {
     return loc1.row < loc2.row ||
             (loc1.row == loc2.row && loc1.col < loc2.col);

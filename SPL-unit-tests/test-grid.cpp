@@ -263,6 +263,17 @@ PROVIDED_TEST("GridLocationRange, contains") {
 }
 
 
+PROVIDED_TEST("GridLocation, offset math and behavior") {
+    GridLocation start(5, 10);
+    GridLocation offset(1, -8);
+    EXPECT_EQUAL(start + offset, GridLocation(6, 2));
+    GridLocation& startReference = start += offset;
+    EXPECT_EQUAL(start, GridLocation(6, 2));
+    startReference = GridLocation(0, 0);
+    EXPECT_EQUAL(start, GridLocation(0, 0));
+}
+
+
 PROVIDED_TEST("GridLocationRange dimensions,size,isEmpty ") {
     Grid<int> grid;
     GridLocationRange range;

@@ -57,6 +57,12 @@ public:
 int hashCode(const GridLocation& loc);
 
 /*
+ * Addition operators for grid locations.
+ */
+GridLocation operator +(const GridLocation& loc1, const GridLocation& loc2);
+GridLocation& operator +=(GridLocation& loc1, const GridLocation& loc2);
+
+/*
  * Relational operators for comparing grid locations.
  */
 bool operator <(const GridLocation& loc1, const GridLocation& loc2);
